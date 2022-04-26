@@ -72,8 +72,8 @@ def _build_photometry_header(columns):
             header.append(f'#   description: {header_dict[column]["description"]}')
     return '\n'.join(header) + '\n'
 
-def _add_header(header, output_file):
-    with open(f'{output_file}.ecsv', "r+") as f:
+def _add_header(header, output_path, output_file):
+    with open(join(output_path, f'{output_file}.ecsv'), "r+") as f:
         s = f.read()
         f.seek(0)
         f.write(header + s)

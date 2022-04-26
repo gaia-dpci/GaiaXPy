@@ -148,13 +148,13 @@ class SampledSpectraData(OutputData):
         header_lines = _build_regular_header(modified_data.columns)
         Path(output_path).mkdir(parents=True, exist_ok=True)
         modified_data.to_csv(join(output_path, f'{output_file}.ecsv'), index=False)
-        _add_header(header_lines, output_file)
+        _add_header(header_lines, output_path, output_file)
         # Assuming the sampling is the same for all spectra
         pos = [str(_array_to_standard(positions))]
         sampling_df = pd.DataFrame({'pos': pos})
         header_lines = _build_regular_header(sampling_df.columns)
         sampling_df.to_csv(join(output_path, f'{output_file}_sampling.ecsv'), index=False)
-        _add_header(header_lines, f'{output_file}_sampling')
+        _add_header(header_lines, output_path, f'{output_file}_sampling')
 
     def _save_fits(self, output_path, output_file):
         """

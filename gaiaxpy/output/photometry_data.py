@@ -1,0 +1,107 @@
+"""
+photometry_dataframe.py
+====================================
+Module to represent a photometry dataframe.
+"""
+from pathlib import Path
+from fastavro import parse_schema, writer
+from astropy.table import Table
+from astropy.io.votable import from_table, writeto
+from fastavro.validation import validate_many
+from os.path import join
+from .output_data import OutputData, _add_header, _build_photometry_header
+
+
+class PhotometryData(OutputData):
+
+    def __init__(self, data):
+        super().__init__(data, None)
+
+    def _save_avro(self, save_path, output_file):
+        """
+        Save the output photometry in AVRO format.
+
+        Args:
+            save_path (str): Path where to save the file.
+            output_file (str): Name chosen for the output file.
+        """
+        def build_field(keys):
+            fields = []
+            for key in keys:
+                if key == 'source_id':
+                    field = {'name': key, 'type': 'long'}
+                else:
+                    field = {'name': key, 'type': 'float'}
+                fields.append(field)
+            return fields
+        phot_list = self.data.to_dict('records')
+        schema = {
+            'doc': 'Output photometry.',
+            'name': 'Photometry',
+            'namespace': 'photometry',
+            'type': 'record',
+            'fields': build_field(phot_list[0].keys()),
+        }
+        validate_many(phot_list, schema)
+        parsed_schema = parse_schema(schema)
+        Path(save_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(save_path, f'{output_file}.avro')
+        with open(output_path, 'wb') as output:
+            writer(output, parsed_schema, phot_list)
+
+    def _save_csv(self, save_path, output_file):
+        """
+        Save the output photometry in CSV format.
+
+        Args:
+            save_path (str): Path where to save the file.
+            output_file (str): Name chosen for the output file.
+        """
+        photometry_df = self.data
+        Path(save_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(save_path, f'{output_file}.csv')
+        photometry_df.to_csv(output_path, index=False)
+
+    def _save_ecsv(self, save_path, output_file):
+        """
+        Save the output photometry in ECSV format.
+
+        Args:
+            save_path (str): Path where to save the file.
+            output_file (str): Name chosen for the output file.
+        """
+        photometry_df = self.data
+        header_lines = _build_photometry_header(photometry_df.columns)
+        Path(save_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(save_path, f'{output_file}.ecsv')
+        photometry_df.to_csv(output_path, index=False)
+        _add_header(header_lines, output_file)
+
+    def _save_fits(self, save_path, output_file):
+        """
+        Save the output photometry in FITS format.
+
+        Args:
+            save_path (str): Path where to save the file.
+            output_file (str): Name chosen for the output file.
+        """
+        photometry_df = self.data
+        table = Table.from_pandas(photometry_df)
+        Path(save_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(save_path, f'{output_file}.fits')
+        table.write(output_path, format='fits', overwrite=True)
+
+    def _save_xml(self, save_path, output_file):
+        """
+        Save the output photometry in XML/VOTABLE format.
+
+        Args:
+            save_path (str): Path where to save the file.
+            output_file (str): Name chosen for the output file.
+        """
+        photometry_df = self.data
+        table = Table.from_pandas(photometry_df)
+        votable = from_table(table)
+        Path(save_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(save_path, f'{output_file}.xml')
+        writeto(votable, output_path)

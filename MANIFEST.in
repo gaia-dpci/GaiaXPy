@@ -1,0 +1,2 @@
+graft gaiaxpy/config
+global-exclude __pycache__

@@ -1,0 +1,2 @@
+from . import xp_filter_system_colour_equation
+from .xp_filter_system_colour_equation import apply_colour_equation

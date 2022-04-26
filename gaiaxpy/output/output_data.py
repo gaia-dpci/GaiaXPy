@@ -96,6 +96,8 @@ class OutputData(object):
             extension (str): Format of the original input file.
         """
         if save_file:
+            if output_file is None:
+                raise ValueError('output_file cannot be None.')
             if output_format is None:
                 output_format = extension
             output_format = _standardise_output_format(output_format)

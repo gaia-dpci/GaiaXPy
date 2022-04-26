@@ -19,7 +19,7 @@ class Plotter(object):
         self.show_plot = show_plot
         self.output_path = output_path
         # Here we assume that the list only contains spectra of the same type
-        self.file_name = _set_file_name(file_name, spectra)
+        self.file_name = self._set_file_name(file_name)
         self.format = format
         self.legend = legend
         self.max_spectra_on_multi = 40
@@ -42,21 +42,10 @@ class Plotter(object):
                 format=format,
                 transparent=False)
 
-def _spectra_as_list(spectra):
-    if isinstance(spectra, list):
-        return spectra
-    else:
-        return [spectra] # to list
-
-def _set_file_name(file_name, spectra):
-    if not file_name:
-        try:
-            spectrum = spectra[0]
-        except:
-            # Case of a single object
-            spectrum = spectra
-        file_name = spectrum.__class__.__name__
-    return file_name
+    def _set_file_name(self, file_name):
+        if not file_name:
+            file_name = self.spectra_class.__name__
+        return file_name
 
 def _set_class(spectra):
     if isinstance(spectra, pd.DataFrame):

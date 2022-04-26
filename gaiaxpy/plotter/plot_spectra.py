@@ -10,7 +10,7 @@ from .multi_absolute import MultiAbsolutePlotter
 from .multi_xp import MultiXpPlotter
 from .single import SinglePlotter
 
-def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_path=None, file_name=None, format='png', legend=True):
+def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_path=None, file_name=None, format='jpg', legend=True):
     """"
     Plot one or more spectra.
 

@@ -26,7 +26,7 @@ class MultiXpPlotter(Plotter):
             max_flux = max(y) if max(y) > max_flux else max_flux
             if spectrum.xp in [BANDS.bp, BANDS.bp.upper()]:
                 ax[0].plot(x, y, lw=2, alpha=0.95, label=spectrum.source_id)
-            elif spectrum.xp == [BANDS.rp, BANDS.rp.upper()]:
+            elif spectrum.xp in [BANDS.rp, BANDS.rp.upper()]:
                 ax[1].plot(x, y, lw=2, alpha=0.95, label=spectrum.source_id)
         for axis in ax:
             axis.set_ylim(0, 1.05 * max_flux)

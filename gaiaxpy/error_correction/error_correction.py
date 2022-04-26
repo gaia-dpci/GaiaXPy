@@ -92,11 +92,11 @@ def _correct_system(system_df, correction_array):
     system_df.update(error_df)
     return system_df
 
-def apply_error_correction(input_multi_photometry, photometric_system=None, save_path='.', output_file='output_corrected_photometry', output_format=None, save_file=True):
+def apply_error_correction(input_multi_photometry, photometric_system=None, output_path='.', output_file='output_corrected_photometry', output_format=None, save_file=True):
     """
     Apply error correction. Infers photometric systems if not specified.
 
-        save_path (str): Path where to save the output data.
+        output_path (str): Path where to save the output data.
     """
     gaia_system = 'GaiaDr3Vega'; gaia_G_mag_column = f'{gaia_system}_mag_G'
     input_multi_photometry, extension = InputReader(input_multi_photometry, apply_error_correction)._read()
@@ -124,5 +124,5 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, save
         # Apply correction to the original input_multi_photometry
         input_multi_photometry.update(corrected_system)
     output_data = PhotometryData(input_multi_photometry)
-    output_data.save(save_file, save_path, output_file, output_format, extension)
+    output_data.save(save_file, output_path, output_file, output_format, extension)
     return input_multi_photometry

@@ -10,7 +10,7 @@ from gaiaxpy.error_correction import apply_error_correction
 def generate(
         input_object,
         photometric_system,
-        save_path='.',
+        output_path='.',
         output_file='output_synthetic_photometry',
         output_format=None,
         save_file=True,
@@ -26,7 +26,7 @@ def generate(
              as downloaded from the archive in their continuous representation,
              a list of sources ids (string or long), or a pandas DataFrame.
         photometric_system (obj): Desired photometric system or list of photometric systems.
-        save_path (str): Path where to save the output data.
+        output_path (str): Path where to save the output data.
         output_file (str): Name of the output file.
         output_format (str): Format to be used for the output file. If no format
                 is given, then the output file will be in the same format as the
@@ -72,5 +72,5 @@ def generate(
         gaia_columns = [column for column in photometry_df if column.startswith(gaia_label)]
         photometry_df = photometry_df.drop(columns=gaia_columns)
     output_data = PhotometryData(photometry_df)
-    output_data.save(save_file, save_path, output_file, output_format, extension)
+    output_data.save(save_file, output_path, output_file, output_format, extension)
     return photometry_df

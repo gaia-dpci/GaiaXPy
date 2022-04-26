@@ -17,12 +17,12 @@ class PhotometryData(OutputData):
     def __init__(self, data):
         super().__init__(data, None)
 
-    def _save_avro(self, save_path, output_file):
+    def _save_avro(self, output_path, output_file):
         """
         Save the output photometry in AVRO format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         def build_field(keys):
@@ -44,64 +44,64 @@ class PhotometryData(OutputData):
         }
         validate_many(phot_list, schema)
         parsed_schema = parse_schema(schema)
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.avro')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.avro')
         with open(output_path, 'wb') as output:
             writer(output, parsed_schema, phot_list)
 
-    def _save_csv(self, save_path, output_file):
+    def _save_csv(self, output_path, output_file):
         """
         Save the output photometry in CSV format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         photometry_df = self.data
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.csv')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.csv')
         photometry_df.to_csv(output_path, index=False)
 
-    def _save_ecsv(self, save_path, output_file):
+    def _save_ecsv(self, output_path, output_file):
         """
         Save the output photometry in ECSV format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         photometry_df = self.data
         header_lines = _build_photometry_header(photometry_df.columns)
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.ecsv')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.ecsv')
         photometry_df.to_csv(output_path, index=False)
         _add_header(header_lines, output_file)
 
-    def _save_fits(self, save_path, output_file):
+    def _save_fits(self, output_path, output_file):
         """
         Save the output photometry in FITS format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         photometry_df = self.data
         table = Table.from_pandas(photometry_df)
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.fits')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.fits')
         table.write(output_path, format='fits', overwrite=True)
 
-    def _save_xml(self, save_path, output_file):
+    def _save_xml(self, output_path, output_file):
         """
         Save the output photometry in XML/VOTABLE format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         photometry_df = self.data
         table = Table.from_pandas(photometry_df)
         votable = from_table(table)
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.xml')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.xml')
         writeto(votable, output_path)

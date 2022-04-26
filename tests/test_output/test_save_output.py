@@ -44,7 +44,7 @@ class TestSaveOutput(unittest.TestCase):
     def test_save_output_calibrator(self):
         filename = 'calibrator'; output_formats = ['csv', 'fits', 'xml', 'avro']
         for format in output_formats:
-            calibrate(mean_spectrum, save_path=output_path, output_file=filename, output_format=format)
+            calibrate(mean_spectrum, output_path=output_path, output_file=filename, output_format=format)
         # Generate dataframe with md5sum of current files
         actual_md5sum_df = generate_current_md5sum_df(output_path)
         # Test all but avro because it is a binary format and the md5sum maybe different even if the files have the same contents
@@ -67,7 +67,7 @@ class TestSaveOutput(unittest.TestCase):
         filenames = [f'{ph}gaia_ab', f'{ph}sdss_doi', f'{ph}gaia_vega']
         output_formats = ['csv', 'csv', 'fits']
         for system, filename, format in zip(phot_systems, filenames, output_formats):
-            generate(mean_spectrum, system, save_path=output_path, output_file=filename, output_format=format)
+            generate(mean_spectrum, system, output_path=output_path, output_file=filename, output_format=format)
         # Generate dataframe with md5sum of current files
         actual_md5sum_df = generate_current_md5sum_df(output_path)
         for filename, format in zip(filenames, output_formats):
@@ -86,7 +86,7 @@ class TestSaveOutput(unittest.TestCase):
         samplings = [(0, 40, 350), (0, 45, 400), (0, 30, 300)]
         for values, format in zip(samplings, output_formats):
             sampling, filename = get_sampling_and_filename(f'{c}_custom', *values)
-            convert(mean_spectrum, sampling=sampling, save_path=output_path, output_file=filename, output_format=format)
+            convert(mean_spectrum, sampling=sampling, output_path=output_path, output_file=filename, output_format=format)
             filenames.append(filename)
         # Insert format of initial basic convert
         output_formats.insert(0, 'csv')
@@ -112,7 +112,7 @@ class TestSaveOutput(unittest.TestCase):
 
     def test_save_output_simulator_sampled(self):
         filename = 'simulator_sampled'
-        simulate_sampled(spss_file, save_file=True, sampling=np.linspace(0, 60, 300), save_path=output_path, output_file=filename)
+        simulate_sampled(spss_file, save_file=True, sampling=np.linspace(0, 60, 300), output_path=output_path, output_file=filename)
         actual_md5sum_df = generate_current_md5sum_df(output_path)
         filename_str = f'{filename}.csv'
         sampling_str = f'{filename}_sampling.csv'
@@ -127,7 +127,7 @@ class TestSaveOutput(unittest.TestCase):
 
     def test_save_output_simulator_continuous(self):
         filename = 'simulator_continuous'
-        simulate_continuous(spss_file, save_file=True, save_path=output_path, output_file=filename)
+        simulate_continuous(spss_file, save_file=True, output_path=output_path, output_file=filename)
         actual_md5sum_df = generate_current_md5sum_df(output_path)
         filename_str = f'{filename}.csv'
         # Test data

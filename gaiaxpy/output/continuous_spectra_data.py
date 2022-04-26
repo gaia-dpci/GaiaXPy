@@ -21,12 +21,12 @@ class ContinuousSpectraData(OutputData):
     def __init__(self, data):
         super().__init__(data, None)
 
-    def _save_avro(self, save_path, output_file):
+    def _save_avro(self, output_path, output_file):
         """
         Save the output spectra in AVRO format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         def _generate_avro_schema(spectra_dicts):
@@ -81,49 +81,49 @@ class ContinuousSpectraData(OutputData):
         # List with one dictionary per source
         spectra_dicts = data.to_dict('records')
         parsed_schema, spectra_dicts = _generate_avro_schema(spectra_dicts)
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.avro')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.avro')
         with open(output_path, 'wb') as output:
             writer(output, parsed_schema, spectra_dicts)
 
-    def _save_csv(self, save_path, output_file):
+    def _save_csv(self, output_path, output_file):
         """
         Save the output spectra in CSV format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         spectra_df = self.data
         array_columns = [column for column in spectra_df.columns if isinstance(spectra_df[column].iloc[0], np.ndarray)]
         spectra_df[array_columns] = spectra_df[array_columns].apply(lambda col: col.apply(tuple)).astype('str')
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.csv')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.csv')
         spectra_df.to_csv(output_path, index=False)
 
-    def _save_ecsv(self, save_path, output_file):
+    def _save_ecsv(self, output_path, output_file):
         """
         Save the output spectra in ECSV format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         spectra_df = self.data
         array_columns = [column for column in spectra_df.columns if isinstance(spectra_df[column].iloc[0], np.ndarray)]
         header_lines = _build_regular_header(array_columns)
         spectra_df[array_columns] = spectra_df[array_columns].apply(lambda col: col.apply(tuple)).astype('str')
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.ecsv')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.ecsv')
         spectra_df.to_csv(output_path, index=False)
         _add_header(header_lines, output_file)
 
-    def _save_fits(self, save_path, output_file):
+    def _save_fits(self, output_path, output_file):
         """
         Save the output data in FITS format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         data = self.data
@@ -164,16 +164,16 @@ class ContinuousSpectraData(OutputData):
         # Put all HDUs together
         hdul = fits.HDUList(hdu_list)
         # Write the file and replace it if it already exists
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.fits')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.fits')
         hdul.writeto(output_path, overwrite=True)
 
-    def _save_xml(self, save_path, output_file):
+    def _save_xml(self, output_path, output_file):
         """
         Save the output spectra in XML/VOTABLE format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         def _create_fields(votable, columns):
@@ -225,8 +225,8 @@ class ContinuousSpectraData(OutputData):
             args = tuple([row[column] for column in spectra_df.columns])
             spectra_table.array[index] = args
         # Write to a file
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.xml')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.xml')
         votable.to_xml(output_path)
 
     def _get_spectra_df(self):

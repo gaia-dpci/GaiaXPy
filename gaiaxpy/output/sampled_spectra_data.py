@@ -23,15 +23,15 @@ class SampledSpectraData(OutputData):
     def __init__(self, data, positions):
         super().__init__(data, positions)
 
-    def _save_avro(self, save_path, output_file):
+    def _save_avro(self, output_path, output_file):
         """
         Save the output spectra in AVRO format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
-        def _save_sampling_avro(positions, save_path, output_file):
+        def _save_sampling_avro(positions, output_path, output_file):
             """
             Save the sampling in a separate avro file.
 
@@ -55,7 +55,7 @@ class SampledSpectraData(OutputData):
             # Validate that records match the schema
             validate_many(sampling, schema)
             parsed_schema = parse_schema(schema)
-            output_path = join(save_path, f'{output_file}_sampling.avro')
+            output_path = join(output_path, f'{output_file}_sampling.avro')
             with open(output_path, 'wb') as output:
                 writer(output, parsed_schema, sampling)
         def _generate_avro_schema(spectra_dicts):
@@ -103,21 +103,21 @@ class SampledSpectraData(OutputData):
             return parse_schema(schema), spectra_dicts
         data = self.data
         positions = self.positions
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        _save_sampling_avro(positions, save_path, output_file)
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        _save_sampling_avro(positions, output_path, output_file)
         # List with one dictionary per source
         spectra_dicts = data.to_dict('records')
         parsed_schema, spectra_dicts = _generate_avro_schema(spectra_dicts)
-        output_path = join(save_path, f'{output_file}.avro')
+        output_path = join(output_path, f'{output_file}.avro')
         with open(output_path, 'wb') as output:
             writer(output, parsed_schema, spectra_dicts)
 
-    def _save_csv(self, save_path, output_file):
+    def _save_csv(self, output_path, output_file):
         """
         Save the output spectra in CSV format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         data = self.data
@@ -125,19 +125,19 @@ class SampledSpectraData(OutputData):
         # NumPy arrays in the DataFrame to string to match the archive output "(a, b)"
         # TODO: evaluate performance impact of applymap
         modified_data = data.applymap(lambda x: _array_to_standard(x) if isinstance(x, ndarray) else x)
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        modified_data.to_csv(join(save_path, f'{output_file}.csv'), index=False)
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        modified_data.to_csv(join(output_path, f'{output_file}.csv'), index=False)
         # Assuming the sampling is the same for all spectra
         pos = [str(_array_to_standard(positions))]
         sampling_df = pd.DataFrame({'pos': pos})
-        sampling_df.to_csv(join(save_path, f'{output_file}_sampling.csv'), index=False)
+        sampling_df.to_csv(join(output_path, f'{output_file}_sampling.csv'), index=False)
 
-    def _save_ecsv(self, save_path, output_file):
+    def _save_ecsv(self, output_path, output_file):
         """
         Save the output spectra in ECSV format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         data = self.data
@@ -146,22 +146,22 @@ class SampledSpectraData(OutputData):
         # TODO: evaluate performance impact of applymap
         modified_data = data.applymap(lambda x: _array_to_standard(x) if isinstance(x, ndarray) else x)
         header_lines = _build_regular_header(modified_data.columns)
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        modified_data.to_csv(join(save_path, f'{output_file}.ecsv'), index=False)
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        modified_data.to_csv(join(output_path, f'{output_file}.ecsv'), index=False)
         _add_header(header_lines, output_file)
         # Assuming the sampling is the same for all spectra
         pos = [str(_array_to_standard(positions))]
         sampling_df = pd.DataFrame({'pos': pos})
         header_lines = _build_regular_header(sampling_df.columns)
-        sampling_df.to_csv(join(save_path, f'{output_file}_sampling.ecsv'), index=False)
+        sampling_df.to_csv(join(output_path, f'{output_file}_sampling.ecsv'), index=False)
         _add_header(header_lines, f'{output_file}_sampling')
 
-    def _save_fits(self, save_path, output_file):
+    def _save_fits(self, output_path, output_file):
         """
         Save the output data in FITS format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         data = self.data
@@ -195,16 +195,16 @@ class SampledSpectraData(OutputData):
         # Put all HDUs together
         hdul = fits.HDUList(hdu_list)
         # Write the file and replace it if it already exists
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.fits')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.fits')
         hdul.writeto(output_path, overwrite=True)
 
-    def _save_xml(self, save_path, output_file):
+    def _save_xml(self, output_path, output_file):
         """
         Save the output spectra in XML/VOTABLE format.
 
         Args:
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
         def _create_params(votable, sampling):
@@ -247,6 +247,6 @@ class SampledSpectraData(OutputData):
             args = tuple([row[column] for column in spectra_df.columns])
             spectra_table.array[index] = args
         # Write to a file
-        Path(save_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(save_path, f'{output_file}.xml')
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        output_path = join(output_path, f'{output_file}.xml')
         votable.to_xml(output_path)

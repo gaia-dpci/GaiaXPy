@@ -88,11 +88,11 @@ class SampledSpectrum(Spectrum):
     def _get_inputs(self, spectrum):
         return spectrum._get_positions(), spectrum._get_fluxes(), spectrum._get_flux_errors()
 
-    def _save_figure(self, save_path, file_name, format):
-        if save_path:
-            Path(save_path).mkdir(parents=True, exist_ok=True)
+    def _save_figure(self, output_path, file_name, format):
+        if output_path:
+            Path(output_path).mkdir(parents=True, exist_ok=True)
             plt.savefig(
-                path.join(save_path, f'{file_name}.{format}'),
+                path.join(output_path, f'{file_name}.{format}'),
                 format=format,
                 transparent=False)
 

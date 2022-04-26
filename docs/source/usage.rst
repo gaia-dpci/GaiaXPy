@@ -228,9 +228,9 @@ This functionality allows to plot the output of the calibrator and converter. It
 .. code-block:: python
 
     from gaiaxpy import plot_spectra
-    plot_spectra(output_data, sampling=output_sampling, multi=False, show_plot=True, save_path='/path')
+    plot_spectra(output_data, sampling=output_sampling, multi=False, show_plot=True, output_path='/path')
 
 The parameter :python:`multi` set as :python:`True` plots all the results in the image, whereas :python:`False` generates one plot per spectrum in the data.
-The parameter :python:`show_plot` shows the images if it is set as :python:`True`. If a :python:`save_path` is provided, the plots are automatically saved.
+The parameter :python:`show_plot` shows the images if it is set as :python:`True`. If a :python:`output_path` is provided, the plots are automatically saved.
 
 All the available options are described in :ref:`plotter <plotter>`.

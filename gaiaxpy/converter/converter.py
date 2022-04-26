@@ -30,7 +30,7 @@ def convert(
             60,
             600),
         truncation=False,
-        save_path='.',
+        output_path='.',
         output_file='output_spectra',
         output_format=None,
         save_file=True):
@@ -52,7 +52,7 @@ def convert(
         truncation (bool): Toggle truncation of the set of bases. The level
              of truncation to be applied is defined by the recommended value in
              the input files.
-        save_path (str): Path where to save the output data.
+        output_path (str): Path where to save the output data.
         output_file (str): Name of the output file.
         output_format (str): Format to be used for the output file. If no format
             is given, then the output file will be in the same format as the
@@ -86,7 +86,7 @@ def convert(
     positions = spectra_list[0]._get_positions()
     # Save output
     output_data = SampledSpectraData(spectra_df, positions)
-    output_data.save(save_file, save_path, output_file, output_format, extension)
+    output_data.save(save_file, output_path, output_file, output_format, extension)
     return spectra_df, positions
 
 def _read_as_continuous_spectra(input_object):

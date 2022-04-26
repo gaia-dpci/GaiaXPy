@@ -27,7 +27,7 @@ def calibrate(
         input_object,
         sampling=None,
         truncation=False,
-        save_path='.',
+        output_path='.',
         output_file='output_spectra',
         output_format=None,
         save_file=True):
@@ -47,7 +47,7 @@ def calibrate(
         truncation (bool): Toggle truncation of the set of bases. The level
              of truncation to be applied is defined by the recommended value in
              the input files.
-        save_path (str): Path where to save the output data.
+        output_path (str): Path where to save the output data.
         output_file (str): Name of the output file.
         output_format (str): Format to be used for the output file. If no format
             is given, then the output file will be in the same format as the
@@ -66,7 +66,7 @@ def calibrate(
         input_object,
         sampling,
         truncation,
-        save_path,
+        output_path,
         output_file,
         output_format,
         save_file)
@@ -75,7 +75,7 @@ def _calibrate(
         input_object,
         sampling=None,
         truncation=False,
-        save_path='.',
+        output_path='.',
         output_file='output_spectra',
         output_format=None,
         save_file=True,
@@ -110,8 +110,8 @@ def _calibrate(
     positions = spectra_list[0]._get_positions()
     output_data = SampledSpectraData(spectra_df, positions)
     # Save output
-    Path(save_path).mkdir(parents=True, exist_ok=True)
-    output_data.save(save_file, save_path, output_file, output_format, extension)
+    Path(output_path).mkdir(parents=True, exist_ok=True)
+    output_data.save(save_file, output_path, output_file, output_format, extension)
     return spectra_df, positions
 
 def _create_merge(xp, sampling):

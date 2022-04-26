@@ -153,7 +153,7 @@ def _get_correction(systems_details, colour, system_label):
     else:
         raise ValueError('At least one variable does not comply with any of the previous statements.')
 
-def apply_colour_equation(input_synthetic_photometry, photometric_system=None, save_path='.', output_file='corrected_photometry', output_format=None, save_file=True):
+def apply_colour_equation(input_synthetic_photometry, photometric_system=None, output_path='.', output_file='corrected_photometry', output_format=None, save_file=True):
     """
     Get colour equation file.
     """
@@ -168,5 +168,5 @@ def apply_colour_equation(input_synthetic_photometry, photometric_system=None, s
     systems_details = _fill_systems_details(systems_to_correct)
     output_df = _generate_output_df(input_synthetic_photometry, systems_in_data, systems_details)
     output_data = PhotometryData(output_df)
-    output_data.save(save_file, save_path, output_file, output_format, extension)
+    output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_df

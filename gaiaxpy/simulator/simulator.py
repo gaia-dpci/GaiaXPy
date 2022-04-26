@@ -29,7 +29,7 @@ bases_config_file = path.join(config_path, config_parser.get('converter', 'optim
 def simulate_sampled(
         sed,
         sampling=np.linspace(0, 60, 600),
-        save_path='.',
+        output_path='.',
         output_file='output_spectra',
         output_format=None,
         save_file=True):
@@ -41,7 +41,7 @@ def simulate_sampled(
         sed (str): Path to the file containing the SED.
         sampling (ndarray): 1D array containing the desired sampling in
             pseudo-wavelengths.
-        save_path (str): Path where to save the output data.
+        output_path (str): Path where to save the output data.
         output_file (str): Name of the output file.
         output_format (str): Format to be used for the output file. If no format
             is given, then the output file will be in the same format as the
@@ -70,7 +70,7 @@ def simulate_sampled(
     spectra_df.attrs['data_type'] = spectra_type
     positions = spectra_list[0]._get_positions()
     output_data = SampledSpectraData(spectra_df, positions)
-    output_data.save(save_file, save_path, output_file, output_format, extension)
+    output_data.save(save_file, output_path, output_file, output_format, extension)
     # Return dataframe with data and positions
     return spectra_df, positions
 
@@ -147,7 +147,7 @@ def _continuous_spectra_to_df(data):
 
 def simulate_continuous(
         sed,
-        save_path='.',
+        output_path='.',
         output_file='output_spectra',
         output_format=None,
         save_file=True):
@@ -157,7 +157,7 @@ def simulate_continuous(
 
     Args:
         sed (str): Path to the file containing the SED.
-        save_path (str): Path where to save the output data.
+        output_path (str): Path where to save the output data.
         output_file (str): Name of the output file.
         output_format (str): Format to be used for the output file. If no format
             is given, then the output file will be in the same format as the
@@ -177,7 +177,7 @@ def simulate_continuous(
     continuous_spectra_list = _simulate_continuous_spectra(parsed_seds, model_dict)
     spectra_df = _continuous_spectra_to_df(continuous_spectra_list)
     output_data = ContinuousSpectraData(spectra_df)
-    output_data.save(save_file, save_path, output_file, output_format, extension)
+    output_data.save(save_file, output_path, output_file, output_format, extension)
     return spectra_df
 
 def _simulate_continuous_spectra(parsed_seds, model_dict):

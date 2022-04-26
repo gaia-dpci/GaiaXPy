@@ -149,10 +149,10 @@ generated_data = generate(mean_spectrum_file, phot_system,
 ### Plotter
 ```python
 from gaiaxpy import plot_spectra
-plot_spectra(output, multi=False, show_plot=True, save_path='/path')
+plot_spectra(output, multi=False, show_plot=True, output_path='/path')
 ```
 
-This functionality allows to plot the output of the `calibrator`, `converter` and `synthetic photometry generator`. The parameter `multi` set as `True` plots all the results in one image, whereas `False` generates one image per spectrum in `output`. The parameter `show_plot` shows the images if it is set as `True`. If a `save_path` is provided, the plots are saved.
+This functionality allows to plot the output of the `calibrator`, `converter` and `synthetic photometry generator`. The parameter `multi` set as `True` plots all the results in one image, whereas `False` generates one image per spectrum in `output`. The parameter `show_plot` shows the images if it is set as `True`. If a `output_path` is provided, the plots are saved.
 
 ## License
 [GNU](https://gitlab.com/pyxp-developers/gaiaxpy-pkg/-/blob/master/LICENSE)

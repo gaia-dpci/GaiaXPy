@@ -84,13 +84,13 @@ class OutputData(object):
         self.data = data.copy()
         self.positions = positions
 
-    def save(self, save_file, save_path, output_file, output_format, extension):
+    def save(self, save_file, output_path, output_file, output_format, extension):
         """
         Save the output data.
 
         Args:
             save_file (bool): Whether to save the file or not.
-            save_path (str): Path where to save the file.
+            output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
             output_format (str): Format of the output file.
             extension (str): Format of the original input file.
@@ -100,28 +100,28 @@ class OutputData(object):
                 output_format = extension
             output_format = _standardise_output_format(output_format)
             if output_format == 'avro':
-                return self._save_avro(save_path, output_file)
+                return self._save_avro(output_path, output_file)
             elif output_format == 'csv':
-                return self._save_csv(save_path, output_file)
+                return self._save_csv(output_path, output_file)
             elif output_format == 'ecsv':
-                return self._save_ecsv(save_path, output_file)
+                return self._save_ecsv(output_path, output_file)
             elif output_format == 'fits':
-                return self._save_fits(save_path, output_file)
+                return self._save_fits(output_path, output_file)
             elif output_format == 'xml':
-                return self._save_xml(save_path, output_file)
+                return self._save_xml(output_path, output_file)
             raise InvalidExtensionError()
 
-    def _save_avro(self, save_path, output_file):
+    def _save_avro(self, output_path, output_file):
         raise NotImplementedError()
 
-    def _save_csv(self, save_path, output_file):
+    def _save_csv(self, output_path, output_file):
         raise NotImplementedError()
 
-    def _save_ecsv(self, save_path, output_file):
+    def _save_ecsv(self, output_path, output_file):
         raise NotImplementedError()
 
-    def _save_fits(self, save_path, output_file):
+    def _save_fits(self, output_path, output_file):
         raise NotImplementedError()
 
-    def _save_xml(self, save_path, output_file):
+    def _save_xml(self, output_path, output_file):
         raise NotImplementedError()

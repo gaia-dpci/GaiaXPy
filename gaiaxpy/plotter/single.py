@@ -31,14 +31,14 @@ class SinglePlotter(Plotter):
     def _plot(self):
         n_spectra = len(self.spectra)
         if n_spectra > self.max_spectra_on_single:
-            raise ValueError(f'Spectra list is too long. This functionality can only show up to {self.max_spectra_on_single} single plots. Try saving the plots without showing them using the option save_path.')
+            raise ValueError(f'Spectra list is too long. This functionality can only show up to {self.max_spectra_on_single} single plots. Try saving the plots without showing them using the option output_path.')
         for index, spectrum in self.spectra.iterrows():
             self._plot_single(spectrum)
-            if self.save_path:
+            if self.output_path:
                 if n_spectra > 1:
-                    self._save_figure(self.save_path, f'{self.file_name}_{index}', self.format)
+                    self._save_figure(self.output_path, f'{self.file_name}_{index}', self.format)
                 else:
-                    self._save_figure(self.save_path, self.file_name, self.format)
+                    self._save_figure(self.output_path, self.file_name, self.format)
         if self.show_plot:
             plt.show()
         plt.close()

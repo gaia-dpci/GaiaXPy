@@ -9,13 +9,10 @@ import pandas as pd
 from math import isnan, floor
 from os import path, listdir
 from gaiaxpy.config import config_path
-from gaiaxpy.core import _extract_systems_from_data
+from gaiaxpy.core import _extract_systems_from_data, _warning
 from gaiaxpy.input_reader import InputReader
 from gaiaxpy.output import PhotometryData
 from scipy.interpolate import interp1d
-
-def _warning(message):
-    print(f'UserWarning: {message}')
 
 correction_tables_path = path.join(config_path, 'correction_tables')
 

@@ -7,7 +7,7 @@ from os import listdir, path
 from numpy import poly1d
 from gaiaxpy.config import filters_path
 from gaiaxpy.core import _extract_systems_from_data, _load_xpzeropoint_from_csv, \
-                         _progress_tracker, _validate_arguments
+                         _progress_tracker, _validate_arguments, _warning
 from gaiaxpy.input_reader import InputReader
 from gaiaxpy.output import PhotometryData
 
@@ -63,6 +63,10 @@ def _generate_output_df(input_synthetic_photometry, systems_in_data, systems_det
     colour_equation_systems = _get_available_systems()
     # Intersection of systems in data and systems that can be corrected
     systems_to_correct = [system for system in systems_in_data if system in colour_equation_systems]
+    skip_systems = list(set(systems_in_data) - set(colour_equation_systems))
+    if skip_systems:
+        for system in skip_systems:
+            _warning(f'Colour equation cannot be applied over system {system}. The program will skip this system.')
     if systems_to_correct:
         # Perform correction
         source_ids = list(synt_phot_df['source_id'].values)

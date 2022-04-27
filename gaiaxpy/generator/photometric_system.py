@@ -63,6 +63,10 @@ class AutoName(Enum):
     def get_offsets(self):
         return self.value.offsets
 
-phot_system_str = _get_available_systems()
-PhotometricSystem = AutoName('PhotometricSystem', phot_system_str)
-PhotometricSystem.get_available_systems = _get_available_systems
+PhotometricSystem = AutoName('PhotometricSystem', _get_available_systems())
+
+def get_available_systems():
+    systems_str = _get_available_systems()
+    return ', '.join(systems_str.split(' '))
+
+PhotometricSystem.get_available_systems = get_available_systems

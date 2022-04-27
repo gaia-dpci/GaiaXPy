@@ -1,4 +1,3 @@
-import warnings
 from .photometric_system import PhotometricSystem
 from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
 from gaiaxpy.core import _validate_arguments
@@ -33,11 +32,12 @@ def generate(
                 input file.
         save_file (bool): Whether to save the output in a file. If false, output_format
             and output_file are ignored.
-        with_colour_equation (bool): Whether to return the results with the colour
+        colour_equation (bool): Whether to return the results with the colour
             equation applied or not.
+        error_correction (bool): Whether to apply error correction using the correction tables.
 
-        Returns:
-            DataFrame: A DataFrame of all synthetic photometry results.
+    Returns:
+        DataFrame: A DataFrame of all synthetic photometry results.
     """
     # TODO: merge this statement with _validate_arguments
     if photometric_system in (None, [], ''):

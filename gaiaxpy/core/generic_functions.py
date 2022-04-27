@@ -45,6 +45,9 @@ def _validate_arguments(default_output_file, given_output_file, save_file):
     if default_output_file != given_output_file and save_file == False:
         warn('Argument output_file was given, but save_file is set to False. Set save_file to True to store the output of the function.')
 
+def _warning(message):
+    print(f'UserWarning: {message}')
+
 def _progress_tracker(func):
     # Progress tracker decorator
     def inner(row, *args):

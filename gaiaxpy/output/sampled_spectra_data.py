@@ -208,10 +208,10 @@ class SampledSpectraData(OutputData):
             output_file (str): Name chosen for the output file.
         """
         def _create_params(votable, sampling):
-            len_sampling = str(len(sampling))
+            #len_sampling = str(len(sampling))
             column = 'sampling'
             params = [Param(votable, name=column, ID=f'_{column}', ucd='em.wl', \
-                      datatype='double', arraysize=len_sampling, value=list(sampling))]
+                      datatype='double', arraysize='*', value=list(sampling))]
             return params
         def _create_fields(votable, spectra_df):
             len_flux = str(len(spectra_df['flux'].iloc[0]))

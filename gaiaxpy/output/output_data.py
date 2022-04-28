@@ -58,13 +58,14 @@ def _build_photometry_header(columns):
         header.append('# -')
         header.append(f'#   name: {column}')
         if column != 'source_id':
-            splitted_column = column.split('_')
-            if len(splitted_column) == 3:
-                system, parameter, band = splitted_column
-                parameter = (('_').join(['phot', parameter]))
-            elif len(splitted_column) == 4:
-                system, parameter1, parameter2, band = splitted_column
-                parameter = (('_').join(['phot', parameter1, parameter2]))
+            if '_flux_error_' in column:
+                parameter = '_flux_error_'
+            elif '_flux_' in column:
+                parameter = '_flux_'
+            elif '_mag_' in column:
+                parameter = '_mag_'
+            system, band = column.split(parameter)
+            parameter = f'phot{parameter}'[:-1]
             header.append(f'#   datatype: {header_dict[parameter]["datatype"]}')
             header.append(f'#   description: {header_dict[parameter]["description"]} {band} band')
         else:

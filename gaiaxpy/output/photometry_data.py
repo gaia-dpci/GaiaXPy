@@ -73,9 +73,8 @@ class PhotometryData(OutputData):
         photometry_df = self.data
         header_lines = _build_photometry_header(photometry_df.columns)
         Path(output_path).mkdir(parents=True, exist_ok=True)
-        output_path = join(output_path, f'{output_file}.ecsv')
-        photometry_df.to_csv(output_path, index=False)
-        _add_header(header_lines, output_file)
+        photometry_df.to_csv(join(output_path, f'{output_file}.ecsv'), index=False)
+        _add_header(header_lines, output_path, output_file)
 
     def _save_fits(self, output_path, output_file):
         """

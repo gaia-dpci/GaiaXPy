@@ -1,0 +1,14 @@
+*.pyc
+.DS_Store
+.coverage
+.eggs/
+.env/
+.idea/
+.pytest_cache/
+.svn/
+GaiaXPy.egg-info/
+__pycache__/
+build/
+dist/
+docs/_build/
+tests_output_files/

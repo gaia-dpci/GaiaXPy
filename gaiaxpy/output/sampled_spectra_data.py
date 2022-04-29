@@ -122,8 +122,6 @@ class SampledSpectraData(OutputData):
         """
         data = self.data
         positions = self.positions
-        # NumPy arrays in the DataFrame to string to match the archive output "(a, b)"
-        # TODO: evaluate performance impact of applymap
         modified_data = data.applymap(lambda x: _array_to_standard(x) if isinstance(x, ndarray) else x)
         Path(output_path).mkdir(parents=True, exist_ok=True)
         modified_data.to_csv(join(output_path, f'{output_file}.csv'), index=False)
@@ -142,8 +140,6 @@ class SampledSpectraData(OutputData):
         """
         data = self.data
         positions = self.positions
-        # NumPy arrays in the DataFrame to string to match the archive output "(a, b)"
-        # TODO: evaluate performance impact of applymap
         modified_data = data.applymap(lambda x: _array_to_standard(x) if isinstance(x, ndarray) else x)
         header_lines = _build_regular_header(modified_data.columns)
         Path(output_path).mkdir(parents=True, exist_ok=True)
@@ -208,7 +204,6 @@ class SampledSpectraData(OutputData):
             output_file (str): Name chosen for the output file.
         """
         def _create_params(votable, sampling):
-            #len_sampling = str(len(sampling))
             column = 'sampling'
             params = [Param(votable, name=column, ID=f'_{column}', ucd='em.wl', \
                       datatype='double', arraysize='*', value=list(sampling))]

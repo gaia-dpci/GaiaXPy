@@ -1,7 +1,7 @@
 """
 Setup module for GaiaXPy.
 
-Francesca De Angeli, Lovro Palaversa, Daniela Ruz-Mieres - 2020
+Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres - 2022
 
 Based on:
 https://packaging.python.org/tutorials/packaging-projects
@@ -23,8 +23,8 @@ with open("README.md", "r") as fh:
 
 setup(
     name="GaiaXPy",
-    version="0.0.6",
-    author="Francesca De Angeli, Lovro Palaversa, Daniela Ruz-Mieres",
+    version="0.1.0",
+    author="Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres",
     author_email="fda@ast.cam.ac.uk",
     maintainer="Daniela Ruz-Mieres",
     maintainer_email="d.ruzmieres@ast.cam.ac.uk",
@@ -38,7 +38,7 @@ setup(
     include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        "License :: OSI Approved :: BSD 3-Clause License",
         "Operating System :: OS Independent",
     ]
 )

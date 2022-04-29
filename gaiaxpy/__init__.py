@@ -7,4 +7,4 @@ from .generator.photometric_system import PhotometricSystem
 from .plotter.plot_spectra import plot_spectra
 from .simulator.simulator import simulate_continuous, simulate_sampled
 
-__version__ = '0.0.6'
+__version__ = '0.1.0'

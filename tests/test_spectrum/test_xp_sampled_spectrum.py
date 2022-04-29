@@ -55,7 +55,7 @@ class TestXpSampledSpectrum(unittest.TestCase):
                                                        covariance_matrix,
                                                        standard_deviation)
 
-            spectrum = XpSampledSpectrum.from_continuous(
+            spectrum = XpSampledSpectrum(
                 continuous_spectrum,
                 design_matrix)
             self.assertIsInstance(spectrum, XpSampledSpectrum)

@@ -152,7 +152,7 @@ def _create_spectrum(row, truncation, design_matrices, band):
         recommended_truncation = row[f'{band}_n_relevant_bases']
     else:
         recommended_truncation = -1
-    spectrum = XpSampledSpectrum.from_continuous(
+    spectrum = XpSampledSpectrum(
         continuous_spectrum,
         design_matrices.get(
             row.loc[f'{band}_basis_function_id']),

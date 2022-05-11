@@ -4,12 +4,12 @@ generic_functions.py
 Module to hold some functions used by different subpackages.
 """
 
+import sys
 import numpy as np
 from collections.abc import Iterable
 from numbers import Number
 from numpy import ndarray
 from string import capwords
-from warnings import warn
 
 def _validate_pwl_sampling(sampling):
     # Receives a numpy array. Validates sampling in pwl.
@@ -38,15 +38,15 @@ def _validate_wl_sampling(sampling):
         elif sampling[0] < min_value or sampling[-1] > max_value:
             raise ValueError(f'Wrong value for sampling. Sampling accepts an array of values where the minimum value is {min_value} and the maximum is {max_value}.')
 
+def _warning(message):
+    print(f'UserWarning: {message}', file=sys.stderr)
+
 def _validate_arguments(default_output_file, given_output_file, save_file):
     if save_file and not isinstance(save_file, bool):
         raise ValueError("Parameter 'save_file' must contain a boolean value.")
     # If the user gave a number different than the default value, but didn't set save_file to True
     if default_output_file != given_output_file and save_file == False:
-        warn('Argument output_file was given, but save_file is set to False. Set save_file to True to store the output of the function.')
-
-def _warning(message):
-    print(f'UserWarning: {message}')
+        _warning('Argument output_file was given, but save_file is set to False. Set save_file to True to store the output of the function.')
 
 def _progress_tracker(func):
     # Progress tracker decorator
@@ -141,3 +141,4 @@ def _extract_systems_from_data(data_columns, photometric_system):
             photometric_system = [photometric_system]
         systems = [system.get_system_label() for system in photometric_system]
     return systems
+

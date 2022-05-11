@@ -63,10 +63,6 @@ def _generate_output_df(input_synthetic_photometry, systems_in_data, systems_det
     colour_equation_systems = _get_available_systems()
     # Intersection of systems in data and systems that can be corrected
     systems_to_correct = [system for system in systems_in_data if system in colour_equation_systems]
-    skip_systems = list(set(systems_in_data) - set(colour_equation_systems))
-    if skip_systems:
-        for system in skip_systems:
-            _warning(f'Colour equation cannot be applied over system {system}. The program will skip this system.')
     if systems_to_correct:
         # Perform correction
         source_ids = list(synt_phot_df['source_id'].values)
@@ -159,7 +155,7 @@ def _get_correction(systems_details, colour, system_label):
 
 def apply_colour_equation(input_synthetic_photometry, photometric_system=None, output_path='.', output_file='corrected_photometry', output_format=None, save_file=True):
     """
-    Get colour equation file.
+    Apply the available colour correction for the input photometric system(s).
     """
     function = apply_colour_equation # Being able to extract the name of the current function would be ideal.
     _validate_arguments(function.__defaults__[2], output_file, save_file)

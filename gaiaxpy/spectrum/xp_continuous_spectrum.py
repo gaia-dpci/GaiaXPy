@@ -5,9 +5,10 @@ Module to represent a BP/RP continuous spectrum.
 """
 
 from .xp_spectrum import XpSpectrum
-from .utils import _list_to_array
+from .utils import _list_to_array, _get_covariance_matrix
 import numpy as np
 from gaiaxpy.core.satellite import BANDS
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
 
 class XpContinuousSpectrum(XpSpectrum):
     """
@@ -24,7 +25,7 @@ class XpContinuousSpectrum(XpSpectrum):
                  coefficients,
                  covariance,
                  standard_deviation):
-        """"
+        """
         Initialise XP continuous spectrum.
 
         Args:
@@ -42,6 +43,29 @@ class XpContinuousSpectrum(XpSpectrum):
         self.covariance = covariance
         self.standard_deviation = standard_deviation
         self.basis_function_id = {BANDS.bp: 56, BANDS.rp: 57}
+
+    @classmethod
+    def from_data_frame(
+            cls,
+            df,
+            band):
+        """
+        Initialise XP continuous spectrum from a Pandas DataFrame.
+
+        Args:
+            df (DataFrame): DataFrame containing at least the fields source_id, BAND_n_parameters, BAND_coefficients,
+                BAND_coefficient_correlations, BAND_standard_deviation, where BAND is either 'bp' or 'rp'. The same
+                structure as used in the archive for the correlation matrix is expected.
+            band (str): Gaia photometer, can be either 'bp' or 'rp'.
+        """
+        corr = array_to_symmetric_matrix(df[f'{band}_n_parameters'], df[f'{band}_coefficient_correlations'])
+        df[f'{band}_coefficient_correlations'] = corr
+        cov = _get_covariance_matrix(df, band)
+        return cls(df['source_id'],
+                   band,
+                   df[f'{band}_coefficients'],
+                   cov,
+                   df[f'{band}_standard_deviation'])
 
     def get_coefficients(self):
         """
@@ -70,7 +94,7 @@ class XpContinuousSpectrum(XpSpectrum):
         """
         return self.standard_deviation
 
-    def _spectrum_to_dict(self): #_archive_format
+    def _spectrum_to_dict(self):  # _archive_format
         """
         Represent spectrum as dictionary.
 
@@ -96,6 +120,7 @@ class XpContinuousSpectrum(XpSpectrum):
             'n_parameters': len(self.coefficients),
             'basis_function_id': self.basis_function_id[self.xp]
         }
+
 
 def _extract_lower_triangle(matrix):
     '''

@@ -1,7 +1,7 @@
 from astroquery.gaia import GaiaClass
 from .dataframe_reader import DataFrameReader
 
-not_supported_functions = ['apply_colour_equation', 'simulate_continuous', 'simulate_sampled']
+not_supported_functions = ['apply_colour_equation']
 
 class QueryReader(object):
 

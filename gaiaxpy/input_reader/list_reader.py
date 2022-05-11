@@ -1,7 +1,7 @@
 from astroquery.gaia import GaiaClass
 from .dataframe_reader import DataFrameReader
 
-not_supported_functions = ['apply_colour_equation', 'simulate_continuous', 'simulate_sampled']
+not_supported_functions = ['apply_colour_equation']
 
 def extremes_are_enclosing(first_row, column):
     if first_row[column][0] == '[' and first_row[column][-1] == ']':
@@ -33,7 +33,6 @@ class ListReader(object):
         try:
             continuous_key = [key for key in result.keys() if 'continuous' in key.lower()][0]
             data = result[continuous_key][0].to_pandas()
-        # TODO: More granular error management required.
-        except KeyError:
+        except (KeyError, IndexError):
             raise ValueError('No continuous raw data found for the given sources.')
         return DataFrameReader(data)._read_df()

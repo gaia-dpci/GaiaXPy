@@ -5,8 +5,9 @@ Module to represent a photometry dataframe.
 """
 from pathlib import Path
 from fastavro import parse_schema, writer
-from astropy.table import Table
+from astropy.io import fits
 from astropy.io.votable import from_table, writeto
+from astropy.table import Table
 from fastavro.validation import validate_many
 from os.path import join
 from .output_data import OutputData, _add_header, _build_photometry_header
@@ -86,9 +87,17 @@ class PhotometryData(OutputData):
         """
         photometry_df = self.data
         table = Table.from_pandas(photometry_df)
+        hdu_list = []
+        hdr = fits.Header()
+        primary_hdu = fits.PrimaryHDU(header=hdr)
+        hdu_list.append(primary_hdu)
+        hdu = fits.table_to_hdu(table)
+        hdu_list.append(hdu)
+        # Put all HDUs together
+        hdul = fits.HDUList(hdu_list)
         Path(output_path).mkdir(parents=True, exist_ok=True)
         output_path = join(output_path, f'{output_file}.fits')
-        table.write(output_path, format='fits', overwrite=True)
+        hdul.writeto(output_path, overwrite=True)
 
     def _save_xml(self, output_path, output_file):
         """

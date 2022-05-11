@@ -1,46 +1,36 @@
 import unittest
+import filecmp
 import numpy as np
 import pandas as pd
 from os.path import join
 from tests.files import files_path
 from gaiaxpy import calibrate, convert, generate, PhotometricSystem
-from .utils import generate_current_md5sum_df
 
 mean_spectrum = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_dr3int6.csv')
 # Create output folder
 output_path = 'tests_output_files'
-
-# Load md5sums of the expected output files
-md5sum_path = join(files_path, 'md5sum_output_files.csv')
-solution_md5sum_df = pd.read_csv(md5sum_path, float_precision='round_trip')
+solution_path = join(files_path, 'output_solution')
 
 # Note: AVRO cannot be tested by md5sum, it is binary.
 
 def run_output_test(self, function, filename, output_format, sampling=None, phot_systems=None):
     """
-    This class generates GaiaXPy output files. Then, it compares their md5sums
-    with the ones stored in a test file.
+    This class generates GaiaXPy output files. Then, it compares them with the
+    output solution files using filecmp.
     """
+    filecmp.clear_cache()
     if sampling is not None:
         function(mean_spectrum, sampling=sampling, output_path=output_path, output_file=filename, output_format=output_format)
     if phot_systems is not None:
         function(mean_spectrum, photometric_system=phot_systems, output_path=output_path, output_file=filename, output_format=output_format)
     elif sampling is None and phot_systems is None:
         function(mean_spectrum, output_path=output_path, output_file=filename, output_format=output_format)
-    # Generate df with our answers
-    current_md5sum_df = generate_current_md5sum_df(output_path)
     current_file = f'{filename}.{output_format}'
-    current_file_md5sum = current_md5sum_df.loc[current_md5sum_df['filename'] == current_file]['hash'].iloc[0]
-    # Get the expected result
-    file_solution = solution_md5sum_df[solution_md5sum_df['filename'] == current_file]['hash'].iloc[0]
-    self.assertEqual(file_solution, current_file_md5sum.decode('utf8'))
+    self.assertTrue(filecmp.cmp(join(output_path, current_file), join(solution_path, current_file), shallow=False))
     if output_format in ['csv', '.csv', 'ecsv', '.ecsv'] and phot_systems is None:
         # A sampling file will be generated too (calibrate and convert), it needs to be tested
         current_sampling_file = f'{filename}_sampling.{output_format}'
-        current_sampling_md5sum = current_md5sum_df.loc[current_md5sum_df['filename'] == current_sampling_file]['hash'].iloc[0]
-        sampling_solution = solution_md5sum_df[solution_md5sum_df['filename'] == current_sampling_file]['hash'].iloc[0]
-        self.assertEqual(sampling_solution, current_sampling_md5sum.decode('utf8'))
-
+        self.assertTrue(filecmp.cmp(join(output_path, current_sampling_file), join(solution_path, current_sampling_file), shallow=False))
 
 class TestSaveContRawCalibrator(unittest.TestCase):
 

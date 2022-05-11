@@ -72,7 +72,6 @@ def convert(
     _validate_pwl_sampling(sampling)
     _validate_arguments(convert.__defaults__[3], output_file, save_file)
     parsed_input_data, extension = InputReader(input_object, convert)._read()
-
     config_df = load_config(config_file)
     # Union of unique ids as sets
     unique_bases_ids = get_unique_basis_ids(parsed_input_data)
@@ -152,7 +151,7 @@ def _create_spectrum(row, truncation, design_matrices, band):
         recommended_truncation = row[f'{band}_n_relevant_bases']
     else:
         recommended_truncation = -1
-    spectrum = XpSampledSpectrum(
+    spectrum = XpSampledSpectrum.from_continuous(
         continuous_spectrum,
         design_matrices.get(
             row.loc[f'{band}_basis_function_id']),

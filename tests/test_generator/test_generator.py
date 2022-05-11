@@ -19,7 +19,7 @@ class TestGenerateInLoop(unittest.TestCase):
         phot_list = [PhotometricSystem.JKC_Std, PhotometricSystem.SDSS]
         columns = []
         for file in avro_list:
-            photometry = generate(file, photometric_system=phot_list, colour_equation=True, error_correction=True, save_file=False)
+            photometry = generate(file, photometric_system=phot_list, error_correction=True, save_file=False)
             columns.append(list(photometry.columns))
         self.assertListEqual(columns[0], columns[1])
 

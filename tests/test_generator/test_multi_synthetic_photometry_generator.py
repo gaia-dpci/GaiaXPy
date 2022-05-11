@@ -67,8 +67,8 @@ class TestMultiSyntheticPhotometryGenerator(unittest.TestCase):
     def test_no_system_given_is_none(self):
         f = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
         with self.assertRaises(ValueError):
-            output_photometry = generate(f, photometric_system=None, colour_equation=True)
+            output_photometry = generate(f, photometric_system=None)
         with self.assertRaises(ValueError):
-            output_photometry = generate(f, photometric_system=[], colour_equation=True)
+            output_photometry = generate(f, photometric_system=[])
         with self.assertRaises(ValueError):
-            output_photometry = generate(f, photometric_system='', colour_equation=True)
+            output_photometry = generate(f, photometric_system='')

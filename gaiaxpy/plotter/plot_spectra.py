@@ -4,11 +4,11 @@ plot_spectra.py
 Module to plot spectra.
 """
 
-import warnings
 from numpy import ndarray
 from .multi_absolute import MultiAbsolutePlotter
 from .multi_xp import MultiXpPlotter
 from .single import SinglePlotter
+from gaiaxpy.core import _warning
 
 def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_path=None, file_name=None, format='jpg', legend=True):
     """"
@@ -42,7 +42,7 @@ def _validate_input(spectra, sampling=None, multi=False, show_plot=True, output_
     bool_params = [('multi', multi), ('show_plot', show_plot), ('legend', legend)]
     # Format is validated by matplotlib, skip
     if output_path is None and file_name is not None:
-        warnings.warn('No save path has been provided, the file will not be saved.')
+        _warning('No save path has been provided, the file will not be saved.')
     if sampling is not None and not isinstance(sampling, ndarray):
         raise ValueError('Sampling must be a NumPy array.')
     for name, variable in bool_params:

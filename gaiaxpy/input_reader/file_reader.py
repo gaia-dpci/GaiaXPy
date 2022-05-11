@@ -13,9 +13,7 @@ function_parser_dict = {'apply_colour_equation': raise_error,
                         'convert': internal_continuous,
                         'generate': internal_continuous,
                         '_calibrate': internal_continuous,
-                        'calibrate': internal_continuous,
-                        'simulate_continuous': external,
-                        'simulate_sampled': external}
+                        'calibrate': internal_continuous}
 
 
 class FileReader(object):

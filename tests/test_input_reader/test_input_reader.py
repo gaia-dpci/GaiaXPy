@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 import pandas.testing as pdt
-from gaiaxpy import calibrate, convert, generate, simulate_sampled, simulate_continuous
+from gaiaxpy import calibrate, convert, generate
 from gaiaxpy.input_reader import InputReader
 from gaiaxpy.file_parser import InternalContinuousParser
 from tests.files import files_path
@@ -32,17 +32,6 @@ class TestGetMethods(unittest.TestCase):
         parsed_df_np, _ = InputReader(dataframe_np, convert)._read()
         # input_reader_list, _ = InputReader(list_input_int, convert)._read() # requires credentials
         pdt.assert_frame_equal(parsed_df_str, parsed_df_np)
-
-    def test_simulate_fails(self):
-        # InputParser only cares about parsing, output below will fail later if
-        # simulate_sampled is used as the columns don't match the expected ones.
-        input_reader, _ = InputReader(dataframe_np, simulate_sampled)._read()
-        with self.assertRaises(KeyError):
-            simulate_sampled(input_reader, save_file=False)
-        with self.assertRaises(ValueError):
-            # This test fails because it receives a list as input and input data
-            # for the simulator cannot be obtained from the archive.
-            input_reader, _ = InputReader(list_input_str, simulate_continuous)._read()
 
     def test_empty_list(self):
         with self.assertRaises(ValueError):

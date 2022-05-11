@@ -39,7 +39,8 @@ class TestSingleColourEquation(unittest.TestCase):
         affected_band = 'U'
         output_photometry = generate(csv_path, phot_system, save_file=False)
         # Read PMN photometry
-        pmn_photometry = pd.read_csv(path.join(files_path, 'colour_equation', 'Landolt_Johnson_STD_v375wiv142r_SAMPLE.csv'))
+        pmn_photometry = pd.read_csv(
+            path.join(files_path, 'colour_equation', 'Landolt_Johnson_Ucorr_v375wiv142r_SAMPLE.csv'))
         # Source for which data could be extracted from Geapre
         sources_to_keep = [26, 21, 24]
         pmn_photometry = pmn_photometry.loc[pmn_photometry['source_id'].isin(sources_to_keep)]
@@ -65,19 +66,19 @@ class TestSingleColourEquation(unittest.TestCase):
         # The band the changes in Johnson_Std is U, all the other stay the same
         affected_band = 'U'
         output_photometry = generate(csv_path, phot_system, save_file=False)
-        corrected_photometry = apply_colour_equation(output_photometry, phot_system, save_file=False)
+        #corrected_photometry = apply_colour_equation(output_photometry, phot_system, save_file=False)
         # DataFrame with all the columns that
         unchanged_columns = [column for column in output_photometry.columns if affected_band not in column]
         affected_columns = [column for column in output_photometry.columns if affected_band in column]
         output_photometry_equal = output_photometry[unchanged_columns]
-        corrected_photometry_equal = corrected_photometry[unchanged_columns]
-        pdt.assert_frame_equal(output_photometry_equal, corrected_photometry_equal)
+        #corrected_photometry_equal = corrected_photometry[unchanged_columns]
+        #pdt.assert_frame_equal(output_photometry_equal, corrected_photometry_equal)
         # Compare changes in photometry
-        corrected_photometry_differences = corrected_photometry[['source_id'] + affected_columns]
+        output_photometry_differences = output_photometry[['source_id'] + affected_columns]
         for source_id in output_photometry['source_id'].values:
             # solution columns format: {band}, {band}_err
             source_solution = johnson_solution_df[johnson_solution_df['source_id'] == source_id].iloc[0]
-            source_result = corrected_photometry_differences[corrected_photometry_differences['source_id'] == source_id].iloc[0]
+            source_result = output_photometry_differences[output_photometry_differences['source_id'] == source_id].iloc[0]
             # Compare mags
             npt.assert_almost_equal(source_solution[affected_band], source_result[f'{label}_mag_{affected_band}'])
             # Compare errors
@@ -90,10 +91,10 @@ class TestSingleColourEquation(unittest.TestCase):
         sources_to_keep = [26, 21, 24]
         pmn_corrected_photometry = pmn_corrected_photometry.loc[pmn_corrected_photometry['source_id'].isin(sources_to_keep)]
         # Compare U band mags
-        npt.assert_array_almost_equal(pmn_corrected_photometry['U'].values, corrected_photometry_differences[f'{label}_mag_U'].values)
+        npt.assert_array_almost_equal(pmn_corrected_photometry['U'].values, output_photometry_differences[f'{label}_mag_U'].values)
         for source_id in sources_to_keep:
             pmn_source = pmn_corrected_photometry[pmn_corrected_photometry['source_id'] == source_id].iloc[0]
-            corrected_source = corrected_photometry[corrected_photometry['source_id'] == source_id].iloc[0]
+            corrected_source = output_photometry[output_photometry['source_id'] == source_id].iloc[0]
             bands = phot_system.get_bands()
             for band in bands:
                 pmn_mag_error = pmn_source[f'{band}_err']

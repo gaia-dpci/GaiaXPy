@@ -13,12 +13,15 @@ def generate(
         output_file='output_synthetic_photometry',
         output_format=None,
         save_file=True,
-        colour_equation=False,
         error_correction=False):
     """
     Synthetic photometry utility: generates synthetic photometry in a set of
     available systems from the input internally-calibrated
     continuously-represented mean spectra.
+
+    Some standardised photometric systems include a colour-correction to the U bands
+    which will be applied automatically when generating the corresponding synthetic
+    photometry.
 
     Args:
         input_object (object): Path to the file containing the mean spectra
@@ -31,14 +34,16 @@ def generate(
                 is given, then the output file will be in the same format as the
                 input file.
         save_file (bool): Whether to save the output in a file. If false, output_format
-            and output_file are ignored.
-        colour_equation (bool): Whether to return the results with the colour
-            equation applied or not.
-        error_correction (bool): Whether to apply error correction using the correction tables.
+            and output_file_name are ignored.
+        error_correction (bool): Whether to apply to the photometric errors the tabulated
+            factors to mitigate underestimated errors (see Montegriffo et al., 2022, for
+            more details).
 
     Returns:
         DataFrame: A DataFrame of all synthetic photometry results.
     """
+    # colour_equation should be always true as it is part of the definition of standardised systems.
+    colour_equation = True
     # TODO: merge this statement with _validate_arguments
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')

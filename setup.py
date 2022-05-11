@@ -12,8 +12,6 @@ from os import path
 from setuptools import setup, find_packages
 
 current_path = path.abspath(path.dirname(__file__))
-README = open(path.join(current_path, "README-pypi.rst")).read()
-NEWS = open(path.join(current_path, "NEWS.txt")).read()
 
 with open("requirements.txt") as f:
     required_packages = f.readlines()

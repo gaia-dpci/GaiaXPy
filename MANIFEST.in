@@ -1,2 +1,4 @@
+include LICENCE
+include requirements.txt
 graft gaiaxpy/config
 global-exclude __pycache__

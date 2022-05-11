@@ -13,12 +13,43 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.append('gaiaxpy')
 from gaiaxpy import __version__
+import numpy as np
+import re
+
+def parse_linspace(values):
+    array = np.fromstring(values, sep=',')
+    initial_value = array[0]
+    end_value = array[-1]
+    length = len(array)
+    # Construct string
+    output = f'numpy.linspace({initial_value}, {end_value}, {length})'
+    return output
+
+def parse_signature(signature, function_name):
+    if 'sampling' in signature:
+        try:
+            expr = re.compile("\(\[(.*)\]\)")
+            array_values = expr.search(signature).group(1)
+            sampling_compressed = parse_linspace(array_values)
+            signature = signature.replace(f'array([{array_values}])', sampling_compressed)
+        except AttributeError:
+            pass # Sampling can be none
+    return signature
+
+def edit_default_value(app, what, name, obj, options, signature, return_annotation):
+    if what in ['function', 'method'] and signature:
+        function_name = name.split('.')[-1]
+        signature = parse_signature(signature, function_name)
+    return (signature, return_annotation)
+
+def setup(app):
+    app.connect("autodoc-process-signature", edit_default_value)
 
 # -- Project information -----------------------------------------------------
 
 project = u'GaiaXPy'
-copyright = u'2020, Francesca De Angeli, Lovro Palaversa, Daniela Ruz-Mieres'
-author = u'Francesca De Angeli, Lovro Palaversa, Daniela Ruz-Mieres'
+copyright = u'2022, DPAC, CU5, DPCI'
+author = u'Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
 
 # The short X.Y version
 version = f'{__version__} (latest)'
@@ -187,7 +218,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'GaiaXPy', u'GaiaXPy Documentation',
-     author, 'GaiaXPy', 'Tools to generate sampled Gaia BP/RP mean spectra from the data served via the Gaia DR3 archive and to simulate Gaia BP/RP spectra from existing SEDs given the DR3 Gaia instrument model.',
+     author, 'GaiaXPy', 'Tools to generate sampled Gaia BP/RP mean spectra from the data served via the Gaia DR3 archive.',
      'Miscellaneous'),
 ]
 

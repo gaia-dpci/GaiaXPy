@@ -1,5 +1,5 @@
-Config
-======
+gaiaxpy.config package
+======================
 
 .. automodule:: gaiaxpy.config
    :members:

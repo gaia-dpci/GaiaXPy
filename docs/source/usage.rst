@@ -1,7 +1,7 @@
 Usage
 =====
 
-The package currently includes five different functionalities: a **calibrator**, a **converter**, a **simulator**, a **synthetic photometry generator** and a **plotter**.
+The package currently includes four different functionalities: a **calibrator**, a **converter**, a **synthetic photometry generator** and a **plotter**. A further functionality, a **simulator**, is under development and will be released soon.
 
 .. role:: python(code)
    :language: python
@@ -163,48 +163,12 @@ There is also a default sampling which is :python:`numpy.linspace(0, 60, 600)`.
 
 All the available options can be found in :ref:`convert <convert>`.
 
----------
-Simulator
----------
-
-The simulator functionality allows the user to simulate sampled or continuous internally calibrated spectra from an input Spectral Energy Distribution (SED).
-
-The input SED must be a DataFrame or a CSV file with one line per :python:`source ID` and the following format:
-
-.. code-block::
-
-    source_id,wl,flux,flux_error
-    12345,"(300.000,300.100,1199.80)","(6.410e-15,6.406e-15,6.398e-15)","(0.00000,0.00000,0.00000)"
-    98765,"(300.000,300.200,1200.00)","(6.430e-15,6.646e-15,6.864e-15)","(0.00000,0.00000,0.00000)"
-
-To simulate sampled spectra:
-
-.. code-block:: python
-
-    import numpy as np
-    from gaiaxpy import simulate_sampled
-
-    sed_file = '/path/to/sed.csv'
-    sampled_data = simulate_sampled(sed_file, sampling=np.linspace(0, 60, 600), save_file=False)
-
-The function :python:`simulate_sampled` requires a sampling which is :python:`numpy.linspace(0, 60, 600)` by default.
-
-To simulate continuous spectra:
-
-.. code-block:: python
-
-    from gaiaxpy import simulate_continuous
-
-    sed_file = '/path/to/sed.csv'
-    continuous_data = simulate_continuous(sed_file, save_file=False)
-
-The available options of these functions can be found in the section :ref:`simulator <simulator>`.
-
 ------------------------------
 Synthetic photometry generator
 ------------------------------
 
-The synthetic photometry utility uses the method :python:`generate` to return a DataFrame with the generated synthetic photometry results. The synthetic fluxes are given in units
+The synthetic photometry utility uses the method :python:`generate` to return a DataFrame with the generated synthetic photometry results.
+Magnitudes, fluxes and flux errors are computed for each filter. The synthetic fluxes are given in units
 of W nm :superscript:`-1` m :superscript:`-2`.
 
 .. code-block:: python
@@ -215,9 +179,16 @@ of W nm :superscript:`-1` m :superscript:`-2`.
     phot_system = PhotometricSystem.JOHNSON
     generated_data = generate(mean_spectrum_file, phot_system, save_file=False)
 
-Currently, the systems available are Gaia DR3 (Vega and AB), HST WFC3/UVIS, Johnson-Cousins, and `SDSS Doi <https://ui.adsabs.harvard.edu/abs/2010AJ....139.1628D/abstract>`_.
+The available systems are updated as requested. Gaia DR3, Johnson-Kron-Cousins, SDSS, HST WFC3/UVIS are some of the ones currently available.
+For a complete list use
 
-All the available options for this method can be found in :ref:`generate <generate>`, whereas the systems can be found under :ref:`PhotometricSystem <photometric_system>`.
+.. code-block:: python
+
+    from gaiaxpy import PhotometricSystem
+
+    PhotometricSystem.get_available_systems()
+
+All the available options for this method can be found in :ref:`generate <generate>`.
 
 -------
 Plotter

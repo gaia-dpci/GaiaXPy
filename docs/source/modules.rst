@@ -1,7 +1,7 @@
-Documents
-==========
+gaiaxpy
+=======
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
    gaiaxpy

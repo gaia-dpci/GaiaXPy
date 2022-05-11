@@ -1,18 +1,26 @@
-GaiaXPy API
+gaiaxpy package
 ===============
 
 .. automodule:: gaiaxpy
    :members:
+   :undoc-members:
    :show-inheritance:
 
 Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
    gaiaxpy.calibrator
+   gaiaxpy.colour_equation
+   gaiaxpy.config
    gaiaxpy.converter
    gaiaxpy.core
+   gaiaxpy.error_correction
+   gaiaxpy.file_parser
+   gaiaxpy.generator
+   gaiaxpy.input_reader
+   gaiaxpy.output
    gaiaxpy.plotter
-   gaiaxpy.simulator
    gaiaxpy.spectrum

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Produced with astropy.io.votable version 5.0.4
+     http://www.astropy.org/ -->
+<VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/VOTable-1.4.xsd">
+ <RESOURCE type="results">
+  <TABLE>
+   <FIELD ID="source_id" datatype="long" name="source_id"/>
+   <FIELD ID="Pristine_mag_CaHK" datatype="double" name="Pristine_mag_CaHK"/>
+   <FIELD ID="Pristine_flux_CaHK" datatype="double" name="Pristine_flux_CaHK"/>
+   <FIELD ID="Pristine_flux_error_CaHK" datatype="double" name="Pristine_flux_error_CaHK"/>
+   <DATA>
+    <TABLEDATA>
+     <TR>
+      <TD>6</TD>
+      <TD>13.818328622279605</TD>
+      <TD>2.1624623313765173e-16</TD>
+      <TD>9.48338777207098e-18</TD>
+     </TR>
+     <TR>
+      <TD>4</TD>
+      <TD>13.016467832389385</TD>
+      <TD>4.525774040688063e-16</TD>
+      <TD>4.9572037336446896e-18</TD>
+     </TR>
+    </TABLEDATA>
+   </DATA>
+  </TABLE>
+ </RESOURCE>
+</VOTABLE>

@@ -14,7 +14,7 @@ class ExternalParser(GenericParser):
     """
     Parser for externally calibrated sampled spectra.
     """
-    
+
     def _parse_csv(self, csv_file, array_columns=array_columns):
         """
         Parse the input CSV file and store the result in a pandas DataFrame if it

@@ -100,6 +100,7 @@ class GenericParser(object):
         Returns:
             DataFrame: A pandas DataFrame representing the CSV file.
         """
+        converters = None
         if array_columns is not None:
             converters = dict([(column, lambda x: np.fromstring(x[1:-1], sep=',')) for column in array_columns])
         try:
@@ -175,21 +176,23 @@ class GenericParser(object):
                 xml_file).to_table(use_names_over_ids=True)
         except ValueError:
             raise DataMismatchError()
-        columns = list(votable.columns)
-        votable_as_list = []
-        for index, row in enumerate(votable):
-            # Append row values to list
-            row = []
-            for column in columns[:-len(array_columns)]:
-                row.append(votable[column][index])
-            # Remove mask
-            for column in array_columns:
-                try:
-                    row.append(votable[column][index].filled())
-                except KeyError:
-                    raise KeyError(f'The columns in the input data do not match the expected ones. Missing column {column}.')
-            votable_as_list.append(row)
-        return pd.DataFrame(votable_as_list, columns=columns)
+        if array_columns:
+            columns = list(votable.columns)
+            votable_as_list = []
+            for index, row in enumerate(votable):
+                # Append row values to list
+                row = []
+                for column in columns[:-len(array_columns)]:
+                    row.append(votable[column][index])
+                # Remove mask
+                for column in array_columns:
+                    try:
+                        row.append(votable[column][index].filled())
+                    except KeyError:
+                        raise KeyError(f'The columns in the input data do not match the expected ones. Missing column {column}.')
+                votable_as_list.append(row)
+                return pd.DataFrame(votable_as_list, columns=columns)
+        return votable.to_pandas()
 
 def _get_file_extension(file_path):
     """

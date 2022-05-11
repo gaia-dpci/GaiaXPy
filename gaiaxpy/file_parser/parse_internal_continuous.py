@@ -81,8 +81,7 @@ class InternalContinuousParser(GenericParser):
             votable = parse_single_table(xml_file)
         except ValueError:
             raise DataMismatchError()
-        columns = [re.search('<FIELD ID="(.+?)"', str(field)).group(1)
-                   for field in votable.fields]
+        columns = [re.search('<FIELD ID="(.+?)"', str(field)).group(1) for field in votable.fields]
         values_to_df = []
         for index, entry in enumerate(votable.array):
             row = []

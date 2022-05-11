@@ -2,23 +2,42 @@ import unittest
 import filecmp
 import numpy as np
 import pandas as pd
+import pandas.testing as pdt
 from os.path import join
 from tests.files import files_path
 from gaiaxpy import calibrate, convert, generate, PhotometricSystem
+from gaiaxpy.file_parser import GenericParser
 
 mean_spectrum = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_dr3int6.csv')
 # Create output folder
 output_path = 'tests_output_files'
 solution_path = join(files_path, 'output_solution')
 
-# Note: AVRO cannot be tested by md5sum, it is binary.
+def compare_frames(file1, file2, extension, function_name):
+    parser = GenericParser()
+    if function_name in ['calibrate', 'convert']:
+        array_columns = ['flux', 'flux_error']
+    else:
+        array_columns = None
+    if extension in ['csv', 'ecsv']:
+        function = parser._parse_csv
+    elif extension == 'fits':
+        function = parser._parse_fits
+    elif extension == 'xml':
+        function = parser._parse_xml
+    if array_columns:
+        file1 = function(file1, array_columns=array_columns)
+        file2 = function(file2, array_columns=array_columns)
+    else:
+        file1 = function(file1)
+        file2 = function(file2)
+    pdt.assert_frame_equal(file1, file2)
 
 def run_output_test(self, function, filename, output_format, sampling=None, phot_systems=None):
     """
     This class generates GaiaXPy output files. Then, it compares them with the
     output solution files using filecmp.
     """
-    filecmp.clear_cache()
     if sampling is not None:
         function(mean_spectrum, sampling=sampling, output_path=output_path, output_file=filename, output_format=output_format)
     if phot_systems is not None:
@@ -26,11 +45,12 @@ def run_output_test(self, function, filename, output_format, sampling=None, phot
     elif sampling is None and phot_systems is None:
         function(mean_spectrum, output_path=output_path, output_file=filename, output_format=output_format)
     current_file = f'{filename}.{output_format}'
-    self.assertTrue(filecmp.cmp(join(output_path, current_file), join(solution_path, current_file), shallow=False))
+    compare_frames(join(output_path, current_file), join(solution_path, current_file), extension=output_format, function_name=function.__name__)
     if output_format in ['csv', '.csv', 'ecsv', '.ecsv'] and phot_systems is None:
         # A sampling file will be generated too (calibrate and convert), it needs to be tested
         current_sampling_file = f'{filename}_sampling.{output_format}'
-        self.assertTrue(filecmp.cmp(join(output_path, current_sampling_file), join(solution_path, current_sampling_file), shallow=False))
+        compare_frames(join(output_path, current_sampling_file), join(solution_path, current_sampling_file), extension=output_format, function_name=function.__name__)
+
 
 class TestSaveContRawCalibrator(unittest.TestCase):
 

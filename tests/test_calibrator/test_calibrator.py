@@ -1,7 +1,6 @@
 import unittest
 import numpy as np
 import pandas as pd
-from numpy import testing as npt
 from pandas import testing as pdt
 from numpy import ndarray
 from gaiaxpy import calibrate

@@ -97,7 +97,7 @@ class InternalContinuousParser(GenericParser):
                         df[values_column][index] = array_to_symmetric_matrix(
                             df[size_column][index].astype(int), row[values_column])
                     # Value can be NaN when a band is not present
-                    except IndexError as err:
+                    except IndexError:
                         continue
         return _cast(df)
 

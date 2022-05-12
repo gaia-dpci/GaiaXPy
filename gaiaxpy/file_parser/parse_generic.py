@@ -15,10 +15,11 @@ from gaiaxpy.core import array_to_symmetric_matrix
 # Avoid warning, false positive
 pd.options.mode.chained_assignment = None
 
-valid_extensions = ['avro', 'csv','ecsv', 'fits', 'xml']
+valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']
 
 def _raise_key_error(column):
     raise KeyError(f'The columns in the input data do not match the expected ones. Missing column {column}.')
+
 
 class DataMismatchError(RuntimeError):
     """

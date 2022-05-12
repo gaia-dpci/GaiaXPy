@@ -12,6 +12,7 @@ from astropy.io.votable import parse_single_table
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
 from gaiaxpy.core import array_to_symmetric_matrix
+from gaiaxpy.file_parser import DataMismatchError
 from .cast import _cast
 
 # Avoid warning, false positive

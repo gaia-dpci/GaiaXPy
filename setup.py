@@ -6,17 +6,17 @@ Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres - 20
 Based on:
 https://packaging.python.org/tutorials/packaging-projects
 """
-
 import re
 from os import path
 from setuptools import setup, find_packages
 
-
 current_path = path.abspath(path.dirname(__file__))
+
 
 def get_property(prop):
     result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open('gaiaxpy' + '/__init__.py').read())
     return result.group(1)
+
 
 with open("requirements.txt") as f:
     required_packages = f.readlines()

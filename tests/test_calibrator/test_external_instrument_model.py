@@ -19,14 +19,15 @@ abs_tol = 1.e-4
 label = 'calibrator'
 models = {BANDS.bp: 'v375wi', BANDS.rp: 'v142r'}
 
+
 def get_file_for_xp(xp, key):
     model = models[xp]
     file_name = config_parser.get(label, key)
     return f"{config_path}/{file_name.replace('xp', xp).replace('model', model)}".format(
         key)
 
-# The design matrices for the default grid are loaded to be used as reference
-# for the test.
+
+# The design matrices for the default grid are loaded to be used as reference for the test.
 design_matrices_from_csv = _load_xpsampling_from_csv(label)
 sampling_grid, xp_merge = _load_xpmerge_from_csv(label)
 

@@ -88,29 +88,6 @@ def convert(
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return spectra_df, positions
 
-def _read_as_continuous_spectra(input_object):
-    """
-    Read the input file and use the content to populate a list of continuous spectra.
-
-    Args:
-        input_object (str): Path to the file containing the mean spectra
-             as downloaded from the archive in their continuous representation,
-             a list of sources ids (string or long), or a pandas DataFrame.
-
-    Returns:
-        list: a list of all continuous spectra.
-    """
-    # Read mean Spectrum
-    parser = InternalContinuousParser()
-    parsed_input_data, extension = parser.parse(input_object)
-    spectra_list = []
-    nrows = len(parsed_input_data)
-    for index, row in parsed_input_data.iterrows():
-        for band in BANDS:
-            spectrum_xp = _create_continuous_spectrum(row, band)
-            spectra_list.append(spectrum_xp)
-    return spectra_list
-
 def _create_continuous_spectrum(row, band):
     covariance_matrix = _get_covariance_matrix(row, band)
     if covariance_matrix is not None:

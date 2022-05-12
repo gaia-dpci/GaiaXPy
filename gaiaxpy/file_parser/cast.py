@@ -59,7 +59,7 @@ def _cast(df):
             df[column] = df[column].astype(type_map[column])
         except KeyError:
             continue # Not every key is available in every case
-        except ValueError:
+        except ValueError as err:
             if np.isnan(np.sum(df[column].values)):
                 pass # There can be nan values, do nothing with them at this step
             else:

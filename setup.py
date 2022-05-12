@@ -7,9 +7,13 @@ Based on:
 https://packaging.python.org/tutorials/packaging-projects
 """
 
-import sys
+import re, sys
 from os import path
 from setuptools import setup, find_packages
+
+def get_property(prop):
+    result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open('gaiaxpy' + '/__init__.py').read())
+    return result.group(1)
 
 current_path = path.abspath(path.dirname(__file__))
 
@@ -20,8 +24,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="GaiaXPy",
-    version="0.1.2a",
+    name='GaiaXPy',
+    version=get_property('__version__'),
     author="Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres",
     author_email="fda@ast.cam.ac.uk",
     maintainer="Daniela Ruz-Mieres",

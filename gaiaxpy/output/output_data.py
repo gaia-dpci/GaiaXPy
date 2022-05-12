@@ -5,9 +5,9 @@ Module to represent generic output data.
 """
 
 from ast import literal_eval
-from pathlib import Path
 from gaiaxpy.file_parser import InvalidExtensionError
 from os.path import abspath, dirname, join
+
 
 def _standardise_output_format(format):
     """
@@ -25,6 +25,7 @@ def _standardise_output_format(format):
         format = format[1:]
     return format.lower()
 
+
 def _load_header_dict():
     current_path = dirname(abspath(__file__))
     header_dictionary_path = join(current_path, '../headers', 'headers_dict.txt')
@@ -33,6 +34,7 @@ def _load_header_dict():
     # Load header dictionary
     header_dict = literal_eval(data)
     return header_dict
+
 
 def _build_regular_header(columns):
     header_dict = _load_header_dict()
@@ -48,8 +50,10 @@ def _build_regular_header(columns):
         header.append(f'#   description: {header_dict[column]["description"]}')
     return '\n'.join(header) + '\n'
 
+
 def _initialise_header():
     return ["# %ECSV 1.0", "# ---", "# delimiter: ','", "# datatype:"]
+
 
 def _build_photometry_header(columns):
     header_dict = _load_header_dict()
@@ -73,11 +77,13 @@ def _build_photometry_header(columns):
             header.append(f'#   description: {header_dict[column]["description"]}')
     return '\n'.join(header) + '\n'
 
+
 def _add_header(header, output_path, output_file):
     with open(join(output_path, f'{output_file}.ecsv'), "r+") as f:
         s = f.read()
         f.seek(0)
         f.write(header + s)
+
 
 class OutputData(object):
 

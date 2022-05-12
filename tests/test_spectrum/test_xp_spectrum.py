@@ -2,6 +2,7 @@ import unittest
 from gaiaxpy.spectrum import XpSpectrum
 from gaiaxpy.core.satellite import BANDS
 
+
 class TestXpSpectrum(unittest.TestCase):
 
     def test_init_get(self):

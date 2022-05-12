@@ -1,4 +1,3 @@
-import sys
 import unittest
 import numpy.testing as npt
 import pandas as pd
@@ -52,10 +51,6 @@ type_map = {'source_id': dtype('int64'),
             'bp_basis_function_id': dtype('int64'),
             'rp_chi_squared': dtype('float64'),
             'bp_chi_squared': dtype('float64'),
-            'rp_basis_function_id': dtype('int64'),
-            'bp_basis_function_id': dtype('int64'),
-            'rp_coefficient_errors': dtype('O'),
-            'bp_coefficient_errors': dtype('O'),
             'rp_coefficient_errors': dtype('O'),
             'bp_coefficient_errors': dtype('O'),
             'rp_coefficient_correlations': dtype('O'),
@@ -338,6 +333,6 @@ class TestFormatEquality(unittest.TestCase):
             self.assertEqual(fits_data.keys(), plain_xml_data.keys())
             self.assertEqual(plain_xml_data.keys(), xml_data.keys())
             for key in csv_data.keys():
-                npt.assert_almost_equal(csv_data[key], fits_data[key], decimal=4) # Precision varies across formats
+                npt.assert_almost_equal(csv_data[key], fits_data[key], decimal=4)  # Precision varies across formats
                 npt.assert_almost_equal(fits_data[key], plain_xml_data[key], decimal=4)
                 npt.assert_almost_equal(plain_xml_data[key], xml_data[key], decimal=4)

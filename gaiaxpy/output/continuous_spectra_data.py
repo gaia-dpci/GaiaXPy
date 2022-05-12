@@ -56,6 +56,7 @@ class ContinuousSpectraData(OutputData):
                 'rp_n_parameters': 'int',
                 'rp_basis_function_id': 'int'
             }
+
             def build_field(keys):
                 fields = []
                 for key in keys:
@@ -205,7 +206,8 @@ class ContinuousSpectraData(OutputData):
                                 f'{BANDS.rp}_n_parameters': '',
                                 f'{BANDS.rp}_basis_function_id': ''}
             fields = [Field(votable, name=column, datatype=fields_datatypes[column], arraysize=fields_arraysize[column])
-                     if fields_arraysize[column] != '' else Field(votable, name=column, datatype=fields_datatypes[column]) for column in columns]
+                      if fields_arraysize[column] != '' else Field(votable, name=column,
+                      datatype=fields_datatypes[column]) for column in columns]
             return fields
         spectra_df = self.data
         # Create a new VOTable file

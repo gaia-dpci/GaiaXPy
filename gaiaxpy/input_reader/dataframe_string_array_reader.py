@@ -17,8 +17,8 @@ class DataFrameStringArrayReader(object):
         for column in array_columns:
             # String column to NumPy array
             for index, row in df.iterrows():
-                    df[column][index] = np.fromstring(
-                        row[column][1:-1], sep=',')
+                df[column][index] = np.fromstring(
+                    row[column][1:-1], sep=',')
         return df
 
     def _parse_brackets_arrays(self):
@@ -27,7 +27,7 @@ class DataFrameStringArrayReader(object):
         for column in array_columns:
             # String column to NumPy array
             for index, row in df.iterrows():
-                    df[column][index] = np.array(row[column])
+                df[column][index] = np.array(row[column])
         return df
 
     def _parse(self):

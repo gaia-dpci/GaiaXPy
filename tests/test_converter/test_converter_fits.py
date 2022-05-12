@@ -26,7 +26,8 @@ config_df = load_config(config_file)
 solution_folder = 'converter_solution'
 continuous_path = join(files_path, 'xp_continuous')
 input_file = join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.fits')
-converter_solution_df = pd.read_csv(join(files_path, solution_folder, 'converter_solution_0_60_481.csv'), float_precision='round_trip')
+converter_solution_df = pd.read_csv(join(files_path, solution_folder, 'converter_solution_0_60_481.csv'),
+                                    float_precision='round_trip')
 columns_to_parse = ['flux', 'flux_error']
 converter_solution_df = df_columns_to_array(converter_solution_df, columns_to_parse)
 

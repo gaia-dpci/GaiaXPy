@@ -19,6 +19,7 @@ xp_continuous_xml_plain = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_
 
 TOL = 4
 
+
 def get_mag_error(flux, flux_error):
     return 2.5 * flux_error / (flux * math.log(10))
 
@@ -47,9 +48,10 @@ class TestSingleColourEquation(unittest.TestCase):
             output_source = output_photometry[output_photometry['source_id'] == source_id].iloc[0]
             for band in bands:
                 # Compare mag errors
-                computed_mag_error = get_mag_error(output_source[f'{label}_flux_{band}'], output_source[f'{label}_flux_error_{band}'])
+                computed_mag_error = get_mag_error(output_source[f'{label}_flux_{band}'],
+                                                   output_source[f'{label}_flux_error_{band}'])
                 pmn_source = pmn_photometry[pmn_photometry['source_id'] == source_id].iloc[0]
-                npt.assert_almost_equal(computed_mag_error, pmn_source[f'{band}_err']) # decimal=6 by default
+                npt.assert_almost_equal(computed_mag_error, pmn_source[f'{band}_err'])  # decimal=6 by default
                 # Compare magnitudes
                 npt.assert_almost_equal(output_source[f'{label}_mag_{band}'], pmn_source[band])
 
@@ -80,7 +82,7 @@ class TestSingleColourEquation(unittest.TestCase):
             # Compare mags
             npt.assert_almost_equal(source_solution[affected_band], source_result[f'{label}_mag_{affected_band}'])
             # Compare errors
-            mag_error = get_mag_error(source_result[f'{label}_flux_{affected_band}'], \
+            mag_error = get_mag_error(source_result[f'{label}_flux_{affected_band}'],
                                       source_result[f'{label}_flux_error_{affected_band}'])
             npt.assert_almost_equal(source_solution[f'{affected_band}_err'], mag_error)
         # Read Paolo's photometry
@@ -89,14 +91,16 @@ class TestSingleColourEquation(unittest.TestCase):
         sources_to_keep = [26, 21, 24]
         pmn_corrected_photometry = pmn_corrected_photometry.loc[pmn_corrected_photometry['source_id'].isin(sources_to_keep)]
         # Compare U band mags
-        npt.assert_array_almost_equal(pmn_corrected_photometry['U'].values, output_photometry_differences[f'{label}_mag_U'].values)
+        npt.assert_array_almost_equal(pmn_corrected_photometry['U'].values,
+                                      output_photometry_differences[f'{label}_mag_U'].values)
         for source_id in sources_to_keep:
             pmn_source = pmn_corrected_photometry[pmn_corrected_photometry['source_id'] == source_id].iloc[0]
             corrected_source = output_photometry[output_photometry['source_id'] == source_id].iloc[0]
             bands = phot_system.get_bands()
             for band in bands:
                 pmn_mag_error = pmn_source[f'{band}_err']
-                computed_mag_error = get_mag_error(corrected_source[f'{label}_flux_{band}'], corrected_source[f'{label}_flux_error_{band}'])
+                computed_mag_error = get_mag_error(corrected_source[f'{label}_flux_{band}'],
+                                                   corrected_source[f'{label}_flux_error_{band}'])
                 npt.assert_almost_equal(pmn_mag_error, computed_mag_error)
 
     def test_absent_filter_present_colour(self):

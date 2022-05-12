@@ -11,7 +11,7 @@ from . import sampled_basis_functions
 from .sampled_basis_functions import SampledBasisFunctions
 
 from . import sampled_spectrum
-from .sampled_spectrum import *
+from .sampled_spectrum import SampledSpectrum
 
 from . import single_synthetic_photometry
 from .single_synthetic_photometry import SingleSyntheticPhotometry

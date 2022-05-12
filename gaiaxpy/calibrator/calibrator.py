@@ -23,6 +23,7 @@ from gaiaxpy.spectrum import _get_covariance_matrix, AbsoluteSampledSpectrum, \
 config_parser = ConfigParser()
 config_parser.read(join(config_path, 'config.ini'))
 
+
 def calibrate(
         input_object,
         sampling=None,
@@ -71,6 +72,7 @@ def calibrate(
         output_format,
         save_file)
 
+
 def _calibrate(
         input_object,
         sampling=None,
@@ -114,6 +116,7 @@ def _calibrate(
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return spectra_df, positions
 
+
 def _create_merge(xp, sampling):
     """
     Create the weight information on the input sampling grid.
@@ -137,6 +140,7 @@ def _create_merge(xp, sampling):
     else:
         raise ValueError(f'Given band is {xp}, but should be either bp or rp.')
     return weight
+
 
 def _generate_xp_matrices_and_merge(label, sampling, bp_model, rp_model):
     """
@@ -170,6 +174,7 @@ def _generate_xp_matrices_and_merge(label, sampling, bp_model, rp_model):
                 sampling, xp_merge[xp], instr_model)
     return xp_design_matrices, xp_merge
 
+
 def _create_spectra(parsed_spectrum_file, truncation, design_matrices, merge):
     """
     Internal wrapper function. Allows _create_spectrum to use the generic
@@ -177,6 +182,7 @@ def _create_spectra(parsed_spectrum_file, truncation, design_matrices, merge):
     """
     spectra_list = []
     nrows = len(parsed_spectrum_file)
+
     @_progress_tracker
     def create_spectrum(row, *args):
         truncation, design_matrices, merge = args[:3]
@@ -186,6 +192,7 @@ def _create_spectra(parsed_spectrum_file, truncation, design_matrices, merge):
     for index, row in parsed_spectrum_file.iterrows():
         create_spectrum(row, truncation, design_matrices, merge, index, nrows)
     return spectra_list
+
 
 def _create_spectrum(row, truncation, design_matrix, merge):
     """

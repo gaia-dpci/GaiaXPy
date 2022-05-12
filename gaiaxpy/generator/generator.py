@@ -6,6 +6,7 @@ from gaiaxpy.output import PhotometryData
 from gaiaxpy.colour_equation import apply_colour_equation
 from gaiaxpy.error_correction import apply_error_correction
 
+
 def generate(
         input_object,
         photometric_system,

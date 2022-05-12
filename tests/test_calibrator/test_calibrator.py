@@ -49,7 +49,8 @@ solution_default_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution
 solution_custom_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_custom.csv'), float_precision='round_trip')
 
 # Load solution files, v211w model
-solution_v211w_default_sampling = pos_file_to_array(join(calibrator_sol_path, 'calibrator_solution_v211w_default_sampling.csv'))
+solution_v211w_default_sampling = pos_file_to_array(join(calibrator_sol_path,
+                                                         'calibrator_solution_v211w_default_sampling.csv'))
 solution_v211w_custom_sampling = pos_file_to_array(join(calibrator_sol_path, 'calibrator_solution_v211w_custom_sampling.csv'))
 solution_v211w_default_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_v211w_default.csv'),
                                         float_precision='round_trip')

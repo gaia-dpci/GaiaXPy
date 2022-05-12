@@ -6,6 +6,7 @@ Module to represent a spectral energy distribution (SED).
 
 from .sampled_spectrum import SampledSpectrum
 
+
 class SpectralEnergyDistribution(SampledSpectrum):
     """
     A spectral energy distribution.
@@ -18,6 +19,4 @@ class SpectralEnergyDistribution(SampledSpectrum):
             flux):
 
         SampledSpectrum.__init__(self, source_id, wl)
-
         self.flux = flux
-

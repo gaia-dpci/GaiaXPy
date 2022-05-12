@@ -1,10 +1,12 @@
 import pandas as pd
 from numpy import ndarray
 
+
 def pandas_from_records(lst, to_dict_func):
     records_df = pd.DataFrame.from_records(
                  [record.to_dict_func for record in lst])
     return records_df
+
 
 def _array_to_standard(array):
     """
@@ -20,6 +22,7 @@ def _array_to_standard(array):
     """
     return tuple(array)
 
+
 def _get_array_columns(df):
     """
     TODO: add docstring
@@ -29,6 +32,7 @@ def _get_array_columns(df):
         if isinstance(df[column].iloc[0], ndarray):
             array_columns.append(column)
     return array_columns
+
 
 def _get_sampling_dict(positions):
     return {'pos': _array_to_standard(positions)}

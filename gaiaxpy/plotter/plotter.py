@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from os.path import join
 
+
 class Plotter(object):
 
     def __init__(self, spectra, sampling, multi, show_plot, output_path, file_name, format, legend):
@@ -46,6 +47,7 @@ class Plotter(object):
         if not file_name:
             file_name = self.spectra_class.__name__
         return file_name
+
 
 def _set_class(spectra):
     if isinstance(spectra, pd.DataFrame):

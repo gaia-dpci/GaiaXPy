@@ -16,6 +16,7 @@ from gaiaxpy.core import _get_system_label
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
 
+
 def _system_is_standard(system_label):
     """
     Tells whether the input system is standard or not.
@@ -24,6 +25,7 @@ def _system_is_standard(system_label):
         matches = finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', word)
         return [m.group(0) for m in matches]
     return split_camel_case(system_label)[-1].lower() == 'std'
+
 
 def _get_available_systems():
     """
@@ -38,6 +40,7 @@ def _get_available_systems():
     f = open(file, 'r')
     lines = f.read().splitlines()
     return ' '.join(lines)
+
 
 class AutoName(Enum):
     def _generate_next_value_(name, start, count, last_values):
@@ -63,10 +66,13 @@ class AutoName(Enum):
     def get_offsets(self):
         return self.value.offsets
 
+
 PhotometricSystem = AutoName('PhotometricSystem', _get_available_systems())
+
 
 def get_available_systems():
     systems_str = _get_available_systems()
     return ', '.join(systems_str.split(' '))
+
 
 PhotometricSystem.get_available_systems = get_available_systems

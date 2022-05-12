@@ -14,6 +14,7 @@ from gaiaxpy.core.satellite import BANDS
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
 
+
 def get_file(label, key, system, bp_model, rp_model):
     """
     Get the file path corresponding to the given label and key.
@@ -35,10 +36,8 @@ def get_file(label, key, system, bp_model, rp_model):
         generic_file_name = path.join(head, tail)
     return generic_file_name
 
-def _load_offset_from_csv(system,
-                          label = 'photsystem',
-                          bp_model='v375wi',
-                          rp_model='v142r'):
+
+def _load_offset_from_csv(system, label = 'photsystem', bp_model='v375wi', rp_model='v142r'):
     """
     Load the offset of a standard photometric system.
     """
@@ -49,11 +48,9 @@ def _load_offset_from_csv(system,
          raise ValueError('Offset file not present. Is this a standard system?')
     return offset
 
-def _load_xpzeropoint_from_csv(
-        system,
-        label='photsystem',
-        bp_model='v375wi',
-        rp_model='v142r'):
+
+def _load_xpzeropoint_from_csv(system, label='photsystem', bp_model='v375wi',
+                               rp_model='v142r'):
     """
     Load the zero-points for each band.
 
@@ -68,17 +65,12 @@ def _load_xpzeropoint_from_csv(
             return np.array([variable])
         return variable
     bands, zero_points =  np.genfromtxt(
-            get_file(
-                label,
-                'zeropoint',
-                system,
-                bp_model,
-                rp_model),
-                          delimiter=',',
-                          dtype=str)
+            get_file(label, 'zeropoint', system, bp_model, rp_model),
+            delimiter=',', dtype=str)
     bands = _make_iterable(bands).astype(str)
     zero_points = _make_iterable(zero_points).astype(float)
     return bands, zero_points
+
 
 def _load_xpmerge_from_csv(
         label,
@@ -118,6 +110,7 @@ def _load_xpmerge_from_csv(
         dtype=float)
     sampling_grid, bp_merge, rp_merge = _parse_merge(_xpmerge)
     return sampling_grid, dict(zip(BANDS, [bp_merge, rp_merge]))
+
 
 def _load_xpsampling_from_csv(
         label,

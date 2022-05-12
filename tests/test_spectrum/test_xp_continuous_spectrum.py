@@ -42,8 +42,6 @@ class TestXpContinuousSpectrum(unittest.TestCase):
             correlation_matrix = row[f'{band}_coefficient_correlations'][0]
             parameters = row[f'{band}_coefficients'][0]
             standard_deviation = row[f'{band}_standard_deviation'][0]
-            design_matrix = design_matrices.get(
-                row[f'{band}_basis_function_id'][0])
             covariance_matrix = _correlation_to_covariance_dr3int4(
                 correlation_matrix,
                 row[f'{band}_coefficient_errors'][0],

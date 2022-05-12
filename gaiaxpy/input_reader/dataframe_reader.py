@@ -7,6 +7,7 @@ from gaiaxpy.core import array_to_symmetric_matrix
 matrix_columns = [('bp_n_parameters', 'bp_coefficient_correlations'),
                   ('rp_n_parameters', 'rp_coefficient_correlations')]
 
+
 def extremes_are_enclosing(first_row, column):
     if first_row[column][0] == '[' and first_row[column][-1] == ']':
         return True
@@ -15,9 +16,11 @@ def extremes_are_enclosing(first_row, column):
     else:
         return False
 
+
 def needs_matrix_conversion(array_columns):
     columns_to_matrix = [column for value, column in matrix_columns]
     return set(columns_to_matrix).issubset(set(array_columns))
+
 
 class DataFrameReader(object):
 
@@ -28,7 +31,7 @@ class DataFrameReader(object):
         content = self.content
         columns = content.columns
         first_row = content.iloc[0]
-        str_array_columns = [column for column in columns if isinstance(first_row[column], str) \
+        str_array_columns = [column for column in columns if isinstance(first_row[column], str)
                          and extremes_are_enclosing(first_row, column)]
         np_array_columns = [column for column in columns if isinstance(first_row[column], ndarray)]
         if str_array_columns:
@@ -47,4 +50,4 @@ class DataFrameReader(object):
                 for size_column, values_column in matrix_columns:
                     data[values_column][index] = array_to_symmetric_matrix(
                         data[size_column][index].astype(int), row[values_column])
-        return data, None # no extension for dataframes
+        return data, None  # No extension for dataframes

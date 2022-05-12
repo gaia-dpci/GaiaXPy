@@ -7,14 +7,15 @@ Module containing auxiliary functions of the parsers.
 import operator
 from functools import reduce
 
+
 def _get_from_dict(dictionary, map):
     try:
         return reduce(operator.getitem, map, dictionary)
     except TypeError:
         return None
 
-# This dictionary contains the mapping from the usual CSV fields to the
-# AVRO fields.
+
+# This dictionary contains the mapping from the usual CSV fields to the AVRO fields.
 _csv_to_avro_map = {'source_id': ['sourceId'],
                     'rp_n_rejected_measurements': ['rpSpec', 'solution', 'numberOfRejectedMeasurements'],
                     'rp_chi_squared': ['rpSpec', 'solution', 'chiSquared'],

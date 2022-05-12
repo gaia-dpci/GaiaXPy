@@ -2,7 +2,7 @@ import unittest
 import pandas as pd
 from numpy import ndarray, dtype
 from os import path
-from gaiaxpy.file_parser import DataMismatchError, ExternalParser, InvalidExtensionError
+from gaiaxpy.file_parser import ExternalParser, InvalidExtensionError
 from tests.files import files_path
 
 # Files to test parse
@@ -38,4 +38,4 @@ class TestExternalParserXML(unittest.TestCase):
 
     def test_parse_fails(self):
         with self.assertRaises(KeyError):
-            parsed_xml_file = parser._parse_xml(xml_file)
+            parser._parse_xml(xml_file)

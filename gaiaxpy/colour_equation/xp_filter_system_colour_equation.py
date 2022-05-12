@@ -7,15 +7,18 @@ from os import listdir, path
 from numpy import poly1d
 from gaiaxpy.config import filters_path
 from gaiaxpy.core import _extract_systems_from_data, _load_xpzeropoint_from_csv, \
-                         _progress_tracker, _validate_arguments, _warning
+                         _progress_tracker, _validate_arguments
 from gaiaxpy.input_reader import InputReader
 from gaiaxpy.output import PhotometryData
+
 
 def _raise_key_error(key):
     raise KeyError(f'Required column {key} is not present in input data.')
 
+
 def _compute_mag_error(data, band, system_label):
     return 2.5 * data[f'{system_label}_flux_error_{band}'] / (data[f'{system_label}_flux_{band}'] * math.log(10))
+
 
 def _fill_systems_details(systems_to_correct):
     systems_details = {}
@@ -46,9 +49,11 @@ def _fill_systems_details(systems_to_correct):
             systems_details[system]['colour_range'] = ast.literal_eval(colour_range)
     return systems_details
 
+
 def _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems_details):
     new_system_rows = []
     nrows = len(single_system_df)
+
     @_progress_tracker
     def _execute_row(row, *args):
         system, colour_band_0, colour_band_1, systems_details = args[:4]
@@ -58,6 +63,7 @@ def _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems
         _execute_row(row, system, colour_band_0, colour_band_1, systems_details, index, nrows)
     return pd.DataFrame(new_system_rows)
 
+
 def _generate_output_df(input_synthetic_photometry, systems_in_data, systems_details):
     synt_phot_df = input_synthetic_photometry.copy()
     colour_equation_systems = _get_available_systems()
@@ -65,16 +71,13 @@ def _generate_output_df(input_synthetic_photometry, systems_in_data, systems_det
     systems_to_correct = [system for system in systems_in_data if system in colour_equation_systems]
     if systems_to_correct:
         # Perform correction
-        source_ids = list(synt_phot_df['source_id'].values)
         column_names = synt_phot_df.columns
         # Extract columns corresponding to one system
         for system in systems_to_correct:
             filter_to_correct = systems_details[system]['filter']
             colour_band_0, colour_band_1 = _get_colour_bands(systems_details[system]['colour_index'])
-            system_columns_with_colour = [column for column in column_names if column.startswith(f'{system}_') \
+            system_columns_with_colour = [column for column in column_names if column.startswith(f'{system}_')
                               and column.endswith((f'_{filter_to_correct}', f'_{colour_band_0}', f'_{colour_band_1}'))]
-            system_columns_relevant_filter = [column for column in column_names if column.startswith(f'{system}_') \
-                              and column.endswith(f'_{filter_to_correct}')]
             # Data to apply the colour equation
             single_system_df = synt_phot_df[system_columns_with_colour]
             new_system_df = _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems_details)
@@ -82,11 +85,10 @@ def _generate_output_df(input_synthetic_photometry, systems_in_data, systems_det
                 synt_phot_df[column] = new_system_df[column]
     return synt_phot_df
 
+
 def _generate_output_row(row, system_label, colour_band_0, colour_band_1, systems_details):
-    system_bands = list(systems_details[system_label]['bands_zp'].keys())
     filter_to_correct = systems_details[system_label]['filter']
     mag = row[f'{system_label}_mag_{filter_to_correct}']
-    flux = row[f'{system_label}_flux_{filter_to_correct}']
     mag_err = _compute_mag_error(row, filter_to_correct, system_label)
     mag_colour_0 = row[f'{system_label}_mag_{colour_band_0}']
     mag_colour_1 = row[f'{system_label}_mag_{colour_band_1}']
@@ -109,15 +111,18 @@ def _generate_output_row(row, system_label, colour_band_0, colour_band_1, system
     new_row[f'{system_label}_flux_error_{filter_to_correct}'] = out_flux_err
     return new_row
 
+
 def _get_available_systems():
     """
     Get systems on which the colour equation can be applied.
     """
     return [filename.split('_')[0] for filename in listdir(path.join(filters_path, '..', 'colour_eq_files'))]
 
+
 def _get_colour_bands(colour_index):
     colour_band_0, colour_band_1 = colour_index.split('-')
     return colour_band_0, colour_band_1
+
 
 def _set_colour_limit(colour, colour_range):
     if colour < min(colour_range):
@@ -128,14 +133,17 @@ def _set_colour_limit(colour, colour_range):
         raise ValueError('The condition for one of the previous statements must be True. Error in colour or colour_range.')
     return colour_limit
 
+
 def _generate_polynomial(colour, colour_limit, system_polyfunc):
     v = system_polyfunc(colour_limit)
     m = system_polyfunc.deriv()(colour_limit)
     return v + m * (colour - colour_limit)
 
+
 # Replaces 'contains'
 def _is_in_range(colour, colour_range):
     return min(colour_range) <= colour and colour <= max(colour_range)
+
 
 def _get_correction(systems_details, colour, system_label):
     colour_range = systems_details[system_label]['colour_range']
@@ -153,11 +161,13 @@ def _get_correction(systems_details, colour, system_label):
     else:
         raise ValueError('At least one variable does not comply with any of the previous statements.')
 
-def apply_colour_equation(input_synthetic_photometry, photometric_system=None, output_path='.', output_file='corrected_photometry', output_format=None, save_file=True):
+
+def apply_colour_equation(input_synthetic_photometry, photometric_system=None, output_path='.',
+                          output_file='corrected_photometry', output_format=None, save_file=True):
     """
     Apply the available colour correction for the input photometric system(s).
     """
-    function = apply_colour_equation # Being able to extract the name of the current function would be ideal.
+    function = apply_colour_equation  # Being able to extract the name of the current function would be ideal.
     _validate_arguments(function.__defaults__[2], output_file, save_file)
     input_synthetic_photometry, extension = InputReader(input_synthetic_photometry, function)._read()
     systems_in_data = _extract_systems_from_data(input_synthetic_photometry.columns, photometric_system)

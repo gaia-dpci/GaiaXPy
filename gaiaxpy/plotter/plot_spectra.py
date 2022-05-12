@@ -10,7 +10,9 @@ from .multi_xp import MultiXpPlotter
 from .single import SinglePlotter
 from gaiaxpy.core import _warning
 
-def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_path=None, file_name=None, format='jpg', legend=True):
+
+def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_path=None, file_name=None,
+                 format='jpg', legend=True):
     """"
     Plot one or more spectra.
 
@@ -37,7 +39,9 @@ def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_pat
         plotter = SinglePlotter(spectra, sampling, multi, show_plot, output_path, file_name, format, legend)
     plotter._plot()
 
-def _validate_input(spectra, sampling=None, multi=False, show_plot=True, output_path=None, file_name=None, format='png', legend=True):
+
+def _validate_input(spectra, sampling=None, multi=False, show_plot=True, output_path=None,
+                    file_name=None, format='png', legend=True):
     bool_values = [True, False]
     bool_params = [('multi', multi), ('show_plot', show_plot), ('legend', legend)]
     # Format is validated by matplotlib, skip

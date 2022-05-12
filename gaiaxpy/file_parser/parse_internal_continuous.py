@@ -131,8 +131,7 @@ class InternalContinuousParser(GenericParser):
                     # Append this record to the global list
                     records_list.append(current_record)
                 except KeyError:
-                    raise KeyError(
-                        f"Keys in the input file don't match the expected ones.")
+                    raise KeyError("Keys in the input file don't match the expected ones.")
                 try:
                     # Move onto the next record
                     record = avro_reader.next()

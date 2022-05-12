@@ -7,6 +7,7 @@ from .query_reader import QueryReader
 
 default_extension = 'csv'
 
+
 class InputReader(object):
 
     def __init__(self, content, function):
@@ -19,7 +20,7 @@ class InputReader(object):
         # Check whether content is path
         if path.isfile(content) or path.isabs(content):
             selector = FileReader(function)
-            parser = selector._select() # Select type of parser required
+            parser = selector._select()  # Select type of parser required
             parsed_input_data, extension = parser.parse(content)
         # Query should start with select
         elif content.lower().startswith('select'):

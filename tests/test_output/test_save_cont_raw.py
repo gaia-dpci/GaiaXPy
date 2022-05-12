@@ -1,7 +1,5 @@
 import unittest
-import filecmp
 import numpy as np
-import pandas as pd
 import pandas.testing as pdt
 from os.path import join
 from tests.files import files_path
@@ -12,6 +10,7 @@ mean_spectrum = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_dr3int6.csv
 # Create output folder
 output_path = 'tests_output_files'
 solution_path = join(files_path, 'output_solution')
+
 
 def compare_frames(file1, file2, extension, function_name):
     parser = GenericParser()
@@ -33,6 +32,7 @@ def compare_frames(file1, file2, extension, function_name):
         file2 = function(file2)
     pdt.assert_frame_equal(file1, file2)
 
+
 def run_output_test(self, function, filename, output_format, sampling=None, phot_systems=None):
     """
     This class generates GaiaXPy output files. Then, it compares them with the
@@ -41,15 +41,18 @@ def run_output_test(self, function, filename, output_format, sampling=None, phot
     if sampling is not None:
         function(mean_spectrum, sampling=sampling, output_path=output_path, output_file=filename, output_format=output_format)
     if phot_systems is not None:
-        function(mean_spectrum, photometric_system=phot_systems, output_path=output_path, output_file=filename, output_format=output_format)
+        function(mean_spectrum, photometric_system=phot_systems, output_path=output_path,
+                 output_file=filename, output_format=output_format)
     elif sampling is None and phot_systems is None:
         function(mean_spectrum, output_path=output_path, output_file=filename, output_format=output_format)
     current_file = f'{filename}.{output_format}'
-    compare_frames(join(output_path, current_file), join(solution_path, current_file), extension=output_format, function_name=function.__name__)
+    compare_frames(join(output_path, current_file), join(solution_path, current_file),
+                   extension=output_format, function_name=function.__name__)
     if output_format in ['csv', '.csv', 'ecsv', '.ecsv'] and phot_systems is None:
         # A sampling file will be generated too (calibrate and convert), it needs to be tested
         current_sampling_file = f'{filename}_sampling.{output_format}'
-        compare_frames(join(output_path, current_sampling_file), join(solution_path, current_sampling_file), extension=output_format, function_name=function.__name__)
+        compare_frames(join(output_path, current_sampling_file), join(solution_path, current_sampling_file),
+                       extension=output_format, function_name=function.__name__)
 
 
 class TestSaveContRawCalibrator(unittest.TestCase):
@@ -100,7 +103,8 @@ class TestSaveContRawGenerator(unittest.TestCase):
         run_output_test(self, generate, 'photometry_sdss_std', 'ecsv', phot_systems=PhotometricSystem.SDSS_Std)
 
     def test_save_output_fits_multi(self):
-        run_output_test(self, generate, 'photometry_multi', 'fits', phot_systems=[PhotometricSystem.Gaia_DR3_Vega, PhotometricSystem.HST_HUGS_Std])
+        run_output_test(self, generate, 'photometry_multi', 'fits',
+                        phot_systems=[PhotometricSystem.Gaia_DR3_Vega, PhotometricSystem.HST_HUGS_Std])
 
     def test_save_output_xml_pristine(self):
         run_output_test(self, generate, 'photometry_pristine', 'xml', phot_systems=[PhotometricSystem.Pristine])

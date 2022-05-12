@@ -2,7 +2,6 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 from numpy import ndarray
-from os import path
 from gaiaxpy.core import _load_xpmerge_from_csv, _load_offset_from_csv, \
                          _load_xpsampling_from_csv, _load_xpzeropoint_from_csv
 

@@ -4,7 +4,7 @@ parse_internal_sampled.py
 Module to parse input files containing internally calibrated sampled spectra.
 """
 
-from .parse_generic import *
+from .parse_generic import GenericParser
 
 
 class InternalSampledParser(GenericParser):

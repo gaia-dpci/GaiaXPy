@@ -7,14 +7,15 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
+import re
 import os
 import sys
+import numpy as np
+import sphinx_rtd_theme
+from gaiaxpy import __version__
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.append('gaiaxpy')
-from gaiaxpy import __version__
-import numpy as np
-import re
+
 
 def parse_linspace(values):
     array = np.fromstring(values, sep=',')
@@ -25,6 +26,7 @@ def parse_linspace(values):
     output = f'numpy.linspace({initial_value}, {end_value}, {length})'
     return output
 
+
 def parse_signature(signature, function_name):
     if 'sampling' in signature:
         try:
@@ -33,8 +35,9 @@ def parse_signature(signature, function_name):
             sampling_compressed = parse_linspace(array_values)
             signature = signature.replace(f'array([{array_values}])', sampling_compressed)
         except AttributeError:
-            pass # Sampling can be none
+            pass  # Sampling can be none
     return signature
+
 
 def edit_default_value(app, what, name, obj, options, signature, return_annotation):
     if what in ['function', 'method'] and signature:
@@ -42,11 +45,12 @@ def edit_default_value(app, what, name, obj, options, signature, return_annotati
         signature = parse_signature(signature, function_name)
     return (signature, return_annotation)
 
+
 def setup(app):
     app.connect("autodoc-process-signature", edit_default_value)
 
-# -- Project information -----------------------------------------------------
 
+# -- Project information -----------------------------------------------------
 project = u'GaiaXPy'
 copyright = u'2022, DPAC, CU5, DPCI'
 author = u'Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
@@ -56,7 +60,6 @@ version = f'{__version__} (latest)'
 # The full version, including alpha/beta/rc tags
 release = __version__
 
-import sphinx_rtd_theme
 
 # -- General configuration ---------------------------------------------------
 
@@ -111,13 +114,12 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
 html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-                                                                               
+
 html_theme_options = {
     'logo_only': True,
     # 'github_user': 'bitprophet',

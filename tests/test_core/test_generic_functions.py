@@ -28,7 +28,7 @@ class TestGenericFunctions(unittest.TestCase):
         with self.assertRaises(ValueError):
             _validate_pwl_sampling(sampling)
 
-    def test_validate_pwl_sampling_none(self):
+    def test_validate_pwl_sampling(self):
         sampling = np.array([0.3, 0.2, 0.5])
         with self.assertRaises(ValueError):
             _validate_pwl_sampling(sampling)

@@ -52,6 +52,7 @@ ref_sampled_truncated, _ = sampled_parser.parse(ref_sampled_truncated_csv)
 
 TOL = 4
 
+
 class TestGetMethods(unittest.TestCase):
 
     def test_get_unique_basis_ids(self):

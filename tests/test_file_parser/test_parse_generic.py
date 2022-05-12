@@ -53,6 +53,3 @@ class TestParser(unittest.TestCase):
             parser._parse_xml(csv_file)
         with self.assertRaises(DataMismatchError):
             parser._parse_xml(fits_file)
-
-        # TODO: Pandas doesn't fail when reading XML as CSV
-        #with self.assertRaises(DataMismatchError): parser._parse_csv(xml_file)

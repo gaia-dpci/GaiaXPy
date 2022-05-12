@@ -30,7 +30,6 @@ class TestGetMethods(unittest.TestCase):
     def test_dfs(self):
         parsed_df_str, _ = InputReader(dataframe_str, convert)._read()
         parsed_df_np, _ = InputReader(dataframe_np, convert)._read()
-        # input_reader_list, _ = InputReader(list_input_int, convert)._read() # requires credentials
         pdt.assert_frame_equal(parsed_df_str, parsed_df_np)
 
     def test_empty_list(self):

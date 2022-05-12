@@ -15,7 +15,7 @@ phot_systems_specs = pd.read_csv(join(files_path, 'PhotometricSystemSpecs.csv'),
 available_systems = list(phot_systems_specs['label'])
 all_systems = [InternalPhotometricSystem(system) for system in available_systems]
 
-# TODO: test offsets
+
 class TestInternalPhotometricSystem(unittest.TestCase):
 
     def test_init(self):

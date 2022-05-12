@@ -31,9 +31,7 @@ class TestUtils(unittest.TestCase):
         standard_deviation = parsed_correlation[f'{BANDS.bp}_standard_deviation'][0]
         reconstructed_covariance = _correlation_to_covariance_dr3int5(
             correlation_matrix, formal_errors, standard_deviation)
-
         covariance_matrix = parsed_covariance[f'{BANDS.bp}_coefficient_covariances'][0]
-
         self.assertTrue(
             np.allclose(
                 reconstructed_covariance,
@@ -43,15 +41,12 @@ class TestUtils(unittest.TestCase):
             "The reconstructed covariance is different from the expected matrix.")
 
     def test_correlation_to_covariance_rp(self):
-
         correlation_matrix = parsed_correlation[f'{BANDS.rp}_coefficient_correlations'][0]
         formal_errors = parsed_correlation[f'{BANDS.rp}_coefficient_errors'][0]
         standard_deviation = parsed_correlation[f'{BANDS.rp}_standard_deviation'][0]
         reconstructed_covariance = _correlation_to_covariance_dr3int5(
             correlation_matrix, formal_errors, standard_deviation)
-
         covariance_matrix = parsed_covariance[f'{BANDS.rp}_coefficient_covariances'][0]
-
         self.assertTrue(
             np.allclose(
                 reconstructed_covariance,

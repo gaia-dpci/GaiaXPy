@@ -1,10 +1,11 @@
 import unittest
 import numpy as np
 import numpy.testing as npt
-from gaiaxpy.core import pwl_to_wl, wl_to_pwl
+from gaiaxpy import pwl_to_wl, wl_to_pwl
 from gaiaxpy.core.satellite import BANDS
 
 rtol = 1.e-5
+
 
 class TestDispersionFunction(unittest.TestCase):
 

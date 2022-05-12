@@ -47,7 +47,6 @@ class TestAbsoluteSampledSpectrum(unittest.TestCase):
                     covariance_matrix,
                     row[f'{band}_standard_deviation'])
                 cont_dict[band] = continuous_object
-
             spectrum = AbsoluteSampledSpectrum(
                 source_id, cont_dict, sampled_basis_func, xp_merge)
             self.assertIsInstance(spectrum, AbsoluteSampledSpectrum)

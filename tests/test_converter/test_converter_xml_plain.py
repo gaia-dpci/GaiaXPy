@@ -132,6 +132,7 @@ class TestConverterSamplingRange(unittest.TestCase):
         with self.assertRaises(ValueError):
             convert(input_file, sampling=None, save_file=False)
 
+
 class TestConverterMissingBand(unittest.TestCase):
 
     def test_missing_band(self):

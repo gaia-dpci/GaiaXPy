@@ -2,10 +2,11 @@ import unittest
 import math
 import numpy as np
 import pandas as pd
+from os import path
 import numpy.testing as npt
 import pandas.testing as pdt
-from gaiaxpy import apply_colour_equation, generate, PhotometricSystem
-from os import path
+from gaiaxpy import generate, PhotometricSystem
+from gaiaxpy.colour_equation import apply_colour_equation
 from tests.files import files_path
 
 continuous_path = path.join(files_path, 'xp_continuous')
@@ -66,7 +67,6 @@ class TestSingleColourEquation(unittest.TestCase):
         # The band the changes in Johnson_Std is U, all the other stay the same
         affected_band = 'U'
         output_photometry = generate(csv_path, phot_system, save_file=False)
-        #corrected_photometry = apply_colour_equation(output_photometry, phot_system, save_file=False)
         # DataFrame with all the columns that
         unchanged_columns = [column for column in output_photometry.columns if affected_band not in column]
         affected_columns = [column for column in output_photometry.columns if affected_band in column]

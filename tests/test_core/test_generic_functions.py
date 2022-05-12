@@ -5,6 +5,7 @@ from gaiaxpy.core import array_to_symmetric_matrix, _validate_pwl_sampling
 array = np.array([1, 2, 3, 4, 5, 6])
 size = 3
 
+
 class TestGenericFunctions(unittest.TestCase):
 
     def test_validate_pwl_sampling_upper_limit(self):

@@ -10,6 +10,7 @@ continuous_path = join(files_path, 'xp_continuous')
 correlation_csv_file = join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
 corrected_errors_solution_path = join(files_path, 'error_correction_solution', 'corrected_errors_solution.csv')
 
+
 class TestErrorCorrection(unittest.TestCase):
 
     def test_error_correction_no_vega(self):

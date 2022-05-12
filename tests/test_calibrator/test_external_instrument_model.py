@@ -28,7 +28,6 @@ def get_file_for_xp(xp, key):
 # The design matrices for the default grid are loaded to be used as reference
 # for the test.
 design_matrices_from_csv = _load_xpsampling_from_csv(label)
-
 sampling_grid, xp_merge = _load_xpmerge_from_csv(label)
 
 xp_merge_from_instrument_model = {}

@@ -11,12 +11,9 @@ import matplotlib.pyplot as plt
 class MultiAbsolutePlotter(Plotter):
 
     def _plot_multi_absolute(self):
-        sampling = self.sampling
         spectra_class = self.spectra_class
         spectra_df = self.spectra
-        legend = self.legend
         fig, ax = plt.subplots(figsize=(16, 9))
-        num_colors = len(spectra_df)
         for index, spectrum in spectra_df.iterrows():
             x, y, e = self._get_inputs(spectrum)
             ax.plot(x, y, lw=2, alpha=0.95, label=spectrum.source_id)
@@ -42,7 +39,7 @@ class MultiAbsolutePlotter(Plotter):
     def _plot(self):
         n_spectra = len(self.spectra)
         if self.show_plot and self.legend and n_spectra > self.max_spectra_on_multi:
-                raise ValueError(f'The legend can only be shown for a list of spectra no longer than {self.max_spectra_on_multi} elements. Try setting legend to False or retry with a shorter list.')
+            raise ValueError(f'The legend can only be shown for a list of spectra no longer than {self.max_spectra_on_multi} elements. Try setting legend to False or retry with a shorter list.')
         fig, ax = self._plot_multi_absolute()
         if self.output_path:
             self._save_figure(self.output_path, self.file_name, self.format)

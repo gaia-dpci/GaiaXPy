@@ -1,3 +1,3 @@
-from os import path
+from os.path import abspath, dirname, join
 
-files_path = path.abspath(path.join(path.dirname(__file__)))
+files_path = abspath(join(dirname(__file__)))

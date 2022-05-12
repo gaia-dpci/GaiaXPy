@@ -26,7 +26,8 @@ config_df = load_config(config_file)
 continuous_path = join(files_path, 'xp_continuous')
 input_file = join(continuous_path, 'XP_CONTINUOUS_RAW_votable_plain_dr3int6.xml')
 converter_solution_path = join(files_path, 'converter_solution')
-converter_solution_df = pd.read_csv(join(converter_solution_path, 'converter_solution_0_60_481.csv'), float_precision='round_trip')
+converter_solution_df = pd.read_csv(join(converter_solution_path, 'converter_solution_0_60_481.csv'),
+                                    float_precision='round_trip')
 columns_to_parse = ['flux', 'flux_error']
 converter_solution_df = df_columns_to_array(converter_solution_df, columns_to_parse)
 missing_band_solution = join(converter_solution_path, 'missing_band_default_sampling_solution.csv')
@@ -51,6 +52,7 @@ ref_sampled, _ = sampled_parser.parse(ref_sampled_csv)
 ref_sampled_truncated, _ = sampled_parser.parse(ref_sampled_truncated_csv)
 
 TOL = 4
+
 
 class TestGetMethods(unittest.TestCase):
 

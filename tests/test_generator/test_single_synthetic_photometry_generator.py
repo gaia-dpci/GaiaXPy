@@ -14,6 +14,7 @@ correlation_xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_dr3
 
 photometric_system_johnson = PhotometricSystem.JKC
 
+
 class TestSingleSyntheticPhotometryGeneratorCSV(unittest.TestCase):
 
     def test_generate_johnson(self):
@@ -26,12 +27,12 @@ class TestSingleSyntheticPhotometryGeneratorCSV(unittest.TestCase):
             save_file=False)
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
-        self.assertTrue(list(synthetic_photometry.columns) == ['source_id', \
-        f'{label}_mag_U', f'{label}_mag_B', f'{label}_mag_V', f'{label}_mag_R', \
-        f'{label}_mag_I', f'{label}_flux_U', f'{label}_flux_B', f'{label}_flux_V', \
-        f'{label}_flux_R', f'{label}_flux_I', f'{label}_flux_error_U', \
-        f'{label}_flux_error_B', f'{label}_flux_error_V', f'{label}_flux_error_R', \
-        f'{label}_flux_error_I'])
+        self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
+                        f'{label}_mag_U', f'{label}_mag_B', f'{label}_mag_V', f'{label}_mag_R',
+                        f'{label}_mag_I', f'{label}_flux_U', f'{label}_flux_B', f'{label}_flux_V',
+                        f'{label}_flux_R', f'{label}_flux_I', f'{label}_flux_error_U',
+                        f'{label}_flux_error_B', f'{label}_flux_error_V', f'{label}_flux_error_R',
+                        f'{label}_flux_error_I'])
 
 
 class TestSingleSyntheticPhotometryGeneratorFITS(unittest.TestCase):
@@ -46,11 +47,12 @@ class TestSingleSyntheticPhotometryGeneratorFITS(unittest.TestCase):
             save_file=False)
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
-        self.assertTrue(list(synthetic_photometry.columns) == ['source_id', \
-        f'{label}_mag_U', f'{label}_mag_B', f'{label}_mag_V', f'{label}_mag_R', \
-        f'{label}_mag_I', f'{label}_flux_U', f'{label}_flux_B', f'{label}_flux_V', \
-        f'{label}_flux_R', f'{label}_flux_I', f'{label}_flux_error_U', f'{label}_flux_error_B', \
-        f'{label}_flux_error_V', f'{label}_flux_error_R', f'{label}_flux_error_I'])
+        self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
+                        f'{label}_mag_U', f'{label}_mag_B', f'{label}_mag_V', f'{label}_mag_R',
+                        f'{label}_mag_I', f'{label}_flux_U', f'{label}_flux_B', f'{label}_flux_V',
+                        f'{label}_flux_R', f'{label}_flux_I', f'{label}_flux_error_U', f'{label}_flux_error_B',
+                        f'{label}_flux_error_V', f'{label}_flux_error_R', f'{label}_flux_error_I'])
+
 
 class TestSyntheticPhotometryGeneratorXML(unittest.TestCase):
 
@@ -64,11 +66,11 @@ class TestSyntheticPhotometryGeneratorXML(unittest.TestCase):
             save_file=False)
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
-        self.assertTrue(list(synthetic_photometry.columns) == ['source_id', \
-        f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r', f'{label}_mag_i', \
-        f'{label}_mag_z', f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r', \
-        f'{label}_flux_i', f'{label}_flux_z', f'{label}_flux_error_u', f'{label}_flux_error_g', \
-        f'{label}_flux_error_r', f'{label}_flux_error_i', f'{label}_flux_error_z'])
+        self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
+                        f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r', f'{label}_mag_i',
+                        f'{label}_mag_z', f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r',
+                        f'{label}_flux_i', f'{label}_flux_z', f'{label}_flux_error_u', f'{label}_flux_error_g',
+                        f'{label}_flux_error_r', f'{label}_flux_error_i', f'{label}_flux_error_z'])
 
 
 class TestSyntheticPhotometryGeneratorAVRO(unittest.TestCase):
@@ -83,8 +85,8 @@ class TestSyntheticPhotometryGeneratorAVRO(unittest.TestCase):
             save_file=False)
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
-        self.assertTrue(list(synthetic_photometry.columns) == ['source_id', \
-        f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r', f'{label}_mag_i', \
-        f'{label}_mag_z', f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r', \
-        f'{label}_flux_i', f'{label}_flux_z', f'{label}_flux_error_u', f'{label}_flux_error_g', \
-        f'{label}_flux_error_r', f'{label}_flux_error_i', f'{label}_flux_error_z'])
+        self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
+                        f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r', f'{label}_mag_i',
+                        f'{label}_mag_z', f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r',
+                        f'{label}_flux_i', f'{label}_flux_z', f'{label}_flux_error_u', f'{label}_flux_error_g',
+                        f'{label}_flux_error_r', f'{label}_flux_error_i', f'{label}_flux_error_z'])

@@ -36,16 +36,13 @@ type_map = {'source_id': dtype('int64'),
             'bp_basis_function_id': dtype('int64'),
             'rp_chi_squared': dtype('float64'),
             'bp_chi_squared': dtype('float64'),
-            'rp_basis_function_id': dtype('int64'),
-            'bp_basis_function_id': dtype('int64'),
-            'rp_coefficient_errors': dtype('O'),
-            'bp_coefficient_errors': dtype('O'),
             'rp_coefficient_errors': dtype('O'),
             'bp_coefficient_errors': dtype('O'),
             'rp_coefficient_correlations': dtype('O'),
             'bp_coefficient_correlations': dtype('O'),
             'rp_relative_shrinking': dtype('float64'),
             'bp_relative_shrinking': dtype('float64')}
+
 
 def _cast(df):
     """
@@ -58,12 +55,12 @@ def _cast(df):
         try:
             df[column] = df[column].astype(type_map[column])
         except KeyError:
-            continue # Not every key is available in every case
+            continue  # Not every key is available in every case
         except ValueError as err:
             if np.isnan(np.sum(df[column].values)):
-                pass # There can be nan values, do nothing with them at this step
+                pass  # There can be nan values, do nothing with them at this step
             else:
-                print(f'Error casting input data: {err}') # This is an actual error
+                print(f'Error casting input data: {err}')  # This is an actual error
         except MaskError:
             continue
     return df

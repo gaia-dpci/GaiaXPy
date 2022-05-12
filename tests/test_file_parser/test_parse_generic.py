@@ -43,8 +43,6 @@ class TestParser(unittest.TestCase):
         self.assertEqual(parser.get_parser('xml'), parser._parse_xml)
 
     def test_parse_incorrect_format(self):
-        #with self.assertRaises(DataMismatchError):
-        #    parser._parse_csv(fits_file)
         with self.assertRaises(DataMismatchError):
             parser._parse_fits(csv_file)
         with self.assertRaises(DataMismatchError):

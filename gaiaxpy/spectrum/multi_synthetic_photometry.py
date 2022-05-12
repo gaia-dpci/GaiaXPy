@@ -6,8 +6,10 @@ Module to represent a synthetic photometry in multiple photometric systems.
 
 import pandas as pd
 
+
 def _flatten_list(lst):
     return [item for sublist in lst for item in sublist]
+
 
 def _generate_variables(photometries):
     # A photometry corresponds to the photometry of a single source id in all the different systems
@@ -16,8 +18,10 @@ def _generate_variables(photometries):
     flux_errors = [[photometry.error for photometry in multi_photometry] for multi_photometry in photometries]
     return mags, fluxes, flux_errors
 
+
 def _get_source_ids(photometries):
     return [photometry[0].source_id for photometry in photometries]
+
 
 class MultiSyntheticPhotometry(object):
     """
@@ -73,7 +77,8 @@ class MultiSyntheticPhotometry(object):
                 for band in bands:
                     dict_keys.append(f'{system}_{name}_{band}')
             return dict_keys
-        system_bands_tuples = [(phot_system.get_system_label(), phot_system.get_bands()) for phot_system in self.photometric_system]
+        system_bands_tuples = [(phot_system.get_system_label(), phot_system.get_bands())
+                                for phot_system in self.photometric_system]
         keys_list = _build_dict_keys(system_bands_tuples, name)
         values = _flatten_list(values)
         return {key: value for key, value in zip(keys_list, values)}

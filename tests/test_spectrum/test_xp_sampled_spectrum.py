@@ -4,7 +4,7 @@ from configparser import ConfigParser
 from os import path
 from gaiaxpy.config import config_path
 from gaiaxpy.converter import get_design_matrices, get_unique_basis_ids, load_config
-from gaiaxpy.file_parser import InternalContinuousParser, InternalSampledParser
+from gaiaxpy.file_parser import InternalContinuousParser
 from gaiaxpy.spectrum import _correlation_to_covariance_dr3int5, XpContinuousSpectrum, \
                              XpSampledSpectrum, SampledSpectrum, XpSpectrum, Spectrum
 from gaiaxpy.core.satellite import BANDS

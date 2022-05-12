@@ -164,11 +164,13 @@ def populate_design_matrix(sampling_grid, config):
 
     return bases_transformation.dot(design_matrix.T)
 
+
 def _evaluate_hermite_function(n, x, w):
     if w > 0:
         return _hermite_function(n, x)
     else:
         return 0
+
 
 @functools.lru_cache(maxsize=128)
 def _hermite_function(n, x):

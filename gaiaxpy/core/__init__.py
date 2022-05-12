@@ -9,4 +9,4 @@ from .config import _load_xpmerge_from_csv, _load_offset_from_csv, \
     _load_xpsampling_from_csv, _load_xpzeropoint_from_csv
 
 from . import dispersion_function
-from .dispersion_function import pwl_to_wl, wl_to_pwl
+from .dispersion_function import pwl_to_wl, wl_to_pwl, pwl_range, wl_range

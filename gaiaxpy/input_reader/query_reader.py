@@ -3,6 +3,7 @@ from .dataframe_reader import DataFrameReader
 
 not_supported_functions = ['apply_colour_equation']
 
+
 class QueryReader(object):
 
     def __init__(self, content, function):
@@ -17,10 +18,11 @@ class QueryReader(object):
         # Connect to geapre
         gaia = GaiaClass(gaia_tap_server='https://geapre.esac.esa.int/', gaia_data_server='https://geapre.esac.esa.int/')
         gaia.login()
-        #ADQL query
+        # ADQL query
         job = gaia.launch_job_async(query, dump_to_file=False)
         ids = job.get_results()
-        result = gaia.load_data(ids=ids['source_id'], format='csv', data_release=data_release, data_structure='raw', retrieval_type='XP_CONTINUOUS', avoid_datatype_check=True)
+        result = gaia.load_data(ids=ids['source_id'], format='csv', data_release=data_release,
+                                data_structure='raw', retrieval_type='XP_CONTINUOUS', avoid_datatype_check=True)
         try:
             continuous_key = [key for key in result.keys() if 'continuous' in key.lower()][0]
             data = result[continuous_key][0].to_pandas()

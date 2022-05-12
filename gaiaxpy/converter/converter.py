@@ -23,6 +23,7 @@ config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
 config_file = path.join(config_path, config_parser.get('converter', 'optimised_bases'))
 
+
 def convert(
         input_object,
         sampling=np.linspace(
@@ -88,6 +89,7 @@ def convert(
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return spectra_df, positions
 
+
 def _create_continuous_spectrum(row, band):
     covariance_matrix = _get_covariance_matrix(row, band)
     if covariance_matrix is not None:
@@ -98,6 +100,7 @@ def _create_continuous_spectrum(row, band):
             covariance_matrix,
             row[f'{band}_standard_deviation'])
         return continuous_spectrum
+
 
 def _create_spectrum(row, truncation, design_matrices, band):
     """
@@ -135,6 +138,7 @@ def _create_spectrum(row, truncation, design_matrices, band):
         truncation=recommended_truncation)
     return spectrum
 
+
 def _create_spectra(parsed_input_data, truncation, design_matrices):
     """
     Internal wrapper function. Allows _create_spectrum to use the generic
@@ -142,6 +146,7 @@ def _create_spectra(parsed_input_data, truncation, design_matrices):
     """
     spectra_list = []
     nrows = len(parsed_input_data)
+
     @_progress_tracker
     def create_spectrum(row, truncation, *args):
         design_matrices = args[0]
@@ -155,6 +160,7 @@ def _create_spectra(parsed_input_data, truncation, design_matrices):
     for index, row in parsed_input_data.iterrows():
         create_spectrum(row, truncation, design_matrices, index, nrows)
     return spectra_list
+
 
 def get_unique_basis_ids(parsed_input_data):
     """
@@ -174,6 +180,7 @@ def get_unique_basis_ids(parsed_input_data):
     set_bp = set([basis for basis in parsed_input_data[f'{BANDS.bp}_basis_function_id'] if isinstance(basis, numbers.Number)])
     set_rp = set([basis for basis in parsed_input_data[f'{BANDS.rp}_basis_function_id'] if isinstance(basis, numbers.Number)])
     return remove_nans(set_bp).union(remove_nans(set_rp))
+
 
 def get_design_matrices(unique_bases_ids, sampling, config_df):
     """

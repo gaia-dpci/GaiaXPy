@@ -6,6 +6,7 @@ Module to hold methods useful for different kinds of spectra.
 
 import numpy as np
 
+
 def _get_covariance_matrix(row, band):
     try:
         return _correlation_to_covariance_dr3int5(
@@ -19,6 +20,7 @@ def _get_covariance_matrix(row, band):
         except BaseException:
             # Row may not be present
             return None
+
 
 def _correlation_to_covariance_dr3int5(
         correlation_matrix,
@@ -42,6 +44,7 @@ def _correlation_to_covariance_dr3int5(
     covariance_matrix = diagonal_errors.dot(
         correlation_matrix).dot(diagonal_errors)
     return covariance_matrix
+
 
 def _correlation_to_covariance_dr3int4(
         correlation_matrix,
@@ -73,6 +76,7 @@ def _correlation_to_covariance_dr3int4(
         correlation_matrix_aux).dot(diagonal_errors)
     return covariance_matrix
 
+
 def _correlation_to_covariance_dr3int3(
         correlation_matrix,
         formal_errors,
@@ -93,6 +97,7 @@ def _correlation_to_covariance_dr3int3(
     covariance_matrix = diagonal_errors.dot(
         correlation_matrix).dot(diagonal_errors)
     return covariance_matrix
+
 
 def _list_to_array(lst):
     """

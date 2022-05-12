@@ -21,7 +21,8 @@ config_parser.read(path.join(config_path, 'config.ini'))
 
 class SyntheticPhotometryGenerator(object):
 
-    def _generate(input_object, photometric_system, output_file, output_format, save_file, bp_model='v375wi', rp_model='v142r'):
+    def _generate(input_object, photometric_system, output_file, output_format, save_file,
+                  bp_model='v375wi', rp_model='v142r'):
         raise ValueError('Method not defined for base class.')
 
     def _get_sampled_basis_functions(self, xp_sampling, xp_sampling_grid):
@@ -34,6 +35,7 @@ class SyntheticPhotometryGenerator(object):
     def _create_photometry_list(self, parsed_input_data, photometric_system, sampled_basis_func, xp_merge):
         photometry_list = []
         nrows = len(parsed_input_data)
+
         @_progress_tracker
         def generate_synthetic_photometry(row, *args):
             sampled_basis_func, xp_merge, photometric_system = args[0], args[1], args[2]
@@ -43,6 +45,7 @@ class SyntheticPhotometryGenerator(object):
         for index, row in parsed_input_data.iterrows():
             generate_synthetic_photometry(row, sampled_basis_func, xp_merge, photometric_system, index, nrows)
         return photometry_list
+
 
 def _generate_synthetic_photometry(
         row,

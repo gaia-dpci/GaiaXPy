@@ -1,10 +1,13 @@
 from gaiaxpy.file_parser import ExternalParser, InternalContinuousParser
 
+
 def external():
     return ExternalParser()
 
+
 def internal_continuous():
     return InternalContinuousParser()
+
 
 def raise_error():
     raise ValueError('File parser not implemented. This function cannot receive a file as input.')

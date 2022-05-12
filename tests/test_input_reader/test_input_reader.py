@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 import pandas.testing as pdt
-from gaiaxpy import calibrate, convert, generate
+from gaiaxpy import convert
 from gaiaxpy.input_reader import InputReader
 from gaiaxpy.file_parser import InternalContinuousParser
 from tests.files import files_path

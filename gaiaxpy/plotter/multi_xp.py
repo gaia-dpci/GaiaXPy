@@ -8,6 +8,7 @@ from .plotter import Plotter
 from gaiaxpy.core.satellite import BANDS
 import matplotlib.pyplot as plt
 
+
 class MultiXpPlotter(Plotter):
 
     def _plot_multi_xp(self):

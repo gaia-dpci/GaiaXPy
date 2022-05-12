@@ -1,2 +1,2 @@
 from . import paths
-from .paths import *
+from .paths import files_path

@@ -28,7 +28,6 @@ class TestErrorCorrection(unittest.TestCase):
                         correlation_csv_file,
                         photometric_system=phot_list,
                         save_file=False)
-        error_columns = [column for column in multi_synthetic_photometry if '_error' in column]
         corrected_multiphotometry = apply_error_correction(multi_synthetic_photometry, save_file=False)
         # Load solution
         corrected_multiphotometry_solution = pd.read_csv(corrected_errors_solution_path, float_precision='round_trip')
@@ -44,7 +43,7 @@ class TestErrorCorrection(unittest.TestCase):
         # Extract Halpha columns from the original photometry
         halpha_columns = [column for column in multi_synthetic_photometry.columns if column.startswith('HalphaCustomAb_')]
         corrected_multiphotometry = apply_error_correction(multi_synthetic_photometry, save_file=False)
-        halpha_photometry = multi_synthetic_photometry[halpha_columns] # The results for this system should not change
+        halpha_photometry = multi_synthetic_photometry[halpha_columns]  # The results for this system should not change
         # Load solution
         corrected_multiphotometry_solution = pd.read_csv(corrected_errors_solution_path, float_precision='round_trip')
         hst_columns = [column for column in corrected_multiphotometry_solution.columns if column.startswith('HstHugsStd_')]

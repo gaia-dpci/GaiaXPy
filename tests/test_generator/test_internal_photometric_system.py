@@ -6,9 +6,9 @@ from gaiaxpy.generator import InternalPhotometricSystem
 from os.path import join
 from tests.files import files_path
 
-phot_systems_specs = pd.read_csv(join(files_path, 'PhotometricSystemSpecs.csv'), \
-                                 converters={'bands': lambda x: x[1:-1].split(','), \
-                                 'zero_points': lambda y: np.array(y[1:-1].split(',')).astype(float)}, \
+phot_systems_specs = pd.read_csv(join(files_path, 'PhotometricSystemSpecs.csv'),
+                                 converters={'bands': lambda x: x[1:-1].split(','),
+                                 'zero_points': lambda y: np.array(y[1:-1].split(',')).astype(float)},
                                  float_precision='round_trip')
 
 # An InternalPhotometricSystem is created from a label, not from a name (i.e from GaiaDr3Ab, not from GAIA_DR3_AB)

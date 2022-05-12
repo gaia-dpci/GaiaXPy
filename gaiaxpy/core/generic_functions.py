@@ -11,9 +11,11 @@ from numbers import Number
 from numpy import ndarray
 from string import capwords
 
+
 def _validate_pwl_sampling(sampling):
     # Receives a numpy array. Validates sampling in pwl.
-    min_sampling_value = -10; max_sampling_value = 70
+    min_sampling_value = -10
+    max_sampling_value = 70
     if sampling is None:
         raise ValueError("Sampling can't be None.")
     if len(sampling) == 0:
@@ -25,12 +27,15 @@ def _validate_pwl_sampling(sampling):
     sorted_sampling = np.sort(sampling)
     if not np.array_equal(sampling, sorted_sampling):
         raise ValueError('Sampling must be in ascendent order.')
-    min_value = sampling[0]; max_value = sampling[-1]
+    min_value = sampling[0]
+    max_value = sampling[-1]
     if min_value < min_sampling_value or max_value > max_sampling_value:
         raise ValueError(f'Wrong value for sampling. Sampling accepts an array of values where the minimum value is {min_sampling_value} and the maximum is {max_sampling_value}.')
 
+
 def _validate_wl_sampling(sampling):
-    min_value = 330; max_value = 1050
+    min_value = 330
+    max_value = 1050
     # Check sampling
     if sampling is not None:
         if sampling[0] >= sampling[-1]:
@@ -38,8 +43,10 @@ def _validate_wl_sampling(sampling):
         elif sampling[0] < min_value or sampling[-1] > max_value:
             raise ValueError(f'Wrong value for sampling. Sampling accepts an array of values where the minimum value is {min_value} and the maximum is {max_value}.')
 
+
 def _warning(message):
     print(f'UserWarning: {message}', file=sys.stderr)
+
 
 def _validate_arguments(default_output_file, given_output_file, save_file):
     if save_file and not isinstance(save_file, bool):
@@ -48,15 +55,18 @@ def _validate_arguments(default_output_file, given_output_file, save_file):
     if default_output_file != given_output_file and save_file == False:
         _warning('Argument output_file was given, but save_file is set to False. Set save_file to True to store the output of the function.')
 
+
 def _progress_tracker(func):
     # Progress tracker decorator
     def inner(row, *args):
         if args:
-            index = args[-2]; nrows = args[-1]
+            index = args[-2]
+            nrows = args[-1]
             print('Processing data [{:.0%}]\r'.format((index + 1) / nrows), end="")
             func(row, *args[:-2])
             print(' ' * 30 + '\r', end='')
     return inner
+
 
 def _get_spectra_type(spectra):
     """
@@ -74,6 +84,7 @@ def _get_spectra_type(spectra):
         spectrum = spectra
     return spectrum.__class__
 
+
 def _get_system_label(name):
     """
     Get the label of the photometric system.
@@ -84,6 +95,7 @@ def _get_system_label(name):
     def snake_to_pascal(word):
         return capwords(word.replace("_", " ")).replace(" ", "")
     return snake_to_pascal(name)
+
 
 # AVRO files include the values in the diagonal, whereas others don't
 def array_to_symmetric_matrix(size, array):
@@ -124,8 +136,8 @@ def array_to_symmetric_matrix(size, array):
         # Input array is already a matrix, we assume that it contains the required values.
         return array
     else:
-        raise TypeError(
-            'Wrong argument types. Must be integer and np.ndarray.')
+        raise TypeError('Wrong argument types. Must be integer and np.ndarray.')
+
 
 def _extract_systems_from_data(data_columns, photometric_system):
     src = 'source_id'
@@ -141,4 +153,3 @@ def _extract_systems_from_data(data_columns, photometric_system):
             photometric_system = [photometric_system]
         systems = [system.get_system_label() for system in photometric_system]
     return systems
-

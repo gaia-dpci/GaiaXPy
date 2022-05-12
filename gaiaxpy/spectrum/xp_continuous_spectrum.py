@@ -107,7 +107,6 @@ class XpContinuousSpectrum(XpSpectrum):
                 a batch of spectra. The array fo positions can be retrieved calling
                 the sampling_to_dict method.
         """
-        n = self.coefficients.size
         D = np.sqrt(np.diag(self.covariance))
         D_inv = np.diag(1.0 / D)
         correlation_matrix = np.matmul(np.matmul(D_inv, self.covariance), D_inv)
@@ -121,6 +120,7 @@ class XpContinuousSpectrum(XpSpectrum):
             'n_parameters': len(self.coefficients),
             'basis_function_id': self.basis_function_id[self.xp]
         }
+
 
 def _extract_lower_triangle(matrix):
     '''

@@ -9,8 +9,7 @@ import pandas as pd
 from fastavro import parse_schema, writer
 from pathlib import Path
 from astropy.io import fits
-from astropy.io.votable.tree import Field, Param, ParamRef, Resource, \
-                                    Table, VOTableFile
+from astropy.io.votable.tree import Field, Param, Resource, Table, VOTableFile
 from fastavro.validation import validate_many
 from os.path import join
 from numpy import ndarray
@@ -58,6 +57,7 @@ class SampledSpectraData(OutputData):
             output_path = join(output_path, f'{output_file}_sampling.avro')
             with open(output_path, 'wb') as output:
                 writer(output, parsed_schema, sampling)
+
         def _generate_avro_schema(spectra_dicts):
             """
             Generate the AVRO schema required to store the output.
@@ -76,6 +76,7 @@ class SampledSpectraData(OutputData):
                 'flux': 'string',
                 'flux_error': 'string'
             }
+
             def build_field(keys):
                 fields = []
                 for key in keys:
@@ -163,7 +164,7 @@ class SampledSpectraData(OutputData):
         data = self.data
         positions = self.positions
         # Get length of flux (should be the same as length of error)
-        flux_format = f"{len(positions)}E" # E: single precision floating
+        flux_format = f"{len(positions)}E"  # E: single precision floating
         # Define formats for each type according to FITS
         column_formats = {
             'source_id': 'K',
@@ -205,20 +206,22 @@ class SampledSpectraData(OutputData):
         """
         def _create_params(votable, sampling):
             column = 'sampling'
-            params = [Param(votable, name=column, ID=f'_{column}', ucd='em.wl', \
+            params = [Param(votable, name=column, ID=f'_{column}', ucd='em.wl',
                       datatype='double', arraysize='*', value=list(sampling))]
             return params
+
         def _create_fields(votable, spectra_df):
             len_flux = str(len(spectra_df['flux'].iloc[0]))
             len_error = str(len(spectra_df['flux_error'].iloc[0]))
             fields_datatypes = {'source_id': 'long', 'xp': 'char', 'flux': 'double', 'flux_error': 'double'}
             fields_arraysize = {'source_id': '', 'xp': '2', 'flux': len_flux, 'flux_error': len_error}
             fields_ID = {'source_id': None, 'xp': '_xp', 'flux': '_flux', 'flux_error': '_flux_error'}
-            fields_ucd = {'source_id': 'meta.id;meta.main', 'xp': 'temp', 'flux': 'phot.flux', 'flux_error': 'stat.error;phot.flux'}
-            fields = [Field(votable, name=column, ucd=fields_ucd[column], ID=fields_ID[column], \
-                     datatype=fields_datatypes[column], arraysize=fields_arraysize[column])
-                     if fields_arraysize[column] != '' else Field(votable, name=column, \
-                     datatype=fields_datatypes[column]) for column in spectra_df.columns]
+            fields_ucd = {'source_id': 'meta.id;meta.main', 'xp': 'temp', 'flux': 'phot.flux',
+                          'flux_error': 'stat.error;phot.flux'}
+            fields = [Field(votable, name=column, ucd=fields_ucd[column], ID=fields_ID[column],
+                            datatype=fields_datatypes[column], arraysize=fields_arraysize[column])
+                            if fields_arraysize[column] != '' else Field(votable, name=column,
+                            datatype=fields_datatypes[column]) for column in spectra_df.columns]
             return fields
         spectra_df = self.data
         positions = list(self.positions)

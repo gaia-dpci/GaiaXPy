@@ -15,10 +15,12 @@ from gaiaxpy.core import array_to_symmetric_matrix
 # Avoid warning, false positive
 pd.options.mode.chained_assignment = None
 
-valid_extensions = ['avro', 'csv','ecsv', 'fits', 'xml']
+valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']
+
 
 def _raise_key_error(column):
     raise KeyError(f'The columns in the input data do not match the expected ones. Missing column {column}.')
+
 
 class DataMismatchError(RuntimeError):
     """
@@ -156,7 +158,7 @@ class GenericParser(object):
                         df[values_column][index] = array_to_symmetric_matrix(
                             df[size_column][index].astype(int), row[values_column])
                     # Value can be NaN when a band is not present
-                    except IndexError as err:
+                    except IndexError:
                         continue
         return df
 
@@ -193,6 +195,7 @@ class GenericParser(object):
                 votable_as_list.append(row)
                 return pd.DataFrame(votable_as_list, columns=columns)
         return votable.to_pandas()
+
 
 def _get_file_extension(file_path):
     """

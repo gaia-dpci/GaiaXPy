@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import xml.etree.ElementTree as et
 
+
 def parse_configuration_file(xml_file, columns):
     """
     Parse the input XML file and store the result in a pandas DataFrame with the given columns.
@@ -53,6 +54,7 @@ def parse_configuration_file(xml_file, columns):
                          for i, _ in enumerate(columns)})
     return pd.DataFrame(rows, columns=columns)
 
+
 def load_config(path):
     """
     Load the configuration for the converter functionality.
@@ -70,6 +72,7 @@ def load_config(path):
                                      'normalizedRange',
                                      'transformedSetDimension',
                                      'transformationMatrix'])
+
 
 def get_config(config, id):
     """

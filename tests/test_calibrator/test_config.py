@@ -1,10 +1,7 @@
 import unittest
 import numpy as np
 import numpy.testing as npt
-from configparser import ConfigParser
 from numpy import ndarray
-from os import path
-from gaiaxpy.config import config_path
 from gaiaxpy.core import _load_xpmerge_from_csv, _load_offset_from_csv, \
                          _load_xpsampling_from_csv, _load_xpzeropoint_from_csv
 
@@ -44,7 +41,7 @@ class TestConfig(unittest.TestCase):
         system_value = 'SdssStd'
         xp_offset = _load_offset_from_csv(system_value)
         self.assertIsInstance(xp_offset, ndarray)
-        npt.assert_array_equal(xp_offset, np.array([1.05000e-31,2.47850e-32,3.49926e-32,3.80023e-32,3.23519e-32]))
+        npt.assert_array_equal(xp_offset, np.array([1.05000e-31, 2.47850e-32, 3.49926e-32, 3.80023e-32, 3.23519e-32]))
 
         system_value = 'StromgrenStd'
         xp_offset = _load_offset_from_csv(system_value)
@@ -55,8 +52,8 @@ class TestConfig(unittest.TestCase):
         # Non-standard system has not got an offset file.
         system_value = 'Jkc'
         with self.assertRaises(ValueError):
-            xp_offset = _load_offset_from_csv(system_value)
+            _load_offset_from_csv(system_value)
 
         system_value = 'Gaia_2'
         with self.assertRaises(ValueError):
-            xp_offset = _load_offset_from_csv(system_value)
+            _load_offset_from_csv(system_value)

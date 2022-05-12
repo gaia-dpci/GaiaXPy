@@ -1,7 +1,6 @@
 import unittest
 import numpy as np
 import pandas as pd
-from numpy import testing as npt
 from pandas import testing as pdt
 from numpy import ndarray
 from gaiaxpy import calibrate
@@ -21,7 +20,7 @@ parser = InternalContinuousParser()
 
 # Load variables
 label = 'calibrator'
-bp_model = 'v211w' # Alternative bp model
+bp_model = 'v211w'  # Alternative bp model
 xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(label, bp_model=bp_model)
 xp_design_matrices = _load_xpsampling_from_csv(label, bp_model=bp_model)
 
@@ -50,10 +49,13 @@ solution_default_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution
 solution_custom_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_custom.csv'), float_precision='round_trip')
 
 # Load solution files, v211w model
-solution_v211w_default_sampling = pos_file_to_array(join(calibrator_sol_path, 'calibrator_solution_v211w_default_sampling.csv'))
+solution_v211w_default_sampling = pos_file_to_array(join(calibrator_sol_path,
+                                                         'calibrator_solution_v211w_default_sampling.csv'))
 solution_v211w_custom_sampling = pos_file_to_array(join(calibrator_sol_path, 'calibrator_solution_v211w_custom_sampling.csv'))
-solution_v211w_default_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_v211w_default.csv'), float_precision='round_trip')
-solution_v211w_custom_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_v211w_custom.csv'), float_precision='round_trip')
+solution_v211w_default_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_v211w_default.csv'),
+                                        float_precision='round_trip')
+solution_v211w_custom_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_v211w_custom.csv'),
+                                       float_precision='round_trip')
 
 # Parse arrays in solution_df
 columns_to_parse = ['flux', 'flux_error']

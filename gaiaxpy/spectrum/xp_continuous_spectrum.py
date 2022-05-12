@@ -10,6 +10,7 @@ import numpy as np
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
 
+
 class XpContinuousSpectrum(XpSpectrum):
     """
     A Gaia BP/RP spectrum represented as a continuous function defined as
@@ -120,7 +121,6 @@ class XpContinuousSpectrum(XpSpectrum):
             'n_parameters': len(self.coefficients),
             'basis_function_id': self.basis_function_id[self.xp]
         }
-
 
 def _extract_lower_triangle(matrix):
     '''

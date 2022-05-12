@@ -79,7 +79,6 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
                 significant bases is optional. By default, no truncation will be applied,
                 i.e. all bases will be used.
         """
-
         if isinstance(truncation, (int, np.int64)) and truncation > 0:
             coefficients = continuous_spectrum.get_coefficients()[:truncation]
             covariance = continuous_spectrum.get_covariance()[

@@ -1,4 +1,4 @@
-gaiaxpy.output package
+Output
 ======================
 
 .. automodule:: gaiaxpy.output

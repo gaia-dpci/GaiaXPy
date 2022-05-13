@@ -1,4 +1,4 @@
-gaiaxpy.core package
+Core
 ====================
 
 .. automodule:: gaiaxpy.core

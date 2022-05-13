@@ -1,4 +1,4 @@
-gaiaxpy.colour\_equation package
+Colour equation
 ================================
 
 .. automodule:: gaiaxpy.colour_equation
@@ -9,7 +9,7 @@ gaiaxpy.colour\_equation package
 Submodules
 ----------
 
-gaiaxpy.colour\_equation.xp\_filter\_system\_colour\_equation module
+xp\_filter\_system\_colour\_equation module
 --------------------------------------------------------------------
 
 .. automodule:: gaiaxpy.colour_equation.xp_filter_system_colour_equation

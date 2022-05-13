@@ -1,4 +1,4 @@
-gaiaxpy package
+GaiaXPy API
 ===============
 
 .. automodule:: gaiaxpy
@@ -13,7 +13,6 @@ Subpackages
    :maxdepth: 4
 
    gaiaxpy.calibrator
-   gaiaxpy.colour_equation
    gaiaxpy.config
    gaiaxpy.converter
    gaiaxpy.core

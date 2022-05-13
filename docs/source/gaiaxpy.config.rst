@@ -1,4 +1,4 @@
-gaiaxpy.config package
+Config
 ======================
 
 .. automodule:: gaiaxpy.config

@@ -1,4 +1,4 @@
-gaiaxpy.file\_parser package
+File parser
 ============================
 
 .. automodule:: gaiaxpy.file_parser

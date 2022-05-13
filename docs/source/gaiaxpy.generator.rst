@@ -1,4 +1,4 @@
-gaiaxpy.generator package
+Generator
 =========================
 
 .. automodule:: gaiaxpy.generator

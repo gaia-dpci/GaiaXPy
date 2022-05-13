@@ -165,7 +165,18 @@ def _get_correction(systems_details, colour, system_label):
 def apply_colour_equation(input_synthetic_photometry, photometric_system=None, output_path='.',
                           output_file='corrected_photometry', output_format=None, save_file=True):
     """
-    Apply the available colour correction for the input photometric system(s).
+    Apply the available colour correction to the input photometric system(s).
+
+    Args:
+        input_synthetic_photometry (DataFrame): Input photometry as returned by GaiaXPy's generator.
+        photometric_system (PhotometricSystem, list of PhotometricSystem): The photometric systems over which to apply the equations.
+        output_path (str): The path of the output file.
+        output_file (str): The name of the output file.
+        output_format (str): The format of the output file (csv, fits, xml).
+        save_file (bool): Whether to save the output file.
+
+    Returns:
+        DataFrame: The input photometry with colour equations applied if it corresponds.
     """
     function = apply_colour_equation  # Being able to extract the name of the current function would be ideal.
     _validate_arguments(function.__defaults__[2], output_file, save_file)

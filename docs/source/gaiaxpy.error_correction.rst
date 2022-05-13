@@ -1,4 +1,4 @@
-gaiaxpy.error\_correction package
+Error correction
 =================================
 
 .. automodule:: gaiaxpy.error_correction

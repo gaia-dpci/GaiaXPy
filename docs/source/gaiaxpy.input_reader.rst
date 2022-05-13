@@ -1,4 +1,4 @@
-gaiaxpy.input\_reader package
+Input reader
 =============================
 
 .. automodule:: gaiaxpy.input_reader

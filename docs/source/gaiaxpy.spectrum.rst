@@ -1,4 +1,4 @@
-gaiaxpy.spectrum package
+Spectrum
 ========================
 
 .. automodule:: gaiaxpy.spectrum

@@ -198,7 +198,7 @@ html_show_sourcelink = False
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'GaiaXPy.tex', u'GaiaXPy Documentation',
-     u'Francesca De Angeli, Lovro Palaversa, Daniela Ruz-Mieres', 'manual'),
+     u'Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres', 'manual'),
 ]
 
 

@@ -1,4 +1,4 @@
-gaiaxpy
+GaiaXPy
 =======
 
 .. toctree::

@@ -12,10 +12,9 @@ import os
 import sys
 import numpy as np
 import sphinx_rtd_theme
-from gaiaxpy import __version__
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.append('gaiaxpy')
-
+from gaiaxpy import __version__
 
 def parse_linspace(values):
     array = np.fromstring(values, sep=',')

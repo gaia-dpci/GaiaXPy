@@ -1,16 +1,56 @@
 Installation
 ============
 
-GaiaXPy is not currently available through a package manager, and therefore needs to be manually installed.
+GaiaXPy works with Python 3 and is **not** available through a package manager yet, but is expected to be available through PyPI in the near future.
 
-To install GaiaXPy, Python3 is required, and it is recommended to create a virtual environment first:
+---------
+From PyPI
+---------
+
+To install GaiaXPy from PyPI, once it's available, simply run:
 
 .. role:: bash(code)
    :language: bash
 
 .. code-block:: sh
 
-    # Move to the package directory
+    pip install GaiaXPy
+
+-----------
+From source
+-----------
+
+To install GaiaXPy from source:
+
+.. role:: bash(code)
+   :language: bash
+
+.. code-block:: sh
+
+    # Clone the repository
+    https://github.com/gaia-dpci/GaiaXPy
+    # Create a virtual environment
+    python3 -m venv .env
+    # Activate the environment
+    source .env/bin/activate
+    # Install package requirements
+    pip install -r requirements.txt
+    # Install the GaiaXPy package in editable mode
+    pip install -e .
+
+
+Installation
+============
+
+GaiaXPy works with Python 3 and is **not** available through a package manager yet, but is expected to be available through PyPI in the near future.
+
+To install GaiaXPy simply run:
+
+.. role:: bash(code)
+   :language: bash
+
+.. code-block:: sh
+
     cd GaiaXPy
     # Create a virtual environment
     python3 -m venv .env

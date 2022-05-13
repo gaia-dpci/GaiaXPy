@@ -4,9 +4,9 @@ BP/RP (often shortened as XP) spectra will become available for the first time i
 
 GaiaXPy is a Python library to facilitate handling Gaia BP/RP spectra as distributed from the Gaia archive.
 
-To learn more about the package click [here](https://ioadpc.ast.cam.ac.uk/examplepydocs/description.html).
+To learn more about the package click [here](https://gaiaxpy.readthedocs.io/en/latest/description.html).
 
-You can also check the [homepage](https://ioadpc.ast.cam.ac.uk/internalpydocs/) for documentation, tutorials, and resources.
+You can also check the [homepage](https://gaia-dpci.github.io/GaiaXPy-website/) for documentation, tutorials, and resources.
 
 ## Licence
 [BSD 3-Clause](https://github.com/gaia-dpci/GaiaXPy/blob/main/LICENCE)

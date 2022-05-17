@@ -107,7 +107,7 @@ def _calibrate(
     """
     _validate_wl_sampling(sampling)
     _validate_arguments(_calibrate.__defaults__[3], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, username, password, _calibrate)._read()
+    parsed_input_data, extension = InputReader(input_object, _calibrate, username, password)._read()
     label = 'calibrator'
 
     xp_design_matrices, xp_merge = _generate_xp_matrices_and_merge(label, sampling, bp_model, rp_model)

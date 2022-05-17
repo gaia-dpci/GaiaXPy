@@ -14,7 +14,9 @@ def generate(
         output_file='output_synthetic_photometry',
         output_format=None,
         save_file=True,
-        error_correction=False):
+        error_correction=False,
+        username=None,
+        password=None):
     """
     Synthetic photometry utility: generates synthetic photometry in a set of
     available systems from the input internally-calibrated
@@ -39,6 +41,8 @@ def generate(
         error_correction (bool): Whether to apply to the photometric errors the tabulated
             factors to mitigate underestimated errors (see Montegriffo et al., 2022, for
             more details).
+        username (str): Cosmos username.
+        password (str): Cosmos password.
 
     Returns:
         DataFrame: A DataFrame of all synthetic photometry results.
@@ -56,7 +60,7 @@ def generate(
     else:
         raise ValueError('Parameter photometric_system must be either a PhotometricSystem or a list.')
     # Load data
-    parsed_input_data, extension = InputReader(input_object, generate)._read()
+    parsed_input_data, extension = InputReader(input_object, generate, username, password)._read()
     gaia_system = PhotometricSystem.Gaia_DR3_Vega
     # Create multi generator
     gaia_initially_in_systems = bool(gaia_system in int_photometric_system)

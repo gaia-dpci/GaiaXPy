@@ -11,7 +11,7 @@ default_extension = 'csv'
 
 class InputReader(object):
 
-    def __init__(self, content, user, password, function):
+    def __init__(self, content, function, user=None, password=None):
         self.content = content
         self.function = function
         self.user = user

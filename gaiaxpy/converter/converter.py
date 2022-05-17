@@ -34,7 +34,9 @@ def convert(
         output_path='.',
         output_file='output_spectra',
         output_format=None,
-        save_file=True):
+        save_file=True,
+        username=None,
+        password=None):
     """
     Conversion utility: converts the input internally calibrated mean
     spectra from the continuous representation to a sampled form. The
@@ -60,6 +62,8 @@ def convert(
             input file.
         save_file (bool): Whether to save the output in a file. If false, output_format
             and output_file are ignored.
+        username (str): Cosmos username.
+        password (str): Cosmos password.
 
     Returns:
         (tuple): tuple containing:
@@ -72,7 +76,7 @@ def convert(
     # Check sampling
     _validate_pwl_sampling(sampling)
     _validate_arguments(convert.__defaults__[3], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, convert)._read()
+    parsed_input_data, extension = InputReader(input_object, convert, username, password)._read()
     config_df = load_config(config_file)
     # Union of unique ids as sets
     unique_bases_ids = get_unique_basis_ids(parsed_input_data)

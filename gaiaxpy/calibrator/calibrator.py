@@ -31,7 +31,9 @@ def calibrate(
         output_path='.',
         output_file='output_spectra',
         output_format=None,
-        save_file=True):
+        save_file=True,
+        username=None,
+        password=None):
     """
     Calibration utility: calibrates the input internally-calibrated
     continuously-represented mean spectra to the absolute system. An absolute
@@ -55,6 +57,8 @@ def calibrate(
             input file.
         save_file (bool): Whether to save the output in a file. If false, output_format
             and output_file are ignored.
+        username (str): Cosmos username.
+        password (str): Cosmos password.
 
     Returns:
         (tuple): tuple containing:
@@ -70,7 +74,9 @@ def calibrate(
         output_path,
         output_file,
         output_format,
-        save_file)
+        save_file,
+        username=username,
+        password=password)
 
 
 def _calibrate(
@@ -82,7 +88,9 @@ def _calibrate(
         output_format=None,
         save_file=True,
         bp_model='v375wi',
-        rp_model='v142r'):
+        rp_model='v142r',
+        username=None,
+        password=None):
     """
     Internal method of the calibration utility. Refer to "calibrate".
 
@@ -99,7 +107,7 @@ def _calibrate(
     """
     _validate_wl_sampling(sampling)
     _validate_arguments(_calibrate.__defaults__[3], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, _calibrate)._read()
+    parsed_input_data, extension = InputReader(input_object, _calibrate, username, password)._read()
     label = 'calibrator'
 
     xp_design_matrices, xp_merge = _generate_xp_matrices_and_merge(label, sampling, bp_model, rp_model)

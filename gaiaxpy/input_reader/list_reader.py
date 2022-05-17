@@ -1,5 +1,6 @@
 from astroquery.gaia import GaiaClass
 from .dataframe_reader import DataFrameReader
+from .archive_reader import ArchiveReader
 
 not_supported_functions = ['apply_colour_equation']
 
@@ -13,14 +14,14 @@ def extremes_are_enclosing(first_row, column):
         return False
 
 
-class ListReader(object):
+class ListReader(ArchiveReader):
 
-    def __init__(self, content, function):
+    def __init__(self, content, function, user, password):
+        super(ListReader, self).__init__(function, user, password)
         if content != []:
             self.content = content
         else:
             raise ValueError('Input list cannot be empty.')
-        self.function = function
 
     def _read(self):
         sources = self.content
@@ -29,7 +30,7 @@ class ListReader(object):
             raise ValueError(f'Function {function_name} does not support receiving a list as input.')
         # Connect to geapre
         gaia = GaiaClass(gaia_tap_server='https://geapre.esac.esa.int/', gaia_data_server='https://geapre.esac.esa.int/')
-        gaia.login()
+        self._login(gaia)
         # ADQL query
         result = gaia.load_data(ids=sources, format='csv', data_release='Gaia DR3_INT6', data_structure='raw',
                                 retrieval_type='XP_CONTINUOUS', avoid_datatype_check=True)

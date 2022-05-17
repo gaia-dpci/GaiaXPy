@@ -81,7 +81,7 @@ class GenericParser(object):
 
         Returns:
             DataFrame: Pandas DataFrame representing the file.
-            str: File extension ('.avro', '.csv', '.fits', or '.xml').
+            str: File extension ('.csv', '.fits', or '.xml').
         """
         extension = _get_file_extension(file_path)
         parser = self.get_parser(extension)

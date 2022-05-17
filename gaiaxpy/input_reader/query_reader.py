@@ -1,14 +1,15 @@
 from astroquery.gaia import GaiaClass
 from .dataframe_reader import DataFrameReader
+from .archive_reader import ArchiveReader
 
 not_supported_functions = ['apply_colour_equation']
 
 
-class QueryReader(object):
+class QueryReader(ArchiveReader):
 
-    def __init__(self, content, function):
+    def __init__(self, content, function, user=None, password=None):
         self.content = content
-        self.function = function
+        super(QueryReader, self).__init__(function, user, password)
 
     def _read(self, data_release='Gaia DR3_INT6'):
         query = self.content
@@ -17,7 +18,7 @@ class QueryReader(object):
             raise ValueError(f'Function {function_name} does not support receiving a query as input.')
         # Connect to geapre
         gaia = GaiaClass(gaia_tap_server='https://geapre.esac.esa.int/', gaia_data_server='https://geapre.esac.esa.int/')
-        gaia.login()
+        self._login(gaia)
         # ADQL query
         job = gaia.launch_job_async(query, dump_to_file=False)
         ids = job.get_results()

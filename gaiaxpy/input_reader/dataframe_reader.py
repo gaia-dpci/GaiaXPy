@@ -1,7 +1,7 @@
 from numpy import ndarray
+from pandas import isnull
 from .dataframe_numpy_array_reader import DataFrameNumPyArrayReader
 from .dataframe_string_array_reader import DataFrameStringArrayReader
-# TODO: move this function to core as it's now used by more than one subpackage
 from gaiaxpy.core import array_to_symmetric_matrix
 
 matrix_columns = [('bp_n_parameters', 'bp_coefficient_correlations'),
@@ -48,6 +48,10 @@ class DataFrameReader(object):
         if needs_matrix_conversion(array_columns):
             for index, row in data.iterrows():
                 for size_column, values_column in matrix_columns:
-                    data[values_column][index] = array_to_symmetric_matrix(
-                        data[size_column][index].astype(int), row[values_column])
+                    try:
+                        data[values_column][index] = array_to_symmetric_matrix(
+                            data[size_column][index].astype(int), row[values_column])
+                    except AttributeError as err:
+                        if isnull(data[size_column][index]):
+                            continue
         return data, None  # No extension for dataframes

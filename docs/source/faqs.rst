@@ -1,5 +1,4 @@
 FAQs
 ====
 
-Nothing here yet.
------------------
+Frequently Asked Questions will be added here.

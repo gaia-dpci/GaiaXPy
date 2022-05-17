@@ -43,7 +43,7 @@ function :python:`array_to_symmetric_matrix` if they come as arrays as it happen
 Generic usage
 -------------
 
-This section shows how to pass different types of input to a generic function in the package that represents the actual tools and some considerations on output and storage.
+This section shows how to pass different types of input to a generic function in the package (which could be calibrate, convert, etc.) and some considerations on output and storage.
 
 Input
 -----
@@ -117,9 +117,11 @@ If the function accepts a sampling, it has to correspond to a NumPy array and be
 Note on TOPCAT
 --------------
 
-`TOPCAT <http://www.star.bris.ac.uk/~mbt/topcat/>`_ can read the FITS and XML output files of the calibrator and converter. It is possible to plot the contents of the XML using TOPCAT.
+`TOPCAT <http://www.star.bris.ac.uk/~mbt/topcat/>`_ can read the FITS and XML output files of the calibrator and converter. It is possible to plot their contents using TOPCAT.
 
-The functionality that allows to generate these plots is the `XYArray Layer Control <http://www.star.bristol.ac.uk/~mbt/topcat/sun253/GangLayerControl_xyarray.html>`_. A short tutorial on how to use this functionality will be available in the future.
+The functionality that allows to generate these plots is the `XYArray Layer Control <http://www.star.bristol.ac.uk/~mbt/topcat/sun253/GangLayerControl_xyarray.html>`_.
+
+A tutorial on how to work with TOPCAT is available `here <https://gaia-dpci.github.io/GaiaXPy-website/tutorials/TOPCAT%20tutorial.html>`_.
 
 ----------
 Calibrator
@@ -159,7 +161,7 @@ There is also a default sampling which is :python:`numpy.linspace(0, 60, 600)`.
     from gaiaxpy import convert
 
     mean_spectrum_file = 'path/to/mean_spectrum_with_correlation.csv'
-    converted_data, sampling = convert(mean_spectrum_file, sampling=numpy.linspace(0, 100, 1000), output_file='my_output_name', output_format='.xml')
+    converted_data, sampling = convert(mean_spectrum_file, sampling=numpy.linspace(0, 70, 1000), output_file='my_output_name', output_format='.xml')
 
 All the available options can be found in :ref:`convert <convert>`.
 

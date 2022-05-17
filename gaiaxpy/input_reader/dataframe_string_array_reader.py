@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from math import isnan
 
 # Avoid warning, false positive
 pd.options.mode.chained_assignment = None
@@ -17,8 +18,13 @@ class DataFrameStringArrayReader(object):
         for column in array_columns:
             # String column to NumPy array
             for index, row in df.iterrows():
-                df[column][index] = np.fromstring(
-                    row[column][1:-1], sep=',')
+                current_element = row[column]
+                try:
+                    df[column][index] = np.fromstring(
+                        current_element[1:-1], sep=',')
+                except TypeError:
+                    if isinstance(current_element, float) and isnan(current_element):
+                        continue
         return df
 
     def _parse_brackets_arrays(self):

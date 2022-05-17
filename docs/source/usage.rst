@@ -24,13 +24,13 @@ Lists
 Lists are accepted only by the :python:`calibrator`, :python:`converter`, and :python:`generator`. These lists have to correspond to a list of source IDs. Both lists of strings and lists of long are accepted.
 
 When a list is passed to one of the tools, the function will internally request the required data for the given sources from the Gaia Archive (currently geapre), ask for
-credentials (username and password), execute the function, and return the results.
+Cosmos credentials (username and password), execute the function, and return the results.
 
 ADQL queries
 ------------
 ADQL queries are accepted only by the :python:`calibrator`, :python:`converter`, and :python:`generator`. Queries need to be passed as strings (e.g.: :python:`"select TOP 100 source_id from user_dr3int6.gaia_source where has_xp_continuous = 'True'"`).
 
-Queries are sent to the Gaia Archive (geapre), and executed after requesting credentials (username and password).
+Queries are sent to the Gaia Archive (geapre), and executed after requesting Cosmos credentials (username and password).
 
 DataFrames
 ----------

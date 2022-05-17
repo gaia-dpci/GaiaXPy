@@ -39,8 +39,4 @@ Contents
    faqs
    caveats
    gaiaxpy
-   Test hyperlink: SO_.
-   `GaiaXPy Homepage <https://gaia-dpci.github.io/GaiaXPy-website/>`_
-   `Gaia Archive <https://archives.esac.esa.int/gaia/>`_
-
-.. _SO: https://stackoverflow.com/
+   links

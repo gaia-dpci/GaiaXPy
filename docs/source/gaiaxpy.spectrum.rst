@@ -4,7 +4,6 @@ Spectrum
 .. automodule:: gaiaxpy.spectrum
    :members:
    :undoc-members:
-   :show-inheritance:
 
 Submodules
 ----------

@@ -10,9 +10,9 @@ To find out which version of the package you're using, simply run:
 .. role:: python(code)
    :language: python
 
-   .. code-block:: python
+.. code-block:: python
 
-      import gaiaxpy
-      print(gaiaxpy.__version__)
+   import gaiaxpy
+   print(gaiaxpy.__version__)
 
 A paper is in preparation and details will be added here as soon as possible.

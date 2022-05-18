@@ -16,19 +16,19 @@ The functions in GaiaXPy can receive different kinds of inputs. The ones current
 
 Files
 -----
-The functions accept input files with the extensions: :python:`avro`, :python:`csv`, :python:`fits`, and :python:`xml`.
-All these, but :python:`avro`, are files that contain XP continuous raw data as extracted from the `Gaia archive <https://gea.esac.esa.int/archive/>`_.
+The functions accept input files with the extensions: :python:`csv`, :python:`ecsv`, :python:`fits`, and :python:`xml`.
+These are files that contain XP continuous raw data as extracted from the `Gaia archive <https://archives.esac.esa.int/gaia/>`_.
 
 Lists
 -----
-Lists are accepted only by the :python:`calibrator`, :python:`converter`, and :python:`generator`. These lists have to correspond to a list of source IDs. Both lists of strings and lists of long are accepted.
+Lists are accepted only by :python:`calibrate`, :python:`convert`, and :python:`generate`. These lists have to correspond to a list of source IDs. Both lists of strings and lists of long are accepted.
 
 When a list is passed to one of the tools, the function will internally request the required data for the given sources from the Gaia Archive (currently geapre), ask for
 Cosmos credentials (username and password), execute the function, and return the results.
 
 ADQL queries
 ------------
-ADQL queries are accepted only by the :python:`calibrator`, :python:`converter`, and :python:`generator`. Queries need to be passed as strings (e.g.: :python:`"select TOP 100 source_id from user_dr3int6.gaia_source where has_xp_continuous = 'True'"`).
+ADQL queries are accepted only by the :python:`calibrate`, :python:`convert`, and :python:`generate`. Queries need to be passed as strings (e.g.: :python:`"select TOP 100 source_id from user_dr3int6.gaia_source where has_xp_continuous = 'True'"`).
 
 Queries are sent to the Gaia Archive (geapre), and executed after requesting Cosmos credentials (username and password).
 
@@ -90,7 +90,7 @@ Storage
 The functions have the option :python:`save_file` which is set to :python:`True` by default.
 
 The output file has the same extension as the input file unless the user chooses a different output format. In the case of elements that do not have an extension like lists and DataFrames, :python:`csv` is used by default.
-The option :python:`output_format` allows to store the data in the formats :python:`avro`, :python:`csv`, :python:`fits`, and :python:`xml`.
+The option :python:`output_format` allows to store the data in the formats :python:`avro`, :python:`csv`, :python:`ecsv`, :python:`fits`, and :python:`xml`.
 
 Depending on the format chosen to store the data, the functions will create one or two files. The formats :python:`fits` and :python:`xml` will create one file that contains both the data and the sampling.
 However, the formats :python:`avro` and :python:`csv` will generate two files, one for each of the output variables. In this case, the name of the sampling file will include the suffix :python:`_sampling`.
@@ -181,7 +181,7 @@ of W nm :superscript:`-1` m :superscript:`-2`.
     phot_system = PhotometricSystem.JKC
     generated_data = generate(mean_spectrum_file, phot_system, save_file=False)
 
-The available systems are updated as requested. For a complete list of the systems included in the package use:
+The available systems are updated as requested. For a complete list of the systems included in the package:
 
 .. code-block:: python
 

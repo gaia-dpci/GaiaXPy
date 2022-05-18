@@ -1,13 +1,10 @@
 Plotter
-=======================
+=======
 
 .. automodule:: gaiaxpy.plotter
    :members:
    :undoc-members:
    :show-inheritance:
-
-Submodules
-----------
 
 .. automodule:: gaiaxpy.plotter.multi_absolute
    :members:

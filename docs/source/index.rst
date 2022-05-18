@@ -1,5 +1,5 @@
-GaiaXPy's documentation
-=======================
+Index
+=====
 
 |License|
 |Zenodo|

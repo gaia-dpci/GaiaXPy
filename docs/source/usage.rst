@@ -100,7 +100,7 @@ However, the formats :python:`avro` and :python:`csv` will generate two files, o
     from gaiaxpy import generic_function
 
     input_file = 'path/to/input/file.extension'
-    output_data = generic_function(input_file, output_file='my_output_name', output_format='fits')
+    output_data = generic_function(input_file, output_path='my/path', output_file='my_output_name', output_format='fits')
 
 If the function accepts a sampling, it has to correspond to a NumPy array and be passed through the option :python:`sampling`.
 
@@ -178,11 +178,10 @@ of W nm :superscript:`-1` m :superscript:`-2`.
     from gaiaxpy import generate, PhotometricSystem
 
     mean_spectrum_file = 'path/to/mean_spectrum_with_correlation.csv'
-    phot_system = PhotometricSystem.JOHNSON
+    phot_system = PhotometricSystem.JKC
     generated_data = generate(mean_spectrum_file, phot_system, save_file=False)
 
-The available systems are updated as requested. Gaia DR3, Johnson-Kron-Cousins, SDSS, HST WFC3/UVIS are some of the ones currently available.
-For a complete list use
+The available systems are updated as requested. For a complete list of the systems included in the package use:
 
 .. code-block:: python
 

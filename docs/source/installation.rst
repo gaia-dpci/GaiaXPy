@@ -28,7 +28,7 @@ Or:
 
     pip3 --version
 
-You should see a Python version at the end of the output of these commands.
+You should see a Python version at the end of the output of these commands. E.g.: :python:`python 3.8`.
 
 To install GaiaXPy from PyPI, simply run:
 
@@ -37,7 +37,7 @@ To install GaiaXPy from PyPI, simply run:
 
 .. code-block:: sh
 
-    pip install GaiaXPy # or pip3 if that's the case
+    pip install GaiaXPy # or pip3 if it corresponds
 
 -----------
 From source
@@ -58,7 +58,5 @@ To install GaiaXPy from source:
     python3 -m venv .env
     # Activate the environment
     source .env/bin/activate
-    # Install package requirements
-    pip install -r requirements.txt
-    # Install the GaiaXPy package in editable mode
-    pip install -e .
+    # Install the package
+    python setup.py install

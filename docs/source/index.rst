@@ -2,9 +2,13 @@ GaiaXPy's documentation
 =======================
 
 |License|
+|Zenodo|
 
 .. |License| image:: https://img.shields.io/badge/License-BSD_3--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
+
+.. |Zenodo| image:: https://zenodo.org/badge/485298196.svg
+   :target: https://zenodo.org/badge/latestdoi/485298196
 
 GaiaXPy is a Python library to facilitate handling Gaia BP/RP spectra as distributed from the `Gaia archive <https://gea.esac.esa.int/archive/>`_.
 
@@ -40,3 +44,4 @@ Contents
    caveats
    gaiaxpy
    links
+   cite

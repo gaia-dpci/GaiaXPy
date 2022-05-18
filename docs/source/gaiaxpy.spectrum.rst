@@ -9,90 +9,79 @@ Spectrum
 Submodules
 ----------
 
-gaiaxpy.spectrum.absolute\_sampled\_spectrum module
----------------------------------------------------
+absolute\_sampled\_spectrum
+---------------------------
 
 .. automodule:: gaiaxpy.spectrum.absolute_sampled_spectrum
    :members:
    :undoc-members:
-   :show-inheritance:
 
-gaiaxpy.spectrum.generic\_spectrum module
------------------------------------------
+generic\_spectrum
+-----------------
 
 .. automodule:: gaiaxpy.spectrum.generic_spectrum
    :members:
    :undoc-members:
-   :show-inheritance:
 
-gaiaxpy.spectrum.multi\_synthetic\_photometry module
-----------------------------------------------------
+multi\_synthetic\_photometry
+----------------------------
 
 .. automodule:: gaiaxpy.spectrum.multi_synthetic_photometry
    :members:
    :undoc-members:
-   :show-inheritance:
 
-gaiaxpy.spectrum.sampled\_basis\_functions module
--------------------------------------------------
+sampled\_basis\_functions
+-------------------------
 
 .. automodule:: gaiaxpy.spectrum.sampled_basis_functions
    :members:
    :undoc-members:
-   :show-inheritance:
 
-gaiaxpy.spectrum.sampled\_spectrum module
------------------------------------------
+sampled\_spectrum
+-----------------
 
 .. automodule:: gaiaxpy.spectrum.sampled_spectrum
    :members:
    :undoc-members:
-   :show-inheritance:
 
-gaiaxpy.spectrum.single\_synthetic\_photometry module
------------------------------------------------------
+single\_synthetic\_photometry
+-----------------------------
 
 .. automodule:: gaiaxpy.spectrum.single_synthetic_photometry
    :members:
    :undoc-members:
-   :show-inheritance:
 
-gaiaxpy.spectrum.spectral\_energy\_distribution module
-------------------------------------------------------
+spectral\_energy\_distribution
+------------------------------
 
 .. automodule:: gaiaxpy.spectrum.spectral_energy_distribution
    :members:
    :undoc-members:
-   :show-inheritance:
 
-gaiaxpy.spectrum.utils module
------------------------------
+utils
+-----
 
 .. automodule:: gaiaxpy.spectrum.utils
    :members:
    :undoc-members:
-   :show-inheritance:
 
-gaiaxpy.spectrum.xp\_continuous\_spectrum module
-------------------------------------------------
+xp\_continuous\_spectrum
+------------------------
 
 .. automodule:: gaiaxpy.spectrum.xp_continuous_spectrum
    :members:
    :undoc-members:
-   :show-inheritance:
 
-gaiaxpy.spectrum.xp\_sampled\_spectrum module
----------------------------------------------
+xp\_sampled\_spectrum
+---------------------
 
 .. automodule:: gaiaxpy.spectrum.xp_sampled_spectrum
    :members:
    :undoc-members:
-   :show-inheritance:
 
-gaiaxpy.spectrum.xp\_spectrum module
-------------------------------------
+xp\_spectrum
+------------
 
 .. automodule:: gaiaxpy.spectrum.xp_spectrum
    :members:
    :undoc-members:
-   :show-inheritance:

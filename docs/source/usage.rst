@@ -43,7 +43,7 @@ function :python:`array_to_symmetric_matrix` if they come as arrays as it happen
 Generic usage
 -------------
 
-This section shows how to pass different types of input to a generic function in the package (which could be calibrate, convert, etc.) and some considerations on output and storage.
+This section shows how to pass different types of input to a generic function in the package (which could be :python:`calibrate`, :python:`convert`, etc.) and some considerations on output and storage.
 
 Input
 -----

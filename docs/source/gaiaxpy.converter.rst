@@ -1,13 +1,10 @@
 Converter
-=========================
+=========
 
 .. automodule:: gaiaxpy.converter
    :members:
    :undoc-members:
    :show-inheritance:
-
-Submodules
-----------
 
 .. automodule:: gaiaxpy.converter.config
    :members:

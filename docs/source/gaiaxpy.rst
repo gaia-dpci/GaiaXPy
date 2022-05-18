@@ -1,5 +1,5 @@
 GaiaXPy API
-===============
+===========
 
 .. automodule:: gaiaxpy
    :members:

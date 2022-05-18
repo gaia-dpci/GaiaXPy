@@ -1,13 +1,10 @@
 Calibrator
-==========================
+==========
 
 .. automodule:: gaiaxpy.calibrator
    :members:
    :undoc-members:
    :show-inheritance:
-
-Submodules
-----------
 
 .. _calibrate:
 

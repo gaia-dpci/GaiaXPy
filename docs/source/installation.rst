@@ -1,20 +1,43 @@
 Installation
 ============
 
-GaiaXPy works with Python 3 and is **not** available through a package manager yet, but is expected to be available through PyPI in the near future.
-
 ---------
 From PyPI
 ---------
 
-To install GaiaXPy from PyPI, once it's available, simply run:
+GaiaXPy was designed to work with Python 3.6 or later, and is available through PyPI.
+
+To install the package, first ensure that the version of pip you are using
+is the one associated with Python 3 in your machine.
+
+You can check this by running:
 
 .. role:: bash(code)
    :language: bash
 
 .. code-block:: sh
 
-    pip install GaiaXPy
+    pip --version
+
+Or:
+
+.. role:: bash(code)
+   :language: bash
+
+.. code-block:: sh
+
+    pip3 --version
+
+You should see a Python version at the end of the output of these commands.
+
+To install GaiaXPy from PyPI, simply run:
+
+.. role:: bash(code)
+   :language: bash
+
+.. code-block:: sh
+
+    pip install GaiaXPy # or pip3 if that's the case
 
 -----------
 From source

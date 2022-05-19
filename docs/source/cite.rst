@@ -5,8 +5,6 @@ If you use GaiaXPy in your research, please cite the `homepage <https://gaia-dpc
 
 Although there's also a concept DOI pointing to the latest version, using the DOI associated with each release is recommended.
 
-DOI v1.0.0: `10.5281/zenodo.6563093 <https://zenodo.org/record/6563093#.YoYJ8jnMJhE>`_
-
 To find out which version of the package you're using, simply run:
 
 .. role:: python(code)
@@ -16,5 +14,10 @@ To find out which version of the package you're using, simply run:
 
    import gaiaxpy
    print(gaiaxpy.__version__)
+
+DOIs
+----
+
+**DOI v1.0.0**: `10.5281/zenodo.6563093 <https://zenodo.org/record/6563093#.YoYJ8jnMJhE>`_
 
 A paper is in preparation and details will be added here as soon as possible.

@@ -34,7 +34,7 @@ setup(
     description="Utilities to handle BP/RP (XP) Gaia low-resolution spectra as delivered via the archive",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://ioadpc.ast.cam.ac.uk/internalpydocs/",
+    url="https://gaia-dpci.github.io/GaiaXPy-website/",
     python_requires='>=3.6',
     packages=find_packages(),
     install_requires=required_packages,

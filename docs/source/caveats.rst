@@ -33,4 +33,4 @@ GaiaXPy works with Python 3.6 and later.
 
 Regarding the operating system used, an installation issue has been reported when using a system older than macOS Monterey 12.1.
 
-So far, no issues have been reported with Linux
+So far, no issues have been reported with other operating systems.

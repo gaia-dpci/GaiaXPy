@@ -29,8 +29,8 @@ def generate_bp_conversion():
     pwl = df['bp_pwl'].copy()
     flipped_pwl = np.flipud(df['bp_pwl'].copy())
     flipped_wl = np.flipud(df['wl_nm'].copy())
-    bp_pwl_to_wl = interpolate.interp1d(flipped_pwl, flipped_wl, kind='cubic', bounds_error=False, fill_value='extrapolate')
-    bp_wl_to_pwl = interpolate.interp1d(wl, pwl, kind='cubic', bounds_error=False, fill_value='extrapolate')
+    bp_pwl_to_wl = interpolate.interp1d(flipped_pwl, flipped_wl, kind='linear', bounds_error=False, fill_value='extrapolate')
+    bp_wl_to_pwl = interpolate.interp1d(wl, pwl, kind='linear', bounds_error=False, fill_value='extrapolate')
     return bp_pwl_to_wl, bp_wl_to_pwl
 
 
@@ -40,8 +40,8 @@ def generate_rp_conversion():
     df_not_nan = df[df['rp_pwl'].notna()]
     wl = df_not_nan['wl_nm'].copy()
     pwl = df_not_nan['rp_pwl'].copy()
-    rp_pwl_to_wl = interpolate.interp1d(pwl, wl, kind='cubic', bounds_error=False, fill_value='extrapolate')
-    rp_wl_to_pwl = interpolate.interp1d(wl, pwl, kind='cubic', bounds_error=False, fill_value='extrapolate')
+    rp_pwl_to_wl = interpolate.interp1d(pwl, wl, kind='linear', bounds_error=False, fill_value='extrapolate')
+    rp_wl_to_pwl = interpolate.interp1d(wl, pwl, kind='linear', bounds_error=False, fill_value='extrapolate')
     return rp_pwl_to_wl, rp_wl_to_pwl
 
 

@@ -32,7 +32,7 @@ ADQL queries
 ------------
 **Important note: Currently the data in the Gaia Archive is not public. The following code may not work until DR3.**
 
-ADQL queries are accepted only by the :python:`calibrate`, :python:`convert`, and :python:`generate`. Queries need to be passed as strings (e.g.: :python:`"select TOP 100 source_id from gaiadr3.gaia_source where has_xp_continuous = 'True'"`).
+ADQL queries are accepted only by the :python:`calibrate`, :python:`convert`, and :python:`generate`. Queries need to be passed as strings (e.g.: :python:`"select TOP 100 source_id from user_dr3int6.gaia_source where has_xp_continuous = 'True'"`).
 
 Queries are sent to the Gaia archive, and executed after requesting Cosmos credentials (username and password).
 

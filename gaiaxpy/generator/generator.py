@@ -47,35 +47,38 @@ def generate(
     Returns:
         DataFrame: A DataFrame of all synthetic photometry results.
     """
+    def create_internal_systems(photometric_system):
+        if isinstance(photometric_system, PhotometricSystem):
+            internal_photometric_system = [photometric_system].copy()
+        elif isinstance(photometric_system, list):
+            internal_photometric_system = photometric_system.copy()
+        else:
+            raise ValueError('Parameter photometric_system must be either a PhotometricSystem or a list.')
+        return internal_photometric_system, internal_photometric_system.copy()
     # colour_equation should be always true as it is part of the definition of standardised systems.
     colour_equation = True
     # TODO: merge this statement with _validate_arguments
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')
     _validate_arguments(generate.__defaults__[1], output_file, save_file)
-    if isinstance(photometric_system, PhotometricSystem):
-        int_photometric_system = [photometric_system].copy()
-    elif isinstance(photometric_system, list):
-        int_photometric_system = photometric_system.copy()
-    else:
-        raise ValueError('Parameter photometric_system must be either a PhotometricSystem or a list.')
+    internal_photometric_system, initial_photometric_system = create_internal_systems(photometric_system)
     # Load data
     parsed_input_data, extension = InputReader(input_object, generate, username, password)._read()
     gaia_system = PhotometricSystem.Gaia_DR3_Vega
     # Create multi generator
-    gaia_initially_in_systems = bool(gaia_system in int_photometric_system)
+    gaia_initially_in_systems = bool(gaia_system in internal_photometric_system)
     if error_correction:
         if not gaia_initially_in_systems:
-            int_photometric_system.append(gaia_system)
-    if isinstance(int_photometric_system, list):
-        generator = MultiSyntheticPhotometryGenerator(int_photometric_system, bp_model='v375wi', rp_model='v142r')
+            internal_photometric_system.append(gaia_system)
+    if isinstance(internal_photometric_system, list):
+        generator = MultiSyntheticPhotometryGenerator(internal_photometric_system, bp_model='v375wi', rp_model='v142r')
     else:
         raise ValueError('Photometry generation not implemented for the input type.')
     photometry_df = generator._generate(parsed_input_data, extension, output_file=None, output_format=None, save_file=False)
     if colour_equation:
-        photometry_df = apply_colour_equation(photometry_df, photometric_system=int_photometric_system, save_file=False)
+        photometry_df = apply_colour_equation(photometry_df, photometric_system=internal_photometric_system, save_file=False)
     if error_correction:
-        photometry_df = apply_error_correction(photometry_df, photometric_system=photometric_system.copy(), save_file=False)
+        photometry_df = apply_error_correction(photometry_df, photometric_system=initial_photometric_system, save_file=False)
     if not gaia_initially_in_systems:
         # Remove Gaia_DR3_Vega system from the final result
         gaia_label = gaia_system.get_system_label()

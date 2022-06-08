@@ -120,7 +120,7 @@ def array_to_symmetric_matrix(size, array):
             return False
         return True
     # Enforce array type, second check verifies that array is 1D.
-    if isinstance(array, np.ndarray) and isinstance(array[0], Number) and isinstance(size, (int, np.int64)):
+    if isinstance(array, np.ndarray) and isinstance(array[0], Number) and isinstance(size, Number):
         k = -1  # Diagonal offset (from Numpy documentation)
         matrix = np.zeros((size, size))
         # Add values in diagonal

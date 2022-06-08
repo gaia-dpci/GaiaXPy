@@ -154,7 +154,7 @@ def populate_design_matrix(sampling_grid, config):
     offset = config['normalizedRange'].iloc(0)[0][0] - config['range'].iloc(0)[0][0] * scale
     rescaled_pwl = (sampling_grid * scale) + offset
 
-    def psi(n, x): return 1.0 / np.sqrt((2 ** n * gamma(n + 1) *
+    def psi(n, x): return 1.0 / np.sqrt((np.power(2, n, dtype=np.float128) * gamma(n + 1) *
                                          np.sqrt(np.pi))) * np.exp(-x ** 2 / 2.0) * eval_hermite(n, x)
 
     bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(

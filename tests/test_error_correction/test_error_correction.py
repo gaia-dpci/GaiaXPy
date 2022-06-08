@@ -13,6 +13,15 @@ corrected_errors_solution_path = join(files_path, 'error_correction_solution', '
 
 class TestErrorCorrection(unittest.TestCase):
 
+    def test_single_phot_object(self):
+        phot_system = PhotometricSystem.Gaia_DR3_Vega
+        synthetic_photometry = generate(
+                        correlation_csv_file,
+                        photometric_system=phot_system,
+                        save_file=False)
+        corrected_synth_phot = apply_error_correction(synthetic_photometry, save_file=False)
+        pdt.assert_frame_equal(synthetic_photometry, corrected_synth_phot)
+
     def test_error_correction_no_vega(self):
         phot_list = [PhotometricSystem.Euclid_VIS, PhotometricSystem.HST_HUGS_Std]
         multi_synthetic_photometry = generate(

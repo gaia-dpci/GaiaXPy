@@ -53,7 +53,7 @@ class TestGenerator(unittest.TestCase):
                    PhotometricSystem.JPAS, PhotometricSystem.JPLUS,
                    PhotometricSystem.JWST_NIRCAM, PhotometricSystem.PanSTARRS1,
                    PhotometricSystem.PanSTARRS1_Std, PhotometricSystem.Pristine,
-                   PhotometricSystem.SDSS, PhotometricSystem.SDSS_Std,
+                   PhotometricSystem.SDSS, PhotometricSystem.SDSS_Std, PhotometricSystem.Sky_Mapper,
                    PhotometricSystem.Stromgren, PhotometricSystem.Stromgren_Std, PhotometricSystem.WFIRST]
         missing_band_csv = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.csv')
         generated_photometry = generate(missing_band_csv, photometric_system=systems, save_file=False)

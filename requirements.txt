@@ -2,6 +2,6 @@ numpy
 pandas
 scipy
 astropy
-fastavro
+fastavro<=1.4.7
 astroquery
 matplotlib

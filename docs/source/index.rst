@@ -41,3 +41,4 @@ Contents
    gaiaxpy
    links
    cite
+   releasenotes

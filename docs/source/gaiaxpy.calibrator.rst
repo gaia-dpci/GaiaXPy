@@ -32,7 +32,7 @@ Calibrator
 
 .. _generate:
 
-.. automodule:: gaiaxpy.calibrator.synthetic_photometry_generator
+.. automodule:: gaiaxpy.generator.synthetic_photometry_generator
    :members:
    :undoc-members:
    :show-inheritance:

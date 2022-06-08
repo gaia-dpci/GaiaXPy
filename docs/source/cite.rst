@@ -22,4 +22,6 @@ DOIs
 
 **DOI v1.0.2**: 10.5281/zenodo.6569912
 
+**DOI v1.1.0**: 10.5281/zenodo.6624491 
+
 A paper is in preparation and details will be added here as soon as possible.

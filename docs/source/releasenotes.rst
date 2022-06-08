@@ -1,24 +1,6 @@
 Release notes
 =============
 
-Version 1.0.0
--------------
-Released on 2022/05/19.
-
-* Initial release.
-
-Version 1.0.1
--------------
-Released on 2022/05/22.
-
-* Erroneous release, will be ignored by the installer.
-
-Version 1.0.2
--------------
-Released on 2022/05/22.
-
-* Fixed error in ECSV output by adding the missing headers file.
-
 Version 1.1.0
 -------------
 Released 2022/06/08.
@@ -28,3 +10,21 @@ Released 2022/06/08.
 * Added SkyMapper filter.
 * Fixed Windows compatibility.
 * The u band has been removed from the standardised Stromgren system. (See Gaia Collaboration, Montegriffo et al. 2022 for more details.)
+
+Version 1.0.2
+-------------
+Released on 2022/05/22.
+
+* Fixed error in ECSV output by adding the missing headers file.
+
+Version 1.0.1
+-------------
+Released on 2022/05/22.
+
+* Erroneous release, will be ignored by the installer.
+
+Version 1.0.0
+-------------
+Released on 2022/05/19.
+
+* Initial release.

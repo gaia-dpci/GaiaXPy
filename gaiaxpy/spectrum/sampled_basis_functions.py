@@ -5,6 +5,7 @@ Module to represent a set of basis functions evaluated on a grid.
 """
 
 import functools
+import math
 import numpy as np
 from scipy.special import eval_hermite, gamma
 from gaiaxpy.core import nature, satellite
@@ -154,8 +155,8 @@ def populate_design_matrix(sampling_grid, config):
     offset = config['normalizedRange'].iloc(0)[0][0] - config['range'].iloc(0)[0][0] * scale
     rescaled_pwl = (sampling_grid * scale) + offset
 
-    def psi(n, x): return 1.0 / np.sqrt((np.power(2, n, dtype=np.float128) * gamma(n + 1) *
-                                         np.sqrt(np.pi))) * np.exp(-x ** 2 / 2.0) * eval_hermite(n, x)
+    def psi(n, x): return 1.0 / np.sqrt(math.pow(2, n) * gamma(n + 1) *
+                                         np.sqrt(np.pi)) * np.exp(-x ** 2 / 2.0) * eval_hermite(n, x)
 
     bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(
         int(config['dimension']), int(config['transformedSetDimension']))

@@ -6,6 +6,8 @@ Generator
    :undoc-members:
    :show-inheritance:
 
+.. _generate:
+
 .. automodule:: gaiaxpy.generator.generator
    :members:
    :undoc-members:
@@ -20,6 +22,8 @@ Generator
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. _photometric_system:
 
 .. automodule:: gaiaxpy.generator.photometric_system
    :members:

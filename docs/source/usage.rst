@@ -209,4 +209,4 @@ This functionality allows to plot the output of the calibrator and converter. It
 The parameter :python:`multi` set as :python:`True` plots all the results in the image, whereas :python:`False` generates one plot per spectrum in the data.
 The parameter :python:`show_plot` shows the images if it is set as :python:`True`. If a :python:`output_path` is provided, the plots are automatically saved.
 
-All the available options are described in :ref:`plotter <plotter>`.
+All the available options are described in :ref:`plot_spectra <plotter>`.

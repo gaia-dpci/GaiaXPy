@@ -27,3 +27,4 @@ Released 2022/06/08.
 * Fixed error when passing a single PhotometricSystem to error correction.
 * Added SkyMapper filter.
 * Fixed Windows compatibility.
+* The u band has been removed from the standardised Stromgren system. (See Gaia Collaboration, Montegriffo et al. 2022 for more details.)

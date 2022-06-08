@@ -20,6 +20,7 @@ PanSTARRS1_Std
 Pristine
 SDSS
 SDSS_Std
+Sky_Mapper
 Stromgren
 Stromgren_Std
 WFIRST

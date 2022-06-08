@@ -46,7 +46,7 @@ class TestConfig(unittest.TestCase):
         system_value = 'StromgrenStd'
         xp_offset = _load_offset_from_csv(system_value)
         self.assertIsInstance(xp_offset, ndarray)
-        npt.assert_array_equal(xp_offset, np.zeros(4))
+        npt.assert_array_equal(xp_offset, np.zeros(3))
 
     def test_error_non_std_xpoffset(self):
         # Non-standard system has not got an offset file.

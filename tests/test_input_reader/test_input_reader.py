@@ -13,7 +13,6 @@ parser = InternalContinuousParser()
 dataframe_np, _ = parser.parse(file_path)
 list_input_int = [4, 6]
 list_input_str = ['4', '6']
-query_input = "SELECT * FROM user_dr3int6.gaia_source WHERE source_id IN ('4', '6')"
 
 
 class TestGetMethods(unittest.TestCase):
@@ -22,6 +21,7 @@ class TestGetMethods(unittest.TestCase):
     # Commented because it requires credentials to run
     def test_path_vs_query(self):
         # Calibrator requires use of internal calibrate function
+        query_input = "SELECT * FROM user_dr3int6.gaia_source WHERE source_id IN ('4', '6')"
         parsed_data_file_path, _ = InputReader(file_path, calibrate)._read()
         parsed_data_query_input, _ = InputReader(query_input, calibrate)._read()
         pdt.assert_frame_equal(parsed_data_file_path, parsed_data_query_input)

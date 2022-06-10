@@ -1,7 +1,7 @@
 from astroquery.gaia import GaiaClass
 from .dataframe_reader import DataFrameReader
 from .archive_reader import ArchiveReader
-from gaiaxpy.core import gaia_server
+from gaiaxpy.core import data_release, gaia_server
 
 not_supported_functions = ['apply_colour_equation']
 
@@ -12,7 +12,7 @@ class QueryReader(ArchiveReader):
         self.content = content
         super(QueryReader, self).__init__(function, user, password)
 
-    def _read(self, data_release='Gaia DR3_INT6'):
+    def _read(self, data_release=data_release):
         query = self.content
         function_name = self.function.__name__
         if function_name in not_supported_functions:

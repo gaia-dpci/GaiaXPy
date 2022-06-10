@@ -12,4 +12,4 @@ from . import dispersion_function
 from .dispersion_function import pwl_to_wl, wl_to_pwl, pwl_range, wl_range
 
 from . import server
-from .server import gaia_server
+from .server import data_release, gaia_server

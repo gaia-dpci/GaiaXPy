@@ -19,7 +19,7 @@ def extremes_are_enclosing(first_row, column):
 
 def needs_matrix_conversion(array_columns):
     columns_to_matrix = [column for value, column in matrix_columns]
-    return set(columns_to_matrix).issubset(set(array_columns))
+    return set(columns_to_matrix).intersection(set(array_columns))
 
 
 class DataFrameReader(object):

@@ -41,8 +41,7 @@ def _correlation_to_covariance_dr3int5(
     # In dr3int5 the errors have been scaled by the standard deviation. So to bring them back to what they were in dr3int3
     # I have to divide by the standard deviation.
     diagonal_errors = np.diag(formal_errors) / standard_deviation
-    covariance_matrix = diagonal_errors.dot(
-        correlation_matrix).dot(diagonal_errors)
+    covariance_matrix = diagonal_errors.dot(correlation_matrix).dot(diagonal_errors)
     return covariance_matrix
 
 

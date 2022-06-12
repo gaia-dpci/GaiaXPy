@@ -224,24 +224,27 @@ def _create_spectrum(row, truncation, design_matrix, merge):
     source_id = row['source_id']
     cont_dict = {}
     # Split both bands
+    source_id = row['source_id']
+    cont_dict = {}
+    # Split both bands
     for band in BANDS:
         try:
             covariance_matrix = _get_covariance_matrix(row, band)
+            if covariance_matrix is not None:
+                continuous_object = XpContinuousSpectrum(
+                    source_id,
+                    band,
+                    row[f'{band}_coefficients'],
+                    covariance_matrix,
+                    row[f'{band}_standard_deviation'])
+                cont_dict[band] = continuous_object
+            if truncation:
+                recommended_truncation = row[f'{band}_n_relevant_bases']
+            else:
+                recommended_truncation = -1
         except Exception:
             # If the band is not present, ignore it
             continue
-        if covariance_matrix is not None:
-            continuous_object = XpContinuousSpectrum(
-                source_id,
-                band,
-                row[f'{band}_coefficients'],
-                covariance_matrix,
-                row[f'{band}_standard_deviation'])
-            cont_dict[band] = continuous_object
-    if truncation:
-        recommended_truncation = row[f'{band}_n_relevant_bases']
-    else:
-        recommended_truncation = -1
     return AbsoluteSampledSpectrum(
         source_id, cont_dict, design_matrix, merge,
         truncation=recommended_truncation)

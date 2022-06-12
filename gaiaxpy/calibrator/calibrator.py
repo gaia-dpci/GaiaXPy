@@ -224,6 +224,9 @@ def _create_spectrum(row, truncation, design_matrix, merge):
     source_id = row['source_id']
     cont_dict = {}
     # Split both bands
+    source_id = row['source_id']
+    cont_dict = {}
+    # Split both bands
     for band in BANDS:
         try:
             covariance_matrix = _get_covariance_matrix(row, band)

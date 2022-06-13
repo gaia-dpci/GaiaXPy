@@ -1,6 +1,16 @@
 Release notes
 =============
 
+Version 1.1.1
+-------------
+Released on 2022/06/13
+
+* Query official Gaia Archive.
+* Updated Hipparcos-Tycho bases.
+* Added fix for single band source with lists and queries.
+* Added error correction tables for Gaia_DR3_Vega, Els_Custom_W09_S2, Pristine and Sky_Mapper.
+* Fixed but in error correction caused when a regular system and its standardised version where requested on the same data frame.
+
 Version 1.1.0
 -------------
 Released 2022/06/08.

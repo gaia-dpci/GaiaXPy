@@ -1,4 +1,4 @@
-from astroquery.gaia import GaiaClass
+
 
 class ArchiveReader(object):
 

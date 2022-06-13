@@ -1,2 +1,2 @@
-gaia_server = 'https://geapre.esac.esa.int/'
-data_release = 'Gaia DR3_INT6'
+gaia_server = 'https://gea.esac.esa.int/'
+data_release = 'Gaia DR3'

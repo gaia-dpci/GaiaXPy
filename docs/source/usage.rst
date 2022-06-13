@@ -21,18 +21,13 @@ These are files that contain XP continuous raw data as extracted from the `Gaia 
 
 Lists
 -----
-**Important note: Currently the data in the Gaia Archive is not public. The following code may not work until DR3.**
-
 Lists are accepted only by :python:`calibrate`, :python:`convert`, and :python:`generate`. These lists have to correspond to a list of source IDs. Both lists of strings and lists of long are accepted.
 
-When a list is passed to one of the tools, the function will internally request the required data for the given sources from the Gaia archive, ask for
-Cosmos credentials (username and password), execute the function, and return the results.
+When a list is passed to one of the tools, the function will internally request the required data for the given sources from the Gaia archive, ask for Cosmos credentials (username and password), execute the function, and return the results.
 
 ADQL queries
 ------------
-**Important note: Currently the data in the Gaia Archive is not public. The following code may not work until DR3.**
-
-ADQL queries are accepted only by the :python:`calibrate`, :python:`convert`, and :python:`generate`. Queries need to be passed as strings (e.g.: :python:`"select TOP 100 source_id from user_dr3int6.gaia_source where has_xp_continuous = 'True'"`).
+ADQL queries are accepted only by the :python:`calibrate`, :python:`convert`, and :python:`generate`. Queries need to be passed as strings (e.g.: :python:`"select TOP 100 source_id from gaiadr3.gaia_source where has_xp_continuous = 'True'"`).
 
 Queries are sent to the Gaia archive, and executed after requesting Cosmos credentials (username and password).
 

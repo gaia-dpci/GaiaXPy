@@ -124,7 +124,7 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
     # Now we have to apply the correction on each of the systems, but this correction depends on the G band
     for system in systems:
         system_df = input_multi_photometry[[column for column in input_multi_photometry.columns if
-                                            column.startswith(system) or column == gaia_G_mag_column]]
+                                            (column.startswith(system) and f'{system}Std' not in column) or column == gaia_G_mag_column]]
         # Get the correction factors for the mag G column
         correction_array = _get_correction_array(system_df[gaia_G_mag_column].values, system)
         # Correct error magnitudes

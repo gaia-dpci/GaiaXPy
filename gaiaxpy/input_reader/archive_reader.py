@@ -13,4 +13,4 @@ class ArchiveReader(object):
         if user and password:
             gaia.login(user=user, password=password)
         else:
-            gaia.login()
+            pass

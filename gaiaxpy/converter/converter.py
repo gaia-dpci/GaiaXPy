@@ -62,8 +62,8 @@ def convert(
             input file.
         save_file (bool): Whether to save the output in a file. If false, output_format
             and output_file are ignored.
-        username (str): Cosmos username, only suggested when the input_object is a list or ADQL query.
-        password (str): Cosmos password, only suggested when the input_object is a list or ADQL query.
+        username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
+        password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
 
     Returns:
         (tuple): tuple containing:

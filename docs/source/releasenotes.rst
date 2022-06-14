@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 1.1.2
+-------------
+Released on 2022/06/14
+
+* Cosmos credentials are optional when using lists and queries.
+
 Version 1.1.1
 -------------
 Released on 2022/06/13

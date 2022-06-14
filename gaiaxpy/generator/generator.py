@@ -41,8 +41,8 @@ def generate(
         error_correction (bool): Whether to apply to the photometric errors the tabulated
             factors to mitigate underestimated errors (see Montegriffo et al., 2022, for
             more details).
-        username (str): Cosmos username, only required when the input_object is a list or ADQL query.
-        password (str): Cosmos password, only required when the input_object is a list or ADQL query.
+        username (str): Cosmos username, only suggested when the input_object is a list or ADQL query.
+        password (str): Cosmos password, only suggested when the input_object is a list or ADQL query.
 
     Returns:
         DataFrame: A DataFrame of all synthetic photometry results.

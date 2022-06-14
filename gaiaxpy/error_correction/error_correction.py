@@ -101,7 +101,19 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
     """
     Apply error correction. Infers photometric systems if not specified.
 
+    Args:
+        input_multi_photometry (DataFrame): Photometry DataFrame, can contain photometry for one or more systems.
+        photometric_system (obj): Desired photometric system or list of photometric systems.
         output_path (str): Path where to save the output data.
+        output_file (str): Name of the output file.
+        output_format (str): Format to be used for the output file. If no format is given, then the output
+            file will be in the same format as the input file.
+        save_file (bool): Whether to save the output in a file. If false, output_format
+            and output_file_name are ignored.
+
+    Returns:
+        DataFrame: A DataFrame of all synthetic photometry with corrected errors for the systems
+            for which it is possible.
     """
     gaia_system = 'GaiaDr3Vega'
     gaia_G_mag_column = f'{gaia_system}_mag_G'

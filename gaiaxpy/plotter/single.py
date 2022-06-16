@@ -36,9 +36,9 @@ class SinglePlotter(Plotter):
             self._plot_single(spectrum)
             if self.output_path:
                 if n_spectra > 1:
-                    self._save_figure(self.output_path, f'{self.file_name}_{index}', self.format)
+                    self._save_figure(self.output_path, f'{self.output_file}_{index}', self.format)
                 else:
-                    self._save_figure(self.output_path, self.file_name, self.format)
+                    self._save_figure(self.output_path, self.output_file, self.format)
         if self.show_plot:
             plt.show()
         plt.close()

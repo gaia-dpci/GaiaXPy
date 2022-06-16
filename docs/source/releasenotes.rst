@@ -1,6 +1,13 @@
 Release notes
 =============
 
+Version 1.1.3
+-------------
+Released on 2022/06/16.
+
+* Fix legend bug in plotter.
+* Restrict pandas version, >= 1.0.0.
+
 Version 1.1.2
 -------------
 Released on 2022/06/14.

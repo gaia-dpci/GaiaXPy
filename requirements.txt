@@ -1,5 +1,5 @@
 numpy
-pandas
+pandas>=1.0.0
 scipy
 astropy
 fastavro<=1.4.7

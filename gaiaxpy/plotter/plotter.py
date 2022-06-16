@@ -12,7 +12,7 @@ from os.path import join
 
 class Plotter(object):
 
-    def __init__(self, spectra, sampling, multi, show_plot, output_path, file_name, format, legend):
+    def __init__(self, spectra, sampling, multi, show_plot, output_path, output_file, format, legend):
         self.spectra = spectra
         self.spectra_class = _set_class(spectra)
         self.sampling = sampling
@@ -20,7 +20,7 @@ class Plotter(object):
         self.show_plot = show_plot
         self.output_path = output_path
         # Here we assume that the list only contains spectra of the same type
-        self.file_name = self._set_file_name(file_name)
+        self.output_file = self._set_output_file(output_file)
         self.format = format
         self.legend = legend
         self.max_spectra_on_multi = 40
@@ -35,18 +35,18 @@ class Plotter(object):
     def _get_source_id(self, spectrum):
         return spectrum['source_id']
 
-    def _save_figure(self, output_path, file_name, format):
+    def _save_figure(self, output_path, output_file, format):
         if output_path:
             Path(output_path).mkdir(parents=True, exist_ok=True)
             plt.savefig(
-                join(output_path, f'{file_name}.{format}'),
+                join(output_path, f'{output_file}.{format}'),
                 format=format,
                 transparent=False)
 
-    def _set_file_name(self, file_name):
-        if not file_name:
-            file_name = self.spectra_class.__name__
-        return file_name
+    def _set_output_file(self, output_file):
+        if not output_file:
+            output_file = self.spectra_class.__name__
+        return output_file
 
 
 def _set_class(spectra):

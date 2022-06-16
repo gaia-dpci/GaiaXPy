@@ -99,7 +99,8 @@ def _correct_system(system_df, correction_array):
 def apply_error_correction(input_multi_photometry, photometric_system=None, output_path='.',
                            output_file='output_corrected_photometry', output_format=None, save_file=True):
     """
-    Apply error correction. Infers photometric systems if not specified.
+    Apply error correction (see Montegriffo et al., 2022, for more details). Infers photometric systems
+        if not specified.
 
     Args:
         input_multi_photometry (DataFrame): Photometry DataFrame, can contain photometry for one or more systems.
@@ -120,7 +121,7 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
     input_multi_photometry, extension = InputReader(input_multi_photometry, apply_error_correction)._read()
     # Validate that it is a multi-photometry, but how? First try below:
     if not gaia_G_mag_column in input_multi_photometry.columns:
-        raise ValueError('System Gaia_DR3_Vega, necessary to apply the error correction is not present in the input photometry.')
+        raise ValueError('System Gaia_DR3_Vega, required to apply the error correction is not present in the input photometry.')
     columns = list(input_multi_photometry.columns)
     columns.remove('source_id')
     systems_in_data = _extract_systems_from_data(columns, photometric_system)

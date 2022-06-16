@@ -11,7 +11,7 @@ from .single import SinglePlotter
 from gaiaxpy.core import _warning
 
 
-def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_path=None, file_name=None,
+def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_path=None, output_file=None,
                  format='jpg', legend=True):
     """"
     Plot one or more spectra.
@@ -23,7 +23,7 @@ def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_pat
         show_plot (bool): Show plots if True.
         output_path (str): Path to the directory where the figures will be saved. E.g.:
                          '/home/user/folder'
-        file_name (str): Name of the file to be saved.
+        output_file (str): Name of the file to be saved.
         format (str): File format for the saved figure. Default value: png.
         legend (bool): Print legend. Valid only if multi is True.
     """
@@ -32,20 +32,20 @@ def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_pat
     spectra_type = spectra.attrs['data_type'].__name__
     if multi:
         if spectra_type == 'AbsoluteSampledSpectrum':
-            plotter = MultiAbsolutePlotter(spectra, sampling, multi, show_plot, output_path, file_name, format, legend)
+            plotter = MultiAbsolutePlotter(spectra, sampling, multi, show_plot, output_path, output_file, format, legend)
         elif spectra_type == 'XpSampledSpectrum':
-            plotter = MultiXpPlotter(spectra, sampling, multi, show_plot, output_path, file_name, format, legend)
+            plotter = MultiXpPlotter(spectra, sampling, multi, show_plot, output_path, output_file, format, legend)
     else:
-        plotter = SinglePlotter(spectra, sampling, multi, show_plot, output_path, file_name, format, legend)
+        plotter = SinglePlotter(spectra, sampling, multi, show_plot, output_path, output_file, format, legend)
     plotter._plot()
 
 
 def _validate_input(spectra, sampling=None, multi=False, show_plot=True, output_path=None,
-                    file_name=None, format='png', legend=True):
+                    output_file=None, format='png', legend=True):
     bool_values = [True, False]
     bool_params = [('multi', multi), ('show_plot', show_plot), ('legend', legend)]
     # Format is validated by matplotlib, skip
-    if output_path is None and file_name is not None:
+    if output_path is None and output_file is not None:
         _warning('No save path has been provided, the file will not be saved.')
     if sampling is not None and not isinstance(sampling, ndarray):
         raise ValueError('Sampling must be a NumPy array.')

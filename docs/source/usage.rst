@@ -190,6 +190,137 @@ The available systems are updated as requested. For a complete list of the syste
 
     PhotometricSystem.get_available_systems()
 
+The following table lists the available systems providing references for the passband definitions.
+The last column indicate the presence of a standardised version of the same set of filters (see
+Gaia Collaboration, Montegriffo et al. 2022 for details). The asterisk for the HST WFC3 UVIS and
+ACS WFC systems indicates that only a small selection (f438w, f606w, f814w) of the bands in these
+two systems have been standardised using the HUGS catalogue (Nardiello, D., et al. 2018, The Hubble Space Telescope UV Legacy Survey of Galactic Globular
+Clusters - XVII. Public Catalogue Release, 481, 3382–3393). These are available as HST_HUGS in GaiaXPy.
+No ultraviolet band is provided in the standardised version of the Stromgren system (this is also indicated
+with an asterisk in the table below).
+
+.. role::  raw-html(raw)
+    :format: html
+.. list-table::
+   :widths: 5 5 50 20 5
+   :header-rows: 1
+
+   * - GaiaXPy
+     - Name
+     - Passbands
+     - Reference
+     - Standardised
+   * - DECam
+     - DECam
+     - g, r, i, z, Y
+     - https://noirlab.edu/science/programs/ctio/filters/Dark-Energy-Camera
+     -
+   * - Els_Custom_W09_S2
+     - Custom
+     - Halpha, Hbeta, O3, CHalpha, CHbeta, CO3, r, i
+     - Gaia Collaboration, Montegriffo et al. 2022
+     -
+   * - Euclid_VIS
+     - Euclid VIS
+     - VIS
+     - http://svo2.cab.inta-csic.es/svo/theory/fps3 (Euclid/VIS)
+     -
+   * - Gaia_2
+     - Gaia 2
+     - C1B431, C1B556, C1B655, C1B768, C1B916, C1M326, C1M344, C1M379, C1M395, C1M410, C1M467, C1M506, C1M515, C1M549, C1M656, C1M716, C1M747, C1M825, C1M861, C1M965
+     - Jordi et al. 2006, MNRAS, 367, 290–314
+     -
+   * - Gaia_DR3_Vega
+     - Gaia DR3
+     - G, BP, RP
+     - https://www.cosmos.esa.int/web/gaia/edr3-passbands
+     -
+   * - Halpha_Custom_AB
+     - Custom
+     - Halpha01nm, Halpha02nm, Halpha03nm, Halpha04nm, Halpha05nm, Halpha06nm, Halpha07nm, Halpha08nm, Halpha09nm, Halpha10nm
+     - Gaia Collaboration, Montegriffo et al. 2022
+     -
+   * - H_custom
+     - Custom
+     - Hbeta_1.0, Hbeta_2.0, Hbeta_3.0, Hbeta_4.0, Hbeta_5.0, Hbeta_6.0, Hbeta_7.0, Hbeta_8.0, Hbeta_9.0, Hbeta_10.0, Hbeta_11.0, Hbeta_12.0, Hbeta_13.0, Hbeta_14.0, Hbeta_15.0, Hbeta_16.0, Hbeta_17.0, Hbeta_18.0, Hbeta_19.0, Hbeta_20.0, Hbeta_21.0, Hbeta_22.0, Hbeta_23.0, Hbeta_24.0, Hbeta_25.0, Halpha_1.0, Halpha_2.0, Halpha_3.0, Halpha_4.0, Halpha_5.0, Halpha_6.0, Halpha_7.0, Halpha_8.0, Halpha_9.0, Halpha_10.0, Halpha_11.0, Halpha_12.0, Halpha_13.0, Halpha_14.0, Halpha_15.0, Halpha_16.0, Halpha_17.0, Halpha_18.0, Halpha_19.0, Halpha_20.0, Halpha_21.0, Halpha_22.0, Halpha_23.0, Halpha_24.0, Halpha_25.0
+     - Gaia Collaboration, Montegriffo et al. 2022
+     -
+   * - Hipparcos_Tycho
+     - Hipparcos/Tycho
+     - Hp, BT, VT
+     - Bessell, M. & Murphy, S. 2012, PASP, 124, 140
+     -
+   * - HST_ACSWFC
+     - HST ACSWFC
+     - f435w, f475w, f550m, f555w, f606w, f625w, f775w, f814w, f850lp
+     - http://svo2.cab.inta-csic.es/svo/theory/fps3 (HST/ACS_WFC)
+     - :raw-html:`&check;` :raw-html:`&ast;`
+   * - HST_WFC3UVIS
+     - HST WFC3UVIS
+     - f336w, f343n, f350lp, f390m, f390w, f395n, f410m, f438w, f467m, f475w, f475x, f547m, f555w, f600lp, f606w, f621m, f625w, f657n, f665n, f673n, f680n, f689m, f763m, f775w, f814w, f845m, f850lz, f373n, f469n, f487n, f502n, f631n, f645n, f656n, f658n
+     - http://svo2.cab.inta-csic.es/svo/theory/fps3 (HST/WFC3_UVIS1)
+     - :raw-html:`&check;` :raw-html:`&ast;`
+   * - HST_WFPC2
+     - HST WFPC2
+     - f300w, f336w, f380w, f410m, f439w, f450w, f467m, f547m, f555w, f569w, f606w, f622w, f675w, f702w, f785lp, f791w, f814w, f850lp
+     - http://svo2.cab.inta-csic.es/svo/theory/fps3 (HST/WFPC2-WF)
+     -
+   * - IPHAS
+     - IPHAS
+     - Halpha, r, i
+     - Barentsen et al. 2014, MNRAS, 444, 3230
+     -
+   * - JKC
+     - Johnson-Kron-Cousins
+     - U, B, V, R, I
+     - Bessell,M. & Murphy,S. 2012, PASP, 124, 140B
+     - :raw-html:`&check;`
+   * - JPAS
+     - JPAS
+     - uJava, u, J0378, J0390, J0400,J0410, J0420, J0430, J0440, J0450, J0460, J0470, J0480, gSDSS, J0490, J0500, J0510, J0520, J0530, J0540, J0550, J0560, J0570, J0580, J0590, J0600, J0610, J0620, rSDSS, J0630, J0640, J0650, J0660, J0670, J0680, J0690, J0700, J0710, J0720, J0730, J0740, J0750, J0760, iSDSS, J0770, J0780, J0790, J0800, J0810, J0820, J0830, J0840, J0850, J0860, J0870, J0880, J0890, J0900, J0910, J1007
+     - Benitez et al. 2014, J-PAS Red Book, arXiv:1403.5237
+     -
+   * - JPLUS
+     - JPLUS
+     - uJAVA, J0378, J0395, J0410, J0430, gJPLUS, J0515, rJPLUS, J0660, iJPLUS, J0861, zJPLUS
+     - Cenarro et al. 2019 A&A, 622, 176
+     -
+   * - JWST_NIRCAM
+     - JWST NIRCam
+     - F070W, F090W
+     - http://svo2.cab.inta-csic.es/svo/theory/fps3 (JWST/NIRCam)
+     -
+   * - PanSTARRS1
+     - PanSTARRS1
+     - gp, rp, ip, zp, yp
+     - Tonry et al. 2012, ApJ, 750, 99
+     - :raw-html:`&check;`
+   * - Pristine
+     - Pristine
+     - CaHK
+     - Starkenburg E., Martin N., et al. 2017, MNRAS, 471, 2587
+     -
+   * - SDSS
+     - SDSS
+     - u, g, r, i, z
+     - Doi et al. 2010, AJ, 141, 47
+     - :raw-html:`&check;`
+   * - Sky_Mapper
+     - SkyMapper
+     - u, u2, v, g, r, i, z
+     - Bessel et al., 2011PASP..123..789B (u2 filter as in https://skymapper.anu.edu.au/data-release/#Filters)
+     -
+   * - Stromgren
+     - Stromgren
+     - u, v, b, y
+     - http://svo2.cab.inta-csic.es/svo/theory/fps3/ (INT/WFC)
+     - :raw-html:`&check;` :raw-html:`&ast;`
+   * - WFIRST
+     - WFIRST
+     - R062, Z087
+     - http://svo2.cab.inta-csic.es/svo/theory/fps3 (WFIRST)
+     -
+
 All the available options for this method can be found in :ref:`generate <generate>`.
 
 -------

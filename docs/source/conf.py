@@ -47,7 +47,7 @@ def edit_default_value(app, what, name, obj, options, signature, return_annotati
 
 
 def setup(app):
-    app.add_css_file('css/custom.css')
+    #app.add_css_file('css/custom.css')
     app.connect("autodoc-process-signature", edit_default_value)
 
 

@@ -47,7 +47,7 @@ def edit_default_value(app, what, name, obj, options, signature, return_annotati
 
 
 def setup(app):
-    #app.add_css_file('css/custom.css')
+    app.add_css_file('css/custom.css')
     app.connect("autodoc-process-signature", edit_default_value)
 
 
@@ -136,7 +136,7 @@ html_theme_options = {
     'titles_only': False,
 }
 
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+#html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

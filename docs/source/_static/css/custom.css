@@ -5,14 +5,3 @@ th p {
 .section #basic-2-flip-flop-synchronizer{
      text-align:justify;
 }
-
-.wy-table-responsive table td, .wy-table-responsive table th {
-    white-space: inherit;
-    overflow: auto;
-}
-
-.tight-table td {
-  white-space: normal !important;
-  border: none !important;
-  margin: 0 !important;
-}

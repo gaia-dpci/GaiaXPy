@@ -113,7 +113,9 @@ If the function accepts a sampling, it has to correspond to a NumPy array and be
     input_file = 'path/to/input/file.extension'
     output_data, output_sampling = generic_function(input_file, sampling=np.linspace(0, 100, 1000))
 
-**IMPORTANT NOTE: If an output file with the same name as an existing one is created, the data of the previous file will be automatically overwritten.**
+.. warning::
+    If an output file with the same name as an existing one is created,
+    the data of the previous file will be automatically overwritten.
 
 Note on TOPCAT
 --------------
@@ -182,13 +184,35 @@ of W nm :superscript:`-1` m :superscript:`-2`.
     phot_system = PhotometricSystem.JKC
     generated_data = generate(mean_spectrum_file, phot_system, save_file=False)
 
-The available systems are updated as requested. For a complete list of the systems included in the package:
+`This table <_static/images/PhotometricSystem_table.pdf>`_ lists the available systems providing references for the passband definitions.
+The last column indicates the presence of a standardised version of the same set of filters (see
+Gaia Collaboration, Montegriffo et al. 2022 for details). The asterisk for the HST WFC3 UVIS and
+ACS WFC systems indicates that only a small selection (f438w, f606w, f814w) of the bands in these
+two systems have been standardised using the HUGS catalogue (Nardiello, D., et al. 2018, The Hubble Space Telescope UV Legacy Survey of Galactic Globular
+Clusters - XVII. Public Catalogue Release, 481, 3382–3393). These are available as HST_HUGS in GaiaXPy.
+No ultraviolet band is provided in the standardised version of the Stromgren system (this is also indicated
+with an asterisk).
+
+The complete list of the systems included in the package can also be obtained as follows:
 
 .. code-block:: python
 
     from gaiaxpy import PhotometricSystem
 
     PhotometricSystem.get_available_systems()
+
+Users can request the addition of other photometric systems by raising an issue via GitHub.
+The main conditions for adding a new system are the following:
+
+* Only passbands that are fully enclosed in the Gaia BP/RP wavelength range [330, 1050] nm can be reproduced.
+* Requests need to be properly justified. An example: it would be pointless to include a specific set of passbands that is used at a given telescope to approximate the JKC or SDSS systems. Synthetic magnitudes/fluxes (standardised or non-standardised) in these systems can be already obtained with GaiaXPy. On the other hand, it would be useful to include a set of passbands adopted by an existing or forthcoming survey that intends to provide magnitudes in its own “natural” photometric system, or a set aimed at tracing a specific feature/characteristic of the available XP spectra, not covered by already included passbands.
+* The newly added systems will be publicly available to all GaiaXPy users
+* The new system to be added is specified as follows:
+
+  * one csv file per passband, containing the following columns: wavelength in nm or Angstrom, total response in arbitrary units
+  * it must be clearly specified if the transmission curves are photonic curves or energy curves (see, e.g., Bessell & Murphy 2012)
+  * it must be clearly specified if the desired magnitudes are VEGAMAG or AB mag
+  * a reference for the source of all the above info (especially the transmission curves) must be provided.
 
 All the available options for this method can be found in :ref:`generate <generate>`.
 

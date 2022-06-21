@@ -201,7 +201,7 @@ The complete list of the systems included in the package can also be obtained as
 
     PhotometricSystem.get_available_systems()
 
-Users can request the addition of other photometric systems by raising an issue via GitHub.
+Users can request the addition of other photometric systems by raising an `issue via GitHub <https://github.com/gaia-dpci/GaiaXPy/issues>`_.
 The main conditions for adding a new system are the following:
 
 * Only passbands that are fully enclosed in the Gaia BP/RP wavelength range [330, 1050] nm can be reproduced.

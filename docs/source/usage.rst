@@ -206,12 +206,12 @@ The main conditions for adding a new system are the following:
 
 * Only passbands that are fully enclosed in the Gaia BP/RP wavelength range [330, 1050] nm can be reproduced.
 * Requests need to be properly justified. An example: it would be pointless to include a specific set of passbands that is used at a given telescope to approximate the JKC or SDSS systems. Synthetic magnitudes/fluxes (standardised or non-standardised) in these systems can be already obtained with GaiaXPy. On the other hand, it would be useful to include a set of passbands adopted by an existing or forthcoming survey that intends to provide magnitudes in its own “natural” photometric system, or a set aimed at tracing a specific feature/characteristic of the available XP spectra, not covered by already included passbands.
-* The newly added systems will be publicly available to all GaiaXPy users
+* The newly added systems will be publicly available to all GaiaXPy users.
 * The new system to be added is specified as follows:
 
-  * one csv file per passband, containing the following columns: wavelength in nm or Angstrom, total response in arbitrary units
-  * it must be clearly specified if the transmission curves are photonic curves or energy curves (see, e.g., Bessell & Murphy 2012)
-  * it must be clearly specified if the desired magnitudes are VEGAMAG or AB mag
+  * one CSV file per passband, containing the following columns: wavelength in nm or Angstrom, total response in arbitrary units.
+  * it must be clearly specified if the transmission curves are photonic curves or energy curves (see, e.g., Bessell & Murphy 2012).
+  * it must be clearly specified if the desired magnitudes are VEGAMAG or AB mag.
   * a reference for the source of all the above info (especially the transmission curves) must be provided.
 
 All the available options for this method can be found in :ref:`generate <generate>`.

@@ -1,6 +1,15 @@
 Release notes
 =============
 
+Version 1.1.4
+-------------
+Released on 2022/06/21.
+
+* Added DECam system files.
+* Removed RVS band from Gaia DR3 system.
+* Added table of available systems in documentation.
+* Added info for requesting new systems and updated citations.
+
 Version 1.1.3
 -------------
 Released on 2022/06/16.

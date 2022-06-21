@@ -113,7 +113,7 @@ If the function accepts a sampling, it has to correspond to a NumPy array and be
     input_file = 'path/to/input/file.extension'
     output_data, output_sampling = generic_function(input_file, sampling=np.linspace(0, 100, 1000))
 
-.. important::
+.. warning::
     If an output file with the same name as an existing one is created,
     the data of the previous file will be automatically overwritten.
 

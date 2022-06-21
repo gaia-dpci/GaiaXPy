@@ -204,6 +204,7 @@ The complete list of the systems included in the package can also be obtained as
 Users can request the addition of other photometric systems by raising an issue via GitHub.
 The main conditions for adding a new system are the following:
 
+* Only passbands that are fully enclosed in the Gaia BP/RP wavelength range [330, 1050] nm can be reproduced.
 * Requests need to be properly justified. An example: it would be pointless to include a specific set of passbands that is used at a given telescope to approximate the JKC or SDSS systems. Synthetic magnitudes/fluxes (standardised or non-standardised) in these systems can be already obtained with GaiaXPy. On the other hand, it would be useful to include a set of passbands adopted by an existing or forthcoming survey that intends to provide magnitudes in its own “natural” photometric system, or a set aimed at tracing a specific feature/characteristic of the available XP spectra, not covered by already included passbands.
 * The newly added systems will be publicly available to all GaiaXPy users
 * The new system to be added is specified as follows:

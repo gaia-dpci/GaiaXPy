@@ -43,7 +43,7 @@ class TestGenericFunctions(unittest.TestCase):
         phot_list = [PhotometricSystem.WFIRST, PhotometricSystem.HST_WFC3UVIS, \
                      PhotometricSystem.Gaia_DR3_Vega, PhotometricSystem.Els_Custom_W09_S2]
         f = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_dr3int6.fits')
-        photometry = generate(f, photometric_system=phot_list)
+        photometry = generate(f, photometric_system=phot_list, save_file=False)
         self.assertListEqual(_extract_systems_from_data(photometry), expected_output)
         self.assertListEqual(_extract_systems_from_data(photometry, photometric_system=phot_list), expected_output)
 

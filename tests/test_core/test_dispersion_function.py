@@ -34,5 +34,5 @@ class TestDispersionFunction(unittest.TestCase):
 
 
     def test_rp_ranges(self):
-        self.assertListEqual(rp_pwl_range, [12.480039999999999, 48.86102])
+        npt.assert_array_almost_equal(np.array(rp_pwl_range), np.array([12.480039999999999, 48.86102]))
         self.assertListEqual(rp_wl_range, [635, 1020])

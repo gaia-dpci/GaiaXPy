@@ -139,7 +139,7 @@ def array_to_symmetric_matrix(size, array):
         raise TypeError('Wrong argument types. Must be integer and np.ndarray.')
 
 
-def _extract_systems_from_data(data_columns, photometric_system):
+def _extract_systems_from_data(data_columns, photometric_system=None):
     src = 'source_id'
     columns = list(data_columns.copy())
     if src in columns:

@@ -5,11 +5,19 @@ from .generic_functions import array_to_symmetric_matrix, _extract_systems_from_
                                _validate_wl_sampling, _warning
 
 from . import config
-from .config import _load_xpmerge_from_csv, _load_offset_from_csv, \
-    _load_xpsampling_from_csv, _load_xpzeropoint_from_csv
+from .config import get_file, _load_offset_from_csv, _load_xpmerge_from_csv, \
+                    _load_xpsampling_from_csv, _load_xpzeropoint_from_csv
 
 from . import dispersion_function
-from .dispersion_function import pwl_to_wl, wl_to_pwl, pwl_range, wl_range
+from .dispersion_function import read_config_file, pwl_to_wl, wl_to_pwl, \
+                                 pwl_range, wl_range, bp_pwl_range, bp_wl_range, \
+                                 rp_pwl_range, rp_wl_range
+
+from . import nature
+from .nature import PLANCK, C
+
+from . import satellite
+from .satellite import TELESCOPE_PUPIL_AREA, BP_WL, RP_WL, BANDS
 
 from . import server
 from .server import data_release, gaia_server

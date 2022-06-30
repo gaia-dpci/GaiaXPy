@@ -33,6 +33,7 @@ Contents
 .. toctree::
    :maxdepth: 3
 
+   Homepage <https://gaia-dpci.github.io/GaiaXPy-website/>
    description
    installation
    usage

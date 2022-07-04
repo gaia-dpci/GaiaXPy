@@ -174,7 +174,9 @@ Synthetic photometry generator
 
 The synthetic photometry utility uses the method :python:`generate` to return a DataFrame with the generated synthetic photometry results.
 Magnitudes, fluxes and flux errors are computed for each filter. The synthetic fluxes are given in units
-of W nm :superscript:`-1` m :superscript:`-2`.
+of W nm :superscript:`-1` m :superscript:`-2` for photometric systems on VEGAMAG and W Hz :superscript:`-1` m :superscript:`-2`
+for systems in AB. See also Gaia Collaboration, Montegriffo et al. 2022, Gaia Data Release 3: The Galaxy in your preferred
+colours. Synthetic photometry from Gaia low-resolution spectra.
 
 .. code-block:: python
 

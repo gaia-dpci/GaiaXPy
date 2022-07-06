@@ -10,33 +10,6 @@ import matplotlib.pyplot as plt
 
 class MultiAbsolutePlotter(Plotter):
 
-    '''
-    def _plot_multi_xp(self):
-        show_legend = self.legend
-        spectra_df = self.spectra
-        spectra_class = self.spectra_class
-        max_flux = 0
-        fig, ax = plt.subplots(ncols=2, figsize=(16, 8))
-        # Set titles
-        ax[0].set_title(BANDS.bp.upper())
-        ax[1].set_title(BANDS.rp.upper())
-        ax[1].yaxis.set_label_position('right')
-        ax[1].yaxis.tick_right()
-        for _, spectrum in spectra_df.iterrows():
-            x, y, e = self._get_inputs(spectrum)
-            max_flux = max(y) if max(y) > max_flux else max_flux
-            axis = BANDS.index(spectrum.xp.lower())
-            ax[axis].plot(x, y, lw=2, alpha=0.95, label=spectrum.source_id)
-        for axis in ax:
-            axis.set_ylim(0, 1.05 * max_flux)
-            axis.set_xlabel(spectra_class._get_position_label())
-            axis.set_ylabel(spectra_class._get_flux_label())
-            if show_legend:
-                handles, labels = plt.gca().get_legend_handles_labels()
-                by_label = dict(zip(labels, handles))
-                fig.subplots_adjust(top=0.95, bottom=0.05, left=0.05, right=0.85, wspace=0.020)
-                fig.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1, 1), loc='upper right', borderaxespad=0.1)
-    '''
 
     def _plot_multi_absolute(self):
         spectra_class = self.spectra_class

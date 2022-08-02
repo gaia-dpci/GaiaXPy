@@ -10,7 +10,7 @@ class TestCholesky(unittest.TestCase):
 
     def test_inverse_covariance_matrix_file_from_notebook(self):
         f = join(files_path, 'cholesky', '18Sco-XP-spectra.csv')
-        inverse = get_inverse_covariance_matrix(f)
+        inverse = get_inverse_covariance_matrix(f, band='bp')
         # Load solution
         solution = np.loadtxt(join(files_path, 'cholesky', 'nb_bp_get_inv_cov_mat.txt'))
         npt.assert_array_equal(inverse, solution)

@@ -13,4 +13,4 @@ class TestCholesky(unittest.TestCase):
         inverse = get_inverse_covariance_matrix(f, band='bp')
         # Load solution
         solution = np.loadtxt(join(files_path, 'cholesky', 'nb_bp_get_inv_cov_mat.txt'))
-        npt.assert_array_equal(inverse, solution)
+        npt.assert_array_almost_equal(inverse, solution)

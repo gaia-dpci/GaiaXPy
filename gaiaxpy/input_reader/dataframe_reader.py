@@ -50,7 +50,7 @@ class DataFrameReader(object):
                 for size_column, values_column in matrix_columns:
                     try:
                         data[values_column][index] = array_to_symmetric_matrix(
-                            data[size_column][index].astype(int), row[values_column])
+                            row[values_column], data[size_column][index].astype(int))
                     except AttributeError as err:
                         if isnull(data[size_column][index]):
                             continue

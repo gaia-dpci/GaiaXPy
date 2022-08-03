@@ -39,7 +39,7 @@ class TestArrayToSymmetricMatrix(unittest.TestCase):
     def test_array_to_symmetric_matrix_type(self):
         self.assertIsInstance(
             array_to_symmetric_matrix(
-                size, array), np.ndarray)
+                array, size), np.ndarray)
 
     def test_array_to_symmetric_matrix_values(self):
         array = np.array([4, 5, 6])
@@ -47,15 +47,15 @@ class TestArrayToSymmetricMatrix(unittest.TestCase):
             [[1., 4., 5.], [4., 1., 6.], [5., 6., 1.]])
         self.assertTrue(
             (array_to_symmetric_matrix(
-                size, array) == expected_symmetric).all())
+                array, size) == expected_symmetric).all())
 
     def test_array_to_symmetric_matrix_mismatching(self):
         with self.assertRaises(ValueError):
-            array_to_symmetric_matrix(2, array)
+            array_to_symmetric_matrix(array, 2)
 
     def test_array_to_symmetric_matrix_negative_size(self):
         with self.assertRaises(ValueError):
-            array_to_symmetric_matrix(-1, array)
+            array_to_symmetric_matrix(array, -1)
 
     def test_array_to_symmetric_matrix_wrong__tipe(self):
         with self.assertRaises(TypeError):

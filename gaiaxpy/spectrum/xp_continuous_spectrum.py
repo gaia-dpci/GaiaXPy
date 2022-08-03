@@ -59,7 +59,7 @@ class XpContinuousSpectrum(XpSpectrum):
                 structure as used in the archive for the correlation matrix is expected.
             band (str): Gaia photometer, can be either 'bp' or 'rp'.
         """
-        corr = array_to_symmetric_matrix(df[f'{band}_n_parameters'], df[f'{band}_coefficient_correlations'])
+        corr = array_to_symmetric_matrix(df[f'{band}_coefficient_correlations'], df[f'{band}_n_parameters'])
         df[f'{band}_coefficient_correlations'] = corr
         cov = _get_covariance_matrix(df, band)
         return cls(df['source_id'],

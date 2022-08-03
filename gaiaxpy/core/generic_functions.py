@@ -98,7 +98,7 @@ def _get_system_label(name):
 
 
 # AVRO files include the values in the diagonal, whereas others don't
-def array_to_symmetric_matrix(size, array):
+def array_to_symmetric_matrix(array, size):
     """
     Convert the input 1D array into a 2D matrix. The array is assumed to store
     only the unique elements of a symmetric matrix (i.e. all elements
@@ -106,8 +106,8 @@ def array_to_symmetric_matrix(size, array):
     is returned symmetric with respect to the diagonal.
 
     Args:
-        size (int): number of rows/columns in the output matrix.
         array (ndarray): 1D array.
+        size (int): number of rows/columns in the output matrix.
 
     Returns:
         array of arrays: a full 2D matrix.

@@ -77,22 +77,17 @@ class InternalContinuousParser(GenericParser):
         except ValueError:
             raise DataMismatchError()
         columns = [re.search('<FIELD ID="(.+?)"', str(field)).group(1) for field in votable.fields]
-        values_to_df = []
-        for index, entry in enumerate(votable.array):
-            row = []
-            for column, value in zip(columns, entry):
-                row.append(value)
-            values_to_df.append(row)
+        values_to_df = ((value for column, value in zip(columns, entry)) for index, entry in enumerate(votable.array))
         df = pd.DataFrame(values_to_df, columns=columns)
         if matrix_columns is not None:
-                for size_column, values_column in matrix_columns:
-                    try:
-                        df[values_column] = df.apply(lambda row: \
-                        array_to_symmetric_matrix(row[values_column], row[size_column]), \
-                        axis=1)
-                    # Value can be NaN when a band is not present
-                    except IndexError:
-                        continue
+            for size_column, values_column in matrix_columns:
+                try:
+                    df[values_column] = df.apply(lambda row: \
+                    array_to_symmetric_matrix(row[values_column], row[size_column]), \
+                    axis=1)
+                # Value can be NaN when a band is not present
+                except IndexError:
+                    continue
         return _cast(df)
 
     def _parse_avro(self, avro_file):

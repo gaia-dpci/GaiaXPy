@@ -40,7 +40,8 @@ class TestCholesky(unittest.TestCase):
         df = pd.read_csv(f)
         # Correlations should be matrix and error should be array
         df['bp_coefficient_correlations'] = df['bp_coefficient_correlations'].map(str_to_np_array)
-        #df['bp_coefficient_correlations'] = array_to_symmetric_matrix
+        df['bp_coefficient_correlations'] = df.apply(lambda row: array_to_symmetric_matrix(row['bp_coefficient_correlations'], \
+                                                     row['bp_n_parameters']), axis=1)
         df['bp_coefficient_errors'] = df['bp_coefficient_errors'].map(str_to_np_array)
         inverse = get_inverse_covariance_matrix(df, band='bp')
         npt.assert_array_almost_equal(inverse, solution)

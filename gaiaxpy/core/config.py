@@ -8,7 +8,7 @@ import numpy as np
 from configparser import ConfigParser
 from numbers import Number
 from os import path
-from gaiaxpy.config import config_path, filters_path
+from gaiaxpy.config.paths import config_path, filters_path
 from gaiaxpy.core.satellite import BANDS
 
 config_parser = ConfigParser()

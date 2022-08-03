@@ -10,7 +10,7 @@ from configparser import ConfigParser
 from functools import lru_cache
 from scipy import interpolate
 from os.path import join
-from gaiaxpy.config import config_path
+from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 
 

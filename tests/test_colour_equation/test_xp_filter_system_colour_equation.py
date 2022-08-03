@@ -6,7 +6,7 @@ from os import path
 import numpy.testing as npt
 import pandas.testing as pdt
 from gaiaxpy import generate, PhotometricSystem
-from gaiaxpy.colour_equation import apply_colour_equation
+from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
 from tests.files import files_path
 
 continuous_path = path.join(files_path, 'xp_continuous')

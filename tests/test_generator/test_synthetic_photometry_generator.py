@@ -4,7 +4,8 @@ from gaiaxpy.generator import _generate_synthetic_photometry, PhotometricSystem
 from gaiaxpy.core import _load_xpmerge_from_csv, _load_xpsampling_from_csv, \
                          satellite
 from gaiaxpy.file_parser import InternalContinuousParser
-from gaiaxpy.spectrum import SampledBasisFunctions, SingleSyntheticPhotometry
+from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.single_synthetic_photometry import SingleSyntheticPhotometry
 from tests.files import files_path
 
 # Files to test parse

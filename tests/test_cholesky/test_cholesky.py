@@ -3,7 +3,7 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 from os.path import join
-from gaiaxpy import get_inverse_covariance_matrix
+from gaiaxpy.cholesky.cholesky import get_chi2, get_inverse_covariance_matrix
 from gaiaxpy.core import array_to_symmetric_matrix
 from tests.files import files_path
 

@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 from os import path
 from gaiaxpy.file_parser import InternalContinuousParser
-from gaiaxpy.spectrum import _correlation_to_covariance_dr3int5
+from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 from gaiaxpy.core.satellite import BANDS
 from tests.files import files_path
 

@@ -7,12 +7,13 @@ from ast import literal_eval
 from configparser import ConfigParser
 from itertools import islice
 from os.path import abspath, dirname, join
-from gaiaxpy.config import config_path
+from gaiaxpy.config.paths import config_path
 from gaiaxpy.converter import convert, get_unique_basis_ids, get_design_matrices, \
                               load_config, _create_spectrum
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser import InternalContinuousParser, InternalSampledParser
-from gaiaxpy.spectrum import SampledBasisFunctions, XpSampledSpectrum
+from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from tests.files import files_path
 from tests.utils import df_columns_to_array, get_spectrum_with_source_id_and_xp
 

@@ -5,7 +5,7 @@ import pandas as pd
 from configparser import ConfigParser
 from os import listdir, path
 from numpy import poly1d
-from gaiaxpy.config import filters_path
+from gaiaxpy.config.paths import filters_path
 from gaiaxpy.core import _extract_systems_from_data, _load_xpzeropoint_from_csv, \
                          _progress_tracker, _validate_arguments
 from gaiaxpy.input_reader import InputReader

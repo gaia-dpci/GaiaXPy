@@ -10,14 +10,16 @@ import pandas as pd
 from configparser import ConfigParser
 from os import path
 from .config import get_config, load_config
-from gaiaxpy.config import config_path
+from gaiaxpy.config.paths import config_path
 from gaiaxpy.core import _get_spectra_type, _progress_tracker, \
                          _validate_arguments, _validate_pwl_sampling
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader import InputReader
 from gaiaxpy.output import SampledSpectraData
-from gaiaxpy.spectrum import SampledBasisFunctions, XpContinuousSpectrum, \
-                             XpSampledSpectrum, _get_covariance_matrix
+from gaiaxpy.spectrum.utils import _get_covariance_matrix
+from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
+from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))

@@ -32,10 +32,3 @@ class TestExternalParserCSV(unittest.TestCase):
     def test_flux_types(self):
         self.assertIsInstance(parsed_csv_file['flux'][0], ndarray)
         self.assertIsInstance(parsed_csv_file['flux_error'][0], ndarray)
-
-
-class TestExternalParserXML(unittest.TestCase):
-
-    def test_parse_fails(self):
-        with self.assertRaises(KeyError):
-            parser._parse_xml(xml_file)

@@ -12,8 +12,6 @@ from astropy.io.votable import parse_single_table
 from .cast import _cast
 from gaiaxpy.core import array_to_symmetric_matrix
 
-# Avoid warning, false positive
-pd.options.mode.chained_assignment = None
 
 valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']
 
@@ -110,14 +108,14 @@ class GenericParser(object):
         except UnicodeDecodeError:
             raise DataMismatchError()
         if matrix_columns is not None:
-            for index, row in df.iterrows():
-                for size_column, values_column in matrix_columns:
-                    try:
-                        df[values_column][index] = array_to_symmetric_matrix(
-                            np.fromstring(row[values_column][1:-1], sep=','), df[size_column][index].astype(int))
-                    # Value can be NaN when a band is not present
-                    except TypeError:
-                        continue
+            for size_column, values_column in matrix_columns:
+                try:
+                    df[values_column] = df.apply(lambda row: \
+                    array_to_symmetric_matrix(np.fromstring(row[values_column][1:-1], sep=','), \
+                    row[size_column]), axis=1)
+                # Value can be NaN when a band is not present
+                except TypeError:
+                    continue
         return df
 
     def _parse_fits(self, fits_file, array_columns=None, matrix_columns=None):
@@ -134,32 +132,18 @@ class GenericParser(object):
             data = Table.read(fits_file, format='fits')
         except OSError:
             raise DataMismatchError()
-        fits_as_list = []
         columns = data.columns.keys()
-        for index, row in enumerate(data):
-            # Append row values to list
-            row = []
-            for column in columns:
-                row.append(data[column][index])
-            fits_as_list.append(row)
-        df = pd.DataFrame(fits_as_list, columns=columns)
-        if array_columns is not None:
-            for column in array_columns:
-                for index, row in df.iterrows():
-                    try:
-                        df[column][index] = row[column]
-                    # Value can be NaN when a band is not present
-                    except TypeError:
-                        continue
+        fits_as_gen = ([data[column][index] for column in columns] for index, _ in enumerate(data))
+        df = pd.DataFrame(fits_as_gen, columns=columns)
         if matrix_columns is not None:
-            for index, row in df.iterrows():
-                for size_column, values_column in matrix_columns:
-                    try:
-                        df[values_column][index] = array_to_symmetric_matrix(
-                            row[values_column], df[size_column][index].astype(int))
-                    # Value can be NaN when a band is not present
-                    except IndexError:
-                        continue
+            for size_column, values_column in matrix_columns:
+                try:
+                    df[values_column] = df.apply(lambda row: \
+                    array_to_symmetric_matrix(row[values_column], row[size_column]), \
+                    axis=1)
+                # Value can be NaN when a band is not present
+                except IndexError:
+                    continue
         return df
 
     def _parse_xml(self, xml_file, array_columns=None):
@@ -180,20 +164,10 @@ class GenericParser(object):
             raise DataMismatchError()
         if array_columns:
             columns = list(votable.columns)
-            votable_as_list = []
-            for index, row in enumerate(votable):
-                # Append row values to list
-                row = []
-                for column in columns[:-len(array_columns)]:
-                    row.append(votable[column][index])
-                # Remove mask
-                for column in array_columns:
-                    try:
-                        row.append(votable[column][index].filled())
-                    except KeyError:
-                        raise KeyError(f'The columns in the input data do not match the expected ones. Missing column {column}.')
-                votable_as_list.append(row)
-                return pd.DataFrame(votable_as_list, columns=columns)
+            votable_as_list = ([votable[column][index].filled() if column in \
+                                array_columns else votable[column][index] for \
+                                column in columns] for index, _ in enumerate(votable))
+            return pd.DataFrame(votable_as_list, columns=columns)
         return votable.to_pandas()
 
 

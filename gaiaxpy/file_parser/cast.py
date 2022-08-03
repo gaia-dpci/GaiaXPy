@@ -8,7 +8,7 @@ from numpy import dtype
 from numpy.ma import MaskError
 
 # Fields of the AVRO file and other formats.
-type_map = {'source_id': dtype('int64'),
+_type_map = {'source_id': dtype('int64'),
             'solution_id': dtype('int64'),
             'rp_n_parameters': dtype('int64'),
             'bp_n_parameters': dtype('int64'),
@@ -53,7 +53,7 @@ def _cast(df):
     """
     for column in df.columns:
         try:
-            df[column] = df[column].astype(type_map[column])
+            df[column] = df[column].astype(_type_map[column])
         except KeyError:
             continue  # Not every key is available in every case
         except ValueError as err:

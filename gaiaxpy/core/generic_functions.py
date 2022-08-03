@@ -136,7 +136,7 @@ def array_to_symmetric_matrix(array, size):
         # Input array is already a matrix, we assume that it contains the required values.
         return array
     else:
-        raise TypeError('Wrong argument types. Must be integer and np.ndarray.')
+        raise TypeError('Wrong argument types. Must be np.ndarray and integer.')
 
 
 def _extract_systems_from_data(data_columns, photometric_system):

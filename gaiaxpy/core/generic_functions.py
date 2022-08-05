@@ -56,18 +56,6 @@ def _validate_arguments(default_output_file, given_output_file, save_file):
         _warning('Argument output_file was given, but save_file is set to False. Set save_file to True to store the output of the function.')
 
 
-def _progress_tracker(func):
-    # Progress tracker decorator
-    def inner(row, *args):
-        if args:
-            index = args[-2]
-            nrows = args[-1]
-            print('Processing data [{:.0%}]\r'.format((index + 1) / nrows), end="")
-            func(row, *args[:-2])
-            print(' ' * 30 + '\r', end='')
-    return inner
-
-
 def _get_spectra_type(spectra):
     """
     Get the spectra type.

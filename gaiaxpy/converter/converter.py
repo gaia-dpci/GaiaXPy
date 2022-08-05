@@ -8,11 +8,12 @@ import numbers
 import numpy as np
 import pandas as pd
 from configparser import ConfigParser
+from tqdm import tqdm
 from os import path
 from .config import get_config, load_config
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core.generic_functions import _get_spectra_type, _progress_tracker, \
-                                           _validate_arguments, _validate_pwl_sampling
+from gaiaxpy.core.generic_functions import _get_spectra_type, _validate_arguments, \
+                                           _validate_pwl_sampling
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
@@ -152,8 +153,6 @@ def _create_spectra(parsed_input_data, truncation, design_matrices):
     """
     spectra_list = []
     nrows = len(parsed_input_data)
-
-    @_progress_tracker
     def create_spectrum(row, truncation, *args):
         design_matrices = args[0]
         for band in BANDS:
@@ -163,7 +162,7 @@ def _create_spectra(parsed_input_data, truncation, design_matrices):
             except BaseException:
                 # Band not available
                 continue
-    for index, row in parsed_input_data.iterrows():
+    for index, row in tqdm(parsed_input_data.iterrows(), desc='Processing data', total=len(parsed_input_data)):
         create_spectrum(row, truncation, design_matrices, index, nrows)
     return spectra_list
 

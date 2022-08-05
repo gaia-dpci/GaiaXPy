@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from math import isnan, floor
 from os import path, listdir
+from tqdm import tqdm
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.generic_functions import _extract_systems_from_data, _warning
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -135,7 +136,7 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
         else:
             _warning(f'System {system} does not have a correction table. The program will not apply error correction over this system.')
     # Now we have to apply the correction on each of the systems, but this correction depends on the G band
-    for system in systems:
+    for system in tqdm(systems, desc='Correcting systems', total=len(systems)):
         system_df = input_multi_photometry[[column for column in input_multi_photometry.columns if
                                             (column.startswith(system) and f'{system}Std' not in column) or column == gaia_G_mag_column]]
         # Get the correction factors for the mag G column

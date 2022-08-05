@@ -8,12 +8,13 @@ import numpy as np
 import pandas as pd
 from configparser import ConfigParser
 from pathlib import Path
+from tqdm import tqdm
 from os.path import join
 from .external_instrument_model import ExternalInstrumentModel
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
-from gaiaxpy.core.generic_functions import _get_spectra_type, _progress_tracker, \
-                                           _validate_arguments, _validate_wl_sampling
+from gaiaxpy.core.generic_functions import _get_spectra_type, _validate_arguments, \
+                                           _validate_wl_sampling
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
@@ -111,7 +112,6 @@ def _calibrate(
     _validate_arguments(_calibrate.__defaults__[3], output_file, save_file)
     parsed_input_data, extension = InputReader(input_object, _calibrate, username, password)._read()
     label = 'calibrator'
-
     xp_design_matrices, xp_merge = _generate_xp_matrices_and_merge(label, sampling, bp_model, rp_model)
     # Create sampled basis functions
     spectra_list = _create_spectra(parsed_input_data, truncation, xp_design_matrices, xp_merge)
@@ -192,14 +192,12 @@ def _create_spectra(parsed_spectrum_file, truncation, design_matrices, merge):
     """
     spectra_list = []
     nrows = len(parsed_spectrum_file)
-
-    @_progress_tracker
     def create_spectrum(row, *args):
         truncation, design_matrices, merge = args[:3]
         spectrum = _create_spectrum(
             row, truncation, design_matrices, merge)
         spectra_list.append(spectrum)
-    for index, row in parsed_spectrum_file.iterrows():
+    for index, row in tqdm(parsed_spectrum_file.iterrows(), desc='Processing data', total=len(parsed_spectrum_file)):
         create_spectrum(row, truncation, design_matrices, merge, index, nrows)
     return spectra_list
 
@@ -223,9 +221,6 @@ def _create_spectrum(row, truncation, design_matrix, merge):
     Returns:
         AbsoluteSampledSpectrum: The sampled absolute spectrum.
     """
-    source_id = row['source_id']
-    cont_dict = {}
-    # Split both bands
     source_id = row['source_id']
     cont_dict = {}
     # Split both bands

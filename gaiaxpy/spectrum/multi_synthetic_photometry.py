@@ -66,9 +66,6 @@ class MultiSyntheticPhotometry(object):
         return pd.DataFrame(list_of_dicts)
 
     def _field_to_dict(self, values, name):
-        """
-        TODO: add docstring
-        """
         def _build_dict_keys(system_bands_tuples, name):
             dict_keys = []
             for system_bands in system_bands_tuples:

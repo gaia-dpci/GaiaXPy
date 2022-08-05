@@ -1,7 +1,7 @@
 from astroquery.gaia import GaiaClass
 from .dataframe_reader import DataFrameReader
 from .archive_reader import ArchiveReader
-from gaiaxpy.core import data_release, gaia_server
+from gaiaxpy.core.server import data_release, gaia_server
 
 not_supported_functions = ['apply_colour_equation']
 

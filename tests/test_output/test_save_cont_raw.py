@@ -4,7 +4,7 @@ import pandas.testing as pdt
 from os.path import join
 from tests.files import files_path
 from gaiaxpy import calibrate, convert, generate, PhotometricSystem
-from gaiaxpy.file_parser import GenericParser
+from gaiaxpy.file_parser.parse_generic import GenericParser
 
 mean_spectrum = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_dr3int6.csv')
 # Create output folder

@@ -6,10 +6,11 @@ from configparser import ConfigParser
 from os import listdir, path
 from numpy import poly1d
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core import _extract_systems_from_data, _load_xpzeropoint_from_csv, \
-                         _progress_tracker, _validate_arguments
-from gaiaxpy.input_reader import InputReader
-from gaiaxpy.output import PhotometryData
+from gaiaxpy.core.generic_functions import _extract_systems_from_data, \
+                                           _progress_tracker, _validate_arguments
+from gaiaxpy.core.config import _load_xpzeropoint_from_csv
+from gaiaxpy.input_reader.input_reader import InputReader
+from gaiaxpy.output.photometry_data import PhotometryData
 
 
 def _raise_key_error(key):

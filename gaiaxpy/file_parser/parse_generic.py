@@ -10,7 +10,7 @@ import pandas as pd
 from astropy.table import Table
 from astropy.io.votable import parse_single_table
 from .cast import _cast
-from gaiaxpy.core import array_to_symmetric_matrix
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
 
 
 valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']

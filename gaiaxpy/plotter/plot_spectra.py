@@ -8,7 +8,7 @@ from numpy import ndarray
 from .multi_absolute import MultiAbsolutePlotter
 from .multi_xp import MultiXpPlotter
 from .single import SinglePlotter
-from gaiaxpy.core import _warning
+from gaiaxpy.core.generic_functions import _warning
 
 
 def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_path=None, output_file=None,

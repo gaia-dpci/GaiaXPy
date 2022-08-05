@@ -7,7 +7,7 @@ These are dispersion function, instrument response and set of inverse bases.
 
 import numpy as np
 from scipy import interpolate
-from gaiaxpy.file_parser import GenericParser
+from gaiaxpy.file_parser.parse_generic import GenericParser
 
 
 class ExternalInstrumentModel(object):

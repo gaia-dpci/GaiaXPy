@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import pandas as pd
 import numpy.testing as npt
-from gaiaxpy.generator import InternalPhotometricSystem
+from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
 from os.path import join
 from tests.files import files_path
 

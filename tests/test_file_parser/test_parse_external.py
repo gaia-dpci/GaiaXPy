@@ -2,7 +2,8 @@ import unittest
 import pandas as pd
 from numpy import ndarray, dtype
 from os import path
-from gaiaxpy.file_parser import ExternalParser, InvalidExtensionError
+from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
+from gaiaxpy.file_parser.parse_external import ExternalParser
 from tests.files import files_path
 
 # Files to test parse

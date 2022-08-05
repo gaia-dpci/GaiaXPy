@@ -2,7 +2,7 @@ from numpy import ndarray
 from pandas import isnull
 from .dataframe_numpy_array_reader import DataFrameNumPyArrayReader
 from .dataframe_string_array_reader import DataFrameStringArrayReader
-from gaiaxpy.core import array_to_symmetric_matrix
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
 
 matrix_columns = [('bp_n_parameters', 'bp_coefficient_correlations'),
                   ('rp_n_parameters', 'rp_coefficient_correlations')]

@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
-from gaiaxpy.core import array_to_symmetric_matrix, _validate_pwl_sampling
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, \
+                                           _validate_pwl_sampling
 
 array = np.array([1, 2, 3, 4, 5, 6])
 size = 3

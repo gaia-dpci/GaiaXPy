@@ -1,5 +1,5 @@
 include LICENCE
 include requirements.txt
-include gaiaxpy/headers/headers_dict.txt
+include gaiaxpy/output/ecsv_headers/headers_dict.txt
 graft gaiaxpy/config
 global-exclude __pycache__

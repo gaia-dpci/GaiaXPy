@@ -12,8 +12,8 @@ from astropy.io.votable import parse_single_table
 from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
-from gaiaxpy.core import array_to_symmetric_matrix
-from gaiaxpy.file_parser import DataMismatchError
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
+from gaiaxpy.file_parser.parse_generic import DataMismatchError
 
 # Columns that contain arrays (as strings)
 array_columns = ['bp_coefficients', 'bp_coefficient_errors', \

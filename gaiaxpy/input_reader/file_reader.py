@@ -1,5 +1,5 @@
-from gaiaxpy.file_parser import ExternalParser, InternalContinuousParser
-
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+from gaiaxpy.file_parser.parse_external import ExternalParser
 
 def external():
     return ExternalParser()

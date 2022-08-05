@@ -1,10 +1,10 @@
 from .photometric_system import PhotometricSystem
 from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
-from gaiaxpy.core import _validate_arguments
-from gaiaxpy.input_reader import InputReader
-from gaiaxpy.output import PhotometryData
+from gaiaxpy.core.generic_functions import _validate_arguments
+from gaiaxpy.input_reader.input_reader import InputReader
+from gaiaxpy.output.photometry_data import PhotometryData
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
-from gaiaxpy.error_correction import apply_error_correction
+from gaiaxpy.error_correction.error_correction import apply_error_correction
 
 
 def generate(

@@ -3,8 +3,10 @@ import numpy as np
 from configparser import ConfigParser
 from os import path
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.converter import get_design_matrices, get_unique_basis_ids, load_config
-from gaiaxpy.file_parser import InternalContinuousParser, InternalSampledParser
+from gaiaxpy.converter.converter import get_design_matrices, get_unique_basis_ids
+from gaiaxpy.converter.config import load_config
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int4
 from gaiaxpy.spectrum.generic_spectrum import Spectrum
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum

@@ -2,7 +2,8 @@ import unittest
 import pandas as pd
 import pandas.testing as pdt
 from os import path
-from gaiaxpy.generator import generate, PhotometricSystem
+from gaiaxpy.generator.generator import generate
+from gaiaxpy.generator.photometric_system import PhotometricSystem
 from tests.files import files_path
 
 # Files to test parse

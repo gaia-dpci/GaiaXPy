@@ -9,9 +9,9 @@ import pandas as pd
 from math import isnan, floor
 from os import path, listdir
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core import _extract_systems_from_data, _warning
-from gaiaxpy.input_reader import InputReader
-from gaiaxpy.output import PhotometryData
+from gaiaxpy.core.generic_functions import _extract_systems_from_data, _warning
+from gaiaxpy.input_reader.input_reader import InputReader
+from gaiaxpy.output.photometry_data import PhotometryData
 from scipy.interpolate import interp1d
 
 

@@ -2,8 +2,8 @@ import unittest
 import pandas as pd
 import pandas.testing as pdt
 from gaiaxpy import convert
-from gaiaxpy.input_reader import InputReader
-from gaiaxpy.file_parser import InternalContinuousParser
+from gaiaxpy.input_reader.input_reader import InputReader
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from tests.files import files_path
 from os import path
 

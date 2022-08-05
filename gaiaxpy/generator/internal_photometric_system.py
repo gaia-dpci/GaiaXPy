@@ -4,7 +4,7 @@ internal_photometric_system.py
 Module for the parent class of the standardised and regular photometric systems.
 """
 
-from gaiaxpy.core import _load_xpzeropoint_from_csv
+from gaiaxpy.core.config import _load_xpzeropoint_from_csv
 
 
 class InternalPhotometricSystem(object):

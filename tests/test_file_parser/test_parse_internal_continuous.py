@@ -3,7 +3,7 @@ import numpy.testing as npt
 import pandas as pd
 from numpy import ndarray, dtype
 from os import path
-from gaiaxpy.file_parser import InternalContinuousParser
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.core.satellite import BANDS
 from tests.files import files_path
 from tests.utils import get_spectrum_with_source_id

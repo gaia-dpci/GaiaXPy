@@ -11,12 +11,13 @@ from pathlib import Path
 from os.path import join
 from .external_instrument_model import ExternalInstrumentModel
 from gaiaxpy.config.paths import config_path
+from gaiaxpy.core import satellite
 from gaiaxpy.core.satellite import BANDS
-from gaiaxpy.core import _get_spectra_type, _load_xpmerge_from_csv, \
-                         _load_xpsampling_from_csv, _progress_tracker, \
-                         _validate_arguments, _validate_wl_sampling, satellite
-from gaiaxpy.input_reader import InputReader
-from gaiaxpy.output import SampledSpectraData
+from gaiaxpy.core.generic_functions import _get_spectra_type, _progress_tracker, \
+                                           _validate_arguments, _validate_wl_sampling
+from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
+from gaiaxpy.input_reader.input_reader import InputReader
+from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
 from gaiaxpy.spectrum.utils import _get_covariance_matrix
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum

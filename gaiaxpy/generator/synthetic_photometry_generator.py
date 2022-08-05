@@ -10,7 +10,7 @@ from .photometric_system import _system_is_standard
 from .regular_photometric_system import RegularPhotometricSystem
 from .standardised_photometric_system import StandardisedPhotometricSystem
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core import _progress_tracker
+from gaiaxpy.core.generic_functions import _progress_tracker
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.spectrum.utils import _get_covariance_matrix
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions

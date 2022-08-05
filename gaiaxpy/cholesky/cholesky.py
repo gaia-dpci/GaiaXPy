@@ -1,6 +1,6 @@
 from numpy import diag, dot, identity
 from scipy.linalg import cholesky, solve_triangular
-from gaiaxpy.input_reader import InputReader
+from gaiaxpy.input_reader.input_reader import InputReader
 
 
 def __get_dot_product(L_inv):

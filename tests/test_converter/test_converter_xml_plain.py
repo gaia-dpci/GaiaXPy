@@ -7,8 +7,8 @@ from ast import literal_eval
 from configparser import ConfigParser
 from itertools import islice
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.converter.converter import _create_spectrum, convert, \
-                                        get_design_matrices, get_unique_basis_ids
+from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices, \
+                                        get_unique_basis_ids
 from gaiaxpy.converter.config import load_config
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
@@ -18,6 +18,8 @@ from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from os.path import abspath, dirname, join
 from tests.files import files_path
 from tests.utils import df_columns_to_array, get_spectrum_with_source_id_and_xp
+
+from gaiaxpy import convert
 
 current_path = abspath(dirname(__file__))
 configparser = ConfigParser()

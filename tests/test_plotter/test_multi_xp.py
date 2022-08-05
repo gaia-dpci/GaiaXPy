@@ -1,7 +1,8 @@
 import unittest
 from os import path
-from gaiaxpy import convert, plot_spectra
 from tests.files import files_path
+
+from gaiaxpy import convert, plot_spectra
 
 continuous_path = path.join(files_path, 'xp_continuous')
 mean_spectrum_avro = path.join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')

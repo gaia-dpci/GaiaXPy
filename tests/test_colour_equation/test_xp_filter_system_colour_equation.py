@@ -5,9 +5,10 @@ import pandas as pd
 from os import path
 import numpy.testing as npt
 import pandas.testing as pdt
-from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
 from tests.files import files_path
+
+from gaiaxpy import generate, PhotometricSystem
 
 continuous_path = path.join(files_path, 'xp_continuous')
 johnson_solution_path = path.join(files_path, 'colour_equation', 'Landolt_Johnson_Ucorr_v375wiv142r_SAMPLE.csv')

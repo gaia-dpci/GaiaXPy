@@ -11,17 +11,16 @@ from pathlib import Path
 from os.path import join
 from .external_instrument_model import ExternalInstrumentModel
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core import satellite
-from gaiaxpy.core.satellite import BANDS
+from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
 from gaiaxpy.core.generic_functions import _get_spectra_type, _progress_tracker, \
                                            _validate_arguments, _validate_wl_sampling
-from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
+from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
-from gaiaxpy.spectrum.utils import _get_covariance_matrix
-from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
+from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.utils import _get_covariance_matrix
+from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 
 config_parser = ConfigParser()
 config_parser.read(join(config_path, 'config.ini'))
@@ -139,8 +138,8 @@ def _create_merge(xp, sampling):
     Returns:
         dict: A dictionary containing a BP and an RP array with weights.
     """
-    wl_high = satellite.BP_WL.high
-    wl_low = satellite.RP_WL.low
+    wl_high = BP_WL.high
+    wl_low = RP_WL.low
 
     if xp == BANDS.bp:
         weight = np.array([1.0 if wl < wl_low else 0.0 if wl > wl_high else (

@@ -3,8 +3,9 @@ import pandas as pd
 import pandas.testing as pdt
 from collections import Counter
 from os.path import join
-from gaiaxpy import generate, PhotometricSystem
 from tests.files import files_path
+
+from gaiaxpy import generate, PhotometricSystem
 
 # Files to test parse
 continuous_path = join(files_path, 'xp_continuous')

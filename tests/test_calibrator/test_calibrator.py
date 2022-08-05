@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from pandas import testing as pdt
 from numpy import ndarray
-from gaiaxpy import calibrate
 from gaiaxpy.calibrator.calibrator import _calibrate, _create_spectrum
 from gaiaxpy.core import satellite
 from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
@@ -13,6 +12,8 @@ from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from os.path import join
 from tests.files import files_path
 from tests.utils import df_columns_to_array, pos_file_to_array
+
+from gaiaxpy import calibrate
 
 # Avoid warning, false positive
 pd.options.mode.chained_assignment = None

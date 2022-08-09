@@ -8,7 +8,7 @@ from tests.files import files_path
 
 # Files to test parse
 continuous_path = path.join(files_path, 'xp_continuous')
-correlation_csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
+correlation_csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 covariance_avro_file = path.join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
 
 # Parsers

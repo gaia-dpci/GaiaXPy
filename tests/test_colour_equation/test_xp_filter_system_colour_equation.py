@@ -13,10 +13,10 @@ from gaiaxpy import generate, PhotometricSystem
 continuous_path = path.join(files_path, 'xp_continuous')
 johnson_solution_path = path.join(files_path, 'colour_equation', 'Landolt_Johnson_Ucorr_v375wiv142r_SAMPLE.csv')
 johnson_solution_df = pd.read_csv(johnson_solution_path)
-xp_continuous_csv = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
-xp_continuous_fits = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.fits')
-xp_continuous_xml = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_dr3int6.xml')
-xp_continuous_xml_plain = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_plain_dr3int6.xml')
+xp_continuous_csv = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
+xp_continuous_fits = path.join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
+xp_continuous_xml = path.join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
+xp_continuous_xml_plain = path.join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 
 TOL = 4
 

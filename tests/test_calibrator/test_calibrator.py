@@ -32,10 +32,10 @@ calibrator_sol_path = join(files_path, 'calibrator_solution')
 # Load XP continuous file
 continuous_path = join(files_path, 'xp_continuous')
 mean_spectrum_avro = join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
-mean_spectrum_csv = join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
-mean_spectrum_fits = join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.fits')
-mean_spectrum_xml = join(continuous_path, 'XP_CONTINUOUS_RAW_votable_dr3int6.xml')
-mean_spectrum_xml_plain = join(continuous_path, 'XP_CONTINUOUS_RAW_votable_plain_dr3int6.xml')
+mean_spectrum_csv = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
+mean_spectrum_fits = join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
+mean_spectrum_xml = join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
+mean_spectrum_xml_plain = join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 missing_bp_file = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.csv')
 
 

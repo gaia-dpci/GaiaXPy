@@ -30,7 +30,7 @@ config_df = load_config(config_file)
 # File under test
 solution_folder = 'converter_solution'
 continuous_path = join(files_path, 'xp_continuous')
-input_file = join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.fits')
+input_file = join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
 converter_solution_df = pd.read_csv(join(files_path, solution_folder, 'converter_solution_0_60_481.csv'),
                                     float_precision='round_trip')
 columns_to_parse = ['flux', 'flux_error']
@@ -48,7 +48,7 @@ design_matrices = get_design_matrices(unique_bases_ids, sampling, config_df)
 converted_df, positions = convert(input_file, sampling=sampling, save_file=False)
 
 # Files to compare the sampled spectrum with value by value without/with truncation applied
-input_file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_dr3int6.csv')
+input_file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 converter_solution_path = join(files_path, 'converter_solution')
 ref_sampled_csv = join(converter_solution_path, 'SampledMeanSpectrum.csv')
 ref_sampled_truncated_csv = join(converter_solution_path, 'SampledMeanSpectrum_truncated.csv')

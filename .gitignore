@@ -11,4 +11,6 @@ __pycache__/
 build/
 dist/
 docs/_build/
+htmlcov/
+junit/
 tests_output_files/

@@ -8,10 +8,10 @@ from tests.files import files_path
 # Files to test parse
 continuous_path = path.join(files_path, 'xp_continuous')
 covariance_avro_file = path.join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
-correlation_csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
-correlation_fits_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.fits')
-correlation_xml_plain_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_plain_dr3int6.xml')
-correlation_xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_dr3int6.xml')
+correlation_csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
+correlation_fits_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
+correlation_xml_plain_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
+correlation_xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
 
 photometric_system_johnson = PhotometricSystem.JKC
 

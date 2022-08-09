@@ -9,16 +9,13 @@ matrix_columns = [('bp_n_parameters', 'bp_coefficient_correlations'),
 
 
 def extremes_are_enclosing(first_row, column):
-    if first_row[column][0] == '[' and first_row[column][-1] == ']':
-        return True
-    elif first_row[column][0] == '(' and first_row[column][-1] == ')':
-        return True
-    else:
-        return False
+    left = first_row[column][0]
+    right = first_row[column][-1]
+    return (left == '[' and right == ']') or (left == '(' and right == ')')
 
 
 def needs_matrix_conversion(array_columns):
-    columns_to_matrix = [column for value, column in matrix_columns]
+    columns_to_matrix = (column for value, column in matrix_columns)
     return set(columns_to_matrix).intersection(set(array_columns))
 
 
@@ -32,7 +29,7 @@ class DataFrameReader(object):
         columns = content.columns
         first_row = content.iloc[0]
         str_array_columns = [column for column in columns if isinstance(first_row[column], str)
-                         and extremes_are_enclosing(first_row, column)]
+                             and extremes_are_enclosing(first_row, column)]
         np_array_columns = [column for column in columns if isinstance(first_row[column], ndarray)]
         if str_array_columns:
             # Call string reader
@@ -41,17 +38,12 @@ class DataFrameReader(object):
         elif np_array_columns:
             data = DataFrameNumPyArrayReader(content, np_array_columns)._parse()
             array_columns = np_array_columns
-        # Nothing to parse
         else:
             data = content
             array_columns = []
         if needs_matrix_conversion(array_columns):
-            for index, row in data.iterrows():
-                for size_column, values_column in matrix_columns:
-                    try:
-                        data[values_column][index] = array_to_symmetric_matrix(
-                            row[values_column], data[size_column][index].astype(int))
-                    except AttributeError as err:
-                        if isnull(data[size_column][index]):
-                            continue
-        return data, None  # No extension for dataframes
+            for size_column, values_column in matrix_columns:
+                    data[values_column] = data.apply(lambda row: \
+                     array_to_symmetric_matrix(row[values_column], row[size_column]), \
+                    axis=1)
+        return data, None  # No extension returned for dataframes

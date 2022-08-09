@@ -19,8 +19,10 @@ class TestGetMethods(unittest.TestCase):
         # Calibrator requires use of internal calibrate function
         query_input = "SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5762406957886626816', '5853498713190525696')"
         parsed_data_file, _ = InputReader(file_path, calibrate)._read()
-        parsed_data_query_input, _ = InputReader(query_input, calibrate)._read()
-        pdt.assert_frame_equal(parsed_data_file.sort_values(by=['source_id'], ignore_index=True), parsed_data_query_input)
+        sorted_parsed_data_file = parsed_data_file.sort_values(by=['source_id'], ignore_index=True)
+        parsed_query_data, _ = InputReader(query_input, calibrate)._read()
+        sorted_parsed_query_data = parsed_query_data.sort_values(by=['source_id'], ignore_index=True)
+        pdt.assert_frame_equal(sorted_parsed_data_file, sorted_parsed_query_data)
 
     def test_dfs(self):
         parsed_df_str, _ = InputReader(dataframe_str, convert)._read()

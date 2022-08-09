@@ -12,7 +12,7 @@ covariance_avro_file = path.join(continuous_path, 'MeanSpectrumSolutionWithCov.a
 correlation_csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 correlation_fits_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
 correlation_xml_plain_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
-correlation_xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable.xml')
+correlation_xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
 
 
 class TestMultiSyntheticPhotometryGenerator(unittest.TestCase):

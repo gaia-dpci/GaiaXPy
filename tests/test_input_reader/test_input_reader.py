@@ -20,6 +20,7 @@ class TestGetMethods(unittest.TestCase):
         query_input = "SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5762406957886626816', '5853498713190525696')"
         parsed_data_file, _ = InputReader(file_path, calibrate)._read()
         parsed_data_query, _ = InputReader(query_input, calibrate)._read()
+        parsed_data_query = parsed_data_query.astype({'source_id': 'int64'}) # Windows version reads source_id as object
         pdt.assert_frame_equal(parsed_data_file.sort_values('source_id', ignore_index=True), parsed_data_query)
 
     def test_dfs(self):

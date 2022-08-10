@@ -16,6 +16,7 @@ from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_cs
 from gaiaxpy.core.generic_functions import _get_spectra_type, _validate_arguments, \
                                            _validate_wl_sampling
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
+from gaiaxpy.core.variable import pbar_colour, pbar_units
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
@@ -197,7 +198,9 @@ def _create_spectra(parsed_spectrum_file, truncation, design_matrices, merge):
         spectrum = _create_spectrum(
             row, truncation, design_matrices, merge)
         spectra_list.append(spectrum)
-    for index, row in tqdm(parsed_spectrum_file.iterrows(), desc='Processing data', total=len(parsed_spectrum_file)):
+    for index, row in tqdm(parsed_spectrum_file.iterrows(), desc='Processing data', \
+                           total=len(parsed_spectrum_file), unit=pbar_units['calibrator'], \
+                           leave=False, colour=pbar_colour):
         create_spectrum(row, truncation, design_matrices, merge, index, nrows)
     return spectra_list
 

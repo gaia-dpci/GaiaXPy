@@ -21,6 +21,8 @@ class TestGetMethods(unittest.TestCase):
         parsed_data_file, _ = InputReader(file_path, calibrate)._read()
         parsed_data_query, _ = InputReader(query_input, calibrate)._read()
         # Windows version returns different dtypes
+        print(parsed_data_query['source_id'].iloc[0], type(parsed_data_query['source_id'].iloc[0]))
+        print(parsed_data_file['source_id'].iloc[0], type(parsed_data_file['source_id'].iloc[0]))
         pdt.assert_frame_equal(parsed_data_file.sort_values('source_id', ignore_index=True), parsed_data_query, check_dtype=False)
 
     def test_dfs(self):

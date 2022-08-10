@@ -16,7 +16,7 @@ from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_cs
 from gaiaxpy.core.generic_functions import _get_spectra_type, _validate_arguments, \
                                            _validate_wl_sampling
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
-from gaiaxpy.core.variable import pbar_colour, pbar_units
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum

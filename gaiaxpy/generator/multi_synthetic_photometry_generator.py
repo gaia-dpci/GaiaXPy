@@ -1,7 +1,7 @@
 from tqdm import tqdm
 from .synthetic_photometry_generator import SyntheticPhotometryGenerator
 from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
-from gaiaxpy.core.variable import pbar_colour, pbar_units
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.spectrum.multi_synthetic_photometry import MultiSyntheticPhotometry
 
 

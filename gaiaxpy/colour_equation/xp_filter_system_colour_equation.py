@@ -10,7 +10,7 @@ from gaiaxpy.config.paths import filters_path
 from gaiaxpy.core.generic_functions import _extract_systems_from_data, \
                                            _validate_arguments
 from gaiaxpy.core.config import _load_xpzeropoint_from_csv
-from gaiaxpy.core.variable import pbar_colour, pbar_units
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 
@@ -62,7 +62,7 @@ def _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems
         new_system_rows.append(new_row)
     for index, row in tqdm(single_system_df.iterrows(), desc='Applying colour equation', \
                            total=len(single_system_df), unit=pbar_units['colour_eq'], \
-                           colour=pbar_colour):
+                           colour=pbar_colour, leave=False):
         _execute_row(row, system, colour_band_0, colour_band_1, systems_details, index, nrows)
     return pd.DataFrame(new_system_rows)
 

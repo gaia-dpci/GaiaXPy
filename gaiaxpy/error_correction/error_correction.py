@@ -11,7 +11,7 @@ from os import path, listdir
 from tqdm import tqdm
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.generic_functions import _extract_systems_from_data, _warning
-from gaiaxpy.core.variable import pbar_colour, pbar_units
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 from scipy.interpolate import interp1d

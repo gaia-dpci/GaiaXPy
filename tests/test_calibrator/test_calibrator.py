@@ -36,8 +36,6 @@ mean_spectrum_csv = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 mean_spectrum_fits = join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
 mean_spectrum_xml = join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
 mean_spectrum_xml_plain = join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
-missing_bp_file = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.csv')
-
 
 # Calibrate data in files
 spectra_df_fits = _calibrate(mean_spectrum_fits, save_file=False, bp_model=bp_model)
@@ -309,16 +307,3 @@ class TestCalibratorSamplingRange(unittest.TestCase):
     def test_sampling_both_wrong(self):
         with self.assertRaises(ValueError):
             calibrate(mean_spectrum_avro, sampling=np.linspace(200, 2000, 100), save_file=False)
-
-
-class TestCalibratorNanValues(unittest.TestCase):
-
-    def test_return_nan_values_csv_default_sampling(self):
-        output, sampling = calibrate(missing_bp_file, save_file=False)
-        self.assertTrue(np.isnan(np.sum(output.iloc[0].flux)))
-        self.assertTrue(np.isnan(np.sum(output.iloc[0].flux_error)))
-
-    def test_return_nan_values_csv(self):
-        output, sampling = calibrate(missing_bp_file, sampling=np.arange(330, 350, 2), save_file=False)
-        self.assertTrue(np.isnan(np.sum(output.iloc[0].flux)))
-        self.assertTrue(np.isnan(np.sum(output.iloc[0].flux_error)))

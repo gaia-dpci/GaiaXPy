@@ -12,6 +12,12 @@ from numpy import ndarray
 from string import capwords
 
 
+def str_to_array(str_array):
+    try:
+        return np.fromstring(str_array[1:-1], sep=',')
+    except TypeError:
+        return float('NaN')
+
 def _validate_pwl_sampling(sampling):
     # Receives a numpy array. Validates sampling in pwl.
     min_sampling_value = -10
@@ -107,8 +113,11 @@ def array_to_symmetric_matrix(array, size):
         if len(array) == len(np.tril_indices(size - 1)[0]):
             return False
         return True
+    if not isinstance(array, np.ndarray) and np.isnan(array):
+        return array
     # Enforce array type, second check verifies that array is 1D.
     if isinstance(array, np.ndarray) and isinstance(array[0], Number) and isinstance(size, Number):
+        size = int(size)
         k = -1  # Diagonal offset (from Numpy documentation)
         matrix = np.zeros((size, size))
         # Add values in diagonal
@@ -120,7 +129,7 @@ def array_to_symmetric_matrix(array, size):
         transpose[np.tril_indices(
             size, -1)] = matrix[np.tril_indices(size, -1)]
         return transpose
-    elif isinstance(array[0], np.ndarray):
+    elif isinstance(array, np.ndarray) and isinstance(array[0], np.ndarray):
         # Input array is already a matrix, we assume that it contains the required values.
         return array
     else:

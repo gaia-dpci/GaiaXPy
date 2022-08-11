@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from math import isnan
+from gaiaxpy.core.generic_functions import str_to_array
 
 # Avoid warning, false positive
 pd.options.mode.chained_assignment = None
@@ -20,8 +21,7 @@ class DataFrameStringArrayReader(object):
             for index, row in df.iterrows():
                 current_element = row[column]
                 try:
-                    df[column][index] = np.fromstring(
-                        current_element[1:-1], sep=',')
+                    df[column][index] = str_to_array(current_element)
                 except TypeError:
                     if isinstance(current_element, float) and isnan(current_element):
                         continue

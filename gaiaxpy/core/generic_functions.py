@@ -13,10 +13,15 @@ from string import capwords
 
 
 def str_to_array(str_array):
-    try:
-        return np.fromstring(str_array[1:-1], sep=',')
-    except TypeError:
+    if isinstance(str_array, str):
+        try:
+            return np.fromstring(str_array[1:-1], sep=',')
+        except:
+            raise ValueError('Input cannot be converted to array.')
+    elif isinstance(str_array, float):
         return float('NaN')
+    else:
+        raise ValueError('Unhandled type.')
 
 
 def _validate_pwl_sampling(sampling):
@@ -112,6 +117,7 @@ def array_to_symmetric_matrix(array, array_size):
     """
     def contains_diagonal(array_size, array):
         return not len(array) == len(np.tril_indices(array_size - 1)[0])
+    # Bad cases
     if (not isinstance(array, np.ndarray) and np.isnan(array)) or \
             isinstance(array_size, np.ma.core.MaskedConstant) or \
             array.size == 0:

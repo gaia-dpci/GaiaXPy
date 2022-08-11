@@ -13,7 +13,7 @@ def _get_covariance_matrix(row, band):
             row[f'{band}_coefficient_correlations'],
             row[f'{band}_coefficient_errors'],
             row[f'{band}_standard_deviation'])
-    except BaseException:
+    except BaseException as err:
         try:
             # It is AVRO
             return row[f'{band}_coefficient_covariances']

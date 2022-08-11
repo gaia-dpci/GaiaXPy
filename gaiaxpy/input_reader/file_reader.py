@@ -14,10 +14,10 @@ def raise_error():
 
 function_parser_dict = {'apply_colour_equation': raise_error,
                         'convert': internal_continuous,
-                        'generate': internal_continuous,
                         '_calibrate': internal_continuous,
                         'calibrate': internal_continuous,
-                        'cholesky': internal_continuous}
+                        'generate': internal_continuous,
+                        'get_inverse_covariance_matrix': internal_continuous}
 
 
 class FileReader(object):

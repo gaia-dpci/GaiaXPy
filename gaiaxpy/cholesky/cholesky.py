@@ -38,7 +38,7 @@ def get_inverse_covariance_matrix(input_object=None, band=None):
                    covariance matrices for the sources in the input object.
     """
     band = band.lower()
-    parsed_input_data, extension = InputReader(input_object, cholesky)._read()
+    parsed_input_data, extension = InputReader(input_object, get_inverse_covariance_matrix)._read()
     xp_errors = parsed_input_data[f'{band}_coefficient_errors']
     xp_correlation_matrix = parsed_input_data[f'{band}_coefficient_correlations']
     L_inv_iterable = map(__get_inv_cholesky_decomp_lower, xp_errors, xp_correlation_matrix)

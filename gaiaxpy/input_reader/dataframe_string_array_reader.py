@@ -22,25 +22,32 @@ class DataFrameStringArrayReader(object):
                 current_element = row[column]
                 try:
                     df[column][index] = str_to_array(current_element)
-                except TypeError:
+                except Exception as err:
                     if isinstance(current_element, float) and isnan(current_element):
                         continue
         return df
+
 
     def _parse_brackets_arrays(self):
         df = self.content
         array_columns = self.array_columns
         for column in array_columns:
-            # String column to NumPy array
-            for index, row in df.iterrows():
-                df[column][index] = np.array(row[column])
+            df[column] = df[column].map(np.array)
         return df
 
     def _parse(self):
+        def __get_enclosing_element(df, array_columns):
+            # Get enclosing symbol for string arrays, i.e. '(' or '['
+            for index, row in df.iterrows():
+                for column in array_columns:
+                    if isinstance(row[column], str):
+                        if row[column][0] in ['(', '[']:
+                            return row[column][0]
+                    else:
+                        continue
         df = self.content
         array_columns = self.array_columns
-        # Get enclosing symbol for string arrays, i.e. '(' or '['
-        enclosing = df[array_columns[0]].iloc[0][0]
+        enclosing = __get_enclosing_element(df, array_columns)
         if enclosing == '(':
             df = self._parse_parenthesis_arrays()
         elif enclosing == '[':

@@ -8,11 +8,9 @@ matrix_columns = [('bp_n_parameters', 'bp_coefficient_correlations'),
                   ('rp_n_parameters', 'rp_coefficient_correlations')]
 
 
-def extremes_are_enclosing(first_row, column):
-    left = first_row[column][0]
-    right = first_row[column][-1]
-    return (left == '[' and right == ']') or (left == '(' and right == ')')
-
+def extremes_are_enclosing(row, column):
+    return (row[column][0] == '[' and row[column][-1] == ']') or \
+           (row[column][0] == '(' and row[column][-1] == ')')
 
 def needs_matrix_conversion(array_columns):
     columns_to_matrix = (column for value, column in matrix_columns)
@@ -24,13 +22,33 @@ class DataFrameReader(object):
     def __init__(self, content):
         self.content = content.copy()
 
+
+    def __get_str_columns(self):
+        str_columns = []
+        content = self.content
+        rows = content.iloc[0:2]
+        for column in content.columns:
+            for index, row in rows.iterrows():
+                if isinstance(row[column], str) and extremes_are_enclosing(row, column):
+                    str_columns.append(column)
+        return list(set(str_columns))
+
+
+    def __get_np_columns(self):
+        np_columns = []
+        content = self.content
+        rows = content.iloc[0:2]
+        for column in content.columns:
+            for index, row in rows.iterrows():
+                np_columns.append(column)
+        return list(set(np_columns))
+
+
     def _read_df(self):
         content = self.content
         columns = content.columns
-        first_row = content.iloc[0]
-        str_array_columns = [column for column in columns if isinstance(first_row[column], str)
-                             and extremes_are_enclosing(first_row, column)]
-        np_array_columns = [column for column in columns if isinstance(first_row[column], ndarray)]
+        str_array_columns = self.__get_str_columns()
+        np_array_columns = self.__get_np_columns()
         if str_array_columns:
             # Call string reader
             data = DataFrameStringArrayReader(content, str_array_columns)._parse()

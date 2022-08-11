@@ -26,7 +26,6 @@ def get_spectrum_with_source_id_and_xp(source_id, xp, spectra):
     raise ValueError('Spectrum does not exist or function is not defined for variable spectra type.')
 
 
-# IMPROVE
 def df_columns_to_array(df, columns):
     for index, row in df.iterrows():
         for column in columns:

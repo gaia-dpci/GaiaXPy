@@ -134,13 +134,9 @@ class GenericParser(object):
         df = pd.DataFrame(fits_as_gen, columns=columns)
         if matrix_columns is not None:
             for size_column, values_column in matrix_columns:
-                try:
-                    df[values_column] = df.apply(lambda row: \
-                    array_to_symmetric_matrix(row[values_column], row[size_column]), \
-                    axis=1)
-                # Value can be NaN when a band is not present
-                except IndexError:
-                    continue
+                df[values_column] = df.apply(lambda row: \
+                array_to_symmetric_matrix(row[values_column], \
+                row[size_column]), axis=1)
         return df
 
     def _parse_xml(self, xml_file, array_columns=None):

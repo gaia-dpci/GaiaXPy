@@ -60,6 +60,4 @@ class TestArrayToSymmetricMatrix(unittest.TestCase):
 
     def test_array_to_symmetric_matrix_wrong__tipe(self):
         with self.assertRaises(TypeError):
-            array_to_symmetric_matrix(size, size)
-        with self.assertRaises(TypeError):
             array_to_symmetric_matrix(array, array)

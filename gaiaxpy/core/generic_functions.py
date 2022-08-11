@@ -18,6 +18,7 @@ def str_to_array(str_array):
     except TypeError:
         return float('NaN')
 
+
 def _validate_pwl_sampling(sampling):
     # Receives a numpy array. Validates sampling in pwl.
     min_sampling_value = -10
@@ -92,7 +93,7 @@ def _get_system_label(name):
 
 
 # AVRO files include the values in the diagonal, whereas others don't
-def array_to_symmetric_matrix(array, size):
+def array_to_symmetric_matrix(array, array_size):
     """
     Convert the input 1D array into a 2D matrix. The array is assumed to store
     only the unique elements of a symmetric matrix (i.e. all elements
@@ -101,7 +102,7 @@ def array_to_symmetric_matrix(array, size):
 
     Args:
         array (ndarray): 1D array.
-        size (int): number of rows/columns in the output matrix.
+        array_size (int): number of rows/columns in the output matrix.
 
     Returns:
         array of arrays: a full 2D matrix.
@@ -109,25 +110,25 @@ def array_to_symmetric_matrix(array, size):
     Raises:
         TypeError: If array is not of type np.ndarray.
     """
-    def contains_diagonal(size, array):
-        if len(array) == len(np.tril_indices(size - 1)[0]):
-            return False
-        return True
-    if not isinstance(array, np.ndarray) and np.isnan(array):
+    def contains_diagonal(array_size, array):
+        return not len(array) == len(np.tril_indices(array_size - 1)[0])
+    if (not isinstance(array, np.ndarray) and np.isnan(array)) or \
+            isinstance(array_size, np.ma.core.MaskedConstant) or \
+            array.size == 0:
         return array
     # Enforce array type, second check verifies that array is 1D.
-    if isinstance(array, np.ndarray) and isinstance(array[0], Number) and isinstance(size, Number):
-        size = int(size)
+    if isinstance(array, np.ndarray) and isinstance(array[0], Number) and isinstance(array_size, Number):
+        array_size = int(array_size)
         k = -1  # Diagonal offset (from Numpy documentation)
-        matrix = np.zeros((size, size))
+        matrix = np.zeros((array_size, array_size))
         # Add values in diagonal
         np.fill_diagonal(matrix, 1.0)
-        if contains_diagonal(size, array):
+        if contains_diagonal(array_size, array):
             k = 0
-        matrix[np.tril_indices(size, k=k)] = array
+        matrix[np.tril_indices(array_size, k=k)] = array
         transpose = matrix.transpose()
         transpose[np.tril_indices(
-            size, -1)] = matrix[np.tril_indices(size, -1)]
+            array_size, -1)] = matrix[np.tril_indices(array_size, -1)]
         return transpose
     elif isinstance(array, np.ndarray) and isinstance(array[0], np.ndarray):
         # Input array is already a matrix, we assume that it contains the required values.

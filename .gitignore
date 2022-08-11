@@ -14,3 +14,5 @@ docs/_build/
 htmlcov/
 junit/
 tests_output_files/
+coverage.xml
+query_tests.py

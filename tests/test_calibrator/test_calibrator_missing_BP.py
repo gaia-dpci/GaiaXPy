@@ -101,5 +101,5 @@ class TestCalibratorMissingBPListInput(unittest.TestCase):
             output_df, sampling = calibrate(src_list, save_file=False)
             sorted_output_df = output_df.sort_values('source_id', ignore_index=True)
             sorted_solution_df = solution_df.sort_values('source_id', ignore_index=True)
-            pdt.assert_frame_equal(sorted_output_df, sorted_solution_df)
+            pdt.assert_frame_equal(sorted_output_df, sorted_solution_df, check_dtype=False)
             npt.assert_array_equal(sampling, solution_sampling)

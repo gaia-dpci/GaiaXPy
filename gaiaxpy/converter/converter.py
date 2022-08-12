@@ -27,7 +27,8 @@ from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
 config_file = path.join(config_path, config_parser.get('converter', 'optimised_bases'))
-
+tqdm.pandas(desc='Processing data', unit=pbar_units['converter'], leave=False, \
+            colour=pbar_colour) # Activate tqdm for pandas
 
 def convert(
         input_object,
@@ -87,12 +88,7 @@ def convert(
     unique_bases_ids = get_unique_basis_ids(parsed_input_data)
     # Get design matrices
     design_matrices = get_design_matrices(unique_bases_ids, sampling, config_df)
-    spectra_list = _create_spectra(parsed_input_data, truncation, design_matrices)
-    # Generate output
-    spectra_df = pd.DataFrame.from_records([spectrum._spectrum_to_dict() for spectrum in spectra_list])
-    spectra_type = _get_spectra_type(spectra_list)
-    spectra_df.attrs['data_type'] = spectra_type
-    positions = spectra_list[0]._get_positions()
+    spectra_df, positions = _create_spectra(parsed_input_data, truncation, design_matrices)
     # Save output
     output_data = SampledSpectraData(spectra_df, positions)
     output_data.data = cast_output(output_data)
@@ -150,26 +146,28 @@ def _create_spectrum(row, truncation, design_matrices, band):
 
 
 def _create_spectra(parsed_input_data, truncation, design_matrices):
-    """
-    Internal wrapper function. Allows _create_spectrum to use the generic
-    progress tracker.
-    """
-    spectra_list = []
-    nrows = len(parsed_input_data)
-    def create_spectrum(row, truncation, *args):
-        design_matrices = args[0]
+    def create_xp_spectra(row, truncation, design_matrices):
+        spectra_list = []
         for band in BANDS:
             try:
                 spectrum_xp = _create_spectrum(row, truncation, design_matrices, band)
-                spectra_list.append(spectrum_xp)
             except BaseException:
                 # Band not available
                 continue
-    for index, row in tqdm(parsed_input_data.iterrows(), desc='Processing data', \
-                           total=len(parsed_input_data), unit=pbar_units['converter'], \
-                           leave=False, colour=pbar_colour):
-        create_spectrum(row, truncation, design_matrices)
-    return spectra_list
+            spectra_list.append(spectrum_xp)
+        return spectra_list
+    spectra_series = parsed_input_data.progress_apply(lambda row: \
+                     create_xp_spectra(row, truncation, design_matrices), axis=1)
+    spectra_df = spectra_series.to_frame()
+    spectra_df = spectra_df.explode(0) # Explode spectra column
+    positions = spectra_df[0].iloc[0]._get_positions()
+    spectra_type = _get_spectra_type(spectra_df[0].iloc[0])
+    spectra_df[0] = spectra_df[0].progress_apply(lambda s: s._spectrum_to_dict())
+    #spectra_df[0] = spectra_df[0].fillna({i: {} for i in spectra_df.index})
+    #spectra_df = spectra_df.join(pd.json_normalize(spectra_df[0]))
+    spectra_df = spectra_df[0].apply(pd.Series).reset_index(drop=True)
+    spectra_df.attrs['data_type'] = spectra_type
+    return spectra_df, positions
 
 
 def get_unique_basis_ids(parsed_input_data):

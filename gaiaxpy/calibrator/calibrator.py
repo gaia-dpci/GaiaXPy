@@ -27,7 +27,7 @@ from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 
 config_parser = ConfigParser()
 config_parser.read(join(config_path, 'config.ini'))
-tqdm.pandas(desc='Processing data', unit=pbar_units['converter'], leave=False, \
+tqdm.pandas(desc='Processing data', unit=pbar_units['calibrator'], leave=False, \
             colour=pbar_colour) # Activate tqdm for pandas
 
 def calibrate(
@@ -119,11 +119,8 @@ def _calibrate(
     xp_design_matrices, xp_merge = _generate_xp_matrices_and_merge(label, \
                                    sampling, bp_model, rp_model)
     # Create sampled basis functions
-    spectra_series, positions, spectra_type = _create_spectra(parsed_input_data, \
-                                      truncation, xp_design_matrices, xp_merge)
-    spectra_df = pd.DataFrame(spectra_series.tolist())
-    # Generate output
-    spectra_df.attrs['data_type'] = spectra_type
+    spectra_df, positions = _create_spectra(parsed_input_data, truncation, \
+                                            xp_design_matrices, xp_merge)
     output_data = SampledSpectraData(spectra_df, positions)
     output_data.data = cast_output(output_data)
     # Save output
@@ -191,18 +188,15 @@ def _generate_xp_matrices_and_merge(label, sampling, bp_model, rp_model):
 
 
 def _create_spectra(parsed_spectrum_file, truncation, design_matrices, merge):
-    """
-    Internal wrapper function. Allows _create_spectrum to use the generic
-    progress tracker.
-    """
-    spectra_list = []
     nrows = len(parsed_spectrum_file)
     spectra_series = parsed_spectrum_file.progress_apply(lambda row: \
                  _create_spectrum(row, truncation, design_matrices, merge), axis=1)
     positions = spectra_series.iloc[0]._get_positions()
     spectra_type = _get_spectra_type(spectra_series.iloc[0])
     spectra_series = spectra_series.map(lambda x: x._spectrum_to_dict())
-    return spectra_series, positions, spectra_type
+    spectra_df = pd.DataFrame(spectra_series.tolist())
+    spectra_df.attrs['data_type'] = spectra_type
+    return spectra_df, positions
 
 
 def _create_spectrum(row, truncation, design_matrix, merge):

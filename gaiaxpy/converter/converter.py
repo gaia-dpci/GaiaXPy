@@ -12,7 +12,8 @@ from tqdm import tqdm
 from os import path
 from .config import get_config, load_config
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core.generic_functions import _get_spectra_type, _validate_arguments, \
+from gaiaxpy.core.generic_functions import cast_output, _get_spectra_type, \
+                                           _validate_arguments, \
                                            _validate_pwl_sampling
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
@@ -94,6 +95,7 @@ def convert(
     positions = spectra_list[0]._get_positions()
     # Save output
     output_data = SampledSpectraData(spectra_df, positions)
+    output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return spectra_df, positions
 

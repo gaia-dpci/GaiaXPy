@@ -12,6 +12,18 @@ from numpy import ndarray
 from string import capwords
 
 
+def cast_output(output):
+    df = output.data
+    cast_dict = {'sourceid': 'int64',
+                 'solution_id': 'int64'}
+    for key, value in cast_dict.items():
+        try:
+            df[key] = df[key].astype(value)
+        except KeyError:
+            continue
+    return df
+
+
 def str_to_array(str_array):
     if isinstance(str_array, str):
         try:

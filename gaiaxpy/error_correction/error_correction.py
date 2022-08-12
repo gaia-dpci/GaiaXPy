@@ -10,7 +10,8 @@ from math import isnan, floor
 from os import path, listdir
 from tqdm import tqdm
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core.generic_functions import _extract_systems_from_data, _warning
+from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, \
+                                           _warning
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
@@ -148,5 +149,6 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
         # Apply correction to the original input_multi_photometry
         input_multi_photometry.update(corrected_system)
     output_data = PhotometryData(input_multi_photometry)
+    output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return input_multi_photometry

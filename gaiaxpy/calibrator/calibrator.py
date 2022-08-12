@@ -13,7 +13,8 @@ from os.path import join
 from .external_instrument_model import ExternalInstrumentModel
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
-from gaiaxpy.core.generic_functions import _get_spectra_type, _validate_arguments, \
+from gaiaxpy.core.generic_functions import cast_output, _get_spectra_type, \
+                                           _validate_arguments, \
                                            _validate_wl_sampling
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
@@ -122,6 +123,7 @@ def _calibrate(
     spectra_df.attrs['data_type'] = spectra_type
     positions = spectra_list[0]._get_positions()
     output_data = SampledSpectraData(spectra_df, positions)
+    output_data.data = cast_output(output_data)
     # Save output
     Path(output_path).mkdir(parents=True, exist_ok=True)
     output_data.save(save_file, output_path, output_file, output_format, extension)

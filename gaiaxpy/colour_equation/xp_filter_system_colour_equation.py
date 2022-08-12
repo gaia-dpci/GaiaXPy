@@ -7,7 +7,7 @@ from os import listdir, path
 from numpy import poly1d
 from tqdm import tqdm
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.generic_functions import _extract_systems_from_data, \
+from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, \
                                            _validate_arguments
 from gaiaxpy.core.config import _load_xpzeropoint_from_csv
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
@@ -192,5 +192,6 @@ def apply_colour_equation(input_synthetic_photometry, photometric_system=None, o
     systems_details = _fill_systems_details(systems_to_correct)
     output_df = _generate_output_df(input_synthetic_photometry, systems_in_data, systems_details)
     output_data = PhotometryData(output_df)
+    output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_df

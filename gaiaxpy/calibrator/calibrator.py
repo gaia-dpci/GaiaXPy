@@ -27,7 +27,7 @@ from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 
 config_parser = ConfigParser()
 config_parser.read(join(config_path, 'config.ini'))
-
+tqdm.pandas() # Activate tqdm for pandas
 
 def calibrate(
         input_object,
@@ -112,16 +112,17 @@ def _calibrate(
     """
     _validate_wl_sampling(sampling)
     _validate_arguments(_calibrate.__defaults__[3], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, _calibrate, username, password)._read()
+    parsed_input_data, extension = InputReader(input_object, _calibrate, \
+                                               username, password)._read()
     label = 'calibrator'
-    xp_design_matrices, xp_merge = _generate_xp_matrices_and_merge(label, sampling, bp_model, rp_model)
+    xp_design_matrices, xp_merge = _generate_xp_matrices_and_merge(label, \
+                                   sampling, bp_model, rp_model)
     # Create sampled basis functions
-    spectra_list = _create_spectra(parsed_input_data, truncation, xp_design_matrices, xp_merge)
+    spectra_series, positions, spectra_type = _create_spectra(parsed_input_data, \
+                                      truncation, xp_design_matrices, xp_merge)
+    spectra_df = pd.DataFrame(spectra_series.tolist())
     # Generate output
-    spectra_df = pd.DataFrame.from_records([spectrum._spectrum_to_dict() for spectrum in spectra_list])
-    spectra_type = _get_spectra_type(spectra_list)
     spectra_df.attrs['data_type'] = spectra_type
-    positions = spectra_list[0]._get_positions()
     output_data = SampledSpectraData(spectra_df, positions)
     output_data.data = cast_output(output_data)
     # Save output
@@ -195,16 +196,12 @@ def _create_spectra(parsed_spectrum_file, truncation, design_matrices, merge):
     """
     spectra_list = []
     nrows = len(parsed_spectrum_file)
-    def create_spectrum(row, *args):
-        truncation, design_matrices, merge = args[:3]
-        spectrum = _create_spectrum(
-            row, truncation, design_matrices, merge)
-        spectra_list.append(spectrum)
-    for index, row in tqdm(parsed_spectrum_file.iterrows(), desc='Processing data', \
-                           total=len(parsed_spectrum_file), unit=pbar_units['calibrator'], \
-                           leave=False, colour=pbar_colour):
-        create_spectrum(row, truncation, design_matrices, merge)
-    return spectra_list
+    spectra_series = parsed_spectrum_file.progress_apply(lambda row: \
+                 _create_spectrum(row, truncation, design_matrices, merge), axis=1)
+    positions = spectra_series.iloc[0]._get_positions()
+    spectra_type = _get_spectra_type(spectra_series.iloc[0])
+    spectra_series = spectra_series.map(lambda x: x._spectrum_to_dict())
+    return spectra_series, positions, spectra_type
 
 
 def _create_spectrum(row, truncation, design_matrix, merge):

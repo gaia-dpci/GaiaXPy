@@ -6,6 +6,7 @@ Module to hold some functions used by different subpackages.
 
 import sys
 import numpy as np
+import pandas as pd
 from collections.abc import Iterable
 from numbers import Number
 from numpy import ndarray
@@ -13,9 +14,12 @@ from string import capwords
 
 
 def cast_output(output):
-    df = output.data
-    cast_dict = {'sourceid': 'int64',
+    cast_dict = {'source_id': 'int64',
                  'solution_id': 'int64'}
+    if not isinstance(output, pd.DataFrame):
+        df = output.data
+    else:
+        df = output
     for key, value in cast_dict.items():
         try:
             df[key] = df[key].astype(value)

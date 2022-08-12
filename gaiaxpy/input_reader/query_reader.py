@@ -31,5 +31,4 @@ class QueryReader(ArchiveReader):
         # TODO: More granular error management required.
         except KeyError:
             raise ValueError('No continuous raw data found for the requested query.')
-        data['source_id'] = data['source_id'].astype('int64')
         return DataFrameReader(data)._read_df()

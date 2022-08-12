@@ -64,4 +64,5 @@ class DataFrameReader(object):
                     data[values_column] = data.apply(lambda row: \
                      array_to_symmetric_matrix(row[values_column], row[size_column]), \
                     axis=1)
+        data['source_id'] = data['source_id'].astype('int64') # Ensure Windows compatibility
         return data, None  # No extension returned for dataframes

@@ -27,7 +27,8 @@ from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 
 config_parser = ConfigParser()
 config_parser.read(join(config_path, 'config.ini'))
-tqdm.pandas() # Activate tqdm for pandas
+tqdm.pandas(desc='Processing data', unit=pbar_units['converter'], leave=False, \
+            colour=pbar_colour) # Activate tqdm for pandas
 
 def calibrate(
         input_object,

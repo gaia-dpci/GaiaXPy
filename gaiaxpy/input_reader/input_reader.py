@@ -54,5 +54,5 @@ class InputReader(object):
             raise ValueError('The input provided does not match any of the expected input types.')
         if extension is None:
             extension = default_extension
-        parsed_data = parsed_data['source_id'].astype('int64')
+        parsed_data['source_id'] = parsed_data['source_id'].astype('int64')
         return parsed_data, extension

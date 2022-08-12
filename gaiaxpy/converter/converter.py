@@ -168,7 +168,7 @@ def _create_spectra(parsed_input_data, truncation, design_matrices):
     for index, row in tqdm(parsed_input_data.iterrows(), desc='Processing data', \
                            total=len(parsed_input_data), unit=pbar_units['converter'], \
                            leave=False, colour=pbar_colour):
-        create_spectrum(row, truncation, design_matrices, index, nrows)
+        create_spectrum(row, truncation, design_matrices)
     return spectra_list
 
 

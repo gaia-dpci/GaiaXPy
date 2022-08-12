@@ -63,7 +63,7 @@ def _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems
     for index, row in tqdm(single_system_df.iterrows(), desc='Applying colour equation', \
                            total=len(single_system_df), unit=pbar_units['colour_eq'], \
                            colour=pbar_colour, leave=False):
-        _execute_row(row, system, colour_band_0, colour_band_1, systems_details, index, nrows)
+        _execute_row(row, system, colour_band_0, colour_band_1, systems_details)
     return pd.DataFrame(new_system_rows)
 
 

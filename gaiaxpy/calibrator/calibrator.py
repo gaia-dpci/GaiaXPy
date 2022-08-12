@@ -203,7 +203,7 @@ def _create_spectra(parsed_spectrum_file, truncation, design_matrices, merge):
     for index, row in tqdm(parsed_spectrum_file.iterrows(), desc='Processing data', \
                            total=len(parsed_spectrum_file), unit=pbar_units['calibrator'], \
                            leave=False, colour=pbar_colour):
-        create_spectrum(row, truncation, design_matrices, merge, index, nrows)
+        create_spectrum(row, truncation, design_matrices, merge)
     return spectra_list
 
 

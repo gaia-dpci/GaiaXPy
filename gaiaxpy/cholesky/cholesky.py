@@ -1,6 +1,7 @@
 import pandas as pd
 from numpy import diag, dot, identity
 from scipy.linalg import cholesky, solve_triangular
+from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 
 
@@ -23,7 +24,7 @@ def __get_inv_cholesky_decomp_lower(xp_errors, xp_correlation_matrix):
         return None
 
 
-def get_inverse_covariance_matrix(input_object=None, band=None):
+def get_inverse_covariance_matrix(input_object=None):
     """
     Compute the inverse covariance matrix.
 
@@ -37,13 +38,17 @@ def get_inverse_covariance_matrix(input_object=None, band=None):
         DataFrame: DataFrame containing the source IDs and the output inverse
                    covariance matrices for the sources in the input object.
     """
-    band = band.lower()
     parsed_input_data, extension = InputReader(input_object, get_inverse_covariance_matrix)._read()
-    xp_errors = parsed_input_data[f'{band}_coefficient_errors']
-    xp_correlation_matrix = parsed_input_data[f'{band}_coefficient_correlations']
-    L_inv_iterable = map(__get_inv_cholesky_decomp_lower, xp_errors, xp_correlation_matrix)
-    output = zip(parsed_input_data['source_id'], map(__get_dot_product, L_inv_iterable))
-    return pd.DataFrame(output, columns=['source_id', f'{band}_inverse_covariance'])
+    bands_output = []
+    for band in BANDS:
+        xp_errors = parsed_input_data[f'{band}_coefficient_errors']
+        xp_correlation_matrix = parsed_input_data[f'{band}_coefficient_correlations']
+        L_inv_iterable = map(__get_inv_cholesky_decomp_lower, xp_errors, xp_correlation_matrix)
+        band_output = map(__get_dot_product, L_inv_iterable)
+        bands_output.append(band_output)
+    output_columns = ['source_id', 'bp_inverse_covariance', 'rp_inverse_covariance']
+    output_data = zip(parsed_input_data['source_id'], bands_output[0], bands_output[1])
+    return pd.DataFrame(output_data, columns=output_columns)
 
 
 def get_chi2(residuals, L_inv):

@@ -43,3 +43,15 @@ class TestCholesky(unittest.TestCase):
         inverse_df = get_inverse_covariance_matrix(df)
         inverse_cov = inverse_df['bp_inverse_covariance'].iloc[0]
         npt.assert_array_almost_equal(inverse_cov, solution)
+
+    def test_get_chi2(self):
+        matrix = np.random.rand(55, 55)
+        residuals = np.random.rand(55)
+        output = get_chi2(matrix, residuals)
+        self.assertIsInstance(output, float)
+
+    def test_get_chi2_wrong_length(self):
+        matrix = np.random.rand(55, 55)
+        residuals = np.random.rand(54)
+        with self.assertRaises(ValueError):
+            output = get_chi2(matrix, residuals)

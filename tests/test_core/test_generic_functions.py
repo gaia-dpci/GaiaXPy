@@ -1,13 +1,52 @@
 import unittest
 import numpy as np
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, \
-                                           _validate_pwl_sampling
+from os.path import join
+from gaiaxpy.core.generic_functions import _get_system_label, _extract_systems_from_data, \
+                                           _validate_pwl_sampling, \
+                                           array_to_symmetric_matrix
+from gaiaxpy import generate, PhotometricSystem
+from tests.files import files_path
+
 
 array = np.array([1, 2, 3, 4, 5, 6])
 size = 3
 
 
 class TestGenericFunctions(unittest.TestCase):
+
+    def test_get_systeml_label(self):
+        self.assertEqual(_get_system_label('Els_Custom_W09_S2'), 'ElsCustomW09S2')
+        self.assertEqual(_get_system_label('DECam'), 'Decam')
+        self.assertEqual(_get_system_label('Els_Custom_W09_S2'), 'ElsCustomW09S2')
+        self.assertEqual(_get_system_label('Euclid_VIS'), 'EuclidVis')
+        self.assertEqual(_get_system_label('Gaia_2'), 'Gaia2')
+        self.assertEqual(_get_system_label('Gaia_DR3_Vega'), 'GaiaDr3Vega')
+        self.assertEqual(_get_system_label('Halpha_Custom_AB'), 'HalphaCustomAb')
+        self.assertEqual(_get_system_label('H_custom'), 'HCustom')
+        self.assertEqual(_get_system_label('Hipparcos_Tycho'), 'HipparcosTycho')
+        self.assertEqual(_get_system_label('HST_ACSWFC'), 'HstAcswfc')
+        self.assertEqual(_get_system_label('HST_WFC3UVIS'), 'HstWfc3uvis')
+        self.assertEqual(_get_system_label('HST_WFPC2'), 'HstWfpc2')
+        self.assertEqual(_get_system_label('IPHAS'), 'Iphas')
+        self.assertEqual(_get_system_label('JKC'), 'Jkc')
+        self.assertEqual(_get_system_label('JPAS'), 'Jpas')
+        self.assertEqual(_get_system_label('JPLUS'), 'Jplus')
+        self.assertEqual(_get_system_label('JWST_NIRCAM'), 'JwstNircam')
+        self.assertEqual(_get_system_label('PanSTARRS1'), 'Panstarrs1')
+        self.assertEqual(_get_system_label('Pristine'), 'Pristine')
+        self.assertEqual(_get_system_label('SDSS'), 'Sdss')
+        self.assertEqual(_get_system_label('Sky_Mapper'), 'SkyMapper')
+        self.assertEqual(_get_system_label('Stromgren'), 'Stromgren')
+        self.assertEqual(_get_system_label('WFIRST'), 'Wfirst')
+
+    def test_extract_systems_from_data(self):
+        expected_output = ['Wfirst', 'HstWfc3uvis', 'GaiaDr3Vega', 'ElsCustomW09S2']
+        phot_list = [PhotometricSystem.WFIRST, PhotometricSystem.HST_WFC3UVIS, \
+                     PhotometricSystem.Gaia_DR3_Vega, PhotometricSystem.Els_Custom_W09_S2]
+        f = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.fits')
+        photometry = generate(f, photometric_system=phot_list, save_file=False)
+        self.assertListEqual(_extract_systems_from_data(photometry), expected_output)
+        self.assertListEqual(_extract_systems_from_data(photometry, photometric_system=phot_list), expected_output)
 
     def test_validate_pwl_sampling_upper_limit(self):
         sampling = np.linspace(0, 71, 300)

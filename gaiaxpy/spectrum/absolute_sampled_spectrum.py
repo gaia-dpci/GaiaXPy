@@ -44,18 +44,14 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
         """
         # Bands available
         bands = [band for band in xp_spectra.keys() if len(xp_spectra[band].get_coefficients()) != 0]
-
         if not bands:
             raise BaseException('At least one band must be present.')
-
         # If there at least one band present
         if len(bands) >= 1:
             pos = sampled_bases[bands[0]]._get_sampling_grid()
         else:
             raise BaseException('At least one band must be present.')
-
         SampledSpectrum.__init__(self, source_id, pos)
-
         split_spectrum = {band: {} for band in BANDS}
         for band in bands:
             if isinstance(truncation, (int, np.int64)) and truncation > 0:

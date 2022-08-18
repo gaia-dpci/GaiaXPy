@@ -20,7 +20,7 @@ xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(label)
 xp_design_matrices = _load_xpsampling_from_csv(label)
 
 parser = InternalContinuousParser()
-file_to_parse = path.join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_dr3int6.csv')
+file_to_parse = path.join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 parsed_correlation, _ = parser.parse(file_to_parse)
 
 # Create sampled basis functions

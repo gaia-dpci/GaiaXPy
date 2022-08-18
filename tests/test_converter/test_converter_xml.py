@@ -30,7 +30,7 @@ config_df = load_config(config_file)
 # File under test
 converter_solution_path = join(files_path, 'converter_solution')
 continuous_path = join(files_path, 'xp_continuous')
-input_file = join(continuous_path, 'XP_CONTINUOUS_RAW_votable_dr3int6.xml')
+input_file = join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
 converter_solution_df = pd.read_csv(join(converter_solution_path, 'converter_solution_0_60_481.csv'),
                                     float_precision='round_trip')
 columns_to_parse = ['flux', 'flux_error']

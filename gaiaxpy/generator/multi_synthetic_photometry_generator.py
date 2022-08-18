@@ -1,6 +1,7 @@
 from tqdm import tqdm
 from .synthetic_photometry_generator import SyntheticPhotometryGenerator
 from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.spectrum.multi_synthetic_photometry import MultiSyntheticPhotometry
 
 
@@ -35,8 +36,9 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
         photometry_list_of_lists = [self._create_photometry_list(parsed_input_data, phot_system, sampled_basis_func,
                                                                  xp_merge)
                                     for phot_system, sampled_basis_func, xp_merge in
-                                    tqdm(zip(photometric_system, sampled_basis_func_list, xp_merge_list), desc='Generating photometry', \
-                                    total=len(photometric_system))]
+                                    tqdm(zip(photometric_system, sampled_basis_func_list, xp_merge_list), \
+                                    desc='Generating photometry', total=len(photometric_system), \
+                                    unit=pbar_units['photometry'], leave=False, colour=pbar_colour)]
         # Now the first list contains the photometries in all systems for the first source_id, and so on.
         rearranged_photometry_list = [sublist for sublist in zip(*photometry_list_of_lists)]  # list of tuples is enough
         multi_photometry_df = MultiSyntheticPhotometry(photometric_system, rearranged_photometry_list)._generate_output_df()

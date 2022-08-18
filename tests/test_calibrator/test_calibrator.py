@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 import pandas as pd
+import numpy.testing as npt
 from pandas import testing as pdt
 from numpy import ndarray
 from gaiaxpy.calibrator.calibrator import _calibrate, _create_spectrum
@@ -32,12 +33,10 @@ calibrator_sol_path = join(files_path, 'calibrator_solution')
 # Load XP continuous file
 continuous_path = join(files_path, 'xp_continuous')
 mean_spectrum_avro = join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
-mean_spectrum_csv = join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
-mean_spectrum_fits = join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.fits')
-mean_spectrum_xml = join(continuous_path, 'XP_CONTINUOUS_RAW_votable_dr3int6.xml')
-mean_spectrum_xml_plain = join(continuous_path, 'XP_CONTINUOUS_RAW_votable_plain_dr3int6.xml')
-missing_bp_file = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.csv')
-
+mean_spectrum_csv = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
+mean_spectrum_fits = join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
+mean_spectrum_xml = join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
+mean_spectrum_xml_plain = join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 
 # Calibrate data in files
 spectra_df_fits = _calibrate(mean_spectrum_fits, save_file=False, bp_model=bp_model)
@@ -84,8 +83,7 @@ class TestCalibratorCSV(unittest.TestCase):
     def test_calibrate_both_bands_default_calibration_model(self):
         # Default sampling and default calibration sampling
         spectra_df_csv, positions = calibrate(mean_spectrum_csv, save_file=False)
-        self.assertIsInstance(spectra_df_csv, pd.DataFrame)
-        self.assertIsInstance(positions, ndarray)
+        npt.assert_array_equal(positions, solution_default_sampling)
         pdt.assert_frame_equal(spectra_df_csv, solution_default_df)
 
     def test_custom_sampling_default_calibration_model(self):
@@ -93,13 +91,12 @@ class TestCalibratorCSV(unittest.TestCase):
             mean_spectrum_csv,
             sampling=np.arange(350, 1050, 200),
             save_file=False)
-        self.assertEqual(len(spectra_df_custom_sampling), 2)
+        npt.assert_array_equal(positions, solution_custom_sampling)
         pdt.assert_frame_equal(spectra_df_custom_sampling, solution_custom_df)
 
     def test_calibrate_both_bands_v211w_model(self):
         spectra_df_csv, positions = _calibrate(mean_spectrum_csv, save_file=False, bp_model=bp_model)
-        self.assertIsInstance(spectra_df_csv, pd.DataFrame)
-        self.assertIsInstance(positions, ndarray)
+        npt.assert_array_equal(positions, solution_v211w_default_sampling)
         pdt.assert_frame_equal(spectra_df_csv, solution_v211w_default_df)
 
     def test_custom_sampling_v211w_model(self):
@@ -108,7 +105,7 @@ class TestCalibratorCSV(unittest.TestCase):
             sampling=np.arange(350, 1050, 200),
             save_file=False,
             bp_model=bp_model)
-        self.assertEqual(len(spectra_df_custom_sampling), 2)
+        npt.assert_array_equal(positions, solution_custom_sampling)
         pdt.assert_frame_equal(spectra_df_custom_sampling, solution_v211w_custom_df)
 
 
@@ -129,8 +126,7 @@ class TestCalibratorAVRO(unittest.TestCase):
     def test_calibrate_both_bands_default_calibration_model(self):
         # Default sampling and default calibration sampling
         spectra_df_avro, positions = calibrate(mean_spectrum_avro, save_file=False)
-        self.assertIsInstance(spectra_df_avro, pd.DataFrame)
-        self.assertIsInstance(positions, ndarray)
+        npt.assert_array_equal(positions, solution_default_sampling)
         pdt.assert_frame_equal(spectra_df_avro, solution_default_df)
 
     def test_custom_sampling_default_calibration_model(self):
@@ -138,13 +134,12 @@ class TestCalibratorAVRO(unittest.TestCase):
             mean_spectrum_avro,
             sampling=np.arange(350, 1050, 200),
             save_file=False)
-        self.assertEqual(len(spectra_df_custom_sampling), 2)
+        npt.assert_array_equal(positions, solution_custom_sampling)
         pdt.assert_frame_equal(spectra_df_custom_sampling, solution_custom_df)
 
     def test_calibrate_both_bands_v211w_model(self):
         spectra_df_avro, positions = _calibrate(mean_spectrum_avro, save_file=False, bp_model=bp_model)
-        self.assertIsInstance(spectra_df_avro, pd.DataFrame)
-        self.assertIsInstance(positions, ndarray)
+        npt.assert_array_equal(positions, solution_v211w_default_sampling)
         pdt.assert_frame_equal(spectra_df_avro, solution_v211w_default_df)
 
     def test_custom_sampling_v211w_model(self):
@@ -153,7 +148,7 @@ class TestCalibratorAVRO(unittest.TestCase):
             sampling=np.arange(350, 1050, 200),
             save_file=False,
             bp_model=bp_model)
-        self.assertEqual(len(spectra_df_custom_sampling), 2)
+        npt.assert_array_equal(positions, solution_v211w_custom_sampling)
         pdt.assert_frame_equal(spectra_df_custom_sampling, solution_v211w_custom_df)
 
 
@@ -174,8 +169,7 @@ class TestCalibratorFITS(unittest.TestCase):
     def test_calibrate_both_bands_default_calibration_model(self):
         # Default sampling and default calibration sampling
         spectra_df_fits, positions = calibrate(mean_spectrum_fits, save_file=False)
-        self.assertIsInstance(spectra_df_fits, pd.DataFrame)
-        self.assertIsInstance(positions, ndarray)
+        npt.assert_array_equal(positions, solution_default_sampling)
         pdt.assert_frame_equal(spectra_df_fits, solution_default_df)
 
     def test_custom_sampling_default_calibration_model(self):
@@ -183,13 +177,12 @@ class TestCalibratorFITS(unittest.TestCase):
             mean_spectrum_fits,
             sampling=np.arange(350, 1050, 200),
             save_file=False)
-        self.assertEqual(len(spectra_df_custom_sampling), 2)
+        npt.assert_array_equal(positions, solution_custom_sampling)
         pdt.assert_frame_equal(spectra_df_custom_sampling, solution_custom_df)
 
     def test_calibrate_both_bands_v211w_model(self):
         spectra_df_fits, positions = _calibrate(mean_spectrum_fits, save_file=False, bp_model=bp_model)
-        self.assertIsInstance(spectra_df_fits, pd.DataFrame)
-        self.assertIsInstance(positions, ndarray)
+        npt.assert_array_equal(positions, solution_v211w_default_sampling)
         pdt.assert_frame_equal(spectra_df_fits, solution_v211w_default_df)
 
     def test_custom_sampling_v211w_model(self):
@@ -198,7 +191,7 @@ class TestCalibratorFITS(unittest.TestCase):
             sampling=np.arange(350, 1050, 200),
             save_file=False,
             bp_model=bp_model)
-        self.assertEqual(len(spectra_df_custom_sampling), 2)
+        npt.assert_array_equal(positions, solution_v211w_custom_sampling)
         pdt.assert_frame_equal(spectra_df_custom_sampling, solution_v211w_custom_df)
 
 
@@ -219,8 +212,7 @@ class TestCalibratorXMLPlain(unittest.TestCase):
     def test_calibrate_both_bands_default_calibration_model(self):
         # Default sampling and default calibration sampling
         spectra_df_xml_plain, positions = calibrate(mean_spectrum_xml_plain, save_file=False)
-        self.assertIsInstance(spectra_df_xml_plain, pd.DataFrame)
-        self.assertIsInstance(positions, ndarray)
+        npt.assert_array_equal(positions, solution_default_sampling)
         pdt.assert_frame_equal(spectra_df_xml_plain, solution_default_df)
 
     def test_custom_sampling_default_calibration_model(self):
@@ -228,13 +220,12 @@ class TestCalibratorXMLPlain(unittest.TestCase):
             mean_spectrum_xml_plain,
             sampling=np.arange(350, 1050, 200),
             save_file=False)
-        self.assertEqual(len(spectra_df_custom_sampling), 2)
+        npt.assert_array_equal(positions, solution_custom_sampling)
         pdt.assert_frame_equal(spectra_df_custom_sampling, solution_custom_df)
 
     def test_calibrate_both_bands_v211w_model(self):
         spectra_df_xml_plain, positions = _calibrate(mean_spectrum_xml_plain, save_file=False, bp_model=bp_model)
-        self.assertIsInstance(spectra_df_xml_plain, pd.DataFrame)
-        self.assertIsInstance(positions, ndarray)
+        npt.assert_array_equal(positions, solution_v211w_default_sampling)
         pdt.assert_frame_equal(spectra_df_xml_plain, solution_v211w_default_df)
 
     def test_custom_sampling_v211w_model(self):
@@ -243,7 +234,7 @@ class TestCalibratorXMLPlain(unittest.TestCase):
             sampling=np.arange(350, 1050, 200),
             save_file=False,
             bp_model=bp_model)
-        self.assertEqual(len(spectra_df_custom_sampling), 2)
+        npt.assert_array_equal(positions, solution_custom_sampling)
         pdt.assert_frame_equal(spectra_df_custom_sampling, solution_v211w_custom_df)
 
 
@@ -264,8 +255,7 @@ class TestCalibratorXML(unittest.TestCase):
     def test_calibrate_both_bands_default_calibration_model(self):
         # Default sampling and default calibration sampling
         spectra_df_xml, positions = calibrate(mean_spectrum_xml, save_file=False)
-        self.assertIsInstance(spectra_df_xml, pd.DataFrame)
-        self.assertIsInstance(positions, ndarray)
+        npt.assert_array_equal(positions, solution_default_sampling)
         pdt.assert_frame_equal(spectra_df_xml, solution_default_df)
 
     def test_custom_sampling_default_calibration_model(self):
@@ -273,13 +263,12 @@ class TestCalibratorXML(unittest.TestCase):
             mean_spectrum_xml,
             sampling=np.arange(350, 1050, 200),
             save_file=False)
-        self.assertEqual(len(spectra_df_custom_sampling), 2)
+        npt.assert_array_equal(positions, solution_custom_sampling)
         pdt.assert_frame_equal(spectra_df_custom_sampling, solution_custom_df)
 
     def test_calibrate_both_bands_v211w_model(self):
         spectra_df_xml, positions = _calibrate(mean_spectrum_xml, save_file=False, bp_model=bp_model)
-        self.assertIsInstance(spectra_df_xml, pd.DataFrame)
-        self.assertIsInstance(positions, ndarray)
+        npt.assert_array_equal(positions, solution_v211w_default_sampling)
         pdt.assert_frame_equal(spectra_df_xml, solution_v211w_default_df)
 
     def test_custom_sampling_v211w_model(self):
@@ -288,7 +277,7 @@ class TestCalibratorXML(unittest.TestCase):
             sampling=np.arange(350, 1050, 200),
             save_file=False,
             bp_model=bp_model)
-        self.assertEqual(len(spectra_df_custom_sampling), 2)
+        npt.assert_array_equal(positions, solution_v211w_custom_sampling)
         pdt.assert_frame_equal(spectra_df_custom_sampling, solution_v211w_custom_df)
 
 
@@ -311,14 +300,12 @@ class TestCalibratorSamplingRange(unittest.TestCase):
             calibrate(mean_spectrum_avro, sampling=np.linspace(200, 2000, 100), save_file=False)
 
 
-class TestCalibratorNanValues(unittest.TestCase):
+class TestCalibratorSingleElement(unittest.TestCase):
 
-    def test_return_nan_values_csv_default_sampling(self):
-        output, sampling = calibrate(missing_bp_file, save_file=False)
-        self.assertTrue(np.isnan(np.sum(output.iloc[0].flux)))
-        self.assertTrue(np.isnan(np.sum(output.iloc[0].flux_error)))
-
-    def test_return_nan_values_csv(self):
-        output, sampling = calibrate(missing_bp_file, sampling=np.arange(330, 350, 2), save_file=False)
-        self.assertTrue(np.isnan(np.sum(output.iloc[0].flux)))
-        self.assertTrue(np.isnan(np.sum(output.iloc[0].flux_error)))
+    def test_single_element_query(self):
+        query = "SELECT * FROM gaiadr3.gaia_source WHERE source_id='5853498713190525696'"
+        output_df, sampling = calibrate(query, save_file=False)
+        source_data_output = output_df[output_df['source_id'] == 5853498713190525696]
+        source_data_solution = solution_default_df[solution_default_df['source_id'] == 5853498713190525696]
+        pdt.assert_frame_equal(source_data_output, source_data_solution)
+        npt.assert_array_equal(sampling, solution_default_sampling)

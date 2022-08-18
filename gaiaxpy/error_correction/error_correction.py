@@ -10,7 +10,9 @@ from math import isnan, floor
 from os import path, listdir
 from tqdm import tqdm
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core.generic_functions import _extract_systems_from_data, _warning
+from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, \
+                                           _warning
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 from scipy.interpolate import interp1d
@@ -136,7 +138,8 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
         else:
             _warning(f'System {system} does not have a correction table. The program will not apply error correction over this system.')
     # Now we have to apply the correction on each of the systems, but this correction depends on the G band
-    for system in tqdm(systems, desc='Correcting systems', total=len(systems)):
+    for system in tqdm(systems, desc='Correcting systems', total=len(systems), \
+                       unit=pbar_units['correction'], leave=False, colour=pbar_colour):
         system_df = input_multi_photometry[[column for column in input_multi_photometry.columns if
                                             (column.startswith(system) and f'{system}Std' not in column) or column == gaia_G_mag_column]]
         # Get the correction factors for the mag G column
@@ -146,5 +149,6 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
         # Apply correction to the original input_multi_photometry
         input_multi_photometry.update(corrected_system)
     output_data = PhotometryData(input_multi_photometry)
+    output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return input_multi_photometry

@@ -10,7 +10,7 @@ import pandas as pd
 from astropy.table import Table
 from astropy.io.votable import parse_single_table
 from .cast import _cast
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
 
 
 valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']
@@ -100,23 +100,20 @@ class GenericParser(object):
         Returns:
             DataFrame: A pandas DataFrame representing the CSV file.
         """
-        converters = None
+        converters = {}
         if array_columns is not None:
-            converters = dict([(column, lambda x: np.fromstring(x[1:-1], sep=',')) for column in array_columns])
+            converters = dict([(column, lambda x: str_to_array(x)) for column in array_columns])
         try:
             df = pd.read_csv(csv_file, comment='#', float_precision='round_trip', converters=converters)
         except UnicodeDecodeError:
             raise DataMismatchError()
         if matrix_columns is not None:
             for size_column, values_column in matrix_columns:
-                try:
-                    df[values_column] = df.apply(lambda row: \
-                    array_to_symmetric_matrix(np.fromstring(row[values_column][1:-1], sep=','), \
-                    row[size_column]), axis=1)
-                # Value can be NaN when a band is not present
-                except TypeError:
-                    continue
+                df[values_column] = df.apply(lambda row: \
+                array_to_symmetric_matrix(str_to_array(row[values_column]), \
+                row[size_column]), axis=1)
         return df
+
 
     def _parse_fits(self, fits_file, array_columns=None, matrix_columns=None):
         """
@@ -137,13 +134,9 @@ class GenericParser(object):
         df = pd.DataFrame(fits_as_gen, columns=columns)
         if matrix_columns is not None:
             for size_column, values_column in matrix_columns:
-                try:
-                    df[values_column] = df.apply(lambda row: \
-                    array_to_symmetric_matrix(row[values_column], row[size_column]), \
-                    axis=1)
-                # Value can be NaN when a band is not present
-                except IndexError:
-                    continue
+                df[values_column] = df.apply(lambda row: \
+                array_to_symmetric_matrix(row[values_column], \
+                row[size_column]), axis=1)
         return df
 
     def _parse_xml(self, xml_file, array_columns=None):

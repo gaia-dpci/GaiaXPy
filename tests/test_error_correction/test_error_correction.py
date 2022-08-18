@@ -7,7 +7,7 @@ from tests.files import files_path
 
 # Files to test parse
 continuous_path = join(files_path, 'xp_continuous')
-correlation_csv_file = join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
+correlation_csv_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 corrected_errors_solution_path = join(files_path, 'error_correction_solution', 'corrected_errors_solution.csv')
 
 

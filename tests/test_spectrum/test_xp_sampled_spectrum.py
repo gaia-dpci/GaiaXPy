@@ -20,7 +20,7 @@ configparser.read(path.join(config_path, 'config.ini'))
 config_file = path.join(config_path, configparser.get('converter', 'optimised_bases'))
 
 # Files to test parse
-csv_file_with_correlation = path.join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_dr3int6.csv')
+csv_file_with_correlation = path.join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 
 parser = InternalContinuousParser()
 correlation_parsed_file, _ = parser.parse(csv_file_with_correlation)

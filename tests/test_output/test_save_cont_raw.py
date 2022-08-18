@@ -6,7 +6,7 @@ from tests.files import files_path
 from gaiaxpy import calibrate, convert, generate, PhotometricSystem
 from gaiaxpy.file_parser.parse_generic import GenericParser
 
-mean_spectrum = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_dr3int6.csv')
+mean_spectrum = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 # Create output folder
 output_path = 'tests_output_files'
 solution_path = join(files_path, 'output_solution')

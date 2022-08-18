@@ -42,7 +42,7 @@ class SyntheticPhotometryGenerator(object):
                 row, sampled_basis_func, xp_merge, photometric_system)
             photometry_list.append(synthetic_photometry)
         for index, row in parsed_input_data.iterrows():
-            generate_synthetic_photometry(row, sampled_basis_func, xp_merge, photometric_system, index, nrows)
+            generate_synthetic_photometry(row, sampled_basis_func, xp_merge, photometric_system)
         return photometry_list
 
 

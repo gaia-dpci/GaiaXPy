@@ -1,6 +1,6 @@
 from .photometric_system import PhotometricSystem
 from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
-from gaiaxpy.core.generic_functions import _validate_arguments
+from gaiaxpy.core.generic_functions import cast_output, _validate_arguments
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
@@ -85,5 +85,6 @@ def generate(
         gaia_columns = [column for column in photometry_df if column.startswith(gaia_label)]
         photometry_df = photometry_df.drop(columns=gaia_columns)
     output_data = PhotometryData(photometry_df)
+    output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return photometry_df

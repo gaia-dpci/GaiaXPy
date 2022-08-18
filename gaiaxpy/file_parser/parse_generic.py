@@ -26,7 +26,7 @@ class DataMismatchError(RuntimeError):
     """
 
     def __init__(self):
-        message = 'The file contains invalid data or the data does not match the file extension.'
+        message = 'The file contains invalid data, the data does not match the file extension or the file does not exist.'
         Exception.__init__(self, message)
 
 

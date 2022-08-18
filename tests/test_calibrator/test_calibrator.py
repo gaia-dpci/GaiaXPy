@@ -304,7 +304,7 @@ class TestCalibratorSingleElement(unittest.TestCase):
 
     def test_single_element_query(self):
         query = "SELECT * FROM gaiadr3.gaia_source WHERE source_id='5853498713190525696'"
-        output_df, sampling = calibrate(query)
+        output_df, sampling = calibrate(query, save_file=False)
         source_data_output = output_df[output_df['source_id'] == 5853498713190525696]
         source_data_solution = solution_default_df[solution_default_df['source_id'] == 5853498713190525696]
         pdt.assert_frame_equal(source_data_output, source_data_solution)

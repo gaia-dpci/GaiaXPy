@@ -1,5 +1,4 @@
 import unittest
-import json
 import numpy as np
 import pandas as pd
 import numpy.testing as npt
@@ -8,15 +7,10 @@ from ast import literal_eval
 from os.path import abspath, dirname, join
 from gaiaxpy import get_chi2, get_inverse_covariance_matrix
 from tests.files import files_path
+from tests.utils.utils import parse_matrices
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
 
-
-def parse_matrices(string):
-    if len(string) == 0:
-        return None
-    else:
-        return np.array(json.loads(string))
 
 input_path = join(files_path, 'xp_continuous')
 input_file = join(input_path, 'XP_CONTINUOUS_RAW_with_missing_BP.csv')

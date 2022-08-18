@@ -54,6 +54,8 @@ def __replace_masked_array(value, itype):
     if (isinstance(value, np.ma.core.MaskedArray) and getdata(value).size == 0) \
         or (isinstance(value, float) and value == 0.0):
         return np.array([])
+    elif isinstance(value, np.ma.core.MaskedArray):
+        return getdata(value)
     else:
         return value
 

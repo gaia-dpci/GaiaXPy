@@ -6,7 +6,6 @@ Module to cast the data after parsing.
 import numpy as np
 from numpy import dtype
 from numpy.ma import MaskError, getdata
-from pandas.errors import IntCastingNaNError
 
 # Fields of all formats including AVRO.
 __type_map = {'source_id': 'int64',

@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import pandas as pd
 from gaiaxpy.core.generic_functions import str_to_array
@@ -5,6 +6,12 @@ from gaiaxpy.core.generic_functions import str_to_array
 # Avoid warning, false positive
 pd.options.mode.chained_assignment = None
 
+
+def parse_matrices(string):
+    if len(string) == 0:
+        return None
+    else:
+        return np.array(json.loads(string))
 
 def get_spectrum_with_source_id(source_id, spectra):
     if isinstance(spectra, list):

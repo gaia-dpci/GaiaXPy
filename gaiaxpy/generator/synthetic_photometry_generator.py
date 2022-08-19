@@ -34,17 +34,9 @@ class SyntheticPhotometryGenerator(object):
         return sampled_basis_func
 
     def _create_photometry_list(self, parsed_input_data, photometric_system, sampled_basis_func, xp_merge):
-        photometry_list = []
-        nrows = len(parsed_input_data)
-        def generate_synthetic_photometry(row, *args):
-            sampled_basis_func, xp_merge, photometric_system = args[0], args[1], args[2]
-            synthetic_photometry = _generate_synthetic_photometry(
-                row, sampled_basis_func, xp_merge, photometric_system)
-            photometry_list.append(synthetic_photometry)
-        for index, row in parsed_input_data.iterrows():
-            generate_synthetic_photometry(row, sampled_basis_func, xp_merge, photometric_system)
-        return photometry_list
-
+        photometry_gen = (_generate_synthetic_photometry(row, sampled_basis_func, xp_merge, photometric_system) \
+                          for index, row in parsed_input_data.iterrows())
+        return photometry_gen
 
 def _generate_synthetic_photometry(
         row,

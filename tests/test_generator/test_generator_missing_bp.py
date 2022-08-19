@@ -29,12 +29,52 @@ phot_systems = [PhotometricSystem.Els_Custom_W09_S2, PhotometricSystem.Euclid_VI
 
 class TestGeneratorMissingBP(unittest.TestCase):
 
-    def test_generate_missing_bp_no_correction(self):
+    def test_generate_missing_bp_no_correction_csv(self):
         file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
         photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
         pdt.assert_frame_equal(photometry_df, solution_df_no_corr)
 
-    def test_generate_missing_bp_with_correction(self):
+    def test_generate_missing_bp_with_correction_csv(self):
         file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
+        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        pdt.assert_frame_equal(photometry_df, solution_df_with_corr)
+
+    def test_generate_missing_bp_no_correction_ecsv(self):
+        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.ecsv')
+        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        pdt.assert_frame_equal(photometry_df, solution_df_no_corr)
+
+    def test_generate_missing_bp_with_correction_ecsv(self):
+        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.ecsv')
+        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        pdt.assert_frame_equal(photometry_df, solution_df_with_corr)
+
+    def test_generate_missing_bp_no_correction_fits(self):
+        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.fits')
+        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        pdt.assert_frame_equal(photometry_df, solution_df_no_corr)
+
+    def test_generate_missing_bp_with_correction_fits(self):
+        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.fits')
+        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        pdt.assert_frame_equal(photometry_df, solution_df_with_corr)
+
+    def test_generate_missing_bp_no_correction_bin_xml(self):
+        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.xml')
+        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        pdt.assert_frame_equal(photometry_df, solution_df_no_corr)
+
+    def test_generate_missing_bp_with_correction_bin_xml(self):
+        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.xml')
+        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        pdt.assert_frame_equal(photometry_df, solution_df_with_corr)
+
+    def test_generate_missing_bp_no_correction_plain_xml(self):
+        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP_plain.xml')
+        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        pdt.assert_frame_equal(photometry_df, solution_df_no_corr)
+
+    def test_generate_missing_bp_with_correction_plain_xml(self):
+        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP_plain.xml')
         photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
         pdt.assert_frame_equal(photometry_df, solution_df_with_corr)

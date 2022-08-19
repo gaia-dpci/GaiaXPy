@@ -160,6 +160,8 @@ def array_to_symmetric_matrix(array, array_size):
 
 
 def _extract_systems_from_data(data_columns, photometric_system=None):
+    if isinstance(photometric_system, list):
+        return [system.get_system_label() for system in photometric_system]
     src = 'source_id'
     columns = list(data_columns.copy())
     if src in columns:

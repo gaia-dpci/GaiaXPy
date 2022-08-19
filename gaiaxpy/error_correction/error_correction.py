@@ -6,6 +6,7 @@ Module that implements the error correction over a multi-photometry.
 
 import numpy as np
 import pandas as pd
+from functools import lru_cache
 from math import isnan, floor
 from os import path, listdir
 from tqdm import tqdm
@@ -20,20 +21,28 @@ from scipy.interpolate import interp1d
 
 correction_tables_path = path.join(config_path, 'correction_tables')
 
+@lru_cache(maxsize=None)
 def _get_correctable_systems():
     correction_files = listdir(correction_tables_path)
     systems = [filename.split('-')[2] for filename in correction_files]
     return systems
 
 
+def _read_system_table(system):
+    # Read system table
+    try:
+        correction_factors_path = path.join(correction_tables_path, f'DIDREQ-465-{system}-correction-factors.csv')
+        correction_table = pd.read_csv(correction_factors_path, float_precision='round_trip')
+        correction_table['bin_centre'] = (correction_table['min_Gmag_bin'] + correction_table['max_Gmag_bin']) / 2
+    except FileNotFoundError:
+        raise FileNotFoundError(f'No correction table found for system {system}.')
+    return correction_table
+
+
 def _get_correction_array(mag_G_values, system):
     # Read table here. We only want to read it once.
     correction_table = _read_system_table(system)
-    correction_array = []
-    for mag in mag_G_values:
-        correction_factors = _get_correction_factors(mag, correction_table)
-        correction_array.append(correction_factors)
-    # One array per row in the original data
+    correction_array = [_get_correction_factors(mag, correction_table) for mag in mag_G_values]
     return np.array(correction_array)
 
 
@@ -64,25 +73,12 @@ def _get_correction_factors(mag, correction_table):
     # or interpolate
     elif bin_centre < mag and mag < range_row['max_Gmag_bin']:
         next_factors = next_range_row[factor_columns]
-        correction_factors = []
-        for index, factor in enumerate(factors):
-            interpolator = interp1d(np.array([bin_centre, range_row['max_Gmag_bin']]),
-                                    np.array([factor, next_factors[index]]))
-            correction_factors.append(interpolator(mag))
+        correction_factors = [interp1d(np.array([bin_centre, range_row['max_Gmag_bin']]),
+                                np.array([factor, next_factors[index]]))(mag) \
+                                for index, factor in enumerate(factors)]
         return np.array(correction_factors)
     else:
         raise ValueError('Check the variables being used. The program should never fall in this case.')
-
-
-def _read_system_table(system):
-    # Read system table
-    try:
-        correction_factors_path = path.join(correction_tables_path, f'DIDREQ-465-{system}-correction-factors.csv')
-        correction_table = pd.read_csv(correction_factors_path, float_precision='round_trip')
-        correction_table['bin_centre'] = (correction_table['min_Gmag_bin'] + correction_table['max_Gmag_bin']) / 2
-    except FileNotFoundError:
-        raise FileNotFoundError(f'No correction table found for system {system}.')
-    return correction_table
 
 
 def _correct_system(system_df, correction_array):
@@ -90,14 +86,13 @@ def _correct_system(system_df, correction_array):
     error_df = system_df[[column for column in system_df.columns if '_error' in column]]
     rearranged_correction = [sublist for sublist in zip(*correction_array)]
     # Factors for each column
-    nrows = len(system_df)
     for index, column in enumerate(error_df.columns):
         correction_factors = rearranged_correction[index]
         error_df[column] = error_df[column] * correction_factors
-    # Update system_df
-    system_df.update(error_df)
-    return system_df
+    return error_df
 
+# The correction can only be applied for the systems present in the config files
+__correctable_systems = _get_correctable_systems()
 
 def apply_error_correction(input_multi_photometry, photometric_system=None, output_path='.',
                            output_file='output_corrected_photometry', output_format=None, save_file=True):
@@ -128,15 +123,11 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
     columns = list(input_multi_photometry.columns)
     columns.remove('source_id')
     systems_in_data = _extract_systems_from_data(columns, photometric_system)
-    # The correction can only be applied for the systems present in the config files
-    correctable_systems = _get_correctable_systems()
     # Only correct the systems that can be corrected
-    systems = []
-    for system in systems_in_data:
-        if system in correctable_systems:
-            systems.append(system)
-        else:
-            _warning(f'System {system} does not have a correction table. The program will not apply error correction over this system.')
+    systems = list(set(systems_in_data) & set(__correctable_systems))
+    systems_to_skip = set(systems_in_data) - set(__correctable_systems)
+    for system in systems_to_skip:
+        _warning(f'System {system} does not have a correction table. The program will not apply error correction over this system.')
     # Now we have to apply the correction on each of the systems, but this correction depends on the G band
     for system in tqdm(systems, desc='Correcting systems', total=len(systems), \
                        unit=pbar_units['correction'], leave=False, colour=pbar_colour):

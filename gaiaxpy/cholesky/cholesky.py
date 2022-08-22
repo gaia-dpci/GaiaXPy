@@ -67,6 +67,20 @@ def get_inverse_covariance_matrix(input_object, band=None):
         return output_df
 
 def get_chi2(L_inv, residuals):
+    """
+    Compute chi2 from given inverse Cholesky and a residual vector (= data - model).
+    This function defines = inverse * residuals such that chi2 = |x|^2., which
+    guarantees that chi2 >= 0.
+
+    Args:
+        L_inv (ndarray): Inverse Cholesky of the covariance, as computed from the
+                         function get_inverse_covariance_matrix.
+        residuals (ndarray): Difference between the observed coefficient vector and
+                             some model prediction of it.
+
+    Returns:
+        float: Chi-squared value.
+    """
     if L_inv.shape != (55, 55):
         raise ValueError('Inverse covariance matrix shape must be (55, 55).')
     if residuals.shape != (55,):

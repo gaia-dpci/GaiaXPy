@@ -18,13 +18,7 @@ class DataFrameStringArrayReader(object):
         array_columns = self.array_columns
         for column in array_columns:
             # String column to NumPy array
-            for index, row in df.iterrows():
-                current_element = row[column]
-                try:
-                    df[column][index] = str_to_array(current_element)
-                except Exception as err:
-                    if isinstance(current_element, float) and isnan(current_element):
-                        continue
+            df[column] = df[column].apply(lambda x: str_to_array(x))
         return df
 
 

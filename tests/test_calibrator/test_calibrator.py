@@ -13,11 +13,8 @@ from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from os.path import join
 from tests.files import files_path
 from tests.utils import df_columns_to_array, pos_file_to_array
-
 from gaiaxpy import calibrate
 
-# Avoid warning, false positive
-pd.options.mode.chained_assignment = None
 
 parser = InternalContinuousParser()
 

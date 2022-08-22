@@ -3,9 +3,6 @@ import numpy as np
 import pandas as pd
 from gaiaxpy.core.generic_functions import str_to_array
 
-# Avoid warning, false positive
-pd.options.mode.chained_assignment = None
-
 
 def parse_matrices(string):
     if len(string) == 0:

@@ -1,6 +1,15 @@
 Release notes
 =============
 
+Version 1.2.0
+-------------
+Released on 2022/08/22.
+
+* Added Cholesky functionality: inverse covariancematrix, chi-squared.
+* Improved testing.
+* Replaced custom progress tracker by tqdm.
+* Improved performance of calibrator, converter, and generator.
+
 Version 1.1.4
 -------------
 Released on 2022/06/21.

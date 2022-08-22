@@ -21,12 +21,10 @@ xp_continuous_path = join(files_path, 'xp_continuous')
 
 
 def check_special_columns(columns, data, solution):
-    allowed_null_values = [[], None, float('NaN'), np.nan]
     for column in columns:
         for i in range(len(data)):
             d = data[column].iloc[i]; s = solution[column].iloc[i]
-            if (not isinstance(d, np.ndarray) and not isinstance(d, np.ndarray)) \
-                and (d in allowed_null_values and s in allowed_null_values):
+            if (not isinstance(d, np.ndarray) and not isinstance(d, np.ndarray)):
                 pass
             else:
                 npt.assert_array_almost_equal(d, s, decimal=5)

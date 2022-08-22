@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 import pandas as pd
 import numpy.testing as npt
 import pandas.testing as pdt
@@ -20,9 +21,15 @@ xp_continuous_path = join(files_path, 'xp_continuous')
 
 
 def check_special_columns(columns, data, solution):
+    allowed_null_values = [[], None, float('NaN'), np.nan]
     for column in columns:
         for i in range(len(data)):
-            npt.assert_array_almost_equal(data[column].iloc[i], solution[column].iloc[i], decimal=5)
+            d = data[column].iloc[i]; s = solution[column].iloc[i]
+            if (not isinstance(d, np.ndarray) and not isinstance(d, np.ndarray)) \
+                and (d in allowed_null_values and s in allowed_null_values):
+                pass
+            else:
+                npt.assert_array_almost_equal(d, s, decimal=5)
 
 # Missing BP source not available in AVRO format
 class TestInputReaderMissingBPFile(unittest.TestCase):
@@ -52,8 +59,8 @@ class TestInputReaderMissingBPFile(unittest.TestCase):
         solution_df = pd.read_csv(solution_file, converters=solution_converters)
         file = join(xp_continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.xml')
         parsed_data_file, _ = InputReader(file, convert)._read()
-        columns_to_drop = ['bp_coefficient_errors', 'bp_coefficient_correlations', \
-                           'rp_coefficient_errors']
+        columns_to_drop = ['bp_coefficients', 'bp_coefficient_errors', \
+                           'bp_coefficient_correlations', 'rp_coefficient_errors']
         check_special_columns(columns_to_drop, parsed_data_file, solution_df)
         parsed_data_file = parsed_data_file.drop(columns=columns_to_drop)
         solution_df = solution_df.drop(columns=columns_to_drop)

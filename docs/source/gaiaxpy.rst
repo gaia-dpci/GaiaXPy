@@ -13,6 +13,7 @@ Subpackages
    :maxdepth: 4
 
    gaiaxpy.calibrator
+   gaiaxpy.cholesky
    gaiaxpy.converter
    gaiaxpy.core
    gaiaxpy.error_correction

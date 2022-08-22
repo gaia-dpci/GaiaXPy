@@ -5,7 +5,7 @@ Module to represent generic output data.
 """
 
 from ast import literal_eval
-from gaiaxpy.file_parser import InvalidExtensionError
+from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
 from os.path import abspath, dirname, join
 
 
@@ -28,7 +28,7 @@ def _standardise_output_format(format):
 
 def _load_header_dict():
     current_path = dirname(abspath(__file__))
-    header_dictionary_path = join(current_path, '../headers', 'headers_dict.txt')
+    header_dictionary_path = join(current_path, 'ecsv_headers', 'headers_dict.txt')
     with open(header_dictionary_path) as f:
         data = f.read()
     # Load header dictionary

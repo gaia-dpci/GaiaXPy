@@ -1,14 +1,14 @@
 import unittest
 import numpy as np
 from os import path
-from gaiaxpy.file_parser import InternalContinuousParser
-from gaiaxpy.spectrum import _correlation_to_covariance_dr3int5
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 from gaiaxpy.core.satellite import BANDS
 from tests.files import files_path
 
 # Files to test parse
 continuous_path = path.join(files_path, 'xp_continuous')
-correlation_csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
+correlation_csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 covariance_avro_file = path.join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
 
 # Parsers

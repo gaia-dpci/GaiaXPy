@@ -2,7 +2,8 @@ import unittest
 import pandas as pd
 from numpy import ndarray, dtype
 from os import path
-from gaiaxpy.file_parser import InternalSampledParser, DataMismatchError
+from gaiaxpy.file_parser.parse_generic import DataMismatchError
+from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from tests.files import files_path
 
 # Files to test parse

@@ -5,17 +5,19 @@ import pandas as pd
 from os import path
 import numpy.testing as npt
 import pandas.testing as pdt
-from gaiaxpy import generate, PhotometricSystem
-from gaiaxpy.colour_equation import apply_colour_equation
+from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
+from gaiaxpy.core.generic_functions import cast_output
 from tests.files import files_path
+
+from gaiaxpy import generate, PhotometricSystem
 
 continuous_path = path.join(files_path, 'xp_continuous')
 johnson_solution_path = path.join(files_path, 'colour_equation', 'Landolt_Johnson_Ucorr_v375wiv142r_SAMPLE.csv')
 johnson_solution_df = pd.read_csv(johnson_solution_path)
-xp_continuous_csv = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
-xp_continuous_fits = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.fits')
-xp_continuous_xml = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_dr3int6.xml')
-xp_continuous_xml_plain = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_plain_dr3int6.xml')
+xp_continuous_csv = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
+xp_continuous_fits = path.join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
+xp_continuous_xml = path.join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
+xp_continuous_xml_plain = path.join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 
 TOL = 4
 
@@ -126,7 +128,10 @@ class TestSingleColourEquation(unittest.TestCase):
         columns_that_change = [f'{label}_mag_u', f'{label}_flux_u', f'{label}_flux_error_u']
         # Data that should remain unchanged
         static_data = data.drop(columns=columns_that_change)
+        static_data = cast_output(static_data)
         static_corrected_data = corrected_data.drop(columns=columns_that_change)
+        # Static corrected data is the output of my function
+        # Static data is the manually generated dataframe
         pdt.assert_frame_equal(static_corrected_data, static_data)
         # Data that should have changed
         for column in columns_that_change:
@@ -151,6 +156,7 @@ class TestSingleColourEquation(unittest.TestCase):
         columns_that_change = [f'{label}_mag_u', f'{label}_flux_u', f'{label}_flux_error_u']
         # Data that should remain unchanged
         static_data = data.drop(columns=columns_that_change)
+        static_data = cast_output(static_data)
         static_corrected_data = corrected_data.drop(columns=columns_that_change)
         pdt.assert_frame_equal(static_corrected_data, static_data)
         # Data that should have changed
@@ -176,6 +182,7 @@ class TestSingleColourEquation(unittest.TestCase):
         columns_that_change = [f'{label}_mag_u', f'{label}_flux_u', f'{label}_flux_error_u']
         # Data that should remain unchanged
         static_data = data.drop(columns=columns_that_change)
+        static_data = cast_output(static_data)
         static_corrected_data = corrected_data.drop(columns=columns_that_change)
         pdt.assert_frame_equal(static_corrected_data, static_data)
         # Data that should have changed
@@ -201,6 +208,7 @@ class TestSingleColourEquation(unittest.TestCase):
         columns_that_change = [f'{label}_mag_u', f'{label}_flux_u', f'{label}_flux_error_u']
         # Data that should remain unchanged
         static_data = data.drop(columns=columns_that_change)
+        static_data = cast_output(static_data)
         static_corrected_data = corrected_data.drop(columns=columns_that_change)
         pdt.assert_frame_equal(static_corrected_data, static_data)
         # Data that should have changed

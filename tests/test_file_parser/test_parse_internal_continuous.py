@@ -3,7 +3,7 @@ import numpy.testing as npt
 import pandas as pd
 from numpy import ndarray, dtype
 from os import path
-from gaiaxpy.file_parser import InternalContinuousParser
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.core.satellite import BANDS
 from tests.files import files_path
 from tests.utils import get_spectrum_with_source_id
@@ -11,10 +11,10 @@ from tests.utils import get_spectrum_with_source_id
 # Files to test parse
 continuous_path = path.join(files_path, 'xp_continuous')
 avro_file = path.join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
-csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
-fits_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.fits')
-plain_xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_plain_dr3int6.xml')
-xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_dr3int6.xml')
+csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
+fits_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
+plain_xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
+xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
 
 parser = InternalContinuousParser()
 parsed_avro_file, _ = parser.parse(avro_file)

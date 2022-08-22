@@ -10,8 +10,8 @@ from re import finditer
 from os import path
 from .regular_photometric_system import RegularPhotometricSystem
 from .standardised_photometric_system import StandardisedPhotometricSystem
-from gaiaxpy.config import config_path
-from gaiaxpy.core import _get_system_label
+from gaiaxpy.config.paths import config_path
+from gaiaxpy.core.generic_functions import _get_system_label
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))

@@ -1,5 +1,5 @@
 import unittest
-from gaiaxpy.spectrum import XpSpectrum
+from gaiaxpy.spectrum.xp_spectrum import XpSpectrum
 from gaiaxpy.core.satellite import BANDS
 
 

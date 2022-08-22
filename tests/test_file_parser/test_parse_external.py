@@ -2,7 +2,8 @@ import unittest
 import pandas as pd
 from numpy import ndarray, dtype
 from os import path
-from gaiaxpy.file_parser import ExternalParser, InvalidExtensionError
+from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
+from gaiaxpy.file_parser.parse_external import ExternalParser
 from tests.files import files_path
 
 # Files to test parse
@@ -32,10 +33,3 @@ class TestExternalParserCSV(unittest.TestCase):
     def test_flux_types(self):
         self.assertIsInstance(parsed_csv_file['flux'][0], ndarray)
         self.assertIsInstance(parsed_csv_file['flux_error'][0], ndarray)
-
-
-class TestExternalParserXML(unittest.TestCase):
-
-    def test_parse_fails(self):
-        with self.assertRaises(KeyError):
-            parser._parse_xml(xml_file)

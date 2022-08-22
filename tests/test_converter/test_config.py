@@ -2,7 +2,7 @@ import unittest
 import pandas as pd
 from configparser import ConfigParser
 from os import path
-from gaiaxpy.config import config_path
+from gaiaxpy.config.paths import config_path
 from gaiaxpy.converter import config
 
 configparser = ConfigParser()

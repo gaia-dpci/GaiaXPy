@@ -6,10 +6,38 @@ Module to hold some functions used by different subpackages.
 
 import sys
 import numpy as np
+import pandas as pd
 from collections.abc import Iterable
 from numbers import Number
 from numpy import ndarray
 from string import capwords
+
+
+def cast_output(output):
+    cast_dict = {'source_id': 'int64',
+                 'solution_id': 'int64'}
+    if not isinstance(output, pd.DataFrame):
+        df = output.data
+    else:
+        df = output
+    for key, value in cast_dict.items():
+        try:
+            df[key] = df[key].astype(value)
+        except KeyError:
+            continue
+    return df
+
+
+def str_to_array(str_array):
+    if isinstance(str_array, str):
+        try:
+            return np.fromstring(str_array[1:-1], sep=',')
+        except:
+            raise ValueError('Input cannot be converted to array.')
+    elif isinstance(str_array, float):
+        return float('NaN')
+    else:
+        raise ValueError('Unhandled type.')
 
 
 def _validate_pwl_sampling(sampling):
@@ -56,18 +84,6 @@ def _validate_arguments(default_output_file, given_output_file, save_file):
         _warning('Argument output_file was given, but save_file is set to False. Set save_file to True to store the output of the function.')
 
 
-def _progress_tracker(func):
-    # Progress tracker decorator
-    def inner(row, *args):
-        if args:
-            index = args[-2]
-            nrows = args[-1]
-            print('Processing data [{:.0%}]\r'.format((index + 1) / nrows), end="")
-            func(row, *args[:-2])
-            print(' ' * 30 + '\r', end='')
-    return inner
-
-
 def _get_spectra_type(spectra):
     """
     Get the spectra type.
@@ -98,7 +114,7 @@ def _get_system_label(name):
 
 
 # AVRO files include the values in the diagonal, whereas others don't
-def array_to_symmetric_matrix(size, array):
+def array_to_symmetric_matrix(array, array_size):
     """
     Convert the input 1D array into a 2D matrix. The array is assumed to store
     only the unique elements of a symmetric matrix (i.e. all elements
@@ -106,8 +122,8 @@ def array_to_symmetric_matrix(size, array):
     is returned symmetric with respect to the diagonal.
 
     Args:
-        size (int): number of rows/columns in the output matrix.
         array (ndarray): 1D array.
+        array_size (int): number of rows/columns in the output matrix.
 
     Returns:
         array of arrays: a full 2D matrix.
@@ -115,31 +131,37 @@ def array_to_symmetric_matrix(size, array):
     Raises:
         TypeError: If array is not of type np.ndarray.
     """
-    def contains_diagonal(size, array):
-        if len(array) == len(np.tril_indices(size - 1)[0]):
-            return False
-        return True
+    def contains_diagonal(array_size, array):
+        return not len(array) == len(np.tril_indices(array_size - 1)[0])
+    # Bad cases
+    if (not isinstance(array, np.ndarray) and np.isnan(array)) or \
+            isinstance(array_size, np.ma.core.MaskedConstant) or \
+            array.size == 0:
+        return array
     # Enforce array type, second check verifies that array is 1D.
-    if isinstance(array, np.ndarray) and isinstance(array[0], Number) and isinstance(size, Number):
+    if isinstance(array, np.ndarray) and isinstance(array[0], Number) and isinstance(array_size, Number):
+        array_size = int(array_size)
         k = -1  # Diagonal offset (from Numpy documentation)
-        matrix = np.zeros((size, size))
+        matrix = np.zeros((array_size, array_size))
         # Add values in diagonal
         np.fill_diagonal(matrix, 1.0)
-        if contains_diagonal(size, array):
+        if contains_diagonal(array_size, array):
             k = 0
-        matrix[np.tril_indices(size, k=k)] = array
+        matrix[np.tril_indices(array_size, k=k)] = array
         transpose = matrix.transpose()
         transpose[np.tril_indices(
-            size, -1)] = matrix[np.tril_indices(size, -1)]
+            array_size, -1)] = matrix[np.tril_indices(array_size, -1)]
         return transpose
-    elif isinstance(array[0], np.ndarray):
+    elif isinstance(array, np.ndarray) and isinstance(array[0], np.ndarray):
         # Input array is already a matrix, we assume that it contains the required values.
         return array
     else:
-        raise TypeError('Wrong argument types. Must be integer and np.ndarray.')
+        raise TypeError('Wrong argument types. Must be np.ndarray and integer.')
 
 
-def _extract_systems_from_data(data_columns, photometric_system):
+def _extract_systems_from_data(data_columns, photometric_system=None):
+    if isinstance(photometric_system, list):
+        return [system.get_system_label() for system in photometric_system]
     src = 'source_id'
     columns = list(data_columns.copy())
     if src in columns:

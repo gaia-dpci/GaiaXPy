@@ -1,19 +1,21 @@
 import unittest
 from os import path
-from gaiaxpy.generator import _generate_synthetic_photometry, PhotometricSystem
-from gaiaxpy.core import _load_xpmerge_from_csv, _load_xpsampling_from_csv, \
-                         satellite
-from gaiaxpy.file_parser import InternalContinuousParser
-from gaiaxpy.spectrum import SampledBasisFunctions, SingleSyntheticPhotometry
+from gaiaxpy.core import satellite
+from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+from gaiaxpy.generator.photometric_system import PhotometricSystem
+from gaiaxpy.generator.synthetic_photometry_generator import _generate_synthetic_photometry
+from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.single_synthetic_photometry import SingleSyntheticPhotometry
 from tests.files import files_path
 
 # Files to test parse
 continuous_path = path.join(files_path, 'xp_continuous')
 covariance_avro_file = path.join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
-correlation_csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
-correlation_fits_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.fits')
-correlation_xml_plain_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_plain_dr3int6.xml')
-correlation_xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_votable_dr3int6.xml')
+correlation_csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
+correlation_fits_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
+correlation_xml_plain_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
+correlation_xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
 continuous_parser = InternalContinuousParser()
 
 # Parse files

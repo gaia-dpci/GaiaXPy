@@ -1,8 +1,8 @@
 import unittest
 import numpy as np
 from os import path
-from gaiaxpy.file_parser import DataMismatchError, GenericParser, \
-                           InvalidExtensionError, _get_file_extension
+from gaiaxpy.file_parser.parse_generic import _get_file_extension, DataMismatchError, \
+                                              GenericParser, InvalidExtensionError
 from tests.files import files_path
 
 parser = GenericParser()

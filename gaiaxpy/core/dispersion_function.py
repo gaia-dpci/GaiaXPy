@@ -10,7 +10,7 @@ from configparser import ConfigParser
 from functools import lru_cache
 from scipy import interpolate
 from os.path import join
-from gaiaxpy.config import config_path
+from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 
 
@@ -46,12 +46,12 @@ def generate_rp_conversion():
 
 
 bp_pwl_to_wl, bp_wl_to_pwl = generate_bp_conversion()
-bp_pwl_range = [bp_wl_to_pwl(BP_WL.low), bp_wl_to_pwl(BP_WL.high)]
+bp_pwl_range = [float(bp_wl_to_pwl(BP_WL.low)), float(bp_wl_to_pwl(BP_WL.high))]
 bp_wl_range = [BP_WL.low, BP_WL.high]
 
 
 rp_pwl_to_wl, rp_wl_to_pwl = generate_rp_conversion()
-rp_pwl_range = [rp_wl_to_pwl(RP_WL.low), rp_wl_to_pwl(RP_WL.high)]
+rp_pwl_range = [float(rp_wl_to_pwl(RP_WL.low)), float(rp_wl_to_pwl(RP_WL.high))]
 rp_wl_range = [RP_WL.low, RP_WL.high]
 
 

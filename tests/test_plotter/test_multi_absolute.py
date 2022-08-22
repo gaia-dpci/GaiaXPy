@@ -1,11 +1,12 @@
 import unittest
 from os import path
-from gaiaxpy import calibrate, plot_spectra
 from tests.files import files_path
+
+from gaiaxpy import calibrate, plot_spectra
 
 continuous_path = path.join(files_path, 'xp_continuous')
 mean_spectrum_avro = path.join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
-mean_spectrum_csv = path.join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
+mean_spectrum_csv = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 
 
 class TestMultiAbsolute(unittest.TestCase):

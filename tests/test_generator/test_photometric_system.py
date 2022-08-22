@@ -4,7 +4,7 @@ import numpy.testing as npt
 import pandas as pd
 from numpy import ndarray
 from os import path
-from gaiaxpy.generator import PhotometricSystem
+from gaiaxpy.generator.photometric_system import PhotometricSystem
 from tests.files import files_path
 
 

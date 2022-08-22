@@ -7,14 +7,19 @@ from ast import literal_eval
 from configparser import ConfigParser
 from itertools import islice
 from os.path import abspath, dirname, join
-from gaiaxpy.config import config_path
-from gaiaxpy.converter import convert, get_unique_basis_ids, get_design_matrices, \
-                              load_config, _create_spectrum
+from gaiaxpy.config.paths import config_path
+from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices, \
+                                        get_unique_basis_ids
+from gaiaxpy.converter.config import load_config
 from gaiaxpy.core.satellite import BANDS
-from gaiaxpy.file_parser import InternalContinuousParser, InternalSampledParser
-from gaiaxpy.spectrum import SampledBasisFunctions, XpSampledSpectrum
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
+from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from tests.files import files_path
 from tests.utils import df_columns_to_array, get_spectrum_with_source_id_and_xp
+
+from gaiaxpy import convert
 
 current_path = abspath(dirname(__file__))
 configparser = ConfigParser()
@@ -25,7 +30,7 @@ config_df = load_config(config_file)
 # File under test
 solution_folder = 'converter_solution'
 continuous_path = join(files_path, 'xp_continuous')
-input_file = join(continuous_path, 'XP_CONTINUOUS_RAW_dr3int6.csv')
+input_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 converter_solution_df = pd.read_csv(join(files_path, solution_folder, 'converter_solution_0_60_481.csv'),
                                     float_precision='round_trip')
 columns_to_parse = ['flux', 'flux_error']

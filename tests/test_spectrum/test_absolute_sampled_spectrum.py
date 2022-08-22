@@ -1,11 +1,13 @@
 import unittest
 from configparser import ConfigParser
 from os import path
-from gaiaxpy.config import config_path
-from gaiaxpy.core import _load_xpmerge_from_csv, _load_xpsampling_from_csv
-from gaiaxpy.file_parser import InternalContinuousParser
-from gaiaxpy.spectrum import _correlation_to_covariance_dr3int5, AbsoluteSampledSpectrum, \
-                             SampledBasisFunctions, XpContinuousSpectrum
+from gaiaxpy.config.paths import config_path
+from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
+from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
+from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.core.satellite import BANDS
 from tests.files import files_path
 
@@ -18,7 +20,7 @@ xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(label)
 xp_design_matrices = _load_xpsampling_from_csv(label)
 
 parser = InternalContinuousParser()
-file_to_parse = path.join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_dr3int6.csv')
+file_to_parse = path.join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 parsed_correlation, _ = parser.parse(file_to_parse)
 
 # Create sampled basis functions

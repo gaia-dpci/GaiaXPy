@@ -5,7 +5,7 @@ Module to represent a standardised photometric system.
 """
 
 from .internal_photometric_system import InternalPhotometricSystem
-from gaiaxpy.core import _load_offset_from_csv
+from gaiaxpy.core.config import _load_offset_from_csv
 
 
 class StandardisedPhotometricSystem(InternalPhotometricSystem):

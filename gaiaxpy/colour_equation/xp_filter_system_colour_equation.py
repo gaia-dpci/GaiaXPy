@@ -5,11 +5,14 @@ import pandas as pd
 from configparser import ConfigParser
 from os import listdir, path
 from numpy import poly1d
-from gaiaxpy.config import filters_path
-from gaiaxpy.core import _extract_systems_from_data, _load_xpzeropoint_from_csv, \
-                         _progress_tracker, _validate_arguments
-from gaiaxpy.input_reader import InputReader
-from gaiaxpy.output import PhotometryData
+from tqdm import tqdm
+from gaiaxpy.config.paths import filters_path
+from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, \
+                                           _validate_arguments
+from gaiaxpy.core.config import _load_xpzeropoint_from_csv
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
+from gaiaxpy.input_reader.input_reader import InputReader
+from gaiaxpy.output.photometry_data import PhotometryData
 
 
 def _raise_key_error(key):
@@ -53,14 +56,14 @@ def _fill_systems_details(systems_to_correct):
 def _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems_details):
     new_system_rows = []
     nrows = len(single_system_df)
-
-    @_progress_tracker
     def _execute_row(row, *args):
         system, colour_band_0, colour_band_1, systems_details = args[:4]
         new_row = _generate_output_row(row, system, colour_band_0, colour_band_1, systems_details)
         new_system_rows.append(new_row)
-    for index, row in single_system_df.iterrows():
-        _execute_row(row, system, colour_band_0, colour_band_1, systems_details, index, nrows)
+    for index, row in tqdm(single_system_df.iterrows(), desc='Applying colour equation', \
+                           total=len(single_system_df), unit=pbar_units['colour_eq'], \
+                           colour=pbar_colour, leave=False):
+        _execute_row(row, system, colour_band_0, colour_band_1, systems_details)
     return pd.DataFrame(new_system_rows)
 
 
@@ -189,5 +192,6 @@ def apply_colour_equation(input_synthetic_photometry, photometric_system=None, o
     systems_details = _fill_systems_details(systems_to_correct)
     output_df = _generate_output_df(input_synthetic_photometry, systems_in_data, systems_details)
     output_data = PhotometryData(output_df)
+    output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_df

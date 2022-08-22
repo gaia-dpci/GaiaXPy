@@ -18,10 +18,14 @@ Package overview
      - Description
    * - Calibrator
      - Implementation of the calibrator tool.
+   * - Cholesky
+     - Subpackage that implements the Cholesky functionality (inverse covariance, etc.).
    * - Converter
      - Implementation of the converter tool.
    * - Core
      - Constants and internal generic functions.
+   * - Generator
+     - Subpackage to generate synthetic photometry
    * - Plotter
      - Subpackage to plot the output of some of the tools.
    * - Spectrum

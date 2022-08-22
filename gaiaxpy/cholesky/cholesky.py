@@ -1,3 +1,9 @@
+"""
+cholesky.py
+====================================
+Module that implements the Cholesky functionality.
+"""
+
 import pandas as pd
 from numpy import diag, dot, identity
 from scipy.linalg import cholesky, solve_triangular

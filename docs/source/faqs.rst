@@ -35,6 +35,6 @@ GaiaXPy expects to receive a pandas DataFrame with at minimum the columns and ty
 * bp_basis_function_id (int, only required if truncation=True)
 * rp_basis_function_id (int, only required if truncation=True)
 
-If there are strings present in the data, the program will fail.
+If strings are present in the data, the program will fail.
 
 The NumPy ndarrays should be 1-dimensional arrays. In the case of bp_coefficient_correlations and rp_coefficient_correlations, both 1-dimensional and 2-dimensional arrays are accepted. If a 1-dimensional array is passed, the program will use the function `array_to_symmetric_matrix <https://gaiaxpy.readthedocs.io/en/latest/gaiaxpy.core.html#gaiaxpy.core.generic_functions.array_to_symmetric_matrix>`_ to transform the array. If a 2-dimensional array is received, no changes will be applied. This 2-dimensional array should have dimensions (55, 55).

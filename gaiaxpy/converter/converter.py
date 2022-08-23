@@ -163,8 +163,6 @@ def _create_spectra(parsed_input_data, truncation, design_matrices):
     positions = spectra_df[0].iloc[0]._get_positions()
     spectra_type = _get_spectra_type(spectra_df[0].iloc[0])
     spectra_df[0] = spectra_df[0].progress_apply(lambda s: s._spectrum_to_dict())
-    #spectra_df[0] = spectra_df[0].fillna({i: {} for i in spectra_df.index})
-    #spectra_df = spectra_df.join(pd.json_normalize(spectra_df[0]))
     spectra_df = spectra_df[0].apply(pd.Series).reset_index(drop=True)
     spectra_df.attrs['data_type'] = spectra_type
     return spectra_df, positions

@@ -31,6 +31,6 @@ Minimum requirements
 
 GaiaXPy works with Python 3.6 and later.
 
-Regarding the operating system, an installation issue has been reported when using a system older than macOS Monterey 12.1. Other details about this issue are unclear, but if a problem is found, it is recommend it to report it by creating an `GitHub issue<https://github.com/gaia-dpci/GaiaXPy/issues>`_.
+Regarding the operating system, an installation issue has been reported when using a system older than macOS Monterey 12.1. Other details about this issue are unclear, but if a problem is found, it is recommend it to report it by creating an `GitHub issue <https://github.com/gaia-dpci/GaiaXPy/issues>`_.
 
 So far, no problems have been reported with other operating systems.

@@ -1,6 +1,10 @@
 Release notes
 =============
 
+Version 1.2.1
+-------------
+* Added LSST filter.
+
 Version 1.2.0
 -------------
 Released on 2022/08/22.

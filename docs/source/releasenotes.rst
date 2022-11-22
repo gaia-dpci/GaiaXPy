@@ -1,6 +1,11 @@
 Release notes
 =============
 
+Version 1.2.2
+-------------
+* Removed fastavro version restriction.
+* Fixed bug in calibrator with truncation (only RP value was being used).
+
 Version 1.2.1
 -------------
 * Added LSST filter.

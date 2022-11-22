@@ -16,13 +16,7 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
     The spectrum is represented by a set of discrete measurements or samples.
     """
 
-    def __init__(
-            self,
-            source_id,
-            xp_spectra,  # This one indicates the bands present
-            sampled_bases,
-            merge,
-            truncation=-1):
+    def __init__(self, source_id, xp_spectra, sampled_bases, merge, truncation=None):
         """
         Initialise an absolute sampled spectrum.
 
@@ -34,35 +28,38 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
                 the grid defining the resolution of the final sampled spectrum.
             merge (dict): The weighting factors for BP and RP sampled onto
                 the grid defining the resolution of the final sampled spectrum.
-            truncation (int): Number of bases to be used for this spectrum. The set of
-                bases functions used for the continuous representation of the spectra
-                has been optimised to ensure that the first bases are the ones that
-                contribute most. In many cases, the last bases contribution will be below
-                the noise. Truncation of the basis function set to preserve only the
-                significant bases is optional. By default, no truncation will be applied,
-                i.e. all bases will be used.
+            truncation (dict): Number of bases to be used for this spectrum by band.
+                The set of bases functions used for the continuous representation of
+                the spectra has been optimised to ensure that the first bases are
+                the ones that contribute most. In many cases, the last bases contribution
+                will be below the noise. Truncation of the basis function set to preserve
+                only the significant bases is optional. By default, no truncation will be
+                applied, i.e. all bases will be used.
         """
-        # Bands available
+        if truncation is None:
+            truncation = dict()
+        #  Bands available
         bands = [band for band in xp_spectra.keys() if len(xp_spectra[band].get_coefficients()) != 0]
         if not bands:
-            raise BaseException('At least one band must be present.')
-        # If there at least one band present
+            raise ValueError('At least one band must be present.')
+        # If there is at least one band present
         if len(bands) >= 1:
             pos = sampled_bases[bands[0]]._get_sampling_grid()
         else:
-            raise BaseException('At least one band must be present.')
+            raise ValueError('At least one band must be present.')
         SampledSpectrum.__init__(self, source_id, pos)
         split_spectrum = {band: {} for band in BANDS}
         for band in bands:
-            if isinstance(truncation, (int, np.int64)) and truncation > 0:
+            band_truncation = truncation.get(band)
+            if isinstance(band_truncation, (int, np.int64)) and band_truncation > 0:
                 split_spectrum[band]['xp_spectra'] = xp_spectra[band]
                 split_spectrum[band]['flux'] = self._sample_flux(
-                    split_spectrum[band]['xp_spectra'].get_coefficients()[:truncation],
-                    sampled_bases[band]._get_design_matrix()[:truncation][:])
+                    split_spectrum[band]['xp_spectra'].get_coefficients()[:band_truncation],
+                    sampled_bases[band]._get_design_matrix()[:band_truncation][:])
                 split_spectrum[band]['error'] = self._sample_error(
                     split_spectrum[band]['xp_spectra'].get_covariance()[
-                        :truncation, :truncation],
-                    sampled_bases[band]._get_design_matrix()[:truncation][:],
+                        :band_truncation, :band_truncation],
+                    sampled_bases[band]._get_design_matrix()[:band_truncation][:],
                     split_spectrum[band]['xp_spectra'].get_standard_deviation())
             else:
                 split_spectrum[band]['xp_spectra'] = xp_spectra[band]
@@ -106,7 +103,7 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
             self.flux[np.argwhere(np.isnan(masked_pos))] = np.nan
             self.error[np.argwhere(np.isnan(masked_pos))] = np.nan
         else:
-            raise BaseException("At least one band must be available.")
+            raise ValueError("At least one band must be available.")
 
     def _get_fluxes(self):
         return self.flux

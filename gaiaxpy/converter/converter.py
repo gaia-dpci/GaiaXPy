@@ -118,7 +118,7 @@ def _create_spectrum(row, truncation, design_matrices, band):
             for one source in the mean spectra file. This will include columns for
             both bands (although one could be missing).
         truncation (bool): Toggle truncation of the set of bases.
-        design_matrix (ndarray): 2D array containing the basis functions
+        design_matrices (ndarray): 2D array containing the basis functions
             sampled on the pseudo-wavelength grid (either user-defined or default).
         band (str): BP/RP band.
 

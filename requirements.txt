@@ -2,7 +2,7 @@ numpy
 pandas>=1.0.0
 scipy
 astropy
-fastavro<=1.4.7
+fastavro
 astroquery
 matplotlib<=3.5.3
 tqdm>=4.64.0

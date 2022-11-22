@@ -7,4 +7,4 @@ from .generator.generator import generate
 from .generator.photometric_system import PhotometricSystem
 from .plotter.plot_spectra import plot_spectra
 
-__version__ = '1.2.1'
+__version__ = '1.2.2'

@@ -189,7 +189,7 @@ colours. Synthetic photometry from Gaia low-resolution spectra.
     phot_system = PhotometricSystem.JKC
     generated_data = generate(mean_spectrum_file, phot_system, save_file=False)
 
-`This table <_static/images/PhotometricSystem_table.png>`_ lists the available systems providing references for the passband definitions.
+`This table <_static/images/PhotometricSystem_table.pdf>`_ lists the available systems providing references for the passband definitions.
 The last column indicates the presence of a standardised version of the same set of filters (see
 Gaia Collaboration, Montegriffo et al. 2022 for details). The asterisk for the HST WFC3 UVIS and
 ACS WFC systems indicates that only a small selection (f438w, f606w, f814w) of the bands in these

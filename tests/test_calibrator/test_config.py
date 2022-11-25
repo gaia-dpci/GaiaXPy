@@ -9,8 +9,7 @@ from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_offset_from_csv, \
 system_value = 'Jkc'
 
 xp_sampling = _load_xpsampling_from_csv('photsystem', system=system_value)
-xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(
-    'photsystem', system=system_value)
+xp_sampling_grid, xp_merge = _load_xpmerge_from_csv('photsystem', system=system_value)
 xp_zero_point = _load_xpzeropoint_from_csv(system_value)
 
 
@@ -26,10 +25,8 @@ class TestConfig(unittest.TestCase):
     def test_load_xpzeropoint_from_csv(self):
         self.assertIsInstance(xp_zero_point, tuple)
         bands, zero_points = xp_zero_point
-        npt.assert_array_equal(zero_points, np.array(
-            [-25.9651, -25.4918, -26.0952, -26.6505, -27.3326]))
-        npt.assert_array_equal(bands, np.array(
-            ['U', 'B', 'V', 'R', 'I']))
+        npt.assert_array_equal(zero_points, np.array([-25.9651, -25.4918, -26.0952, -26.6505, -27.3326]))
+        npt.assert_array_equal(bands, np.array(['U', 'B', 'V', 'R', 'I']))
 
     def test_load_xpoffset(self):
         # Standard system has got an offset file
@@ -47,13 +44,3 @@ class TestConfig(unittest.TestCase):
         xp_offset = _load_offset_from_csv(system_value)
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.zeros(3))
-
-    def test_error_non_std_xpoffset(self):
-        # Non-standard system has not got an offset file.
-        system_value = 'Jkc'
-        with self.assertRaises(ValueError):
-            _load_offset_from_csv(system_value)
-
-        system_value = 'Gaia_2'
-        with self.assertRaises(ValueError):
-            _load_offset_from_csv(system_value)

@@ -1,9 +1,13 @@
 Release notes
 =============
 
+Version 1.2.3
+-------------
+* Removed matplotlib version constraint.
+
 Version 1.2.2
 -------------
-* Removed fastavro version restriction.
+* Removed fastavro version constraint.
 * Fixed bug in calibrator with truncation (only RP value was being used).
 
 Version 1.2.1

@@ -4,5 +4,5 @@ scipy
 astropy
 fastavro
 astroquery
-matplotlib<=3.5.3
+matplotlib
 tqdm>=4.64.0

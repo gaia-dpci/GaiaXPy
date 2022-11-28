@@ -5,4 +5,5 @@ astropy
 fastavro
 astroquery
 matplotlib
+PyQt5
 tqdm>=4.64.0

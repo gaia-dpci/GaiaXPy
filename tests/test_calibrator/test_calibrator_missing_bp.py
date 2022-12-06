@@ -25,7 +25,7 @@ converters = dict([(column, lambda x: str_to_array(x)) for column in ['flux', 'f
 solution_df = pd.read_csv(join(solution_path, 'with_missing_calibrator_solution.csv'), converters=converters)
 solution_sampling = pos_file_to_array(join(solution_path, 'with_missing_calibrator_solution_sampling.csv'))
 
-_rtol, _atol = 1e-23, 1e-23
+_rtol, _atol = 1e-14, 1e-14
 
 
 class TestCalibratorMissingBPFileInput(unittest.TestCase):

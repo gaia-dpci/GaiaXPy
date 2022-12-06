@@ -13,7 +13,7 @@ continuous_path = join(files_path, 'xp_continuous')
 covariance_avro_file = join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
 solution_path = join(files_path, 'generator_solution')
 
-_rtol, _atol = 1e-24, 1e-24
+_rtol, _atol = 1e-22, 1e-22
 
 
 class TestGenerator(unittest.TestCase):

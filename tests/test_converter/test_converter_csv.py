@@ -61,7 +61,7 @@ ref_sampled, _ = sampled_parser.parse(ref_sampled_csv)
 ref_sampled_truncated, _ = sampled_parser.parse(ref_sampled_truncated_csv)
 
 TOL = 4
-_rtol, _atol = 1e-14, 1e-14
+_rtol, _atol = 1e-12, 1e-12
 
 
 class TestGetMethods(unittest.TestCase):

@@ -8,7 +8,7 @@ from gaiaxpy import calibrate, convert, generate, PhotometricSystem
 from gaiaxpy.file_parser.parse_generic import GenericParser
 from tests.files.paths import files_path
 
-_rtol, _atol = 1e-9, 1e-9
+_rtol, _atol = 1e-8, 1e-8
 
 mean_spectrum = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 # Create output folder

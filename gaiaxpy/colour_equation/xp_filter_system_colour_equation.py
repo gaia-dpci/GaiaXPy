@@ -1,15 +1,17 @@
 import ast
 import math
-import numpy as np
-import pandas as pd
 from configparser import ConfigParser
 from os import listdir, path
+
+import numpy as np
+import pandas as pd
 from numpy import poly1d
 from tqdm import tqdm
+
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, \
-                                           _validate_arguments
 from gaiaxpy.core.config import _load_xpzeropoint_from_csv
+from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, \
+    _validate_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
@@ -56,10 +58,12 @@ def _fill_systems_details(systems_to_correct):
 def _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems_details):
     new_system_rows = []
     nrows = len(single_system_df)
+
     def _execute_row(row, *args):
         system, colour_band_0, colour_band_1, systems_details = args[:4]
         new_row = _generate_output_row(row, system, colour_band_0, colour_band_1, systems_details)
         new_system_rows.append(new_row)
+
     for index, row in tqdm(single_system_df.iterrows(), desc='Applying colour equation', \
                            total=len(single_system_df), unit=pbar_units['colour_eq'], \
                            colour=pbar_colour, leave=False):
@@ -80,7 +84,8 @@ def _generate_output_df(input_synthetic_photometry, systems_in_data, systems_det
             filter_to_correct = systems_details[system]['filter']
             colour_band_0, colour_band_1 = _get_colour_bands(systems_details[system]['colour_index'])
             system_columns_with_colour = [column for column in column_names if column.startswith(f'{system}_')
-                              and column.endswith((f'_{filter_to_correct}', f'_{colour_band_0}', f'_{colour_band_1}'))]
+                                          and column.endswith(
+                (f'_{filter_to_correct}', f'_{colour_band_0}', f'_{colour_band_1}'))]
             # Data to apply the colour equation
             single_system_df = synt_phot_df[system_columns_with_colour]
             new_system_df = _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems_details)
@@ -101,14 +106,14 @@ def _generate_output_row(row, system_label, colour_band_0, colour_band_1, system
     # Propagated colour error
     mag_err_1 = _compute_mag_error(row, colour_band_0, system_label)
     mag_err_2 = _compute_mag_error(row, colour_band_1, system_label)
-    colour_err = math.sqrt(mag_err_1**2 + mag_err_2**2)
+    colour_err = math.sqrt(mag_err_1 ** 2 + mag_err_2 ** 2)
     correction_err = colour_err * abs(systems_details[system_label]['derivative'](colour))
     # Total error on corrected magnitude
-    out_err = math.sqrt(mag_err**2 + correction_err**2)
+    out_err = math.sqrt(mag_err ** 2 + correction_err ** 2)
     new_row = {}
     new_row[f'{system_label}_mag_{filter_to_correct}'] = corrected_magnitude
     zp = systems_details[system_label]['bands_zp'][filter_to_correct]
-    out_flux = 10**(-0.4 * (corrected_magnitude - zp))
+    out_flux = 10 ** (-0.4 * (corrected_magnitude - zp))
     out_flux_err = out_err * out_flux * math.log(10) / 2.5
     new_row[f'{system_label}_flux_{filter_to_correct}'] = out_flux
     new_row[f'{system_label}_flux_error_{filter_to_correct}'] = out_flux_err
@@ -133,7 +138,8 @@ def _set_colour_limit(colour, colour_range):
     elif colour > max(colour_range):
         colour_limit = max(colour_range)
     else:
-        raise ValueError('The condition for one of the previous statements must be True. Error in colour or colour_range.')
+        raise ValueError(
+            'The condition for one of the previous statements must be True. Error in colour or colour_range.')
     return colour_limit
 
 

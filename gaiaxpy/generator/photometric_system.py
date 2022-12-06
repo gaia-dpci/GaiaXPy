@@ -4,14 +4,15 @@ photometric_system.py
 Module for the management of photometric systems.
 """
 
-from enum import Enum
 from configparser import ConfigParser
-from re import finditer
+from enum import Enum
 from os import path
-from .regular_photometric_system import RegularPhotometricSystem
-from .standardised_photometric_system import StandardisedPhotometricSystem
+from re import finditer
+
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.generic_functions import _get_system_label
+from .regular_photometric_system import RegularPhotometricSystem
+from .standardised_photometric_system import StandardisedPhotometricSystem
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
@@ -21,9 +22,11 @@ def _system_is_standard(system_label):
     """
     Tells whether the input system is standard or not.
     """
+
     def split_camel_case(word):
         matches = finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', word)
         return [m.group(0) for m in matches]
+
     return split_camel_case(system_label)[-1].lower() == 'std'
 
 

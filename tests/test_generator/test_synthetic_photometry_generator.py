@@ -1,5 +1,6 @@
 import unittest
 from os import path
+
 from gaiaxpy.core import satellite
 from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
@@ -7,7 +8,7 @@ from gaiaxpy.generator.photometric_system import PhotometricSystem
 from gaiaxpy.generator.synthetic_photometry_generator import _generate_synthetic_photometry
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.single_synthetic_photometry import SingleSyntheticPhotometry
-from tests.files import files_path
+from tests.files.paths import files_path
 
 # Files to test parse
 continuous_path = path.join(files_path, 'xp_continuous')

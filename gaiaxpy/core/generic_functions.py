@@ -5,12 +5,13 @@ Module to hold some functions used by different subpackages.
 """
 
 import sys
-import numpy as np
-import pandas as pd
 from collections.abc import Iterable
 from numbers import Number
-from numpy import ndarray
 from string import capwords
+
+import numpy as np
+import pandas as pd
+from numpy import ndarray
 
 
 def cast_output(output):
@@ -58,7 +59,9 @@ def _validate_pwl_sampling(sampling):
     min_value = sampling[0]
     max_value = sampling[-1]
     if min_value < min_sampling_value or max_value > max_sampling_value:
-        raise ValueError(f'Wrong value for sampling. Sampling accepts an array of values where the minimum value is {min_sampling_value} and the maximum is {max_sampling_value}.')
+        raise ValueError(
+            f'Wrong value for sampling. Sampling accepts an array of values where the minimum value is '
+            f'{min_sampling_value} and the maximum is {max_sampling_value}.')
 
 
 def _validate_wl_sampling(sampling):
@@ -69,7 +72,9 @@ def _validate_wl_sampling(sampling):
         if sampling[0] >= sampling[-1]:
             raise ValueError('Sampling should be a non-decreasing array.')
         elif sampling[0] < min_value or sampling[-1] > max_value:
-            raise ValueError(f'Wrong value for sampling. Sampling accepts an array of values where the minimum value is {min_value} and the maximum is {max_value}.')
+            raise ValueError(
+                f'Wrong value for sampling. Sampling accepts an array of values where the minimum value is {min_value}'
+                f' and the maximum is {max_value}.')
 
 
 def _warning(message):
@@ -80,8 +85,9 @@ def _validate_arguments(default_output_file, given_output_file, save_file):
     if save_file and not isinstance(save_file, bool):
         raise ValueError("Parameter 'save_file' must contain a boolean value.")
     # If the user gave a number different than the default value, but didn't set save_file to True
-    if default_output_file != given_output_file and save_file == False:
-        _warning('Argument output_file was given, but save_file is set to False. Set save_file to True to store the output of the function.')
+    if default_output_file != given_output_file and not save_file:
+        _warning(
+            'Argument output_file was given, but save_file is set to False. Set save_file to True to store the output of the function.')
 
 
 def _get_spectra_type(spectra):
@@ -108,8 +114,10 @@ def _get_system_label(name):
     Returns:
         str: A short description of the photometric system.
     """
+
     def snake_to_pascal(word):
         return capwords(word.replace("_", " ")).replace(" ", "")
+
     return snake_to_pascal(name)
 
 
@@ -131,26 +139,23 @@ def array_to_symmetric_matrix(array, array_size):
     Raises:
         TypeError: If array is not of type np.ndarray.
     """
+
     def contains_diagonal(array_size, array):
         return not len(array) == len(np.tril_indices(array_size - 1)[0])
+
     # Bad cases
-    if (not isinstance(array, np.ndarray) and np.isnan(array)) or \
-            isinstance(array_size, np.ma.core.MaskedConstant) or \
-            array.size == 0:
+    if (not isinstance(array, np.ndarray) and np.isnan(array)) or isinstance(array_size, np.ma.core.MaskedConstant) \
+            or array.size == 0:
         return array
     # Enforce array type, second check verifies that array is 1D.
     if isinstance(array, np.ndarray) and isinstance(array[0], Number) and isinstance(array_size, Number):
         array_size = int(array_size)
-        k = -1  # Diagonal offset (from Numpy documentation)
         matrix = np.zeros((array_size, array_size))
-        # Add values in diagonal
-        np.fill_diagonal(matrix, 1.0)
-        if contains_diagonal(array_size, array):
-            k = 0
+        np.fill_diagonal(matrix, 1.0)  # Add values in diagonal
+        k = 0 if contains_diagonal(array_size, array) else -1  # Diagonal offset (from Numpy documentation)
         matrix[np.tril_indices(array_size, k=k)] = array
         transpose = matrix.transpose()
-        transpose[np.tril_indices(
-            array_size, -1)] = matrix[np.tril_indices(array_size, -1)]
+        transpose[np.tril_indices(array_size, -1)] = matrix[np.tril_indices(array_size, -1)]
         return transpose
     elif isinstance(array, np.ndarray) and isinstance(array[0], np.ndarray):
         # Input array is already a matrix, we assume that it contains the required values.

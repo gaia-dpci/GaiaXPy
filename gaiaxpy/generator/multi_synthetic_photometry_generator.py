@@ -1,8 +1,9 @@
 from tqdm import tqdm
-from .synthetic_photometry_generator import SyntheticPhotometryGenerator
+
 from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.spectrum.multi_synthetic_photometry import MultiSyntheticPhotometry
+from .synthetic_photometry_generator import SyntheticPhotometryGenerator
 
 
 class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
@@ -24,9 +25,11 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
         bp_model = self.bp_model
         rp_model = self.rp_model
         # Generate XP variables
-        xp_sampling_list = [_load_xpsampling_from_csv(function_label, slabel, bp_model, rp_model) for slabel in system_label]
+        xp_sampling_list = [_load_xpsampling_from_csv(function_label, slabel, bp_model, rp_model) for slabel in
+                            system_label]
         xp_sampling_grid_xp_merge_tuples_list = [_load_xpmerge_from_csv(function_label, slabel,
-                                                 bp_model=bp_model, rp_model=rp_model) for slabel in system_label]
+                                                                        bp_model=bp_model, rp_model=rp_model) for slabel
+                                                 in system_label]
         xp_sampling_grid_list = [element[0] for element in xp_sampling_grid_xp_merge_tuples_list]
         xp_merge_list = [element[1] for element in xp_sampling_grid_xp_merge_tuples_list]
         # Get basis functions list
@@ -37,9 +40,10 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
                                                                  xp_merge)
                                     for phot_system, sampled_basis_func, xp_merge in
                                     tqdm(zip(photometric_system, sampled_basis_func_list, xp_merge_list), \
-                                    desc='Generating photometry', total=len(photometric_system), \
-                                    unit=pbar_units['photometry'], leave=False, colour=pbar_colour)]
+                                         desc='Generating photometry', total=len(photometric_system), \
+                                         unit=pbar_units['photometry'], leave=False, colour=pbar_colour)]
         # Now the first list contains the photometries in all systems for the first source_id, and so on.
         rearranged_photometry_list = [sublist for sublist in zip(*photometry_list_of_lists)]  # list of tuples is enough
-        multi_photometry_df = MultiSyntheticPhotometry(photometric_system, rearranged_photometry_list)._generate_output_df()
+        multi_photometry_df = MultiSyntheticPhotometry(photometric_system,
+                                                       rearranged_photometry_list)._generate_output_df()
         return multi_photometry_df

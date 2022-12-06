@@ -5,9 +5,10 @@ Module to represent a BP/RP sampled spectrum.
 """
 
 import numpy as np
-from .xp_spectrum import XpSpectrum
+
 from .sampled_spectrum import SampledSpectrum
 from .utils import _list_to_array
+from .xp_spectrum import XpSpectrum
 
 
 class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
@@ -82,9 +83,9 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
         if isinstance(truncation, (int, np.int64)) and truncation > 0:
             coefficients = continuous_spectrum.get_coefficients()[:truncation]
             covariance = continuous_spectrum.get_covariance()[
-                :truncation, :truncation]
+                         :truncation, :truncation]
             design_matrix = sampled_basis_functions._get_design_matrix()[
-                :truncation][:]
+                            :truncation][:]
         else:
             coefficients = continuous_spectrum.get_coefficients()
             covariance = continuous_spectrum.get_covariance()

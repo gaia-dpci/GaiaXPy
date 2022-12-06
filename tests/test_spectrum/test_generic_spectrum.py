@@ -1,4 +1,5 @@
 import unittest
+
 from gaiaxpy.spectrum.generic_spectrum import Spectrum
 
 

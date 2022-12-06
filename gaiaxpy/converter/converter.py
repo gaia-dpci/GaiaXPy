@@ -5,30 +5,33 @@ Module for the converter functionality.
 """
 
 import numbers
+from configparser import ConfigParser
+from os import path
+
 import numpy as np
 import pandas as pd
-from configparser import ConfigParser
 from tqdm import tqdm
-from os import path
-from .config import get_config, load_config
+
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.generic_functions import cast_output, _get_spectra_type, \
-                                           _validate_arguments, \
-                                           _validate_pwl_sampling
-from gaiaxpy.core.satellite import BANDS
+    _validate_arguments, \
+    _validate_pwl_sampling
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
+from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
-from gaiaxpy.spectrum.utils import _get_covariance_matrix
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.utils import _get_covariance_matrix
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
+from .config import get_config, load_config
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
 config_file = path.join(config_path, config_parser.get('converter', 'optimised_bases'))
 tqdm.pandas(desc='Processing data', unit=pbar_units['converter'], leave=False, \
-            colour=pbar_colour) # Activate tqdm for pandas
+            colour=pbar_colour)  # Activate tqdm for pandas
+
 
 def convert(
         input_object,
@@ -156,10 +159,11 @@ def _create_spectra(parsed_input_data, truncation, design_matrices):
                 continue
             spectra_list.append(spectrum_xp)
         return spectra_list
+
     spectra_series = parsed_input_data.progress_apply(lambda row: \
-                     create_xp_spectra(row, truncation, design_matrices), axis=1)
+                                                          create_xp_spectra(row, truncation, design_matrices), axis=1)
     spectra_df = spectra_series.to_frame()
-    spectra_df = spectra_df.explode(0) # Explode spectra column
+    spectra_df = spectra_df.explode(0)  # Explode spectra column
     positions = spectra_df[0].iloc[0]._get_positions()
     spectra_type = _get_spectra_type(spectra_df[0].iloc[0])
     spectra_df[0] = spectra_df[0].progress_apply(lambda s: s._spectrum_to_dict())
@@ -179,12 +183,15 @@ def get_unique_basis_ids(parsed_input_data):
     Returns:
         set: A set containing all the required unique basis function IDs.
     """
+
     # Keep only non NaN values (in Python, nan != nan)
     def remove_nans(_set):
         return {int(element) for element in _set if element == element}
 
-    set_bp = set([basis for basis in parsed_input_data[f'{BANDS.bp}_basis_function_id'] if isinstance(basis, numbers.Number)])
-    set_rp = set([basis for basis in parsed_input_data[f'{BANDS.rp}_basis_function_id'] if isinstance(basis, numbers.Number)])
+    set_bp = set(
+        [basis for basis in parsed_input_data[f'{BANDS.bp}_basis_function_id'] if isinstance(basis, numbers.Number)])
+    set_rp = set(
+        [basis for basis in parsed_input_data[f'{BANDS.rp}_basis_function_id'] if isinstance(basis, numbers.Number)])
     return remove_nans(set_bp).union(remove_nans(set_rp))
 
 

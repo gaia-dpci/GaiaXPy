@@ -4,15 +4,17 @@ sampled_spectra_dataframe.py
 Module to represent a dataframe of sampled spectra.
 """
 
+from os.path import join
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from fastavro import parse_schema, writer
-from pathlib import Path
 from astropy.io import fits
 from astropy.io.votable.tree import Field, Param, Resource, Table, VOTableFile
+from fastavro import parse_schema, writer
 from fastavro.validation import validate_many
-from os.path import join
 from numpy import ndarray
+
 from .output_data import OutputData, _add_header, _build_regular_header
 from .utils import _array_to_standard, _get_sampling_dict
 
@@ -30,6 +32,7 @@ class SampledSpectraData(OutputData):
             output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
+
         def _save_sampling_avro(positions, output_path, output_file):
             """
             Save the sampling in a separate avro file.
@@ -83,6 +86,7 @@ class SampledSpectraData(OutputData):
                     field = {'name': key, 'type': field_to_type[key]}
                     fields.append(field)
                 return fields
+
             schema = {
                 'doc': 'Spectrum output.',
                 'name': 'Spectra',
@@ -102,6 +106,7 @@ class SampledSpectraData(OutputData):
             # Validate that records match the schema
             validate_many(spectra_dicts, schema)
             return parse_schema(schema), spectra_dicts
+
         data = self.data
         positions = self.positions
         Path(output_path).mkdir(parents=True, exist_ok=True)
@@ -184,7 +189,8 @@ class SampledSpectraData(OutputData):
         spectra_keys = output_by_column_dict.keys()
         columns = []
         for key in spectra_keys:
-            columns.append(fits.Column(name=key, array=np.array(output_by_column_dict[key]), format=column_formats[key]))
+            columns.append(
+                fits.Column(name=key, array=np.array(output_by_column_dict[key]), format=column_formats[key]))
         header = fits.Header()
         header['Sampling'] = str(tuple(positions))
         hdu = fits.BinTableHDU.from_columns(columns, header=header)
@@ -204,10 +210,11 @@ class SampledSpectraData(OutputData):
             output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
+
         def _create_params(votable, sampling):
             column = 'sampling'
             params = [Param(votable, name=column, ID=f'_{column}', ucd='em.wl',
-                      datatype='double', arraysize='*', value=list(sampling))]
+                            datatype='double', arraysize='*', value=list(sampling))]
             return params
 
         def _create_fields(votable, spectra_df):
@@ -220,9 +227,11 @@ class SampledSpectraData(OutputData):
                           'flux_error': 'stat.error;phot.flux'}
             fields = [Field(votable, name=column, ucd=fields_ucd[column], ID=fields_ID[column],
                             datatype=fields_datatypes[column], arraysize=fields_arraysize[column])
-                            if fields_arraysize[column] != '' else Field(votable, name=column,
-                            datatype=fields_datatypes[column]) for column in spectra_df.columns]
+                      if fields_arraysize[column] != '' else Field(votable, name=column,
+                                                                   datatype=fields_datatypes[column]) for column in
+                      spectra_df.columns]
             return fields
+
         spectra_df = self.data
         positions = list(self.positions)
         # Create a new VOTable file

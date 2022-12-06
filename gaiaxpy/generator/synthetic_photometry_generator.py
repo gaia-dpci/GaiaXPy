@@ -6,15 +6,16 @@ Module for the generation of synthetic photometry.
 
 from configparser import ConfigParser
 from os import path
+
+from gaiaxpy.config.paths import config_path
+from gaiaxpy.core.satellite import BANDS
+from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.single_synthetic_photometry import SingleSyntheticPhotometry
+from gaiaxpy.spectrum.utils import _get_covariance_matrix
+from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from .photometric_system import _system_is_standard
 from .regular_photometric_system import RegularPhotometricSystem
 from .standardised_photometric_system import StandardisedPhotometricSystem
-from gaiaxpy.config.paths import config_path
-from gaiaxpy.core.satellite import BANDS
-from gaiaxpy.spectrum.utils import _get_covariance_matrix
-from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from gaiaxpy.spectrum.single_synthetic_photometry import SingleSyntheticPhotometry
-from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
@@ -37,6 +38,7 @@ class SyntheticPhotometryGenerator(object):
         photometry_gen = (_generate_synthetic_photometry(row, sampled_basis_func, xp_merge, photometric_system) \
                           for index, row in parsed_input_data.iterrows())
         return photometry_gen
+
 
 def _generate_synthetic_photometry(
         row,

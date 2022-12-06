@@ -4,9 +4,10 @@ config.py
 Module to work with the converter's configuration.
 """
 
+import xml.etree.ElementTree as et
+
 import numpy as np
 import pandas as pd
-import xml.etree.ElementTree as et
 
 
 def parse_configuration_file(xml_file, columns):

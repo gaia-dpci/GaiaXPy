@@ -17,6 +17,5 @@ class SpectralEnergyDistribution(SampledSpectrum):
             source_id,
             wl,
             flux):
-
         SampledSpectrum.__init__(self, source_id, wl)
         self.flux = flux

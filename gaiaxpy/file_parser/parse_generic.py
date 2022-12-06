@@ -5,13 +5,13 @@ Module to parse input files containing spectra.
 """
 
 import os
-import numpy as np
-import pandas as pd
-from astropy.table import Table
-from astropy.io.votable import parse_single_table
-from .cast import _cast
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
 
+import pandas as pd
+from astropy.io.votable import parse_single_table
+from astropy.table import Table
+
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
+from .cast import _cast
 
 valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']
 
@@ -109,11 +109,9 @@ class GenericParser(object):
             raise DataMismatchError()
         if matrix_columns is not None:
             for size_column, values_column in matrix_columns:
-                df[values_column] = df.apply(lambda row: \
-                array_to_symmetric_matrix(str_to_array(row[values_column]), \
-                row[size_column]), axis=1)
+                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(str_to_array(row[values_column]),
+                                                                                   row[size_column]), axis=1)
         return df
-
 
     def _parse_fits(self, fits_file, array_columns=None, matrix_columns=None):
         """
@@ -134,9 +132,8 @@ class GenericParser(object):
         df = pd.DataFrame(fits_as_gen, columns=columns)
         if matrix_columns is not None:
             for size_column, values_column in matrix_columns:
-                df[values_column] = df.apply(lambda row: \
-                array_to_symmetric_matrix(row[values_column], \
-                row[size_column]), axis=1)
+                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column],
+                                                                                   row[size_column]), axis=1)
         return df
 
     def _parse_xml(self, xml_file, array_columns=None):
@@ -157,9 +154,8 @@ class GenericParser(object):
             raise DataMismatchError()
         if array_columns:
             columns = list(votable.columns)
-            votable_as_list = ([votable[column][index].filled() if column in \
-                                array_columns else votable[column][index] for \
-                                column in columns] for index, _ in enumerate(votable))
+            votable_as_list = ([votable[column][index].filled() if column in array_columns else votable[column][index]
+                                for column in columns] for index, _ in enumerate(votable))
             return pd.DataFrame(votable_as_list, columns=columns)
         return votable.to_pandas()
 

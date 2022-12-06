@@ -5,8 +5,9 @@ Module to represent generic output data.
 """
 
 from ast import literal_eval
-from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
 from os.path import abspath, dirname, join
+
+from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
 
 
 def _standardise_output_format(format):

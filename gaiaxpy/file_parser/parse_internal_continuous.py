@@ -5,16 +5,18 @@ Module to parse input files containing internally calibrated continuous spectra.
 """
 
 import re
+
 import numpy as np
 import pandas as pd
+from astropy.io.votable import parse_single_table
 from fastavro import __version__ as fa_version
 from packaging import version
-from astropy.io.votable import parse_single_table
+
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
+from gaiaxpy.file_parser.parse_generic import DataMismatchError
 from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
-from gaiaxpy.file_parser.parse_generic import DataMismatchError
 
 # Columns that contain arrays (as strings)
 array_columns = ['bp_coefficients', 'bp_coefficient_errors',
@@ -95,6 +97,7 @@ class InternalContinuousParser(GenericParser):
         if isinstance(_get_from_dict(record, _csv_to_avro_map[key]),
                       list) else _get_from_dict(record, _csv_to_avro_map[key]) for
                 key in _csv_to_avro_map.keys()}
+
     @staticmethod
     def __get_records_up_to_1_4_7(avro_file):
         from fastavro import reader
@@ -121,6 +124,7 @@ class InternalContinuousParser(GenericParser):
                 for block in block_reader(fo):
                     for rec in block:
                         yield rec
+
         records = __yield_records(avro_file)
         for record in records:
             yield InternalContinuousParser.__process_avro_record(record)

@@ -1,15 +1,16 @@
 import unittest
 from configparser import ConfigParser
 from os import path
+
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
-from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
-from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
-from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
-from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.core.satellite import BANDS
-from tests.files import files_path
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
+from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
+from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
+from tests.files.paths import files_path
 
 configparser = ConfigParser()
 configparser.read(path.join(config_path, 'config.ini'))

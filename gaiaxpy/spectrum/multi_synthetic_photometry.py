@@ -32,7 +32,7 @@ class MultiSyntheticPhotometry(object):
             self,
             photometric_system,
             photometries
-            ):
+    ):
         """
         Initialise a synthetic photometry in multiple photometric systems.
 
@@ -74,8 +74,9 @@ class MultiSyntheticPhotometry(object):
                 for band in bands:
                     dict_keys.append(f'{system}_{name}_{band}')
             return dict_keys
+
         system_bands_tuples = [(phot_system.get_system_label(), phot_system.get_bands())
-                                for phot_system in self.photometric_system]
+                               for phot_system in self.photometric_system]
         keys_list = _build_dict_keys(system_bands_tuples, name)
         values = _flatten_list(values)
         return {key: value for key, value in zip(keys_list, values)}

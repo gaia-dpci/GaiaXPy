@@ -12,6 +12,7 @@ class XpSpectrum(Spectrum):
     A spectrum observed with one of the Gaia low-resolution photometers
     (Blue or Red Photometer, BP or RP).
     """
+
     def __init__(
             self,
             source_id,

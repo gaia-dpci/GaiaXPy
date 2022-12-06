@@ -1,5 +1,6 @@
-from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.file_parser.parse_external import ExternalParser
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+
 
 def external():
     return ExternalParser()
@@ -11,6 +12,7 @@ def internal_continuous():
 
 def raise_error():
     raise ValueError('File parser not implemented. This function cannot receive a file as input.')
+
 
 function_parser_dict = {'apply_colour_equation': raise_error,
                         'convert': internal_continuous,

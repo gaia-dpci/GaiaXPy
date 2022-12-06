@@ -1,9 +1,11 @@
 import unittest
-import pandas as pd
 from os import path
+
+import pandas as pd
+
 from gaiaxpy.generator.generator import generate
 from gaiaxpy.generator.photometric_system import PhotometricSystem
-from tests.files import files_path
+from tests.files.paths import files_path
 
 # Files to test parse
 continuous_path = path.join(files_path, 'xp_continuous')
@@ -29,11 +31,15 @@ class TestSingleSyntheticPhotometryGeneratorCSV(unittest.TestCase):
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
         self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
-                        f'{label}_mag_U', f'{label}_mag_B', f'{label}_mag_V', f'{label}_mag_R',
-                        f'{label}_mag_I', f'{label}_flux_U', f'{label}_flux_B', f'{label}_flux_V',
-                        f'{label}_flux_R', f'{label}_flux_I', f'{label}_flux_error_U',
-                        f'{label}_flux_error_B', f'{label}_flux_error_V', f'{label}_flux_error_R',
-                        f'{label}_flux_error_I'])
+                                                               f'{label}_mag_U', f'{label}_mag_B', f'{label}_mag_V',
+                                                               f'{label}_mag_R',
+                                                               f'{label}_mag_I', f'{label}_flux_U', f'{label}_flux_B',
+                                                               f'{label}_flux_V',
+                                                               f'{label}_flux_R', f'{label}_flux_I',
+                                                               f'{label}_flux_error_U',
+                                                               f'{label}_flux_error_B', f'{label}_flux_error_V',
+                                                               f'{label}_flux_error_R',
+                                                               f'{label}_flux_error_I'])
 
 
 class TestSingleSyntheticPhotometryGeneratorFITS(unittest.TestCase):
@@ -49,10 +55,14 @@ class TestSingleSyntheticPhotometryGeneratorFITS(unittest.TestCase):
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
         self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
-                        f'{label}_mag_U', f'{label}_mag_B', f'{label}_mag_V', f'{label}_mag_R',
-                        f'{label}_mag_I', f'{label}_flux_U', f'{label}_flux_B', f'{label}_flux_V',
-                        f'{label}_flux_R', f'{label}_flux_I', f'{label}_flux_error_U', f'{label}_flux_error_B',
-                        f'{label}_flux_error_V', f'{label}_flux_error_R', f'{label}_flux_error_I'])
+                                                               f'{label}_mag_U', f'{label}_mag_B', f'{label}_mag_V',
+                                                               f'{label}_mag_R',
+                                                               f'{label}_mag_I', f'{label}_flux_U', f'{label}_flux_B',
+                                                               f'{label}_flux_V',
+                                                               f'{label}_flux_R', f'{label}_flux_I',
+                                                               f'{label}_flux_error_U', f'{label}_flux_error_B',
+                                                               f'{label}_flux_error_V', f'{label}_flux_error_R',
+                                                               f'{label}_flux_error_I'])
 
 
 class TestSyntheticPhotometryGeneratorXML(unittest.TestCase):
@@ -68,10 +78,14 @@ class TestSyntheticPhotometryGeneratorXML(unittest.TestCase):
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
         self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
-                        f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r', f'{label}_mag_i',
-                        f'{label}_mag_z', f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r',
-                        f'{label}_flux_i', f'{label}_flux_z', f'{label}_flux_error_u', f'{label}_flux_error_g',
-                        f'{label}_flux_error_r', f'{label}_flux_error_i', f'{label}_flux_error_z'])
+                                                               f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r',
+                                                               f'{label}_mag_i',
+                                                               f'{label}_mag_z', f'{label}_flux_u', f'{label}_flux_g',
+                                                               f'{label}_flux_r',
+                                                               f'{label}_flux_i', f'{label}_flux_z',
+                                                               f'{label}_flux_error_u', f'{label}_flux_error_g',
+                                                               f'{label}_flux_error_r', f'{label}_flux_error_i',
+                                                               f'{label}_flux_error_z'])
 
 
 class TestSyntheticPhotometryGeneratorAVRO(unittest.TestCase):
@@ -87,7 +101,11 @@ class TestSyntheticPhotometryGeneratorAVRO(unittest.TestCase):
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
         self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
-                        f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r', f'{label}_mag_i',
-                        f'{label}_mag_z', f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r',
-                        f'{label}_flux_i', f'{label}_flux_z', f'{label}_flux_error_u', f'{label}_flux_error_g',
-                        f'{label}_flux_error_r', f'{label}_flux_error_i', f'{label}_flux_error_z'])
+                                                               f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r',
+                                                               f'{label}_mag_i',
+                                                               f'{label}_mag_z', f'{label}_flux_u', f'{label}_flux_g',
+                                                               f'{label}_flux_r',
+                                                               f'{label}_flux_i', f'{label}_flux_z',
+                                                               f'{label}_flux_error_u', f'{label}_flux_error_g',
+                                                               f'{label}_flux_error_r', f'{label}_flux_error_i',
+                                                               f'{label}_flux_error_z'])

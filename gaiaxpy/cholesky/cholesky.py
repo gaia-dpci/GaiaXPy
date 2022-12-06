@@ -7,6 +7,7 @@ Module that implements the Cholesky functionality.
 import pandas as pd
 from numpy import diag, dot, identity
 from scipy.linalg import cholesky, solve_triangular
+
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 
@@ -71,6 +72,7 @@ def get_inverse_covariance_matrix(input_object, band=None):
         return output_df[f'{band}_inverse_covariance'].iloc[0]
     else:
         return output_df
+
 
 def get_chi2(L_inv, residuals):
     """

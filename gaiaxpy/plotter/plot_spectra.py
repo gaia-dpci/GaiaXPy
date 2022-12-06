@@ -5,10 +5,11 @@ Module to plot spectra.
 """
 
 from numpy import ndarray
+
+from gaiaxpy.core.generic_functions import _warning
 from .multi_absolute import MultiAbsolutePlotter
 from .multi_xp import MultiXpPlotter
 from .single import SinglePlotter
-from gaiaxpy.core.generic_functions import _warning
 
 
 def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_path=None, output_file=None,
@@ -32,7 +33,8 @@ def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_pat
     spectra_type = spectra.attrs['data_type'].__name__
     if multi:
         if spectra_type == 'AbsoluteSampledSpectrum':
-            plotter = MultiAbsolutePlotter(spectra, sampling, multi, show_plot, output_path, output_file, format, legend)
+            plotter = MultiAbsolutePlotter(spectra, sampling, multi, show_plot, output_path, output_file, format,
+                                           legend)
         elif spectra_type == 'XpSampledSpectrum':
             plotter = MultiXpPlotter(spectra, sampling, multi, show_plot, output_path, output_file, format, legend)
     else:

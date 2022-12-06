@@ -6,8 +6,10 @@ Module to represent a set of basis functions evaluated on a grid.
 
 import functools
 import math
+
 import numpy as np
 from scipy.special import eval_hermite, gamma
+
 from gaiaxpy.core import nature, satellite
 
 sqrt_4_pi = np.pi ** (-0.25)
@@ -53,10 +55,12 @@ class SampledBasisFunctions(object):
             object: An instance of this class.
         """
         n_samples = len(sampling)
-        scale = (external_instrument_model.bases['normRangeMax'][0] - external_instrument_model.bases['normRangeMin'][0]) / (
-            external_instrument_model.bases['pwlRangeMax'][0] - external_instrument_model.bases['pwlRangeMin'][0])
+        scale = (external_instrument_model.bases['normRangeMax'][0] - external_instrument_model.bases['normRangeMin'][
+            0]) / (
+                        external_instrument_model.bases['pwlRangeMax'][0] -
+                        external_instrument_model.bases['pwlRangeMin'][0])
         offset = external_instrument_model.bases['normRangeMin'][0] - \
-            external_instrument_model.bases['pwlRangeMin'][0] * scale
+                 external_instrument_model.bases['pwlRangeMin'][0] * scale
 
         sampling_pwl = external_instrument_model._wl_to_pwl(sampling)
         rescaled_pwl = (sampling_pwl * scale) + offset
@@ -66,12 +70,12 @@ class SampledBasisFunctions(object):
             [
                 _evaluate_hermite_function(
                     n_h, pos, weight) for pos, weight in zip(
-                    rescaled_pwl, weights) for n_h in np.arange(
-                    int(
-                        external_instrument_model.bases['nInverseBasesCoefficients'][0]))]) .reshape(
-                            n_samples, int(
-                                external_instrument_model.bases['nInverseBasesCoefficients'][0]))
-        _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'][0]\
+                rescaled_pwl, weights) for n_h in np.arange(
+                int(
+                    external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
+            n_samples, int(
+                external_instrument_model.bases['nInverseBasesCoefficients'][0]))
+        _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'][0] \
             .dot(evaluated_hermite_bases.T)
 
         transformed_design_matrix = bases_transformation.dot(_design_matrix)
@@ -151,12 +155,12 @@ def populate_design_matrix(sampling_grid, config):
     """
     n_samples = len(sampling_grid)
     scale = (config['normalizedRange'].iloc(0)[0][1] - config['normalizedRange'].iloc(0)
-             [0][0]) / (config['range'].iloc(0)[0][1] - config['range'].iloc(0)[0][0])
+    [0][0]) / (config['range'].iloc(0)[0][1] - config['range'].iloc(0)[0][0])
     offset = config['normalizedRange'].iloc(0)[0][0] - config['range'].iloc(0)[0][0] * scale
     rescaled_pwl = (sampling_grid * scale) + offset
 
     def psi(n, x): return 1.0 / np.sqrt(math.pow(2, n) * gamma(n + 1) *
-                                         np.sqrt(np.pi)) * np.exp(-x ** 2 / 2.0) * eval_hermite(n, x)
+                                        np.sqrt(np.pi)) * np.exp(-x ** 2 / 2.0) * eval_hermite(n, x)
 
     bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(
         int(config['dimension']), int(config['transformedSetDimension']))

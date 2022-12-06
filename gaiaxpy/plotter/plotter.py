@@ -4,10 +4,11 @@ plotter.py
 Module to create a plotter object.
 """
 
-import pandas as pd
-import matplotlib.pyplot as plt
-from pathlib import Path
 from os.path import join
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import pandas as pd
 
 
 class Plotter(object):

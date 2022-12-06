@@ -1,4 +1,3 @@
-
 pbar_colour = '#509faf'
 pbar_units = {'calibrator': 'spec',
               'colour_eq': 'row',

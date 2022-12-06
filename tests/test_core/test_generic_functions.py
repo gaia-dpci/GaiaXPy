@@ -1,12 +1,13 @@
 import unittest
-import numpy as np
 from os.path import join
-from gaiaxpy.core.generic_functions import _get_system_label, _extract_systems_from_data, \
-                                           _validate_pwl_sampling, \
-                                           array_to_symmetric_matrix
-from gaiaxpy import generate, PhotometricSystem
-from tests.files import files_path
 
+import numpy as np
+
+from gaiaxpy import generate, PhotometricSystem
+from gaiaxpy.core.generic_functions import _get_system_label, _extract_systems_from_data, \
+    _validate_pwl_sampling, \
+    array_to_symmetric_matrix
+from tests.files.paths import files_path
 
 array = np.array([1, 2, 3, 4, 5, 6])
 size = 3

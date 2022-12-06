@@ -1,10 +1,10 @@
-from .photometric_system import PhotometricSystem
-from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
+from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
 from gaiaxpy.core.generic_functions import cast_output, _validate_arguments
+from gaiaxpy.error_correction.error_correction import apply_error_correction
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
-from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
-from gaiaxpy.error_correction.error_correction import apply_error_correction
+from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
+from .photometric_system import PhotometricSystem
 
 
 def generate(
@@ -47,6 +47,7 @@ def generate(
     Returns:
         DataFrame: A DataFrame of all synthetic photometry results.
     """
+
     def create_internal_systems(photometric_system):
         if isinstance(photometric_system, PhotometricSystem):
             internal_photometric_system = [photometric_system].copy()
@@ -55,6 +56,7 @@ def generate(
         else:
             raise ValueError('Parameter photometric_system must be either a PhotometricSystem or a list.')
         return internal_photometric_system, internal_photometric_system.copy()
+
     # colour_equation should be always true as it is part of the definition of standardised systems.
     colour_equation = True
     # TODO: merge this statement with _validate_arguments
@@ -74,11 +76,14 @@ def generate(
         generator = MultiSyntheticPhotometryGenerator(internal_photometric_system, bp_model='v375wi', rp_model='v142r')
     else:
         raise ValueError('Photometry generation not implemented for the input type.')
-    photometry_df = generator._generate(parsed_input_data, extension, output_file=None, output_format=None, save_file=False)
+    photometry_df = generator._generate(parsed_input_data, extension, output_file=None, output_format=None,
+                                        save_file=False)
     if colour_equation:
-        photometry_df = apply_colour_equation(photometry_df, photometric_system=internal_photometric_system, save_file=False)
+        photometry_df = apply_colour_equation(photometry_df, photometric_system=internal_photometric_system,
+                                              save_file=False)
     if error_correction:
-        photometry_df = apply_error_correction(photometry_df, photometric_system=initial_photometric_system, save_file=False)
+        photometry_df = apply_error_correction(photometry_df, photometric_system=initial_photometric_system,
+                                               save_file=False)
     if not gaia_initially_in_systems:
         # Remove Gaia_DR3_Vega system from the final result
         gaia_label = gaia_system.get_system_label()

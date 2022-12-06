@@ -4,9 +4,12 @@ single_synthetic_photometry.py
 Module to represent a synthetic photometry in a single photometric system.
 """
 
-import numpy as np
 import warnings
+
+import numpy as np
+
 from .absolute_sampled_spectrum import AbsoluteSampledSpectrum
+
 # Ignore negative flux, handled in the code.
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 

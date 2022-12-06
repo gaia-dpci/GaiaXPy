@@ -4,12 +4,14 @@ dispersion_function.py
 Module providing utilities to convert pseudo-wavelength to absolute wavelength and viceversa.
 """
 
-import numpy as np
-import pandas as pd
 from configparser import ConfigParser
 from functools import lru_cache
-from scipy import interpolate
 from os.path import join
+
+import numpy as np
+import pandas as pd
+from scipy import interpolate
+
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 
@@ -29,7 +31,8 @@ def generate_bp_conversion():
     pwl = df['bp_pwl'].copy()
     flipped_pwl = np.flipud(df['bp_pwl'].copy())
     flipped_wl = np.flipud(df['wl_nm'].copy())
-    bp_pwl_to_wl = interpolate.interp1d(flipped_pwl, flipped_wl, kind='linear', bounds_error=False, fill_value='extrapolate')
+    bp_pwl_to_wl = interpolate.interp1d(flipped_pwl, flipped_wl, kind='linear', bounds_error=False,
+                                        fill_value='extrapolate')
     bp_wl_to_pwl = interpolate.interp1d(wl, pwl, kind='linear', bounds_error=False, fill_value='extrapolate')
     return bp_pwl_to_wl, bp_wl_to_pwl
 
@@ -48,7 +51,6 @@ def generate_rp_conversion():
 bp_pwl_to_wl, bp_wl_to_pwl = generate_bp_conversion()
 bp_pwl_range = [float(bp_wl_to_pwl(BP_WL.low)), float(bp_wl_to_pwl(BP_WL.high))]
 bp_wl_range = [BP_WL.low, BP_WL.high]
-
 
 rp_pwl_to_wl, rp_wl_to_pwl = generate_rp_conversion()
 rp_pwl_range = [float(rp_wl_to_pwl(RP_WL.low)), float(rp_wl_to_pwl(RP_WL.high))]

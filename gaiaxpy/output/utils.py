@@ -4,7 +4,7 @@ from numpy import ndarray
 
 def pandas_from_records(lst, to_dict_func):
     records_df = pd.DataFrame.from_records(
-                 [record.to_dict_func for record in lst])
+        [record.to_dict_func for record in lst])
     return records_df
 
 

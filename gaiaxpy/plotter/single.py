@@ -4,12 +4,12 @@ single.py
 Module to plot a single spectrum, either absolute or XP.
 """
 
-from .plotter import Plotter
 import matplotlib.pyplot as plt
+
+from .plotter import Plotter
 
 
 class SinglePlotter(Plotter):
-
     '''
     for index, spectrum in spectra_df.iterrows():
         x, y, e = self._get_inputs(spectrum)
@@ -31,7 +31,8 @@ class SinglePlotter(Plotter):
     def _plot(self):
         n_spectra = len(self.spectra)
         if n_spectra > self.max_spectra_on_single:
-            raise ValueError(f'Spectra list is too long. This functionality can only show up to {self.max_spectra_on_single} single plots. Try saving the plots without showing them using the option output_path.')
+            raise ValueError(
+                f'Spectra list is too long. This functionality can only show up to {self.max_spectra_on_single} single plots. Try saving the plots without showing them using the option output_path.')
         for index, spectrum in self.spectra.iterrows():
             self._plot_single(spectrum)
             if self.output_path:

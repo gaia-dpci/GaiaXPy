@@ -1,17 +1,20 @@
 import unittest
+
 import numpy as np
 import numpy.testing as npt
 from numpy import ndarray
+
 from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_offset_from_csv, \
-                         _load_xpsampling_from_csv, _load_xpzeropoint_from_csv
+    _load_xpsampling_from_csv, _load_xpzeropoint_from_csv
 
 # Non-standard system
 system_value = 'Jkc'
 
 xp_sampling = _load_xpsampling_from_csv('photsystem', system=system_value)
-xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(
-    'photsystem', system=system_value)
+xp_sampling_grid, xp_merge = _load_xpmerge_from_csv('photsystem', system=system_value)
 xp_zero_point = _load_xpzeropoint_from_csv(system_value)
+
+_rtol, _atol = 1e-24, 1e-24
 
 
 class TestConfig(unittest.TestCase):
@@ -26,10 +29,8 @@ class TestConfig(unittest.TestCase):
     def test_load_xpzeropoint_from_csv(self):
         self.assertIsInstance(xp_zero_point, tuple)
         bands, zero_points = xp_zero_point
-        npt.assert_array_equal(zero_points, np.array(
-            [-25.9651, -25.4918, -26.0952, -26.6505, -27.3326]))
-        npt.assert_array_equal(bands, np.array(
-            ['U', 'B', 'V', 'R', 'I']))
+        npt.assert_array_equal(zero_points, np.array([-25.9651, -25.4918, -26.0952, -26.6505, -27.3326]))
+        npt.assert_array_equal(bands, np.array(['U', 'B', 'V', 'R', 'I']))
 
     def test_load_xpoffset(self):
         # Standard system has got an offset file

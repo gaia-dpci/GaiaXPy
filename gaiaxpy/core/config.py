@@ -4,10 +4,12 @@ config.py
 Module to handle the calibrator and generator configuration files.
 """
 
-import numpy as np
 from configparser import ConfigParser
 from numbers import Number
 from os import path
+
+import numpy as np
+
 from gaiaxpy.config.paths import config_path, filters_path
 from gaiaxpy.core.satellite import BANDS
 
@@ -37,7 +39,7 @@ def get_file(label, key, system, bp_model, rp_model):
     return generic_file_name
 
 
-def _load_offset_from_csv(system, label = 'photsystem', bp_model='v375wi', rp_model='v142r'):
+def _load_offset_from_csv(system, label='photsystem', bp_model='v375wi', rp_model='v142r'):
     """
     Load the offset of a standard photometric system.
     """
@@ -45,7 +47,7 @@ def _load_offset_from_csv(system, label = 'photsystem', bp_model='v375wi', rp_mo
     try:
         offset = np.genfromtxt(file_path, delimiter=',', dtype=float)
     except OSError:
-         raise ValueError('Offset file not present. Is this a standard system?')
+        raise ValueError('Offset file not present. Is this a standard system?')
     return offset
 
 
@@ -60,13 +62,15 @@ def _load_xpzeropoint_from_csv(system, label='photsystem', bp_model='v375wi',
     Returns:
         ndarray: Loaded zero-points from the CSV file.
     """
+
     def _make_iterable(variable):
         if isinstance(variable, str):
             return np.array([variable])
         return variable
-    bands, zero_points =  np.genfromtxt(
-            get_file(label, 'zeropoint', system, bp_model, rp_model),
-            delimiter=',', dtype=str)
+
+    bands, zero_points = np.genfromtxt(
+        get_file(label, 'zeropoint', system, bp_model, rp_model),
+        delimiter=',', dtype=str)
     bands = _make_iterable(bands).astype(str)
     zero_points = _make_iterable(zero_points).astype(float)
     return bands, zero_points
@@ -87,6 +91,7 @@ def _load_xpmerge_from_csv(
         ndarray: Array containing the samplig grid values.
         dict: A dictionary containing the XpMerge table with one entry for BP and one for RP.
     """
+
     def _parse_merge(_xpmerge):
         # np.genfromtxt can only return numbers and NumPy arrays.
         if isinstance(_xpmerge[0], Number):
@@ -100,6 +105,7 @@ def _load_xpmerge_from_csv(
             bp_merge = _xpmerge[1, :]
             rp_merge = _xpmerge[2, :]
         return sampling_grid, bp_merge, rp_merge
+
     if not bp_model:
         bp_model = 'v375wi'
     file_name = get_file(label, 'merge', system, bp_model, rp_model)

@@ -1,12 +1,13 @@
 import unittest
+from os.path import basename, join
+
 import numpy as np
 import numpy.testing as npt
 from numpy import ndarray
-from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.config import get_file, _load_offset_from_csv, _load_xpmerge_from_csv, \
-                         _load_xpsampling_from_csv, _load_xpzeropoint_from_csv
-from os.path import basename, join
 
+from gaiaxpy.config.paths import filters_path
+from gaiaxpy.core.config import get_file, _load_offset_from_csv, _load_xpmerge_from_csv, _load_xpsampling_from_csv, \
+    _load_xpzeropoint_from_csv
 
 system_value = 'Jkc'
 label = 'photsystem'
@@ -20,8 +21,8 @@ class TestConfig(unittest.TestCase):
 
     def test_get_file(self):
         system = 'test'
-        bp_model='v375wi'
-        rp_model='v142r'
+        bp_model = 'v375wi'
+        rp_model = 'v142r'
         file_path = get_file(label, 'offset', system, bp_model, rp_model)
         self.assertEqual(file_path, join(filters_path, basename(file_path)))
 

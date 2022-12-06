@@ -4,11 +4,12 @@ xp_continuous_spectrum.py
 Module to represent a BP/RP continuous spectrum.
 """
 
-from .xp_spectrum import XpSpectrum
-from .utils import _list_to_array, _get_covariance_matrix
 import numpy as np
-from gaiaxpy.core.satellite import BANDS
+
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
+from gaiaxpy.core.satellite import BANDS
+from .utils import _list_to_array, _get_covariance_matrix
+from .xp_spectrum import XpSpectrum
 
 
 class XpContinuousSpectrum(XpSpectrum):

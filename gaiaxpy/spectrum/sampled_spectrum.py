@@ -5,10 +5,12 @@ Module to represent a sampled spectrum.
 """
 
 import math
-import numpy as np
-import matplotlib.pyplot as plt
 from os import path
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 from .generic_spectrum import Spectrum
 
 

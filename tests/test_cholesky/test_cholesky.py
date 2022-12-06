@@ -1,13 +1,14 @@
 import unittest
+from os.path import join
+
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
-from os.path import join
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
-from gaiaxpy.input_reader.input_reader import InputReader
-from tests.files import files_path
 
 from gaiaxpy import get_chi2, get_inverse_covariance_matrix
+from gaiaxpy.core.generic_functions import str_to_array
+from gaiaxpy.input_reader.input_reader import InputReader
+from tests.files.paths import files_path
 
 cholesky_path = join(files_path, 'cholesky_solution')
 f = join(cholesky_path, '18Sco-XP-spectra.csv')

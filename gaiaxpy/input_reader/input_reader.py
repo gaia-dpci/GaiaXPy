@@ -1,10 +1,11 @@
-import pandas as pd
 from os import path
+
+import pandas as pd
+
 from .dataframe_reader import DataFrameReader
 from .file_reader import FileReader
 from .list_reader import ListReader
 from .query_reader import QueryReader
-
 
 default_extension = 'csv'
 

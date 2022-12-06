@@ -5,9 +5,10 @@ Module to represent an absolute sampled spectrum.
 """
 
 import numpy as np
+
+from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from .sampled_spectrum import SampledSpectrum
 from .utils import _list_to_array
-from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 
 
 class AbsoluteSampledSpectrum(SampledSpectrum):
@@ -58,7 +59,7 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
                     sampled_bases[band]._get_design_matrix()[:band_truncation][:])
                 split_spectrum[band]['error'] = self._sample_error(
                     split_spectrum[band]['xp_spectra'].get_covariance()[
-                        :band_truncation, :band_truncation],
+                    :band_truncation, :band_truncation],
                     sampled_bases[band]._get_design_matrix()[:band_truncation][:],
                     split_spectrum[band]['xp_spectra'].get_standard_deviation())
             else:
@@ -80,11 +81,11 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
             self.error = np.sqrt(
                 np.add(
                     np.multiply(
-                        split_spectrum[BANDS.bp]['error']**2,
-                        merge[BANDS.bp]**2),
+                        split_spectrum[BANDS.bp]['error'] ** 2,
+                        merge[BANDS.bp] ** 2),
                     np.multiply(
-                        split_spectrum[BANDS.rp]['error']**2,
-                        merge[BANDS.rp]**2)))
+                        split_spectrum[BANDS.rp]['error'] ** 2,
+                        merge[BANDS.rp] ** 2)))
             self.pos = pos
         # If just one is
         elif len(bands) == 1:

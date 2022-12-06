@@ -1,15 +1,16 @@
-import unittest
 import math
-import numpy as np
-import pandas as pd
+import unittest
 from os import path
+
+import numpy as np
 import numpy.testing as npt
+import pandas as pd
 import pandas.testing as pdt
-from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
-from gaiaxpy.core.generic_functions import cast_output
-from tests.files import files_path
 
 from gaiaxpy import generate, PhotometricSystem
+from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
+from gaiaxpy.core.generic_functions import cast_output
+from tests.files.paths import files_path
 
 continuous_path = path.join(files_path, 'xp_continuous')
 johnson_solution_path = path.join(files_path, 'colour_equation', 'Landolt_Johnson_Ucorr_v375wiv142r_SAMPLE.csv')
@@ -19,7 +20,7 @@ xp_continuous_fits = path.join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
 xp_continuous_xml = path.join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
 xp_continuous_xml_plain = path.join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 
-TOL = 4
+_rtol, _atol = 1e-24, 1e-24
 
 
 def get_mag_error(flux, flux_error):
@@ -73,25 +74,26 @@ class TestSingleColourEquation(unittest.TestCase):
         unchanged_columns = [column for column in output_photometry.columns if affected_band not in column]
         affected_columns = [column for column in output_photometry.columns if affected_band in column]
         output_photometry_equal = output_photometry[unchanged_columns]
-        #corrected_photometry_equal = corrected_photometry[unchanged_columns]
-        #pdt.assert_frame_equal(output_photometry_equal, corrected_photometry_equal)
+        # TODO: generate new test files with errors in flux and not magnitude
         # Compare changes in photometry
         output_photometry_differences = output_photometry[['source_id'] + affected_columns]
         for source_id in output_photometry['source_id'].values:
             # solution columns format: {band}, {band}_err
             source_solution = johnson_solution_df[johnson_solution_df['source_id'] == source_id].iloc[0]
-            source_result = output_photometry_differences[output_photometry_differences['source_id'] == source_id].iloc[0]
+            source_result = output_photometry_differences[output_photometry_differences['source_id'] == source_id].iloc[
+                0]
             # Compare mags
             npt.assert_almost_equal(source_solution[affected_band], source_result[f'{label}_mag_{affected_band}'])
             # Compare errors
             mag_error = get_mag_error(source_result[f'{label}_flux_{affected_band}'],
                                       source_result[f'{label}_flux_error_{affected_band}'])
             npt.assert_almost_equal(source_solution[f'{affected_band}_err'], mag_error)
-        # Read Paolo's photometry
+        # Read PMN's photometry
         pmn_photometry_path = path.join(files_path, 'colour_equation', 'Landolt_Johnson_Ucorr_v375wiv142r_SAMPLE.csv')
         pmn_corrected_photometry = pd.read_csv(pmn_photometry_path)
         sources_to_keep = [26, 21, 24]
-        pmn_corrected_photometry = pmn_corrected_photometry.loc[pmn_corrected_photometry['source_id'].isin(sources_to_keep)]
+        pmn_corrected_photometry = pmn_corrected_photometry.loc[
+            pmn_corrected_photometry['source_id'].isin(sources_to_keep)]
         # Compare U band mags
         npt.assert_array_almost_equal(pmn_corrected_photometry['U'].values,
                                       output_photometry_differences[f'{label}_mag_U'].values)
@@ -132,7 +134,7 @@ class TestSingleColourEquation(unittest.TestCase):
         static_corrected_data = corrected_data.drop(columns=columns_that_change)
         # Static corrected data is the output of my function
         # Static data is the manually generated dataframe
-        pdt.assert_frame_equal(static_corrected_data, static_data)
+        pdt.assert_frame_equal(static_corrected_data, static_data, rtol=_rtol, atol=_atol)
         # Data that should have changed
         for column in columns_that_change:
             self.assertTrue(math.isnan(corrected_data[column].iloc[0]))
@@ -158,7 +160,7 @@ class TestSingleColourEquation(unittest.TestCase):
         static_data = data.drop(columns=columns_that_change)
         static_data = cast_output(static_data)
         static_corrected_data = corrected_data.drop(columns=columns_that_change)
-        pdt.assert_frame_equal(static_corrected_data, static_data)
+        pdt.assert_frame_equal(static_corrected_data, static_data, rtol=_rtol, atol=_atol)
         # Data that should have changed
         for column in columns_that_change:
             self.assertTrue(math.isnan(corrected_data[column].iloc[0]))
@@ -184,7 +186,7 @@ class TestSingleColourEquation(unittest.TestCase):
         static_data = data.drop(columns=columns_that_change)
         static_data = cast_output(static_data)
         static_corrected_data = corrected_data.drop(columns=columns_that_change)
-        pdt.assert_frame_equal(static_corrected_data, static_data)
+        pdt.assert_frame_equal(static_corrected_data, static_data, rtol=_rtol, atol=_atol)
         # Data that should have changed
         for column in columns_that_change:
             self.assertTrue(math.isnan(corrected_data[column].iloc[0]))
@@ -210,7 +212,7 @@ class TestSingleColourEquation(unittest.TestCase):
         static_data = data.drop(columns=columns_that_change)
         static_data = cast_output(static_data)
         static_corrected_data = corrected_data.drop(columns=columns_that_change)
-        pdt.assert_frame_equal(static_corrected_data, static_data)
+        pdt.assert_frame_equal(static_corrected_data, static_data, rtol=_rtol, atol=_atol)
         # Data that should have changed
         for column in columns_that_change:
             self.assertTrue(math.isnan(corrected_data[column].iloc[0]))

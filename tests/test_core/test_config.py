@@ -4,7 +4,7 @@ from os.path import basename, join
 import numpy as np
 import numpy.testing as npt
 from numpy import ndarray
-
+from os.path import basename, join
 from gaiaxpy.config.paths import filters_path
 from gaiaxpy.core.config import get_file, _load_offset_from_csv, _load_xpmerge_from_csv, _load_xpsampling_from_csv, \
     _load_xpzeropoint_from_csv
@@ -57,13 +57,3 @@ class TestConfig(unittest.TestCase):
         xp_offset = _load_offset_from_csv(system_value)
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.zeros(3))
-
-    def test_error_non_std_xpoffset(self):
-        # Non-standard system has not got an offset file.
-        system_value = 'Jkc'
-        with self.assertRaises(ValueError):
-            _load_offset_from_csv(system_value)
-
-        system_value = 'Gaia_2'
-        with self.assertRaises(ValueError):
-            _load_offset_from_csv(system_value)

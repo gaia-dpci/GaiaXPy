@@ -48,13 +48,3 @@ class TestConfig(unittest.TestCase):
         xp_offset = _load_offset_from_csv(system_value)
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.zeros(3))
-
-    def test_error_non_std_xpoffset(self):
-        # Non-standard system has not got an offset file.
-        system_value = 'Jkc'
-        with self.assertRaises(ValueError):
-            _load_offset_from_csv(system_value)
-
-        system_value = 'Gaia_2'
-        with self.assertRaises(ValueError):
-            _load_offset_from_csv(system_value)

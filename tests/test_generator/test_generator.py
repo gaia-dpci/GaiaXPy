@@ -13,7 +13,8 @@ continuous_path = join(files_path, 'xp_continuous')
 covariance_avro_file = join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
 solution_path = join(files_path, 'generator_solution')
 
-_rtol, _atol = 1e-22, 1e-22
+_ertol, _eatol = 1e-23, 1e-23
+_rtol, _atol = 1e-14, 1e-14
 
 
 class TestGenerator(unittest.TestCase):
@@ -45,7 +46,11 @@ class TestGenerator(unittest.TestCase):
         # Load solution
         solution_df = pd.read_csv(join(solution_path, 'generator_missing_band_solution.csv'),
                                   float_precision='round_trip')
-        pdt.assert_frame_equal(generated_photometry, solution_df, rtol=_rtol, atol=_atol)
+        error_columns = [column for column in solution_df.columns if 'error' in column]
+        other_columns = [column for column in solution_df.columns if not 'error' in column]
+        pdt.assert_frame_equal(generated_photometry[error_columns], solution_df[error_columns], rtol=_ertol,
+                               atol=_eatol)
+        pdt.assert_frame_equal(generated_photometry[other_columns], solution_df[other_columns], rtol=_rtol, atol=_atol)
 
     def test_duplicate_columns(self):
         systems = [PhotometricSystem.Els_Custom_W09_S2, PhotometricSystem.Euclid_VIS,

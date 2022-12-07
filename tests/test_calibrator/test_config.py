@@ -4,7 +4,7 @@ import numpy as np
 import numpy.testing as npt
 from numpy import ndarray
 
-from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_offset_from_csv, \
+from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_offset_from_xml, \
     _load_xpsampling_from_csv, _load_xpzeropoint_from_csv
 
 # Non-standard system
@@ -35,26 +35,16 @@ class TestConfig(unittest.TestCase):
     def test_load_xpoffset(self):
         # Standard system has got an offset file
         system_value = 'JkcStd'
-        xp_offset = _load_offset_from_csv(system_value)
+        xp_offset = _load_offset_from_xml(system_value)
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.array([2.44819e-19, 4.62320e-20, 1.81103e-20, 2.15027e-20, 1.73864e-20]))
 
         system_value = 'SdssStd'
-        xp_offset = _load_offset_from_csv(system_value)
+        xp_offset = _load_offset_from_xml(system_value)
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.array([1.05000e-31, 2.47850e-32, 3.49926e-32, 3.80023e-32, 3.23519e-32]))
 
         system_value = 'StromgrenStd'
-        xp_offset = _load_offset_from_csv(system_value)
+        xp_offset = _load_offset_from_xml(system_value)
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.zeros(3))
-
-    def test_error_non_std_xpoffset(self):
-        # Non-standard system has not got an offset file.
-        system_value = 'Jkc'
-        with self.assertRaises(ValueError):
-            _load_offset_from_csv(system_value)
-
-        system_value = 'Gaia_2'
-        with self.assertRaises(ValueError):
-            _load_offset_from_csv(system_value)

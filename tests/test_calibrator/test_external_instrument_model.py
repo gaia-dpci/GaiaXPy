@@ -9,15 +9,15 @@ from gaiaxpy.calibrator.calibrator import _create_merge
 from gaiaxpy.calibrator.external_instrument_model import ExternalInstrumentModel
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core import satellite
-from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
+from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_csv
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
 
-rel_tol = 1.e-6
-abs_tol = 1.e-4
+rel_tol = 1e-6
+abs_tol = 1e-4
 
 label = 'calibrator'
 models = {BANDS.bp: 'v375wi', BANDS.rp: 'v142r'}
@@ -32,7 +32,7 @@ def get_file_for_xp(xp, key):
 
 # The design matrices for the default grid are loaded to be used as reference for the test.
 design_matrices_from_csv = _load_xpsampling_from_csv(label)
-sampling_grid, xp_merge = _load_xpmerge_from_csv(label)
+sampling_grid, xp_merge = _load_xpmerge_from_xml()
 
 xp_merge_from_instrument_model = {}
 design_matrices_from_instrument_model = {}

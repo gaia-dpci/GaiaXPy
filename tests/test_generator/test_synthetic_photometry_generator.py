@@ -2,7 +2,7 @@ import unittest
 from os import path
 
 from gaiaxpy.core import satellite
-from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
+from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_csv
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.generator.photometric_system import PhotometricSystem
 from gaiaxpy.generator.synthetic_photometry_generator import _generate_synthetic_photometry
@@ -38,22 +38,20 @@ class TestSyntheticPhotometryGeneratorCSV(unittest.TestCase):
 
     def test_generate_synthetic_photometry(self):
         xp_sampling = _load_xpsampling_from_csv(label, system=system_johnson)
-        xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(
-            label, system=system_johnson)
+        xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system=system_johnson)
 
         # create sampled basis functions
         sampled_basis_func = {}
         for band in satellite.BANDS:
-            sampled_basis_func[band] = SampledBasisFunctions.from_design_matrix(
-                xp_sampling_grid, xp_sampling[band])
+            sampled_basis_func[band] = SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_sampling[band])
         photometry_list = []
         for index, row in parsed_correlation_csv.iterrows():
-            synthetic_photometry = _generate_synthetic_photometry(
-                row, sampled_basis_func, xp_merge, photometric_system_johnson)
+            synthetic_photometry = _generate_synthetic_photometry(row, sampled_basis_func, xp_merge,
+                                                                  photometric_system_johnson)
             photometry_list.append(synthetic_photometry)
         first_row = parsed_correlation_csv.iloc[0]
-        synthetic_photometry = _generate_synthetic_photometry(
-            first_row, sampled_basis_func, xp_merge, photometric_system_johnson)
+        synthetic_photometry = _generate_synthetic_photometry(first_row, sampled_basis_func, xp_merge,
+                                                              photometric_system_johnson)
         self.assertIsInstance(synthetic_photometry, SingleSyntheticPhotometry)
 
 
@@ -61,18 +59,16 @@ class TestSyntheticPhotometryGeneratorFITS(unittest.TestCase):
 
     def test_generate_synthetic_photometry(self):
         xp_sampling = _load_xpsampling_from_csv(label, system_johnson)
-        xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(
-            label, system_johnson)
+        xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system_johnson)
 
         # create sampled basis functions
         sampled_basis_func = {}
         for band in satellite.BANDS:
-            sampled_basis_func[band] = SampledBasisFunctions.from_design_matrix(
-                xp_sampling_grid, xp_sampling[band])
+            sampled_basis_func[band] = SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_sampling[band])
         photometry_list = []
         for index, row in parsed_correlation_fits.iterrows():
-            synthetic_photometry = _generate_synthetic_photometry(
-                row, sampled_basis_func, xp_merge, photometric_system_johnson)
+            synthetic_photometry = _generate_synthetic_photometry(row, sampled_basis_func, xp_merge,
+                                                                  photometric_system_johnson)
             photometry_list.append(synthetic_photometry)
         first_row = parsed_correlation_fits.iloc[0]
         synthetic_photometry = _generate_synthetic_photometry(
@@ -84,8 +80,7 @@ class TestSyntheticPhotometryGeneratorXMLPlain(unittest.TestCase):
 
     def test_generate_synthetic_photometry(self):
         xp_sampling = _load_xpsampling_from_csv(label, system_sdss)
-        xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(
-            label, system_sdss)
+        xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system_sdss)
 
         # create sampled basis functions
         sampled_basis_func = {}
@@ -107,8 +102,7 @@ class TestSyntheticPhotometryGeneratorXML(unittest.TestCase):
 
     def test_generate_synthetic_photometry(self):
         xp_sampling = _load_xpsampling_from_csv(label, system_sdss)
-        xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(
-            label, system_sdss)
+        xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system_sdss)
 
         # create sampled basis functions
         sampled_basis_func = {}
@@ -130,8 +124,7 @@ class TestSyntheticPhotometryGeneratorAVRO(unittest.TestCase):
 
     def test_generate_synthetic_photometry(self):
         xp_sampling = _load_xpsampling_from_csv(label, system_johnson)
-        xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(
-            label, system_johnson)
+        xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system_johnson)
 
         # create sampled basis functions
         sampled_basis_func = {}

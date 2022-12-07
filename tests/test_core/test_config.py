@@ -6,14 +6,14 @@ import numpy.testing as npt
 from numpy import ndarray
 
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.config import get_file, _load_offset_from_xml, _load_xpmerge_from_csv, _load_xpsampling_from_csv, \
+from gaiaxpy.core.config import get_file, _load_offset_from_xml, _load_xpmerge_from_xml, _load_xpsampling_from_csv, \
     _load_xpzeropoint_from_xml
 
 system_value = 'Jkc'
 label = 'photsystem'
 
 xp_sampling = _load_xpsampling_from_csv(label, system=system_value)
-xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(label, system=system_value)
+xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system=system_value)
 xp_zero_point = _load_xpzeropoint_from_xml(system_value)
 
 
@@ -29,17 +29,15 @@ class TestConfig(unittest.TestCase):
     def test_load_xpsampling_from_csv_type(self):
         self.assertIsInstance(xp_sampling, dict)
 
-    def test_load_xpmerge_from_csv_types(self):
+    def test_load_xpmerge_from_xml_types(self):
         self.assertIsInstance(xp_merge, dict)
         self.assertIsInstance(xp_sampling_grid, np.ndarray)
 
-    def test_load_xpzeropoint_from_csv(self):
+    def test_load_xpzeropoint_from_xml(self):
         self.assertIsInstance(xp_zero_point, tuple)
         bands, zero_points = xp_zero_point
-        npt.assert_array_equal(zero_points, np.array(
-            [-25.9651, -25.4918, -26.0952, -26.6505, -27.3326]))
-        npt.assert_array_equal(bands, np.array(
-            ['U', 'B', 'V', 'R', 'I']))
+        npt.assert_array_equal(zero_points, np.array([-25.9651, -25.4918, -26.0952, -26.6505, -27.3326]))
+        npt.assert_array_equal(bands, np.array(['U', 'B', 'V', 'R', 'I']))
 
     def test_load_xpoffset(self):
         # Standard system has got an offset file

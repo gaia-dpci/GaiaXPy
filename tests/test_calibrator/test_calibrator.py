@@ -9,7 +9,7 @@ from pandas import testing as pdt
 from gaiaxpy import calibrate
 from gaiaxpy.calibrator.calibrator import _calibrate, _create_spectrum
 from gaiaxpy.core import satellite
-from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
+from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_csv
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
@@ -22,7 +22,7 @@ parser = InternalContinuousParser()
 # Load variables
 label = 'calibrator'
 bp_model = 'v211w'  # Alternative bp model
-xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(label, bp_model=bp_model)
+xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(bp_model=bp_model)
 xp_design_matrices = _load_xpsampling_from_csv(label, bp_model=bp_model)
 
 # Path to solution files

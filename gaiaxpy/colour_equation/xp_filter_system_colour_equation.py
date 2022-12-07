@@ -9,9 +9,8 @@ from numpy import poly1d
 from tqdm import tqdm
 
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.config import _load_xpzeropoint_from_csv
-from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, \
-    _validate_arguments
+from gaiaxpy.core.config import _load_xpzeropoint_from_xml
+from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, _validate_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
@@ -31,7 +30,7 @@ def _fill_systems_details(systems_to_correct):
         for system in systems_to_correct:
             systems_details[system] = {}
             # Get bands and zero points
-            bands, zero_points = _load_xpzeropoint_from_csv(system)
+            bands, zero_points = _load_xpzeropoint_from_xml(system)
             systems_details[system]['bands_zp'] = dict(zip(bands, zero_points))
             # Load ini file
             config_parser = ConfigParser()

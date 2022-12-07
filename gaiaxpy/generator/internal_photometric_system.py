@@ -4,14 +4,14 @@ internal_photometric_system.py
 Module for the parent class of the standardised and regular photometric systems.
 """
 
-from gaiaxpy.core.config import _load_xpzeropoint_from_csv
+from gaiaxpy.core.config import _load_xpzeropoint_from_xml
 
 
 class InternalPhotometricSystem(object):
 
     def __init__(self, name):
         self.label = name
-        bands, zero_points = _load_xpzeropoint_from_csv(name)
+        bands, zero_points = _load_xpzeropoint_from_xml(name)
         self.set_bands(bands)
         self.set_zero_points(zero_points)
 

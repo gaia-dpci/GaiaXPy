@@ -12,6 +12,7 @@ import numpy as np
 
 from gaiaxpy.config.paths import config_path, filters_path
 from gaiaxpy.core.satellite import BANDS
+from gaiaxpy.core.xml_utils import get_file_root, parse_array, get_array_text
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
@@ -39,41 +40,32 @@ def get_file(label, key, system, bp_model, rp_model):
     return generic_file_name
 
 
-def _load_offset_from_csv(system, label='photsystem', bp_model='v375wi', rp_model='v142r'):
+def _load_offset_from_xml(system, bp_model='v375wi', rp_model='v142r'):
     """
     Load the offset of a standard photometric system.
     """
-    file_path = get_file(label, 'offset', system, bp_model, rp_model)
-    try:
-        offset = np.genfromtxt(file_path, delimiter=',', dtype=float)
-    except OSError:
-        raise ValueError('Offset file not present. Is this a standard system?')
-    return offset
+    label = key = 'filter'
+    file_path = get_file(label, key, system, bp_model, rp_model)
+    x_root = get_file_root(file_path)
+    return parse_array(x_root, 'fluxBias')
 
 
-def _load_xpzeropoint_from_csv(system, label='photsystem', bp_model='v375wi',
-                               rp_model='v142r'):
+def _load_xpzeropoint_from_xml(system, bp_model='v375wi', rp_model='v142r'):
     """
     Load the zero-points for each band.
 
     Args:
-        label (str): Label of the photometric system or functionality.
+        system (str): Name of the photometric system.
 
     Returns:
-        ndarray: Loaded zero-points from the CSV file.
+        ndarray: Zero-points in the XML file.
     """
-
-    def _make_iterable(variable):
-        if isinstance(variable, str):
-            return np.array([variable])
-        return variable
-
-    bands, zero_points = np.genfromtxt(
-        get_file(label, 'zeropoint', system, bp_model, rp_model),
-        delimiter=',', dtype=str)
-    bands = _make_iterable(bands).astype(str)
-    zero_points = _make_iterable(zero_points).astype(float)
-    return bands, zero_points
+    label = key = 'filter'
+    file_path = get_file(label, key, system, bp_model, rp_model)
+    x_root = get_file_root(file_path)
+    zeropoints = parse_array(x_root, 'zeropoints')
+    bands = get_array_text(x_root, 'bands')
+    return bands, zeropoints
 
 
 def _load_xpmerge_from_csv(

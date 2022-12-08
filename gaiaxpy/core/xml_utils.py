@@ -25,7 +25,7 @@ def get_xp_sampling_matrix(x_root, xp, nbands):
 
 
 def parse_array(x_root, tag):
-    values = get_array_text(x_root, tag)
+    values, _ = get_array_text(x_root, tag)
     return np.array([float(element) for element in values])
 
 
@@ -41,4 +41,16 @@ def get_xp_merge(x_root):
 
 def get_array_text(x_root, tag):
     result = x_root.find(tag)
-    return [element.text for element in result]
+    result = [element.text for element in result] if result else None
+    length = len(result) if result else None
+    return result, length
+
+def get_xp_sampling_matrix(x_root, xp, nbands):
+    xpConfig = iterative_find(x_root, ['XpSampling', f'{xp.lower()}SampledBases'])
+    xpDimension = int(xpConfig.attrib['dimension'])
+    xpSampling = np.array([float(element.text) for element in xpConfig])
+    if not nbands:
+        # TODO: A bit too custom, could be improved adding a variable to the filter files.
+        nbands = len(xpSampling) // xpDimension
+    xpSampling = xpSampling.reshape(nbands, xpDimension)
+    return np.transpose(xpSampling)

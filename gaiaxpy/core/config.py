@@ -5,14 +5,13 @@ Module to handle the calibrator and generator configuration files.
 """
 
 from configparser import ConfigParser
-from numbers import Number
 from os import path
 
 import numpy as np
 
 from gaiaxpy.config.paths import config_path, filters_path
 from gaiaxpy.core.satellite import BANDS
-from gaiaxpy.core.xml_utils import get_file_root, parse_array, get_array_text, get_xp_merge
+from gaiaxpy.core.xml_utils import get_file_root, parse_array, get_array_text, get_xp_merge, get_xp_sampling_matrix
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
@@ -35,16 +34,21 @@ def get_file(label, key, system, bp_model, rp_model):
     _config_parser = ConfigParser()
     _config_parser.read(path.join(config_path, 'config.ini'))
     file_name = _config_parser.get(label, key).format(label, key).replace('model', f'{bp_model}{rp_model}')
-    if system:
-        file_name = file_name.replace('system', system)
-    else:
-        file_name = file_name.replace('system_', '')
+    file_name = file_name.replace('system', system) if system else file_name.replace('system_', '')
     return path.join(filters_path, file_name)
 
 
 def _load_offset_from_xml(system, bp_model='v375wi', rp_model='v142r'):
     """
-    Load the offset of a standard photometric system.
+    Load the offset of a standard photometric system from the filter XML file.
+
+    Args:
+        system (str): Photometric system name.
+        bp_model (str): BP model.
+        rp_model (str): RP model.
+
+    Returns:
+        ndarray: Array of offsets.
     """
     label = key = 'filter'
     file_path = get_file(label, key, system, bp_model, rp_model)
@@ -54,35 +58,38 @@ def _load_offset_from_xml(system, bp_model='v375wi', rp_model='v142r'):
 
 def _load_xpzeropoint_from_xml(system, bp_model='v375wi', rp_model='v142r'):
     """
-    Load the zero-points for each band.
+    Load the zero-points for each band from the filter XML file.
 
     Args:
         system (str): Name of the photometric system.
+        bp_model (str): BP model.
+        rp_model (str): RP model.
 
     Returns:
-        ndarray: Zero-points in the XML file.
+        ndarray: Array of zero-points.
     """
     label = key = 'filter'
     file_path = get_file(label, key, system, bp_model, rp_model)
     x_root = get_file_root(file_path)
     zeropoints = parse_array(x_root, 'zeropoints')
-    bands = get_array_text(x_root, 'bands')
+    bands, _ = get_array_text(x_root, 'bands')
     return bands, zeropoints
 
 
 def _load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r'):
     """
-    Load the XpMerge table.
+    Load the XpMerge table from the filter XML file.
 
     Args:
         system (str): Name of the photometric system if it corresponds.
+        bp_model (str): BP model.
+        rp_model (str): RP model.
 
     Returns:
         ndarray: Array containing the sampling grid values.
         dict: A dictionary containing the XpMerge table with one entry for BP and one for RP.
     """
-    if not bp_model:
-        bp_model = 'v375wi'
+    bp_model = bp_model if bp_model else 'v375wi'
     label = key = 'filter'
     file_path = get_file(label, key, system, bp_model, rp_model)
     x_root = get_file_root(file_path)
@@ -90,31 +97,25 @@ def _load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r'):
     return sampling_grid, dict(zip(BANDS, [bp_merge, rp_merge]))
 
 
-def _load_xpsampling_from_csv(
-        label,
-        system=None,
-        bp_model=None,
-        rp_model='v142r'):
+def _load_xpsampling_from_xml(system=None, bp_model=None, rp_model='v142r'):
     """
-    Load the XpSampling table as provided by PMN in CSV.
+    Load the XpSampling table from the XML filter file.
 
     Args:
-        label (str): Label of the photometric system or functionality.
+        system (str): Photometric system name, can be None in which case the generic configuration is loaded.
+        bp_model (str): BP model.
+        rp_model (str): RP model.
 
     Returns:
         dict: A dictionary containing the XpSampling table with one entry for BP and one for RP.
     """
-    if not bp_model:
-        bp_model = 'v375wi'
-    file_name = get_file(label, 'sampling', system, bp_model, rp_model)
-    _xpsampling = np.genfromtxt(file_name, skip_header=1, delimiter=',', dtype=float)
-    n_wl = int(_xpsampling.shape[0] / 2)
+    bp_model = bp_model if bp_model else 'v375wi'
+    xml_file = get_file('filter', 'filter', system, bp_model, rp_model)
+    x_root = get_file_root(xml_file)
+    _, nbands = get_array_text(x_root, 'bands')
 
-    bp_sampling = _xpsampling[:n_wl, :]
-    bp_sampling = np.transpose(bp_sampling)
+    bp_sampling = get_xp_sampling_matrix(x_root, 'bp', nbands)
+    rp_sampling = get_xp_sampling_matrix(x_root, 'rp', nbands)
 
-    rp_sampling = _xpsampling[n_wl:, :]
-    rp_sampling = np.transpose(rp_sampling)
-
-    xpsampling = dict(zip(BANDS, [bp_sampling, rp_sampling]))
-    return xpsampling
+    xp_sampling = dict(zip(BANDS, [bp_sampling, rp_sampling]))
+    return xp_sampling

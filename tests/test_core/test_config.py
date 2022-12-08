@@ -6,13 +6,12 @@ import numpy.testing as npt
 from numpy import ndarray
 
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.config import get_file, _load_offset_from_xml, _load_xpmerge_from_xml, _load_xpsampling_from_csv, \
+from gaiaxpy.core.config import get_file, _load_offset_from_xml, _load_xpmerge_from_xml, _load_xpsampling_from_xml, \
     _load_xpzeropoint_from_xml
 
 system_value = 'Jkc'
-label = 'photsystem'
 
-xp_sampling = _load_xpsampling_from_csv(label, system=system_value)
+xp_sampling = _load_xpsampling_from_xml(system=system_value)
 xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system=system_value)
 xp_zero_point = _load_xpzeropoint_from_xml(system_value)
 
@@ -23,7 +22,7 @@ class TestConfig(unittest.TestCase):
         system = 'test'
         bp_model = 'v375wi'
         rp_model = 'v142r'
-        file_path = get_file(label, 'offset', system, bp_model, rp_model)
+        file_path = get_file('filter', 'filter', system, bp_model, rp_model)
         self.assertEqual(file_path, join(filters_path, basename(file_path)))
 
     def test_load_xpsampling_from_csv_type(self):

@@ -4,13 +4,13 @@ import numpy as np
 import numpy.testing as npt
 from numpy import ndarray
 
-from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_offset_from_xml, _load_xpsampling_from_csv,\
+from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_offset_from_xml, _load_xpsampling_from_xml,\
     _load_xpzeropoint_from_xml
 
 # Non-standard system
 system_value = 'Jkc'
 
-xp_sampling = _load_xpsampling_from_csv('photsystem', system=system_value)
+xp_sampling = _load_xpsampling_from_xml(system=system_value)
 xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system=system_value)
 xp_zero_point = _load_xpzeropoint_from_xml(system_value)
 

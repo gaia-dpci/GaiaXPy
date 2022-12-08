@@ -1,6 +1,6 @@
 from tqdm import tqdm
 
-from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_csv
+from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_xml
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.spectrum.multi_synthetic_photometry import MultiSyntheticPhotometry
 from .synthetic_photometry_generator import SyntheticPhotometryGenerator
@@ -25,7 +25,7 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
         bp_model = self.bp_model
         rp_model = self.rp_model
         # Generate XP variables
-        xp_sampling_list = [_load_xpsampling_from_csv(function_label, slabel, bp_model, rp_model) for slabel in
+        xp_sampling_list = [_load_xpsampling_from_xml(slabel, bp_model, rp_model) for slabel in
                             system_label]
         xp_sampling_grid_xp_merge_tuples_list = [_load_xpmerge_from_xml(slabel, bp_model=bp_model, rp_model=rp_model)
                                                  for slabel in system_label]

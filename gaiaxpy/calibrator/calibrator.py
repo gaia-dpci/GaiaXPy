@@ -13,7 +13,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_csv
+from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_xml
 from gaiaxpy.core.generic_functions import cast_output, _get_spectra_type, _validate_arguments, _validate_wl_sampling
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
@@ -144,7 +144,7 @@ def _generate_xp_matrices_and_merge(label, sampling, bp_model, rp_model):
     xp_design_matrices = {}
     if sampling is None:
         xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(bp_model=bp_model)
-        xp_design_matrices = _load_xpsampling_from_csv(label, bp_model=bp_model)
+        xp_design_matrices = _load_xpsampling_from_xml(bp_model=bp_model)
         for xp in BANDS:
             xp_design_matrices[xp] = SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[xp])
     else:

@@ -8,7 +8,7 @@ from pandas import testing as pdt
 from gaiaxpy import calibrate
 from gaiaxpy.calibrator.calibrator import _create_spectrum
 from gaiaxpy.core import satellite
-from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_csv
+from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_xml
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum

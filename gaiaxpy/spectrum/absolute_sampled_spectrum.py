@@ -64,9 +64,8 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
                     split_spectrum[band]['xp_spectra'].get_standard_deviation())
             else:
                 split_spectrum[band]['xp_spectra'] = xp_spectra[band]
-                split_spectrum[band]['flux'] = self._sample_flux(
-                    split_spectrum[band]['xp_spectra'].get_coefficients(),
-                    sampled_bases[band]._get_design_matrix())
+                split_spectrum[band]['flux'] = self._sample_flux(split_spectrum[band]['xp_spectra'].get_coefficients(),
+                                                                 sampled_bases[band]._get_design_matrix())
                 split_spectrum[band]['error'] = self._sample_error(
                     split_spectrum[band]['xp_spectra'].get_covariance(),
                     sampled_bases[band]._get_design_matrix(),

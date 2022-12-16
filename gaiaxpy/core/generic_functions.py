@@ -13,10 +13,23 @@ import numpy as np
 import pandas as pd
 from numpy import ndarray
 
+from gaiaxpy.config.paths import filters_path, config_path
+from gaiaxpy.generator.config import get_additional_filters_path
+
+from os.path import join
+
+def _get_built_in_systems() -> list:
+    file = join(config_path, 'available_systems.txt')
+    f = open(file, 'r')
+    built_in_systems = f.read().splitlines()
+    return built_in_systems
+
+def _is_built_in_system(system):
+    return system in _get_built_in_systems()
+
 
 def cast_output(output):
-    cast_dict = {'source_id': 'int64',
-                 'solution_id': 'int64'}
+    cast_dict = {'source_id': 'int64', 'solution_id': 'int64'}
     if not isinstance(output, pd.DataFrame):
         df = output.data
     else:
@@ -84,7 +97,7 @@ def _warning(message):
 def _validate_arguments(default_output_file, given_output_file, save_file):
     if save_file and not isinstance(save_file, bool):
         raise ValueError("Parameter 'save_file' must contain a boolean value.")
-    # If the user gave a number different than the default value, but didn't set save_file to True
+    # If the user input a number different to the default value, but didn't set save_file to True
     if default_output_file != given_output_file and not save_file:
         _warning(
             'Argument output_file was given, but save_file is set to False. Set save_file to True to store the output of the function.')
@@ -118,7 +131,16 @@ def _get_system_label(name):
     def snake_to_pascal(word):
         return capwords(word.replace("_", " ")).replace(" ", "")
 
+    if not _is_built_in_system(name):
+        return name
     return snake_to_pascal(name)
+
+
+def _get_system_path(is_built_in):
+    if is_built_in:
+        return filters_path
+    else:
+        return get_additional_filters_path()
 
 
 # AVRO files include the values in the diagonal, whereas others don't

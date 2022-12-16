@@ -4,8 +4,7 @@ from os.path import join
 import numpy as np
 
 from gaiaxpy import generate, PhotometricSystem
-from gaiaxpy.core.generic_functions import _get_system_label, _extract_systems_from_data, \
-    _validate_pwl_sampling, \
+from gaiaxpy.core.generic_functions import _get_system_label, _extract_systems_from_data, _validate_pwl_sampling,\
     array_to_symmetric_matrix
 from tests.files.paths import files_path
 
@@ -15,7 +14,7 @@ size = 3
 
 class TestGenericFunctions(unittest.TestCase):
 
-    def test_get_systeml_label(self):
+    def test_get_system_label(self):
         self.assertEqual(_get_system_label('Els_Custom_W09_S2'), 'ElsCustomW09S2')
         self.assertEqual(_get_system_label('DECam'), 'Decam')
         self.assertEqual(_get_system_label('Els_Custom_W09_S2'), 'ElsCustomW09S2')
@@ -23,7 +22,7 @@ class TestGenericFunctions(unittest.TestCase):
         self.assertEqual(_get_system_label('Gaia_2'), 'Gaia2')
         self.assertEqual(_get_system_label('Gaia_DR3_Vega'), 'GaiaDr3Vega')
         self.assertEqual(_get_system_label('Halpha_Custom_AB'), 'HalphaCustomAb')
-        self.assertEqual(_get_system_label('H_custom'), 'HCustom')
+        self.assertEqual(_get_system_label('H_Custom'), 'HCustom')
         self.assertEqual(_get_system_label('Hipparcos_Tycho'), 'HipparcosTycho')
         self.assertEqual(_get_system_label('HST_ACSWFC'), 'HstAcswfc')
         self.assertEqual(_get_system_label('HST_WFC3UVIS'), 'HstWfc3uvis')
@@ -42,8 +41,8 @@ class TestGenericFunctions(unittest.TestCase):
 
     def test_extract_systems_from_data(self):
         expected_output = ['Wfirst', 'HstWfc3uvis', 'GaiaDr3Vega', 'ElsCustomW09S2']
-        phot_list = [PhotometricSystem.WFIRST, PhotometricSystem.HST_WFC3UVIS, \
-                     PhotometricSystem.Gaia_DR3_Vega, PhotometricSystem.Els_Custom_W09_S2]
+        phot_list = [PhotometricSystem.WFIRST, PhotometricSystem.HST_WFC3UVIS, PhotometricSystem.Gaia_DR3_Vega,
+                     PhotometricSystem.Els_Custom_W09_S2]
         f = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.fits')
         photometry = generate(f, photometric_system=phot_list, save_file=False)
         self.assertListEqual(_extract_systems_from_data(photometry), expected_output)

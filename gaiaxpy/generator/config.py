@@ -1,12 +1,13 @@
+from configparser import ConfigParser
 from dataclasses import asdict, dataclass
 from os import listdir
+from os.path import isdir, isfile, join
 from pathlib import Path
 
-from configparser import ConfigParser
-from os.path import isdir, isfile, join
 from gaiaxpy.core.config import _ADDITIONAL_SYSTEM_PREFIX
 
 _CFG_FILE_PATH = Path('~/.gaiaxpyrc').expanduser()
+
 
 @dataclass(frozen=True)
 class GenCfg:
@@ -31,6 +32,7 @@ def create_config(filters_path=None, config_file=None):
     cfg_details = GenCfg(filters_path, version)
     write_config(cfg_details, config_file)
 
+
 def write_config(cfg_details, config_file=None):
     config_file = _CFG_FILE_PATH if not config_file else config_file
     config = ConfigParser()
@@ -39,6 +41,7 @@ def write_config(cfg_details, config_file=None):
         config.write(cf)
     print('Configuration saved.')
 
+
 def load_config(config_file=None):
     config_file = _CFG_FILE_PATH if not config_file else config_file
     config = ConfigParser()
@@ -46,12 +49,14 @@ def load_config(config_file=None):
         config.read_file(f)
     return config
 
+
 def get_additional_filters_path(config_file=None):
     try:
         config = load_config(config_file)
         return config['filter']['filters_dir']
     except IOError:
         return None
+
 
 def get_additional_filters_names(config_file=None):
     filters_path = get_additional_filters_path(config_file)
@@ -61,6 +66,7 @@ def get_additional_filters_names(config_file=None):
     else:
         additional_system_names = []
     return additional_system_names
+
 
 def get_yes_no_answer(question, yes_action, no_action):
     yes_choices = ['yes', 'y']
@@ -82,4 +88,3 @@ def get_yes_no_answer(question, yes_action, no_action):
         else:
             print('Please type yes or no.')
             continue
-

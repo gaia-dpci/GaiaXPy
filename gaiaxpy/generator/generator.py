@@ -36,6 +36,7 @@ def generate(input_object, photometric_system, output_path='.', output_file='out
     Returns:
         DataFrame: A DataFrame of all synthetic photometry results.
     """
+
     def create_internal_systems(_photometric_system):
         if isinstance(_photometric_system, PhotometricSystem):
             _internal_photometric_system = [_photometric_system].copy()

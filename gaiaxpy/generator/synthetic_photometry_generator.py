@@ -40,11 +40,7 @@ class SyntheticPhotometryGenerator(object):
         return photometry_gen
 
 
-def _generate_synthetic_photometry(
-        row,
-        design_matrix,
-        merge,
-        photometric_system):
+def _generate_synthetic_photometry(row, design_matrix, merge, photometric_system):
     """
     Create the synthetic photometry from the input continuously-represented
     mean spectrum and design matrix.
@@ -67,21 +63,14 @@ def _generate_synthetic_photometry(
     for band in BANDS:
         covariance_matrix = _get_covariance_matrix(row, band)
         if covariance_matrix is not None:
-            continuous_spectrum = XpContinuousSpectrum(
-                row['source_id'],
-                band.upper(),
-                row[f'{band}_coefficients'],
-                covariance_matrix,
-                row[f'{band}_standard_deviation'])
+            continuous_spectrum = XpContinuousSpectrum(row['source_id'], band.upper(), row[f'{band}_coefficients'],
+                                                       covariance_matrix, row[f'{band}_standard_deviation'])
             cont_dict[band] = continuous_spectrum
     # Get the PhotometricSystem object
-    system_label = photometric_system.get_system_label()
-    if _system_is_standard(system_label):
-        photometric_system = StandardisedPhotometricSystem(system_label)
+    system_name = photometric_system.get_system_name()
+    # TODO: at this point it shouldn't be necessary to check the system type
+    if _system_is_standard(system_name):
+        photometric_system = StandardisedPhotometricSystem(system_name)
     else:
-        photometric_system = RegularPhotometricSystem(system_label)
-    return SingleSyntheticPhotometry(row['source_id'],
-                                     cont_dict,
-                                     design_matrix,
-                                     merge,
-                                     photometric_system)
+        photometric_system = RegularPhotometricSystem(system_name)
+    return SingleSyntheticPhotometry(row['source_id'], cont_dict, design_matrix, merge, photometric_system)

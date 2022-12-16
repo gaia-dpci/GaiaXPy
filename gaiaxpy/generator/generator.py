@@ -7,16 +7,8 @@ from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenera
 from .photometric_system import PhotometricSystem
 
 
-def generate(
-        input_object,
-        photometric_system,
-        output_path='.',
-        output_file='output_synthetic_photometry',
-        output_format=None,
-        save_file=True,
-        error_correction=False,
-        username=None,
-        password=None):
+def generate(input_object, photometric_system, output_path='.', output_file='output_synthetic_photometry',
+             output_format=None, save_file=True, error_correction=False, username=None, password=None):
     """
     Synthetic photometry utility: generates synthetic photometry in a set of
     available systems from the input internally-calibrated
@@ -27,35 +19,31 @@ def generate(
     photometry.
 
     Args:
-        input_object (object): Path to the file containing the mean spectra
-             as downloaded from the archive in their continuous representation,
-             a list of sources ids (string or long), or a pandas DataFrame.
+        input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
+                               continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
         photometric_system (obj): Desired photometric system or list of photometric systems.
         output_path (str): Path where to save the output data.
         output_file (str): Name of the output file.
-        output_format (str): Format to be used for the output file. If no format
-                is given, then the output file will be in the same format as the
-                input file.
-        save_file (bool): Whether to save the output in a file. If false, output_format
-            and output_file_name are ignored.
-        error_correction (bool): Whether to apply to the photometric errors the tabulated
-            factors to mitigate underestimated errors (see Montegriffo et al., 2022, for
-            more details).
+        output_format (str): Format to be used for the output file. If no format is given, then the output file will be
+                             in the same format as the input file.
+        save_file (bool): Whether to save the output in a file or not. If false, output_format and output_file_name will
+                          be ignored.
+        error_correction (bool): Whether to apply to the photometric errors the tabulated factors to mitigate
+                                 underestimated errors (see Montegriffo et al., 2022, for more details).
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
 
     Returns:
         DataFrame: A DataFrame of all synthetic photometry results.
     """
-
-    def create_internal_systems(photometric_system):
-        if isinstance(photometric_system, PhotometricSystem):
-            internal_photometric_system = [photometric_system].copy()
-        elif isinstance(photometric_system, list):
-            internal_photometric_system = photometric_system.copy()
+    def create_internal_systems(_photometric_system):
+        if isinstance(_photometric_system, PhotometricSystem):
+            _internal_photometric_system = [_photometric_system].copy()
+        elif isinstance(_photometric_system, list):
+            _internal_photometric_system = _photometric_system.copy()
         else:
             raise ValueError('Parameter photometric_system must be either a PhotometricSystem or a list.')
-        return internal_photometric_system, internal_photometric_system.copy()
+        return _internal_photometric_system, _internal_photometric_system.copy()
 
     # colour_equation should be always true as it is part of the definition of standardised systems.
     colour_equation = True

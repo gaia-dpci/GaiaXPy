@@ -5,19 +5,16 @@ Module to handle the calibrator and generator configuration files.
 """
 
 from configparser import ConfigParser
-from os import path
-
-import numpy as np
+from os.path import join
 
 from gaiaxpy.config.paths import config_path, filters_path
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.xml_utils import get_file_root, parse_array, get_array_text, get_xp_merge, get_xp_sampling_matrix
 
-config_parser = ConfigParser()
-config_parser.read(path.join(config_path, 'config.ini'))
 
+_ADDITIONAL_SYSTEM_PREFIX = 'USER'
 
-def get_file(label, key, system, bp_model, rp_model):
+def get_file(label, key, system, bp_model, rp_model, config_file=None):
     """
     Get the file path corresponding to the given label and key.
 
@@ -27,15 +24,17 @@ def get_file(label, key, system, bp_model, rp_model):
         system (str): Photometric system name, can be None in which case the generic configuration is loaded.
         bp_model (str): BP model.
         rp_model (str): RP model.
+        config_file: Path to configuration file.
 
     Returns:
         str: Path of a file.
     """
+    config_file = join(config_path, 'config.ini') if not config_file else config_file
     _config_parser = ConfigParser()
-    _config_parser.read(path.join(config_path, 'config.ini'))
+    _config_parser.read(config_file)
     file_name = _config_parser.get(label, key).format(label, key).replace('model', f'{bp_model}{rp_model}')
     file_name = file_name.replace('system', system) if system else file_name.replace('system_', '')
-    return path.join(filters_path, file_name)
+    return join(filters_path, file_name)
 
 
 def _load_offset_from_xml(system, bp_model='v375wi', rp_model='v142r'):
@@ -56,7 +55,7 @@ def _load_offset_from_xml(system, bp_model='v375wi', rp_model='v142r'):
     return parse_array(x_root, 'fluxBias')
 
 
-def _load_xpzeropoint_from_xml(system, bp_model='v375wi', rp_model='v142r'):
+def _load_xpzeropoint_from_xml(system, bp_model='v375wi', rp_model='v142r', config_file=None):
     """
     Load the zero-points for each band from the filter XML file.
 
@@ -64,12 +63,13 @@ def _load_xpzeropoint_from_xml(system, bp_model='v375wi', rp_model='v142r'):
         system (str): Name of the photometric system.
         bp_model (str): BP model.
         rp_model (str): RP model.
+        config_file (str): Path to configuration file.
 
     Returns:
         ndarray: Array of zero-points.
     """
     label = key = 'filter'
-    file_path = get_file(label, key, system, bp_model, rp_model)
+    file_path = get_file(label, key, system, bp_model, rp_model, config_file=config_file)
     x_root = get_file_root(file_path)
     zeropoints = parse_array(x_root, 'zeropoints')
     bands, _ = get_array_text(x_root, 'bands')

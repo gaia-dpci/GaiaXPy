@@ -19,14 +19,12 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
 
     def _generate(self, parsed_input_data, extension, output_file, output_format, save_file):
         # Recover attributes
-        function_label = self.function_label
         photometric_system = self.photometric_system
         system_label = self.system_label
         bp_model = self.bp_model
         rp_model = self.rp_model
         # Generate XP variables
-        xp_sampling_list = [_load_xpsampling_from_xml(slabel, bp_model, rp_model) for slabel in
-                            system_label]
+        xp_sampling_list = [_load_xpsampling_from_xml(slabel, bp_model, rp_model) for slabel in system_label]
         xp_sampling_grid_xp_merge_tuples_list = [_load_xpmerge_from_xml(slabel, bp_model=bp_model, rp_model=rp_model)
                                                  for slabel in system_label]
         xp_sampling_grid_list = [element[0] for element in xp_sampling_grid_xp_merge_tuples_list]

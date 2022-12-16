@@ -5,13 +5,18 @@ Module for the parent class of the standardised and regular photometric systems.
 """
 
 from gaiaxpy.core.config import _load_xpzeropoint_from_xml
+from gaiaxpy.core.generic_functions import _get_system_label
 
 
 class InternalPhotometricSystem(object):
 
-    def __init__(self, name):
-        self.label = name
-        bands, zero_points = _load_xpzeropoint_from_xml(name)
+    def __init__(self, name, config_file=None):
+        self.zero_points = None
+        self.bands = None
+        self.offsets = None
+        self.name = name
+        self.label = _get_system_label(name)
+        bands, zero_points = _load_xpzeropoint_from_xml(self.label, config_file=config_file)
         self.set_bands(bands)
         self.set_zero_points(zero_points)
 

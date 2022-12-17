@@ -1,13 +1,16 @@
 import unittest
-from os.path import basename, join
+from os.path import basename, join, dirname, realpath
 
 import numpy as np
 import numpy.testing as npt
 from numpy import ndarray
+import pytest
 
+from gaiaxpy import load_additional_systems
 from gaiaxpy.config.paths import filters_path
 from gaiaxpy.core.config import get_file, _load_offset_from_xml, _load_xpmerge_from_xml, _load_xpsampling_from_xml, \
     _load_xpzeropoint_from_xml
+from tests.files.paths import files_path
 
 system_value = 'Jkc'
 
@@ -54,3 +57,16 @@ class TestConfig(unittest.TestCase):
         xp_offset = _load_offset_from_xml(system_value)
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.zeros(3))
+
+'''
+def test_additional_config(tmpdir):
+    # TODO: Should use a temporary path
+    config_file = join(tmpdir, '.testrc')
+    load_additional_systems(filters_path=join(files_path, 'additional_filters'), config_file=config_file)
+    system = 'test'
+    bp_model = 'v375wi'
+    rp_model = 'v142r'
+    file_path = get_file('filter', 'filter', system, bp_model, rp_model, config_file=config_file)
+    print(file_path)
+    # self.assertEqual(file_path, join(filters_path, basename(file_path)))
+'''

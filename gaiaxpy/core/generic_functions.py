@@ -7,6 +7,7 @@ Module to hold some functions used by different subpackages.
 import sys
 from collections.abc import Iterable
 from numbers import Number
+from os.path import join
 from string import capwords
 
 import numpy as np
@@ -16,13 +17,13 @@ from numpy import ndarray
 from gaiaxpy.config.paths import filters_path, config_path
 from gaiaxpy.generator.config import get_additional_filters_path
 
-from os.path import join
 
 def _get_built_in_systems() -> list:
     file = join(config_path, 'available_systems.txt')
     f = open(file, 'r')
     built_in_systems = f.read().splitlines()
     return built_in_systems
+
 
 def _is_built_in_system(system):
     return system in _get_built_in_systems()

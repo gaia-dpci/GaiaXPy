@@ -39,7 +39,7 @@ def write_config(cfg_details, config_file=None):
     config['filter'] = asdict(cfg_details)
     with open(config_file, 'w') as cf:
         config.write(cf)
-    print('Configuration saved.')
+    print(f"Configuration saved. Filters version {cfg_details.version}.")
 
 
 def load_config(config_file=None):
@@ -68,22 +68,23 @@ def get_additional_filters_names(config_file=None):
     return additional_system_names
 
 
-def get_yes_no_answer(question, yes_action, no_action):
+def execute_answer(action, message=None):
+    if action:
+        action()
+        if message:
+            print(message)
+
+
+def get_yes_no_answer(question, yes_action, no_action, yes_message=None, no_message=None):
     yes_choices = ['yes', 'y']
     no_choices = ['no', 'n']
     while True:
         user_input = input(question)
         if user_input.lower() in yes_choices:
-            if not yes_action:
-                break
-            else:
-                yes_action()
+            execute_answer(yes_action, yes_message)
             break
         elif user_input.lower() in no_choices:
-            if not no_action:
-                break
-            else:
-                no_action()
+            execute_answer(no_action, no_message)
             break
         else:
             print('Please type yes or no.')

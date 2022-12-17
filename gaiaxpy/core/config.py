@@ -11,8 +11,41 @@ from gaiaxpy.config.paths import config_path, filters_path
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.xml_utils import get_file_root, parse_array, get_array_text, get_xp_merge, get_xp_sampling_matrix
 
-
 _ADDITIONAL_SYSTEM_PREFIX = 'USER'
+
+
+def get_file_path(config_file=None):
+    if not config_file:
+        return filters_path
+    _config_parser = ConfigParser()
+    _config_parser.read(config_file)
+    try:
+        file_path = _config_parser['filter']['filters_dir']
+    except KeyError:
+        return filters_path
+    return file_path
+
+
+def get_filter_version_from_config(_config_parser):
+    try:
+        version = _config_parser['filter']['version']
+    except KeyError:
+        version = None
+    return version
+
+
+def replace_file_name(_config_file, label, key, bp_model, rp_model, system):
+    _config_parser = ConfigParser()
+    _config_parser.read(_config_file)
+    version = get_filter_version_from_config(_config_parser)
+    if version:
+        file_name = _config_parser.get(label, key).replace('version', version)
+        system = system.replace(f'{_ADDITIONAL_SYSTEM_PREFIX}_', '')
+    else:
+        file_name = _config_parser.get(label, key).format(label, key).replace('model', f'{bp_model}{rp_model}')
+    file_name = file_name.replace('system', system) if system else file_name.replace('system_', '')
+    return file_name
+
 
 def get_file(label, key, system, bp_model, rp_model, config_file=None):
     """
@@ -25,16 +58,15 @@ def get_file(label, key, system, bp_model, rp_model, config_file=None):
         bp_model (str): BP model.
         rp_model (str): RP model.
         config_file: Path to configuration file.
+        version: Filters version, only used for non-built-in filters.
 
     Returns:
         str: Path of a file.
     """
-    config_file = join(config_path, 'config.ini') if not config_file else config_file
-    _config_parser = ConfigParser()
-    _config_parser.read(config_file)
-    file_name = _config_parser.get(label, key).format(label, key).replace('model', f'{bp_model}{rp_model}')
-    file_name = file_name.replace('system', system) if system else file_name.replace('system_', '')
-    return join(filters_path, file_name)
+    _config_file = join(config_path, 'config.ini') if config_file is None else config_file
+    file_name = replace_file_name(_config_file, label, key, bp_model, rp_model, system)
+    file_path = get_file_path(config_file)
+    return join(file_path, file_name)
 
 
 def _load_offset_from_xml(system, bp_model='v375wi', rp_model='v142r'):

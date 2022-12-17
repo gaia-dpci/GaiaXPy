@@ -11,6 +11,7 @@ def get_file_root(xml_file):
 def iterative_find(x_root, tag_list):
     def find_in_root(_x_root, tag):
         return _x_root.find(tag)
+
     result = find_in_root(x_root, tag_list[0])
     for tag in tag_list[1:]:
         result = find_in_root(result, tag)
@@ -44,6 +45,7 @@ def get_array_text(x_root, tag):
     result = [element.text for element in result] if result else None
     length = len(result) if result else None
     return result, length
+
 
 def get_xp_sampling_matrix(x_root, xp, nbands):
     xpConfig = iterative_find(x_root, ['XpSampling', f'{xp.lower()}SampledBases'])

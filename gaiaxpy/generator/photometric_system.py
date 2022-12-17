@@ -4,27 +4,14 @@ photometric_system.py
 Module for the management of photometric systems.
 """
 
-from enum import Enum
 from os.path import exists
 
-from gaiaxpy.core.generic_functions import _get_built_in_systems
+from aenum import Enum, extend_enum
+
+from gaiaxpy.core.generic_functions import _get_built_in_systems, _is_built_in_system
 from .config import _CFG_FILE_PATH, get_yes_no_answer, create_config, get_additional_filters_names
 from .regular_photometric_system import RegularPhotometricSystem
 from .standardised_photometric_system import StandardisedPhotometricSystem
-
-
-def _system_is_standard(system_name):
-    """
-    Tell whether the input system is standard or not.
-
-    Args:
-        system_name (str): Photometric system name.
-
-    Returns:
-        bool: True is system is standard, false otherwise.
-    """
-
-    return system_name.split('_')[-1].lower() == 'std'
 
 
 def _get_available_systems(config_file=None):
@@ -64,17 +51,43 @@ class AutoName(Enum):
         return self.value.version
 
 
+def _system_is_standard(system_name):
+    """
+    Tell whether the input system is standard or not.
+
+    Args:
+        system_name (str): Photometric system name.
+
+    Returns:
+        bool: True is system is standard, false otherwise.
+    """
+
+    return system_name.split('_')[-1].lower() == 'std'
+
+
+def create_system(name, systems_path=None):
+    if _system_is_standard(name):
+        return StandardisedPhotometricSystem(name)
+    else:
+        return RegularPhotometricSystem(name, systems_path)
+
+
 def get_available_systems():
-    systems_str = _get_available_systems()
-    return ', '.join(systems_str.split(' '))
+    systems_list = _get_available_systems()
+    return ', '.join(systems_list)
 
 
-def load_additional_systems(filters_path=None, config_file=None):
+system_tuples = [(s, create_system(s, None)) for s in _get_available_systems()]
+PhotometricSystem = AutoName('PhotometricSystem', system_tuples)
+PhotometricSystem.get_available_systems = get_available_systems
+
+
+def load_additional_systems(_filters_path=None, config_file=None):
     """
     Load additional photometric systems.
 
     Args:
-        filters_path (str): Path to directory containing the additional filter files.
+        _filters_path (str): Path to directory containing the additional filter files.
         config_file (str): Path to configuration file where the path to the additional filter files will be stored.
     """
     config_file = _CFG_FILE_PATH if not config_file else config_file
@@ -82,20 +95,10 @@ def load_additional_systems(filters_path=None, config_file=None):
         print('A path for additional filters has already been defined.')
         get_yes_no_answer('Do you want to redefine the path? [y/n]: ', create_config, None)
     else:
-        create_config(filters_path, config_file)
+        create_config(_filters_path, config_file)
     # Re-create AutoEnum
     global PhotometricSystem
-    new_system_tuples = [(s, create_system(s, config_file)) for s in _get_available_systems(config_file)]
-    PhotometricSystem = AutoName('PhotometricSystem', new_system_tuples)
-
-
-def create_system(name, path=None):
-    if _system_is_standard(name):
-        return StandardisedPhotometricSystem(name)
-    else:
-        return RegularPhotometricSystem(name, path)
-
-
-system_tuples = [(s, create_system(s, None)) for s in _get_available_systems()]
-PhotometricSystem = AutoName('PhotometricSystem', system_tuples)
-PhotometricSystem.get_available_systems = get_available_systems
+    new_system_tuples = [(s, create_system(s, config_file)) for s in _get_available_systems(config_file) if not
+    _is_built_in_system(s)]
+    for name, value in new_system_tuples:
+        extend_enum(PhotometricSystem, name, value)

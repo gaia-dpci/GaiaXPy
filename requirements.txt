@@ -1,5 +1,5 @@
 numpy
-pandas>=1.0.0
+pandas
 scipy
 astropy
 fastavro
@@ -7,4 +7,5 @@ astroquery
 matplotlib
 packaging
 PyQt5
-tqdm>=4.64.0
+tqdm
+aenum

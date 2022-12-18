@@ -4,7 +4,6 @@ standardised_photometric_system.py
 Module to represent a standardised photometric system.
 """
 
-from gaiaxpy.core.generic_functions import _get_system_label
 from .internal_photometric_system import InternalPhotometricSystem
 
 

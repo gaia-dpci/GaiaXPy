@@ -19,13 +19,7 @@ class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
     Synthetic photometry derived from Gaia spectra in one photometric system.
     """
 
-    def __init__(
-            self,
-            source_id,
-            xp_spectra,
-            sampled_bases,
-            merge,
-            photometric_system):
+    def __init__(self, source_id, xp_spectra, sampled_bases, merge, photometric_system):
         """
         Initialise a synthetic photometry in a single photometric system.
 
@@ -40,9 +34,8 @@ class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
             photometric_system (object): The photometric system of the
                 synthetic photometry.
         """
-        AbsoluteSampledSpectrum.__init__(
-            self, source_id, xp_spectra, sampled_bases, merge)
-        self.photometric_system = photometric_system
+        AbsoluteSampledSpectrum.__init__(self, source_id, xp_spectra, sampled_bases, merge)
+        self.photometric_system = photometric_system.value
         # Correct flux if necessary (regular Photometric systems return the original value)
         flux = self.flux
         self.flux = self.photometric_system._correct_flux(flux)
@@ -50,10 +43,8 @@ class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
         error = self.error
         self.error = self.photometric_system._correct_error(flux, error)
         # Magnitude is computed from self.flux which is the corrected flux
-        self.mag = [
-            self.flux_to_mag(
-                flux, zero_point) for flux, zero_point in zip(
-                self.flux, self.photometric_system.get_zero_points())]
+        self.mag = [self.flux_to_mag(flux, zero_point) for flux, zero_point in
+                    zip(self.flux, self.photometric_system.get_zero_points())]
 
     def flux_to_mag(self, flux, zero_point):
         """

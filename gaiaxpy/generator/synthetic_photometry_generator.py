@@ -13,9 +13,6 @@ from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.single_synthetic_photometry import SingleSyntheticPhotometry
 from gaiaxpy.spectrum.utils import _get_covariance_matrix
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
-from .photometric_system import _system_is_standard
-from .regular_photometric_system import RegularPhotometricSystem
-from .standardised_photometric_system import StandardisedPhotometricSystem
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
@@ -66,11 +63,4 @@ def _generate_synthetic_photometry(row, design_matrix, merge, photometric_system
             continuous_spectrum = XpContinuousSpectrum(row['source_id'], band.upper(), row[f'{band}_coefficients'],
                                                        covariance_matrix, row[f'{band}_standard_deviation'])
             cont_dict[band] = continuous_spectrum
-    # Get the PhotometricSystem object
-    system_name = photometric_system.get_system_name()
-    # TODO: at this point it shouldn't be necessary to check the system type
-    if _system_is_standard(system_name):
-        photometric_system = StandardisedPhotometricSystem(system_name)
-    else:
-        photometric_system = RegularPhotometricSystem(system_name)
     return SingleSyntheticPhotometry(row['source_id'], cont_dict, design_matrix, merge, photometric_system)

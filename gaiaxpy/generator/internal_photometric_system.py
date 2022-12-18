@@ -6,7 +6,8 @@ Module for the parent class of the standardised and regular photometric systems.
 
 from gaiaxpy.core.config import get_file
 from gaiaxpy.core.generic_functions import _get_system_label
-from gaiaxpy.core.xml_utils import get_file_root, parse_array, get_array_text
+from gaiaxpy.core.satellite import BANDS
+from gaiaxpy.core.xml_utils import get_file_root, parse_array, get_array_text, get_xp_sampling_matrix, get_xp_merge
 
 
 class InternalPhotometricSystem(object):
@@ -94,7 +95,7 @@ class InternalPhotometricSystem(object):
             ndarray: Array of offsets.
         """
         label = key = 'filter'
-        file_path = get_file(label, key, self.label, bp_model, rp_model)
+        file_path = get_file(label, key, self.label, bp_model, rp_model, config_file=self.config_file)
         x_root = get_file_root(file_path)
         self.offsets = parse_array(x_root, 'fluxBias')
 
@@ -116,4 +117,45 @@ class InternalPhotometricSystem(object):
         self.zero_points = parse_array(x_root, 'zeropoints')
         self.bands, _ = get_array_text(x_root, 'bands')
 
+    def _load_xpsampling_from_xml(self, bp_model=None, rp_model='v142r'):
+        """
+        Load the XpSampling table from the XML filter file.
 
+        Args:
+            bp_model (str): BP model.
+            rp_model (str): RP model.
+
+        Returns:
+            dict: A dictionary containing the XpSampling table with one entry for BP and one for RP.
+        """
+        label = self.get_system_label()
+        bp_model = bp_model if bp_model else 'v375wi'
+        xml_file = get_file('filter', 'filter', label, bp_model, rp_model, config_file=self.config_file)
+        x_root = get_file_root(xml_file)
+        _, nbands = get_array_text(x_root, 'bands')
+
+        bp_sampling = get_xp_sampling_matrix(x_root, 'bp', nbands)
+        rp_sampling = get_xp_sampling_matrix(x_root, 'rp', nbands)
+
+        xp_sampling = dict(zip(BANDS, [bp_sampling, rp_sampling]))
+        return xp_sampling
+
+    def _load_xpmerge_from_xml(self, bp_model=None, rp_model='v142r'):
+        """
+        Load the XpMerge table from the filter XML file.
+
+        Args:
+            bp_model (str): BP model.
+            rp_model (str): RP model.
+
+        Returns:
+            ndarray: Array containing the sampling grid values.
+            dict: A dictionary containing the XpMerge table with one entry for BP and one for RP.
+        """
+        system_label = self.get_system_label()
+        bp_model = bp_model if bp_model else 'v375wi'
+        label = key = 'filter'
+        file_path = get_file(label, key, system_label, bp_model, rp_model, config_file=self.config_file)
+        x_root = get_file_root(file_path)
+        sampling_grid, bp_merge, rp_merge = get_xp_merge(x_root)
+        return sampling_grid, dict(zip(BANDS, [bp_merge, rp_merge]))

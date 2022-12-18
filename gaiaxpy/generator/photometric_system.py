@@ -61,8 +61,8 @@ def _system_is_standard(system_name):
     Returns:
         bool: True is system is standard, false otherwise.
     """
-
-    return system_name.split('_')[-1].lower() == 'std'
+    std_substring = system_name.split('_')[-1] if _is_built_in_system(system_name) else system_name[-3:]
+    return std_substring.lower() == 'std'
 
 
 def create_system(name, systems_path=None):
@@ -89,7 +89,6 @@ def load_additional_systems(_filters_path=None):
 
     Args:
         _filters_path (str): Path to directory containing the additional filter files.
-        config_file (str): Path to configuration file where the path to the additional filter files will be stored.
     """
     config_file = _CFG_FILE_PATH
     __load_additional_systems(_filters_path, config_file)

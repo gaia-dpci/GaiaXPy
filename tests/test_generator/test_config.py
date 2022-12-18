@@ -4,8 +4,8 @@ import numpy as np
 import numpy.testing as npt
 from numpy import ndarray
 
-from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_offset_from_xml, _load_xpsampling_from_xml,\
-    _load_xpzeropoint_from_xml
+from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_xml, _load_xpzeropoint_from_xml
+from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
 
 # Non-standard system
 system_value = 'Jkc'
@@ -33,18 +33,20 @@ class TestConfig(unittest.TestCase):
         npt.assert_array_equal(bands, np.array(['U', 'B', 'V', 'R', 'I']))
 
     def test_load_xpoffset(self):
+        # TODO: Remove duplicate tests in test core config
+
         # Standard system has got an offset file
-        system_value = 'JkcStd'
-        xp_offset = _load_offset_from_xml(system_value)
+        system = InternalPhotometricSystem('JKC_Std')
+        xp_offset = system.offsets
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.array([2.44819e-19, 4.62320e-20, 1.81103e-20, 2.15027e-20, 1.73864e-20]))
 
-        system_value = 'SdssStd'
-        xp_offset = _load_offset_from_xml(system_value)
+        system = InternalPhotometricSystem('SDSS_Std')
+        xp_offset = system.offsets
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.array([1.05000e-31, 2.47850e-32, 3.49926e-32, 3.80023e-32, 3.23519e-32]))
 
-        system_value = 'StromgrenStd'
-        xp_offset = _load_offset_from_xml(system_value)
+        system = InternalPhotometricSystem('Stromgren_Std')
+        xp_offset = system.offsets
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.zeros(3))

@@ -58,7 +58,6 @@ def get_file(label, key, system, bp_model, rp_model, config_file=None):
         bp_model (str): BP model.
         rp_model (str): RP model.
         config_file: Path to configuration file.
-        version: Filters version, only used for non-built-in filters.
 
     Returns:
         str: Path of a file.
@@ -67,25 +66,6 @@ def get_file(label, key, system, bp_model, rp_model, config_file=None):
     file_name = replace_file_name(_config_file, label, key, bp_model, rp_model, system)
     file_path = get_file_path(config_file)
     return join(file_path, file_name)
-
-
-def _load_offset_from_xml(system, bp_model='v375wi', rp_model='v142r'):
-    """
-    Load the offset of a standard photometric system from the filter XML file.
-
-    Args:
-        system (str): Photometric system name.
-        bp_model (str): BP model.
-        rp_model (str): RP model.
-
-    Returns:
-        ndarray: Array of offsets.
-    """
-    label = key = 'filter'
-    file_path = get_file(label, key, system, bp_model, rp_model)
-    x_root = get_file_root(file_path)
-    return parse_array(x_root, 'fluxBias')
-
 
 def _load_xpzeropoint_from_xml(system, bp_model='v375wi', rp_model='v142r', config_file=None):
     """
@@ -108,7 +88,7 @@ def _load_xpzeropoint_from_xml(system, bp_model='v375wi', rp_model='v142r', conf
     return bands, zeropoints
 
 
-def _load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r'):
+def _load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r', config_file=None):
     """
     Load the XpMerge table from the filter XML file.
 
@@ -123,13 +103,13 @@ def _load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r'):
     """
     bp_model = bp_model if bp_model else 'v375wi'
     label = key = 'filter'
-    file_path = get_file(label, key, system, bp_model, rp_model)
+    file_path = get_file(label, key, system, bp_model, rp_model, config_file=config_file)
     x_root = get_file_root(file_path)
     sampling_grid, bp_merge, rp_merge = get_xp_merge(x_root)
     return sampling_grid, dict(zip(BANDS, [bp_merge, rp_merge]))
 
 
-def _load_xpsampling_from_xml(system=None, bp_model=None, rp_model='v142r'):
+def _load_xpsampling_from_xml(system=None, bp_model=None, rp_model='v142r', config_file=None):
     """
     Load the XpSampling table from the XML filter file.
 
@@ -142,7 +122,7 @@ def _load_xpsampling_from_xml(system=None, bp_model=None, rp_model='v142r'):
         dict: A dictionary containing the XpSampling table with one entry for BP and one for RP.
     """
     bp_model = bp_model if bp_model else 'v375wi'
-    xml_file = get_file('filter', 'filter', system, bp_model, rp_model)
+    xml_file = get_file('filter', 'filter', system, bp_model, rp_model, config_file=config_file)
     x_root = get_file_root(xml_file)
     _, nbands = get_array_text(x_root, 'bands')
 

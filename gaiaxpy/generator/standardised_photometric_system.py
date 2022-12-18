@@ -4,7 +4,6 @@ standardised_photometric_system.py
 Module to represent a standardised photometric system.
 """
 
-from gaiaxpy.core.config import _load_offset_from_xml
 from gaiaxpy.core.generic_functions import _get_system_label
 from .internal_photometric_system import InternalPhotometricSystem
 
@@ -18,10 +17,8 @@ class StandardisedPhotometricSystem(InternalPhotometricSystem):
         Args:
             name (str): Name of the PhotometricSystem
         """
-        label = _get_system_label(name)
         super().__init__(name)
-        offsets = _load_offset_from_xml(label)
-        self.set_offsets(offsets)
+        self._load_offset_from_xml()
 
     def _correct_flux(self, flux):
         flux_corr = flux + self.offsets

@@ -4,7 +4,7 @@ from os.path import join
 import numpy as np
 
 from gaiaxpy import generate, PhotometricSystem
-from gaiaxpy.core.generic_functions import _get_system_label, _extract_systems_from_data, _validate_pwl_sampling,\
+from gaiaxpy.core.generic_functions import _get_system_label, _extract_systems_from_data, _validate_pwl_sampling, \
     array_to_symmetric_matrix
 from tests.files.paths import files_path
 

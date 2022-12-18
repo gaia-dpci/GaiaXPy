@@ -77,12 +77,25 @@ def get_available_systems():
     return ', '.join(systems_list)
 
 
-system_tuples = [(s, create_system(s, None)) for s in _get_available_systems()]
+system_tuples = [(s, create_system(s, None)) if _is_built_in_system(s) else (s, create_system(s, _CFG_FILE_PATH))
+                 for s in _get_available_systems(_CFG_FILE_PATH)]
 PhotometricSystem = AutoName('PhotometricSystem', system_tuples)
 PhotometricSystem.get_available_systems = get_available_systems
 
 
-def load_additional_systems(_filters_path=None, config_file=None):
+def load_additional_systems(_filters_path=None):
+    """
+    Load additional photometric systems.
+
+    Args:
+        _filters_path (str): Path to directory containing the additional filter files.
+        config_file (str): Path to configuration file where the path to the additional filter files will be stored.
+    """
+    config_file = _CFG_FILE_PATH
+    __load_additional_systems(_filters_path, config_file)
+
+
+def __load_additional_systems(_filters_path=None, config_file=None):
     """
     Load additional photometric systems.
 

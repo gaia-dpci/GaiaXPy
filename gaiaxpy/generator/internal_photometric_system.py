@@ -4,18 +4,20 @@ internal_photometric_system.py
 Module for the parent class of the standardised and regular photometric systems.
 """
 
-from gaiaxpy.core.config import _load_xpzeropoint_from_xml
+from gaiaxpy.core.config import _load_xpzeropoint_from_xml, get_file
 from gaiaxpy.core.generic_functions import _get_system_label
+from gaiaxpy.core.xml_utils import get_file_root, parse_array
 
 
 class InternalPhotometricSystem(object):
 
     def __init__(self, name, config_file=None):
+        self.label = _get_system_label(name)
         self.zero_points = None
         self.bands = None
         self.offsets = None
+        self._load_offset_from_xml()
         self.name = name
-        self.label = _get_system_label(name)
         bands, zero_points = _load_xpzeropoint_from_xml(self.label, config_file=config_file)
         self.set_bands(bands)
         self.set_zero_points(zero_points)
@@ -79,3 +81,20 @@ class InternalPhotometricSystem(object):
 
     def _correct_error(self, flux, error):
         raise ValueError('Method not implemented in parent class.')
+
+    def _load_offset_from_xml(self, bp_model='v375wi', rp_model='v142r'):
+        """
+        Load the offset of a standard photometric system from the filter XML file.
+
+        Args:
+            system (str): Photometric system name.
+            bp_model (str): BP model.
+            rp_model (str): RP model.
+
+        Returns:
+            ndarray: Array of offsets.
+        """
+        label = key = 'filter'
+        file_path = get_file(label, key, self.label, bp_model, rp_model)
+        x_root = get_file_root(file_path)
+        self.offsets = parse_array(x_root, 'fluxBias')

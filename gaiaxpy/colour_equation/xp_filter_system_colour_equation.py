@@ -13,6 +13,7 @@ from gaiaxpy.config.paths import filters_path
 from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, _validate_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
+from gaiaxpy.generator.photometric_system import PhotometricSystem
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 
@@ -71,27 +72,27 @@ def _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems
     return pd.DataFrame(new_system_rows)
 
 
-def _generate_output_df(input_synthetic_photometry, systems_in_data, systems_details):
-    synt_phot_df = input_synthetic_photometry.copy()
-    colour_equation_systems = _get_available_colour_systems()
+def _generate_output_df(input_synthetic_photometry, systems_details, systems_to_correct):
+    synth_phot_df = input_synthetic_photometry.copy()
     # Intersection of systems in data and systems that can be corrected
-    systems_to_correct = [system for system in systems_in_data if system in colour_equation_systems]
+    # TODO: statements can be shortened
     if systems_to_correct:
         # Perform correction
-        column_names = synt_phot_df.columns
+        column_names = synth_phot_df.columns
         # Extract columns corresponding to one system
         for system in systems_to_correct:
-            filter_to_correct = systems_details[system]['filter']
-            colour_band_0, colour_band_1 = _get_colour_bands(systems_details[system]['colour_index'])
-            system_columns_with_colour = [column for column in column_names if column.startswith(f'{system}_')
+            label = system.get_system_label()
+            filter_to_correct = systems_details[label]['filter']
+            colour_band_0, colour_band_1 = _get_colour_bands(systems_details[label]['colour_index'])
+            system_columns_with_colour = [column for column in column_names if column.startswith(f'{label}_')
                                           and column.endswith(
                 (f'_{filter_to_correct}', f'_{colour_band_0}', f'_{colour_band_1}'))]
             # Data to apply the colour equation
-            single_system_df = synt_phot_df[system_columns_with_colour]
-            new_system_df = _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems_details)
+            single_system_df = synth_phot_df[system_columns_with_colour]
+            new_system_df = _create_rows(single_system_df, label, colour_band_0, colour_band_1, systems_details)
             for column in new_system_df.columns:
-                synt_phot_df[column] = new_system_df[column]
-    return synt_phot_df
+                synth_phot_df[column] = new_system_df[column]
+    return synth_phot_df
 
 
 def _generate_output_row(row, system_label, colour_band_0, colour_band_1, systems_details):
@@ -172,7 +173,9 @@ def _get_correction(systems_details, colour, system_label):
 
 
 def _get_systems_to_correct(systems):
-    correctable_labels = [filename.split('_')[0] for filename in colour_eq_dir]
+    if isinstance(systems, PhotometricSystem):
+        systems = [systems]
+    correctable_labels = [filename.split('_')[0] for filename in listdir(colour_eq_dir)]
     correctable_systems = [system for system in systems if system.get_system_label() in correctable_labels]
     return correctable_systems
 
@@ -196,12 +199,9 @@ def apply_colour_equation(input_synthetic_photometry, photometric_system=None, o
     function = apply_colour_equation  # Being able to extract the name of the current function would be ideal.
     _validate_arguments(function.__defaults__[2], output_file, save_file)
     input_synthetic_photometry, extension = InputReader(input_synthetic_photometry, function)._read()
-    systems_in_data_labels = _extract_systems_from_data(input_synthetic_photometry.columns, photometric_system)
-    # Intersection of systems in data and systems that can be corrected
     systems_to_correct = _get_systems_to_correct(photometric_system)
-    # Only extract the data of the systems that need to be corrected
     systems_details = _fill_systems_details(systems_to_correct)
-    output_df = _generate_output_df(input_synthetic_photometry, systems_in_data_labels, systems_details)
+    output_df = _generate_output_df(input_synthetic_photometry, systems_details, systems_to_correct)
     output_data = PhotometryData(output_df)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)

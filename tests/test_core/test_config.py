@@ -13,10 +13,6 @@ from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSys
 system = InternalPhotometricSystem('JKC')
 system_label = system.get_system_label()
 
-xp_sampling = _load_xpsampling_from_xml(system=system_label)
-xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system=system_label)
-xp_zero_point = system.get_zero_points()
-
 
 class TestConfig(unittest.TestCase):
 
@@ -28,15 +24,17 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(file_path, join(filters_path, basename(file_path)))
 
     def test_load_xpsampling_from_csv_type(self):
+        xp_sampling = _load_xpsampling_from_xml(system=system_label)
         self.assertIsInstance(xp_sampling, dict)
 
     def test_load_xpmerge_from_xml_types(self):
+        xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system=system_label)
         self.assertIsInstance(xp_merge, dict)
         self.assertIsInstance(xp_sampling_grid, np.ndarray)
 
     def test_load_xpzeropoint_from_xml(self):
-        self.assertIsInstance(xp_zero_point, tuple)
-        bands, zero_points = xp_zero_point
+        zero_points = system.get_zero_points()
+        bands = system.get_bands()
         npt.assert_array_equal(zero_points, np.array([-25.9651, -25.4918, -26.0952, -26.6505, -27.3326]))
         npt.assert_array_equal(bands, np.array(['U', 'B', 'V', 'R', 'I']))
 

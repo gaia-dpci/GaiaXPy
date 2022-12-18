@@ -72,26 +72,19 @@ def _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems
     return pd.DataFrame(new_system_rows)
 
 
-def _generate_output_df(input_synthetic_photometry, systems_details, systems_to_correct):
+def _generate_output_df(input_synthetic_photometry, systems_details):
     synth_phot_df = input_synthetic_photometry.copy()
-    # Intersection of systems in data and systems that can be corrected
-    # TODO: statements can be shortened
-    if systems_to_correct:
-        # Perform correction
-        column_names = synth_phot_df.columns
-        # Extract columns corresponding to one system
-        for system in systems_to_correct:
-            label = system.get_system_label()
-            filter_to_correct = systems_details[label]['filter']
-            colour_band_0, colour_band_1 = _get_colour_bands(systems_details[label]['colour_index'])
-            system_columns_with_colour = [column for column in column_names if column.startswith(f'{label}_')
-                                          and column.endswith(
-                (f'_{filter_to_correct}', f'_{colour_band_0}', f'_{colour_band_1}'))]
-            # Data to apply the colour equation
-            single_system_df = synth_phot_df[system_columns_with_colour]
-            new_system_df = _create_rows(single_system_df, label, colour_band_0, colour_band_1, systems_details)
-            for column in new_system_df.columns:
-                synth_phot_df[column] = new_system_df[column]
+    column_names = synth_phot_df.columns
+    # Extract columns corresponding to one system
+    for label in systems_details.keys():
+        filter_to_correct = systems_details[label]['filter']
+        colour_band_0, colour_band_1 = _get_colour_bands(systems_details[label]['colour_index'])
+        system_columns_with_colour = [column for column in column_names if column.startswith(f'{label}_') and
+                                      column.endswith((f'_{filter_to_correct}', f'_{colour_band_0}',
+                                                       f'_{colour_band_1}'))]
+        single_system_df = synth_phot_df[system_columns_with_colour]
+        new_system_df = _create_rows(single_system_df, label, colour_band_0, colour_band_1, systems_details)
+        synth_phot_df[new_system_df.columns] = new_system_df[new_system_df.columns]
     return synth_phot_df
 
 
@@ -201,7 +194,7 @@ def apply_colour_equation(input_synthetic_photometry, photometric_system=None, o
     input_synthetic_photometry, extension = InputReader(input_synthetic_photometry, function)._read()
     systems_to_correct = _get_systems_to_correct(photometric_system)
     systems_details = _fill_systems_details(systems_to_correct)
-    output_df = _generate_output_df(input_synthetic_photometry, systems_details, systems_to_correct)
+    output_df = _generate_output_df(input_synthetic_photometry, systems_details)
     output_data = PhotometryData(output_df)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)

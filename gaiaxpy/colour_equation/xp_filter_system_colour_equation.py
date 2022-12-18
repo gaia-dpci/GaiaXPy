@@ -83,8 +83,9 @@ def _generate_output_df(input_synthetic_photometry, systems_details):
                                       column.endswith((f'_{filter_to_correct}', f'_{colour_band_0}',
                                                        f'_{colour_band_1}'))]
         single_system_df = synth_phot_df[system_columns_with_colour]
-        new_system_df = _create_rows(single_system_df, label, colour_band_0, colour_band_1, systems_details)
-        synth_phot_df[new_system_df.columns] = new_system_df[new_system_df.columns]
+        corrected_system_df = _create_rows(single_system_df, label, colour_band_0, colour_band_1, systems_details)
+        columns_to_correct = corrected_system_df.columns
+        synth_phot_df[columns_to_correct] = corrected_system_df[columns_to_correct]
     return synth_phot_df
 
 

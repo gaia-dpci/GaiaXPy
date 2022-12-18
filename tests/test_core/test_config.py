@@ -7,14 +7,15 @@ from numpy import ndarray
 import pytest
 
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.config import get_file, _load_xpmerge_from_xml, _load_xpsampling_from_xml, _load_xpzeropoint_from_xml
+from gaiaxpy.core.config import get_file, _load_xpmerge_from_xml, _load_xpsampling_from_xml
 from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
 
-system_value = 'Jkc'
+system = InternalPhotometricSystem('JKC')
+system_label = system.get_system_label()
 
-xp_sampling = _load_xpsampling_from_xml(system=system_value)
-xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system=system_value)
-xp_zero_point = _load_xpzeropoint_from_xml(system_value)
+xp_sampling = _load_xpsampling_from_xml(system=system_label)
+xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(system=system_label)
+xp_zero_point = system.get_zero_points()
 
 
 class TestConfig(unittest.TestCase):

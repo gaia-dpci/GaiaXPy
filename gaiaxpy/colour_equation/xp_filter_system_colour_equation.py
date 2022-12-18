@@ -1,7 +1,8 @@
 import ast
 import math
 from configparser import ConfigParser
-from os import listdir, path
+from os import listdir
+from os.path import join
 
 import numpy as np
 import pandas as pd
@@ -9,12 +10,14 @@ from numpy import poly1d
 from tqdm import tqdm
 
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.config import _load_xpzeropoint_from_xml
 from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, _validate_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
+from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 
+
+colour_eq_dir = join(filters_path, '..', 'colour_eq_files')
 
 def _raise_key_error(key):
     raise KeyError(f'Required column {key} is not present in input data.')
@@ -28,51 +31,49 @@ def _fill_systems_details(systems_to_correct):
     systems_details = {}
     if systems_to_correct:
         for system in systems_to_correct:
-            systems_details[system] = {}
+            label = system.get_system_label()
+            systems_details[label] = {}
             # Get bands and zero points
-            bands, zero_points = _load_xpzeropoint_from_xml(system)
-            systems_details[system]['bands_zp'] = dict(zip(bands, zero_points))
+            system = InternalPhotometricSystem(system.get_system_name())
+            systems_details[label]['bands_zp'] = dict(zip(system.get_bands(), system.get_zero_points()))
             # Load ini file
             config_parser = ConfigParser()
-            equation_file = path.join(filters_path, '..', 'colour_eq_files', f'{system}_colour_eq.ini')
+            equation_file = join(colour_eq_dir, f'{label}_colour_eq.ini')
             config_parser.read(equation_file)
             # The filter to be corrected (String)
-            filter = config_parser.get(system, 'FILTER')
-            systems_details[system]['filter'] = filter
+            filter = config_parser.get(label, 'FILTER')
+            systems_details[label]['filter'] = filter
             # The colour index (String)
-            systems_details[system]['colour_index'] = config_parser.get(system, 'COLOUR_INDEX')
+            systems_details[label]['colour_index'] = config_parser.get(label, 'COLOUR_INDEX')
             # The colour equation (PolynomialFunction)
             # Reverse, coefficients were originally defined for the Java polyfunction
-            coeffs = list(ast.literal_eval(config_parser.get(system, 'POLY_COEFFICIENTS')))[::-1]
+            coeffs = list(ast.literal_eval(config_parser.get(label, 'POLY_COEFFICIENTS')))[::-1]
             polyfunc = poly1d(coeffs)
-            systems_details[system]['polyfunc'] = polyfunc
+            systems_details[label]['polyfunc'] = polyfunc
             # Derivative of the colour equation (UnivariateFunction)
-            systems_details[system]['derivative'] = polyfunc.deriv()
+            systems_details[label]['derivative'] = polyfunc.deriv()
             # Colour range for the correction (double[])
-            colour_range = config_parser.get(system, 'COLOUR_RANGE')
-            systems_details[system]['colour_range'] = ast.literal_eval(colour_range)
+            colour_range = config_parser.get(label, 'COLOUR_RANGE')
+            systems_details[label]['colour_range'] = ast.literal_eval(colour_range)
     return systems_details
 
 
 def _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems_details):
     new_system_rows = []
-    nrows = len(single_system_df)
-
     def _execute_row(row, *args):
         system, colour_band_0, colour_band_1, systems_details = args[:4]
         new_row = _generate_output_row(row, system, colour_band_0, colour_band_1, systems_details)
         new_system_rows.append(new_row)
 
-    for index, row in tqdm(single_system_df.iterrows(), desc='Applying colour equation', \
-                           total=len(single_system_df), unit=pbar_units['colour_eq'], \
-                           colour=pbar_colour, leave=False):
+    for index, row in tqdm(single_system_df.iterrows(), desc='Applying colour equation', total=len(single_system_df),
+                           unit=pbar_units['colour_eq'], colour=pbar_colour, leave=False):
         _execute_row(row, system, colour_band_0, colour_band_1, systems_details)
     return pd.DataFrame(new_system_rows)
 
 
 def _generate_output_df(input_synthetic_photometry, systems_in_data, systems_details):
     synt_phot_df = input_synthetic_photometry.copy()
-    colour_equation_systems = _get_available_systems()
+    colour_equation_systems = _get_available_colour_systems()
     # Intersection of systems in data and systems that can be corrected
     systems_to_correct = [system for system in systems_in_data if system in colour_equation_systems]
     if systems_to_correct:
@@ -119,11 +120,11 @@ def _generate_output_row(row, system_label, colour_band_0, colour_band_1, system
     return new_row
 
 
-def _get_available_systems():
+def _get_available_colour_systems():
     """
     Get systems on which the colour equation can be applied.
     """
-    return [filename.split('_')[0] for filename in listdir(path.join(filters_path, '..', 'colour_eq_files'))]
+    return [filename.split('_')[0] for filename in colour_eq_dir]
 
 
 def _get_colour_bands(colour_index):
@@ -170,6 +171,12 @@ def _get_correction(systems_details, colour, system_label):
         raise ValueError('At least one variable does not comply with any of the previous statements.')
 
 
+def _get_systems_to_correct(systems):
+    correctable_labels = [filename.split('_')[0] for filename in colour_eq_dir]
+    correctable_systems = [system for system in systems if system.get_system_label() in correctable_labels]
+    return correctable_systems
+
+
 def apply_colour_equation(input_synthetic_photometry, photometric_system=None, output_path='.',
                           output_file='corrected_photometry', output_format=None, save_file=True):
     """
@@ -189,14 +196,14 @@ def apply_colour_equation(input_synthetic_photometry, photometric_system=None, o
     function = apply_colour_equation  # Being able to extract the name of the current function would be ideal.
     _validate_arguments(function.__defaults__[2], output_file, save_file)
     input_synthetic_photometry, extension = InputReader(input_synthetic_photometry, function)._read()
-    systems_in_data = _extract_systems_from_data(input_synthetic_photometry.columns, photometric_system)
-    colour_equation_systems = _get_available_systems()
+    systems_in_data_labels = _extract_systems_from_data(input_synthetic_photometry.columns, photometric_system)
     # Intersection of systems in data and systems that can be corrected
-    systems_to_correct = [system for system in systems_in_data if system in colour_equation_systems]
+    systems_to_correct = _get_systems_to_correct(photometric_system)
     # Only extract the data of the systems that need to be corrected
     systems_details = _fill_systems_details(systems_to_correct)
-    output_df = _generate_output_df(input_synthetic_photometry, systems_in_data, systems_details)
+    output_df = _generate_output_df(input_synthetic_photometry, systems_in_data_labels, systems_details)
     output_data = PhotometryData(output_df)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_df
+

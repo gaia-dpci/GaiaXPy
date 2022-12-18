@@ -67,27 +67,6 @@ def get_file(label, key, system, bp_model, rp_model, config_file=None):
     file_path = get_file_path(config_file)
     return join(file_path, file_name)
 
-def _load_xpzeropoint_from_xml(system, bp_model='v375wi', rp_model='v142r', config_file=None):
-    """
-    Load the zero-points for each band from the filter XML file.
-
-    Args:
-        system (str): Name of the photometric system.
-        bp_model (str): BP model.
-        rp_model (str): RP model.
-        config_file (str): Path to configuration file.
-
-    Returns:
-        ndarray: Array of zero-points.
-    """
-    label = key = 'filter'
-    file_path = get_file(label, key, system, bp_model, rp_model, config_file=config_file)
-    x_root = get_file_root(file_path)
-    zeropoints = parse_array(x_root, 'zeropoints')
-    bands, _ = get_array_text(x_root, 'bands')
-    return bands, zeropoints
-
-
 def _load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r', config_file=None):
     """
     Load the XpMerge table from the filter XML file.

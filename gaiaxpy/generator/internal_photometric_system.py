@@ -4,23 +4,21 @@ internal_photometric_system.py
 Module for the parent class of the standardised and regular photometric systems.
 """
 
-from gaiaxpy.core.config import _load_xpzeropoint_from_xml, get_file
+from gaiaxpy.core.config import get_file
 from gaiaxpy.core.generic_functions import _get_system_label
-from gaiaxpy.core.xml_utils import get_file_root, parse_array
+from gaiaxpy.core.xml_utils import get_file_root, parse_array, get_array_text
 
 
 class InternalPhotometricSystem(object):
 
     def __init__(self, name, config_file=None):
         self.label = _get_system_label(name)
-        self.zero_points = None
         self.bands = None
+        self.zero_points = None
+        self._load_xpzeropoint_from_xml(config_file=config_file)
         self.offsets = None
         self._load_offset_from_xml()
         self.name = name
-        bands, zero_points = _load_xpzeropoint_from_xml(self.label, config_file=config_file)
-        self.set_bands(bands)
-        self.set_zero_points(zero_points)
 
     def set_bands(self, bands):
         """
@@ -98,3 +96,24 @@ class InternalPhotometricSystem(object):
         file_path = get_file(label, key, self.label, bp_model, rp_model)
         x_root = get_file_root(file_path)
         self.offsets = parse_array(x_root, 'fluxBias')
+
+    def _load_xpzeropoint_from_xml(self, bp_model='v375wi', rp_model='v142r', config_file=None):
+        """
+        Load the zero-points for each band from the filter XML file.
+
+        Args:
+            system (str): Name of the photometric system.
+            bp_model (str): BP model.
+            rp_model (str): RP model.
+            config_file (str): Path to configuration file.
+
+        Returns:
+            ndarray: Array of zero-points.
+        """
+        label = key = 'filter'
+        file_path = get_file(label, key, self.label, bp_model, rp_model, config_file=config_file)
+        x_root = get_file_root(file_path)
+        zeropoints = parse_array(x_root, 'zeropoints')
+        bands, _ = get_array_text(x_root, 'bands')
+        self.bands = bands
+        self.zero_points = zeropoints

@@ -60,15 +60,9 @@ def _fill_systems_details(systems_to_correct):
 
 
 def _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems_details):
-    new_system_rows = []
-    def _execute_row(row, *args):
-        system, colour_band_0, colour_band_1, systems_details = args[:4]
-        new_row = _generate_output_row(row, system, colour_band_0, colour_band_1, systems_details)
-        new_system_rows.append(new_row)
-
-    for index, row in tqdm(single_system_df.iterrows(), desc='Applying colour equation', total=len(single_system_df),
-                           unit=pbar_units['colour_eq'], colour=pbar_colour, leave=False):
-        _execute_row(row, system, colour_band_0, colour_band_1, systems_details)
+    new_system_rows = [_generate_output_row(row, system, colour_band_0, colour_band_1, systems_details) for index, row
+                       in tqdm(single_system_df.iterrows(), desc='Applying colour equation', total=len(single_system_df),
+                               unit=pbar_units['colour_eq'], colour=pbar_colour, leave=False)]
     return pd.DataFrame(new_system_rows)
 
 
@@ -105,7 +99,7 @@ def _generate_output_row(row, system_label, colour_band_0, colour_band_1, system
     correction_err = colour_err * abs(systems_details[system_label]['derivative'](colour))
     # Total error on corrected magnitude
     out_err = math.sqrt(mag_err ** 2 + correction_err ** 2)
-    new_row = {}
+    new_row = dict()
     new_row[f'{system_label}_mag_{filter_to_correct}'] = corrected_magnitude
     zp = systems_details[system_label]['bands_zp'][filter_to_correct]
     out_flux = 10 ** (-0.4 * (corrected_magnitude - zp))
@@ -146,7 +140,7 @@ def _generate_polynomial(colour, colour_limit, system_polyfunc):
 
 # Replaces 'contains'
 def _is_in_range(colour, colour_range):
-    return min(colour_range) <= colour and colour <= max(colour_range)
+    return min(colour_range) <= colour <= max(colour_range)
 
 
 def _get_correction(systems_details, colour, system_label):
@@ -180,8 +174,9 @@ def apply_colour_equation(input_synthetic_photometry, photometric_system=None, o
     Apply the available colour correction to the input photometric system(s).
 
     Args:
-        input_synthetic_photometry (DataFrame): Input photometry as returned by GaiaXPy's generator.
-        photometric_system (PhotometricSystem, list of PhotometricSystem): The photometric systems over which to apply the equations.
+        input_synthetic_photometry (DataFrame): Input photometry as returned by GaiaXPy generator.
+        photometric_system (PhotometricSystem, list of PhotometricSystem): The photometric systems over which to apply
+        the equations.
         output_path (str): The path of the output file.
         output_file (str): The name of the output file.
         output_format (str): The format of the output file (csv, fits, xml).

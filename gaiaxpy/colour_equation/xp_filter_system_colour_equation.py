@@ -1,4 +1,4 @@
-import ast
+from ast import literal_eval
 import math
 from configparser import ConfigParser
 from os import listdir
@@ -10,15 +10,15 @@ from numpy import poly1d
 from tqdm import tqdm
 
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, _validate_arguments
+from gaiaxpy.core.generic_functions import cast_output, _validate_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
 from gaiaxpy.generator.photometric_system import PhotometricSystem
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 
-
 colour_eq_dir = join(filters_path, '..', 'colour_eq_files')
+
 
 def _raise_key_error(key):
     raise KeyError(f'Required column {key} is not present in input data.')
@@ -29,33 +29,25 @@ def _compute_mag_error(data, band, system_label):
 
 
 def _fill_systems_details(systems_to_correct):
-    systems_details = {}
-    if systems_to_correct:
-        for system in systems_to_correct:
-            label = system.get_system_label()
-            systems_details[label] = {}
-            # Get bands and zero points
-            system = InternalPhotometricSystem(system.get_system_name())
-            systems_details[label]['bands_zp'] = dict(zip(system.get_bands(), system.get_zero_points()))
-            # Load ini file
-            config_parser = ConfigParser()
-            equation_file = join(colour_eq_dir, f'{label}_colour_eq.ini')
-            config_parser.read(equation_file)
-            # The filter to be corrected (String)
-            filter = config_parser.get(label, 'FILTER')
-            systems_details[label]['filter'] = filter
-            # The colour index (String)
-            systems_details[label]['colour_index'] = config_parser.get(label, 'COLOUR_INDEX')
-            # The colour equation (PolynomialFunction)
-            # Reverse, coefficients were originally defined for the Java polyfunction
-            coeffs = list(ast.literal_eval(config_parser.get(label, 'POLY_COEFFICIENTS')))[::-1]
-            polyfunc = poly1d(coeffs)
-            systems_details[label]['polyfunc'] = polyfunc
-            # Derivative of the colour equation (UnivariateFunction)
-            systems_details[label]['derivative'] = polyfunc.deriv()
-            # Colour range for the correction (double[])
-            colour_range = config_parser.get(label, 'COLOUR_RANGE')
-            systems_details[label]['colour_range'] = ast.literal_eval(colour_range)
+    systems_details = dict()
+    for system in systems_to_correct:
+        label = system.get_system_label()
+        systems_details[label] = dict()
+        # Get bands and zero points
+        systems_details[label]['bands_zp'] = dict(zip(system.get_bands(), system.get_zero_points()))
+        # Load ini file
+        config_parser = ConfigParser()
+        config_parser.read(join(colour_eq_dir, f'{label}_colour_eq.ini'))
+        systems_details[label]['filter'] = config_parser.get(label, 'FILTER')  # The filter to be corrected (string)
+        systems_details[label]['colour_index'] = config_parser.get(label, 'COLOUR_INDEX')  # The colour index (string)
+        # The colour equation (PolynomialFunction)
+        # Reverse, coefficients were originally defined for the Java polyfunction
+        coefficients = list(literal_eval(config_parser.get(label, 'POLY_COEFFICIENTS')))[::-1]
+        polyfunc = poly1d(coefficients)
+        systems_details[label]['polyfunc'] = polyfunc
+        systems_details[label]['derivative'] = polyfunc.deriv()  # Colour equation derivative (UnivariateFunction)
+        colour_range = config_parser.get(label, 'COLOUR_RANGE')  # Colour range for the correction (double[])
+        systems_details[label]['colour_range'] = literal_eval(colour_range)
     return systems_details
 
 
@@ -160,9 +152,8 @@ def _get_correction(systems_details, colour, system_label):
         raise ValueError('At least one variable does not comply with any of the previous statements.')
 
 
-def _get_systems_to_correct(systems):
-    if isinstance(systems, PhotometricSystem):
-        systems = [systems]
+def _get_systems_to_correct(systems) -> list:
+    systems = [systems] if isinstance(systems, PhotometricSystem) else systems
     correctable_labels = [filename.split('_')[0] for filename in listdir(colour_eq_dir)]
     correctable_systems = [system for system in systems if system.get_system_label() in correctable_labels]
     return correctable_systems
@@ -195,4 +186,3 @@ def apply_colour_equation(input_synthetic_photometry, photometric_system=None, o
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_df
-

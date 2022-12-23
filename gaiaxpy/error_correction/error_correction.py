@@ -14,8 +14,7 @@ from scipy.interpolate import interp1d
 from tqdm import tqdm
 
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, \
-    _warning
+from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, _warning
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
@@ -108,14 +107,14 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
         photometric_system (obj): Desired photometric system or list of photometric systems.
         output_path (str): Path where to save the output data.
         output_file (str): Name of the output file.
-        output_format (str): Format to be used for the output file. If no format is given, then the output file will
-        be in the same format as the input file.
+        output_format (str): Format to be used for the output file. If no format is given, then the output file will be
+            in the same format as the input file.
         save_file (bool): Whether to save the output in a file. If false, output_format and output_file_name are
-        ignored.
+            ignored.
 
     Returns:
         DataFrame: A DataFrame of all synthetic photometry with corrected errors for the systems for which it is
-        possible.
+            possible.
     """
     gaia_system = 'GaiaDr3Vega'
     gaia_G_mag_column = f'{gaia_system}_mag_G'
@@ -123,7 +122,7 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
     # Validate that it is a multi-photometry, but how? First try below:
     if not gaia_G_mag_column in input_multi_photometry.columns:
         raise ValueError('System Gaia_DR3_Vega, required to apply the error correction is not present in the input'
-                         'photometry.')
+                         ' photometry.')
     columns = list(input_multi_photometry.columns)
     columns.remove('source_id')
     systems_in_data = _extract_systems_from_data(columns, photometric_system)

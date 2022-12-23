@@ -6,7 +6,6 @@ Module to plot spectra.
 
 from numpy import ndarray
 
-from gaiaxpy.core.generic_functions import _warning
 from .multi_absolute import MultiAbsolutePlotter
 from .multi_xp import MultiXpPlotter
 from .single import SinglePlotter

@@ -4,25 +4,17 @@ import numpy as np
 
 
 def get_file_root(xml_file):
-    xtree = et.parse(xml_file)
-    return xtree.getroot()
+    return et.parse(xml_file).getroot()
 
 
 def iterative_find(x_root, tag_list):
-    def find_in_root(_x_root, tag):
-        return _x_root.find(tag)
+    def find_in_root(_x_root, _tag):
+        return _x_root.find(_tag)
 
     result = find_in_root(x_root, tag_list[0])
     for tag in tag_list[1:]:
         result = find_in_root(result, tag)
     return result
-
-
-def get_xp_sampling_matrix(x_root, xp, nbands):
-    xpConfig = iterative_find(x_root, ['XpSampling', f'{xp.lower()}SampledBases'])
-    xpDimension = int(xpConfig.attrib['dimension'])
-    xpSampling = np.array([float(element.text) for element in xpConfig]).reshape(xpDimension, nbands)
-    return xpSampling
 
 
 def parse_array(x_root, tag):
@@ -47,12 +39,12 @@ def get_array_text(x_root, tag):
     return result, length
 
 
-def get_xp_sampling_matrix(x_root, xp, nbands):
-    xpConfig = iterative_find(x_root, ['XpSampling', f'{xp.lower()}SampledBases'])
-    xpDimension = int(xpConfig.attrib['dimension'])
-    xpSampling = np.array([float(element.text) for element in xpConfig])
-    if not nbands:
+def get_xp_sampling_matrix(x_root, xp, n_bands):
+    xp_config = iterative_find(x_root, ['XpSampling', f'{xp.lower()}SampledBases'])
+    xp_dimension = int(xp_config.attrib['dimension'])
+    xp_sampling = np.array([float(element.text) for element in xp_config])
+    if not n_bands:
         # TODO: A bit too custom, could be improved adding a variable to the filter files.
-        nbands = len(xpSampling) // xpDimension
-    xpSampling = xpSampling.reshape(nbands, xpDimension)
-    return np.transpose(xpSampling)
+        n_bands = len(xp_sampling) // xp_dimension
+    xp_sampling = xp_sampling.reshape(n_bands, xp_dimension)
+    return np.transpose(xp_sampling)

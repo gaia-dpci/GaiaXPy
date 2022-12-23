@@ -1,10 +1,11 @@
 from configparser import ConfigParser
 from dataclasses import asdict, dataclass
-from os import listdir
-from os.path import isdir, isfile, join
+from os import walk
+from os.path import isdir
 from pathlib import Path
+from re import match
 
-from gaiaxpy.core.config import _ADDITIONAL_SYSTEM_PREFIX
+from gaiaxpy.core.config import ADDITIONAL_SYSTEM_PREFIX
 
 _CFG_FILE_PATH = Path('~/.gaiaxpyrc').expanduser()
 
@@ -20,13 +21,26 @@ class GenCfg:
             raise ValueError(f'{self.filters_dir} is not a path to a valid directory.')
 
 
+def get_file_names_recursively(dir_path):
+    all_files = [f for _, _, fn in walk(dir_path) for f in fn]
+    return [f for f in all_files if file_name_is_compliant(f)]
+
+
+def file_name_is_compliant(file_name):
+    regex = '[a-zA-Z0-9-_]+\.gaiaXPy_dr3_[a-zA-Z0-9-]+\.xml'
+    return match(regex, file_name) is not None
+
+
 def create_config(filters_path=None, config_file=None):
+    quotes = ["'", '"']
     if not filters_path:
         filters_path = input('Please enter the path to the filters directory: ')
+    filters_path = filters_path[1:-1] if filters_path[0] in quotes and filters_path[-1] in quotes else filters_path
     # Get filters version
-    version = [f.split('.')[1].split('_')[-1] for f in listdir(filters_path) if isfile(join(filters_path, f))]
+    files = get_file_names_recursively(filters_path)
+    version = [f.split('.')[1].split('_')[-1] for f in files]
     if len(set(version)) != 1:
-        raise ValueError('More than one version detected in the additional filters.')
+        raise ValueError('More than one version detected in the additional filters. This is currently not allowed.')
     elif len(set(version)) == 1:
         version = version[0]
     cfg_details = GenCfg(filters_path, version)
@@ -61,31 +75,8 @@ def get_additional_filters_path(config_file=None):
 def get_additional_filters_names(config_file=None):
     filters_path = get_additional_filters_path(config_file)
     if filters_path:
-        filenames = [f for f in listdir(filters_path) if isfile(join(filters_path, f))]
-        additional_system_names = [f"{_ADDITIONAL_SYSTEM_PREFIX}_{f.split('.')[0]}" for f in filenames]
+        filenames = get_file_names_recursively(filters_path)
+        additional_system_names = [f"{ADDITIONAL_SYSTEM_PREFIX}_{f.split('.')[0]}" for f in filenames]
     else:
         additional_system_names = []
     return additional_system_names
-
-
-def execute_answer(action, message=None):
-    if action:
-        action()
-        if message:
-            print(message)
-
-
-def get_yes_no_answer(question, yes_action, no_action, yes_message=None, no_message=None):
-    yes_choices = ['yes', 'y']
-    no_choices = ['no', 'n']
-    while True:
-        user_input = input(question)
-        if user_input.lower() in yes_choices:
-            execute_answer(yes_action, yes_message)
-            break
-        elif user_input.lower() in no_choices:
-            execute_answer(no_action, no_message)
-            break
-        else:
-            print('Please type yes or no.')
-            continue

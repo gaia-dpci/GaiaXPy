@@ -210,7 +210,7 @@ class SampledSpectraData(OutputData):
             fields_ucd = {'source_id': 'meta.id;meta.main', 'xp': 'temp', 'flux': 'phot.flux',
                           'flux_error': 'stat.error;phot.flux'}
             return [Field(_votable, name=column, ucd=fields_ucd[column], ID=fields_id[column],
-                            datatype=fields_datatypes[column], arraysize=fields_array_size[column]) if
+                          datatype=fields_datatypes[column], arraysize=fields_array_size[column]) if
                     fields_array_size[column] != '' else Field(_votable, name=column, datatype=fields_datatypes[column])
                     for column in _spectra_df.columns]
 

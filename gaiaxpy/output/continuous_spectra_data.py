@@ -181,13 +181,13 @@ class ContinuousSpectraData(OutputData):
                                 f'{BANDS.bp}_n_parameters': 'int', f'{BANDS.rp}_n_parameters': 'int',
                                 f'{BANDS.bp}_basis_function_id': 'int', f'{BANDS.rp}_basis_function_id': 'int'}
             fields_array_size = {'source_id': '',
-                                f'{BANDS.bp}_standard_deviation': '', f'{BANDS.rp}_standard_deviation': '',
-                                f'{BANDS.bp}_coefficients': '*', f'{BANDS.rp}_coefficients': '*',
-                                f'{BANDS.bp}_coefficient_correlations': '*',
+                                 f'{BANDS.bp}_standard_deviation': '', f'{BANDS.rp}_standard_deviation': '',
+                                 f'{BANDS.bp}_coefficients': '*', f'{BANDS.rp}_coefficients': '*',
+                                 f'{BANDS.bp}_coefficient_correlations': '*',
                                  f'{BANDS.rp}_coefficient_correlations': '*',
-                                f'{BANDS.bp}_coefficient_errors': '*', f'{BANDS.rp}_coefficient_errors': '*',
-                                f'{BANDS.bp}_n_parameters': '', f'{BANDS.rp}_n_parameters': '',
-                                f'{BANDS.bp}_basis_function_id': '', f'{BANDS.rp}_basis_function_id': ''}
+                                 f'{BANDS.bp}_coefficient_errors': '*', f'{BANDS.rp}_coefficient_errors': '*',
+                                 f'{BANDS.bp}_n_parameters': '', f'{BANDS.rp}_n_parameters': '',
+                                 f'{BANDS.bp}_basis_function_id': '', f'{BANDS.rp}_basis_function_id': ''}
             return [Field(votable, name=column, datatype=fields_datatypes[column], arraysize=fields_array_size[column])
                     if fields_array_size[column] != '' else
                     Field(votable, name=column, datatype=fields_datatypes[column]) for column in columns]

@@ -25,14 +25,12 @@ class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
 
         Args:
             source_id (str): Source identifier.
-            xp_spectra (dict): A dictionary containing the BP and RP continuous
-                spectra.
-            sampled_bases (dict): The set of basis functions sampled onto
-                the grid defining the resolution of the final sampled spectrum.
-            merge (dict): The weighting factors for BP and RP sampled onto
-                the grid defining the resolution of the final sampled spectrum.
-            photometric_system (object): The photometric system of the
-                synthetic photometry.
+            xp_spectra (dict): A dictionary containing the BP and RP continuous spectra.
+            sampled_bases (dict): The set of basis functions sampled onto the grid defining the resolution of the final
+                sampled spectrum.
+            merge (dict): The weighting factors for BP and RP sampled onto the grid defining the resolution of the final
+                sampled spectrum.
+            photometric_system (object): The photometric system of the synthetic photometry.
         """
         AbsoluteSampledSpectrum.__init__(self, source_id, xp_spectra, sampled_bases, merge)
         self.photometric_system = photometric_system.value

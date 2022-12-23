@@ -25,58 +25,46 @@ class SampledBasisFunctions(object):
         Initialise a sampled basis functions object.
 
         Args:
-            sampling_grid (ndarray): 1D array of positions where the bases need to
-                be evaluated.
-            design_matrix (ndarray): 2D array containing the evaluation of each basis
-                at all positions in the sampling grid.
+            sampling_grid (ndarray): 1D array of positions where the bases need to be evaluated.
+            design_matrix (ndarray): 2D array containing the evaluation of each basis at all positions in the sampling
+                grid.
         """
         self.sampling_grid = sampling_grid
         self.design_matrix = design_matrix
 
     @classmethod
-    def from_external_instrument_model(
-            cls, sampling, weights, external_instrument_model):
+    def from_external_instrument_model(cls, sampling, weights, external_instrument_model):
         """
-        Instantiate an object starting from a sampling grid, an array of weights and the
-        external calibration instrument model.
+        Instantiate an object starting from a sampling grid, an array of weights and the external calibration instrument
+            model.
 
         Args:
-            sampling (ndarray): 1D array of positions where the bases need to
-                be evaluated.
-            weights (ndarray): 1D array containing the weights to be applied at each
-                element in the sampling grid. These are simply used to define where
-                in the sampling grid some contribution is expected. Where the weight is
+            sampling (ndarray): 1D array of positions where the bases need to be evaluated.
+            weights (ndarray): 1D array containing the weights to be applied at each element in the sampling grid. These
+                are simply used to define where in the sampling grid some contribution is expected. Where the weight is
                 0, the bases will not be evaluated.
-            external_instrument_model (obj): external calibration instrument model.
-                This object contains information on the dispersion, response and
-                inverse bases.
+            external_instrument_model (obj): External calibration instrument model. This object contains information on
+                the dispersion, response and inverse bases.
 
         Returns:
             object: An instance of this class.
         """
         n_samples = len(sampling)
         scale = (external_instrument_model.bases['normRangeMax'][0] - external_instrument_model.bases['normRangeMin'][
-            0]) / (
-                        external_instrument_model.bases['pwlRangeMax'][0] -
-                        external_instrument_model.bases['pwlRangeMin'][0])
-        offset = external_instrument_model.bases['normRangeMin'][0] - \
-                 external_instrument_model.bases['pwlRangeMin'][0] * scale
+            0]) / (external_instrument_model.bases['pwlRangeMax'][0] - external_instrument_model.bases['pwlRangeMin'][0])
+        offset = external_instrument_model.bases['normRangeMin'][0] - external_instrument_model.bases['pwlRangeMin'][0]\
+                 * scale
 
         sampling_pwl = external_instrument_model._wl_to_pwl(sampling)
         rescaled_pwl = (sampling_pwl * scale) + offset
 
         bases_transformation = external_instrument_model.bases['transformationMatrix'][0]
-        evaluated_hermite_bases = np.array(
-            [
-                _evaluate_hermite_function(
-                    n_h, pos, weight) for pos, weight in zip(
-                rescaled_pwl, weights) for n_h in np.arange(
-                int(
-                    external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
-            n_samples, int(
-                external_instrument_model.bases['nInverseBasesCoefficients'][0]))
-        _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'][0] \
-            .dot(evaluated_hermite_bases.T)
+        evaluated_hermite_bases = np.array([
+            _evaluate_hermite_function(n_h, pos, weight) for pos, weight in zip(rescaled_pwl, weights) for n_h in
+            np.arange(
+                int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
+            n_samples, int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))
+        _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'][0].dot(evaluated_hermite_bases.T)
 
         transformed_design_matrix = bases_transformation.dot(_design_matrix)
 
@@ -84,10 +72,7 @@ class SampledBasisFunctions(object):
 
         def compute_norm(wl):
             r = external_instrument_model._get_response(wl)
-            if r > 0:
-                return hc / (satellite.TELESCOPE_PUPIL_AREA * r * wl)
-            else:
-                return 0.
+            return hc / (satellite.TELESCOPE_PUPIL_AREA * r * wl) if r > 0 else 0.0
 
         norm = np.array([compute_norm(wl) for wl in sampling])
 
@@ -100,14 +85,11 @@ class SampledBasisFunctions(object):
     @classmethod
     def from_config(cls, sampling, bases_config):
         """
-        Instantiate an object starting from a sampling grid and the configuration
-        for the basis functions.
+        Instantiate an object starting from a sampling grid and the configuration for the basis functions.
 
         Args:
-            sampling (ndarray): 1D array of positions where the bases need to
-                be evaluated.
-            bases_config (DataFrame): The configuration of the set of bases
-                loaded into a DataFrame.
+            sampling (ndarray): 1D array of positions where the bases need to be evaluated.
+            bases_config (DataFrame): The configuration of the set of bases loaded into a DataFrame.
 
         Returns:
             object: An instance of this class.
@@ -118,14 +100,12 @@ class SampledBasisFunctions(object):
     @classmethod
     def from_design_matrix(cls, sampling, design_matrix):
         """
-        Instantiate an object starting from a sampling grid and the design
-        matrix.
+        Instantiate an object starting from a sampling grid and the design matrix.
 
         Args:
-            sampling (ndarray): 1D array of positions where the bases need to
-                be evaluated.
-            design_matrix (ndarray): 2D array containing the evaluation of each basis
-                at all positions in the sampling grid.
+            sampling (ndarray): 1D array of positions where the bases need to be evaluated.
+            design_matrix (ndarray): 2D array containing the evaluation of each basis at all positions in the sampling
+                grid.
 
         Returns:
             object: An instance of this class.
@@ -141,8 +121,7 @@ class SampledBasisFunctions(object):
 
 def populate_design_matrix(sampling_grid, config):
     """
-    Create a design matrix given the internal calibration bases and a user-defined
-    sampling.
+    Create a design matrix given the internal calibration bases and a user-defined sampling.
 
     Args:
         sampling_grid (ndarray): 1D array of positions where the bases need to
@@ -171,10 +150,7 @@ def populate_design_matrix(sampling_grid, config):
 
 
 def _evaluate_hermite_function(n, x, w):
-    if w > 0:
-        return _hermite_function(n, x)
-    else:
-        return 0
+    return _hermite_function(n, x) if w > 0 else 0
 
 
 @functools.lru_cache(maxsize=128)

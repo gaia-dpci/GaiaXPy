@@ -12,10 +12,6 @@ class SpectralEnergyDistribution(SampledSpectrum):
     A spectral energy distribution.
     """
 
-    def __init__(
-            self,
-            source_id,
-            wl,
-            flux):
+    def __init__(self, source_id, wl, flux):
         SampledSpectrum.__init__(self, source_id, wl)
         self.flux = flux

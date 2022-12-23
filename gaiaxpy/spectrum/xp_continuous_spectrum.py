@@ -14,31 +14,22 @@ from .xp_spectrum import XpSpectrum
 
 class XpContinuousSpectrum(XpSpectrum):
     """
-    A Gaia BP/RP spectrum represented as a continuous function defined as
-    the sum of a set of bases functions multiplied by a set of coefficient.
-    This definition is the result of a least squares fit. Covariance and
-    standard deviation for the least square solution are also part of the
-    continuous spectrum definition to allow estimating errors.
+    A Gaia BP/RP spectrum represented as a continuous function defined as the sum of a set of bases functions multiplied
+        by a set of coefficient. This definition is the result of the least squares fit. Covariance and standard
+        deviation for the least square solution are also part of the continuous spectrum definition to allow estimating
+        errors.
     """
 
-    def __init__(self,
-                 source_id,
-                 xp,
-                 coefficients,
-                 covariance,
-                 standard_deviation):
+    def __init__(self, source_id, xp, coefficients, covariance, standard_deviation):
         """
         Initialise XP continuous spectrum.
 
         Args:
             source_id (str): Source identifier.
             xp (str): Gaia photometer, can be either 'bp' or 'rp'.
-            coefficients (ndarray): 1D array containing the coefficients
-                multiplying the basis functions.
-            covariance (ndarray): 2D array containing the covariance of the
-                least squares solution.
-            standard_deviation (float): Standard deviation of the least
-                squares solution.
+            coefficients (ndarray): 1D array containing the coefficients multiplying the basis functions.
+            covariance (ndarray): 2D array containing the covariance of the least squares solution.
+            standard_deviation (float): Standard deviation of the least squares solution.
         """
         XpSpectrum.__init__(self, source_id, xp)
         self.coefficients = coefficients
@@ -47,10 +38,7 @@ class XpContinuousSpectrum(XpSpectrum):
         self.basis_function_id = {BANDS.bp: 56, BANDS.rp: 57}
 
     @classmethod
-    def from_data_frame(
-            cls,
-            df,
-            band):
+    def from_data_frame(cls, df, band):
         """
         Initialise XP continuous spectrum from a Pandas DataFrame.
 
@@ -63,11 +51,7 @@ class XpContinuousSpectrum(XpSpectrum):
         corr = array_to_symmetric_matrix(df[f'{band}_coefficient_correlations'], df[f'{band}_n_parameters'])
         df[f'{band}_coefficient_correlations'] = corr
         cov = _get_covariance_matrix(df, band)
-        return cls(df['source_id'],
-                   band,
-                   df[f'{band}_coefficients'],
-                   cov,
-                   df[f'{band}_standard_deviation'])
+        return cls(df['source_id'], band, df[f'{band}_coefficients'], cov, df[f'{band}_standard_deviation'])
 
     def get_coefficients(self):
         """
@@ -96,17 +80,15 @@ class XpContinuousSpectrum(XpSpectrum):
         """
         return self.standard_deviation
 
-    def _spectrum_to_dict(self):  # _archive_format
+    def _spectrum_to_dict(self):
         """
         Represent spectrum as dictionary.
 
         Returns:
-            dict: A dictionary populated with the minimum set of parameters that
-                need to be stored for this object. This is optimised for writing
-                large number of sampled spectra and for this reason the array of
-                positions is NOT included as it is expected to be the same for
-                a batch of spectra. The array fo positions can be retrieved calling
-                the sampling_to_dict method.
+            dict: A dictionary populated with the minimum set of parameters that need to be stored for this object.
+                This is optimised for writing large number of sampled spectra and for this reason the array of positions
+                is NOT included as it is expected to be the same for a batch of spectra. The array fo positions can be
+                retrieved calling the sampling_to_dict method.
         """
         D = np.sqrt(np.diag(self.covariance))
         D_inv = np.diag(1.0 / D)
@@ -124,12 +106,9 @@ class XpContinuousSpectrum(XpSpectrum):
 
 
 def _extract_lower_triangle(matrix):
-    '''
+    """
     Extract the lower triangle of the matrix without including the diagonal.
-    '''
+    """
     # Get the indices
     indices = np.tril_indices(matrix.shape[0], k=-1)
-    values = []
-    for i, j in zip(indices[0], indices[1]):
-        values.append(matrix[i][j])
-    return values
+    return [matrix[i][j] for i, j in zip(indices[0], indices[1])]

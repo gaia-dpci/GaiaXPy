@@ -10,9 +10,7 @@ class Spectrum(object):
     Base spectrum. Contain only the source ID.
     """
 
-    def __init__(
-            self,
-            source_id):
+    def __init__(self, source_id):
         """
         Initialise a spectrum.
 

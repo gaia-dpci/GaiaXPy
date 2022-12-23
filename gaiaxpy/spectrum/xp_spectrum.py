@@ -9,14 +9,10 @@ from .generic_spectrum import Spectrum
 
 class XpSpectrum(Spectrum):
     """
-    A spectrum observed with one of the Gaia low-resolution photometers
-    (Blue or Red Photometer, BP or RP).
+    A spectrum observed with one of the Gaia low-resolution photometers (Blue or Red Photometer, BP or RP).
     """
 
-    def __init__(
-            self,
-            source_id,
-            xp):
+    def __init__(self, source_id, xp):
         """
         Initialise an XP spectrum.
 

@@ -23,20 +23,18 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
 
         Args:
             source_id (str): Source identifier.
-            xp_spectra (dict): A dictionary containing the BP and RP continuous
-                spectra.
-            sampled_bases (dict): The set of basis functions sampled onto
-                the grid defining the resolution of the final sampled spectrum.
-            merge (dict): The weighting factors for BP and RP sampled onto
-                the grid defining the resolution of the final sampled spectrum.
-            truncation (dict): Number of bases to be used for this spectrum by band.
-                The set of bases functions used for the continuous representation of
-                the spectra has been optimised to ensure that the first bases are
-                the ones that contribute most. In many cases, the last bases contribution
-                will be below the noise. Truncation of the basis function set to preserve
-                only the significant bases is optional. By default, no truncation will be
-                applied, i.e. all bases will be used.
+            xp_spectra (dict): A dictionary containing the BP and RP continuous spectra.
+            sampled_bases (dict): The set of basis functions sampled onto the grid defining the resolution of the final
+                sampled spectrum.
+            merge (dict): The weighting factors for BP and RP sampled onto the grid defining the resolution of the final
+                sampled spectrum.
+            truncation (dict): Number of bases to be used for this spectrum by band. The set of bases functions used for
+                the continuous representation of the spectra has been optimised to ensure that the first bases are the
+                ones that contribute most. In many cases, the last bases contribution will be below the noise.
+                Truncation of the basis function set to preserve only the significant bases is optional. By default, no
+                truncation will be applied, i.e. all bases will be used.
         """
+        # TODO: Try not truncation
         if truncation is None:
             truncation = dict()
         #  Bands available
@@ -73,20 +71,12 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
 
         # If both bands are present
         if len(bands) == 2:
-            self.flux = np.add(
-                np.multiply(
-                    split_spectrum[BANDS.bp]['flux'], merge[BANDS.bp]), np.multiply(
-                    split_spectrum[BANDS.rp]['flux'], merge[BANDS.rp]))
-            self.error = np.sqrt(
-                np.add(
-                    np.multiply(
-                        split_spectrum[BANDS.bp]['error'] ** 2,
-                        merge[BANDS.bp] ** 2),
-                    np.multiply(
-                        split_spectrum[BANDS.rp]['error'] ** 2,
-                        merge[BANDS.rp] ** 2)))
+            self.flux = np.add(np.multiply(split_spectrum[BANDS.bp]['flux'], merge[BANDS.bp]),
+                               np.multiply(split_spectrum[BANDS.rp]['flux'], merge[BANDS.rp]))
+            self.error = np.sqrt(np.add(np.multiply(split_spectrum[BANDS.bp]['error'] ** 2, merge[BANDS.bp] ** 2),
+                                        np.multiply(split_spectrum[BANDS.rp]['error'] ** 2, merge[BANDS.rp] ** 2)))
             self.pos = pos
-        # If just one is
+        # If only one is
         elif len(bands) == 1:
             existing_band = bands[0]
             self.flux = split_spectrum[existing_band]['flux']
@@ -127,18 +117,12 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
         Represent the spectrum as a dictionary.
 
         Returns:
-            dict: A dictionary populated with the minimum set of parameters that
-                need to be stored for this object. This is optimised for writing
-                large number of sampled spectra and for this reason the array of
-                positions is NOT included as it is expected to be the same for
-                a batch of spectra. The array of positions can be retrieved calling
-                the sampling_to_dict method.
+            dict: A dictionary populated with the minimum set of parameters that need to be stored for this object.
+                This is optimised for writing large number of sampled spectra and for this reason the array of positions
+                is NOT included as it is expected to be the same for a batch of spectra. The array of positions can be
+                retrieved calling the sampling_to_dict method.
         """
-        return {
-            'source_id': self.source_id,
-            'flux': _list_to_array(self.flux),
-            'flux_error': _list_to_array(self.error)
-        }
+        return {'source_id': self.source_id, 'flux': _list_to_array(self.flux), 'flux_error': _list_to_array(self.error)}
 
     def _sampling_to_dict(self):
         """

@@ -4,8 +4,8 @@ converter.py
 Module for the converter functionality.
 """
 
-import numbers
 from configparser import ConfigParser
+from numbers import Number
 from os import path
 
 import numpy as np
@@ -13,9 +13,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core.generic_functions import cast_output, _get_spectra_type, \
-    _validate_arguments, \
-    _validate_pwl_sampling
+from gaiaxpy.core.generic_functions import cast_output, _get_spectra_type, _validate_arguments, _validate_pwl_sampling
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -29,7 +27,7 @@ from .config import get_config, load_config
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
 config_file = path.join(config_path, config_parser.get('converter', 'optimised_bases'))
-tqdm.pandas(desc='Processing data', unit=pbar_units['converter'], leave=False, \
+tqdm.pandas(desc='Processing data', unit=pbar_units['converter'], leave=False,
             colour=pbar_colour)  # Activate tqdm for pandas
 
 
@@ -130,38 +128,28 @@ def _create_spectrum(row, truncation, design_matrices, band):
     """
     covariance_matrix = _get_covariance_matrix(row, band)
     if covariance_matrix is not None:
-        continuous_spectrum = XpContinuousSpectrum(
-            row['source_id'],
-            band,
-            row[f'{band}_coefficients'],
-            covariance_matrix,
-            row[f'{band}_standard_deviation'])
-    if truncation:
-        recommended_truncation = row[f'{band}_n_relevant_bases']
-    else:
-        recommended_truncation = -1
-    spectrum = XpSampledSpectrum.from_continuous(
-        continuous_spectrum,
-        design_matrices.get(
-            row.loc[f'{band}_basis_function_id']),
-        truncation=recommended_truncation)
+        continuous_spectrum = XpContinuousSpectrum(row['source_id'], band, row[f'{band}_coefficients'],
+                                                   covariance_matrix, row[f'{band}_standard_deviation'])
+    recommended_truncation = row[f'{band}_n_relevant_bases'] if truncation else -1
+    spectrum = XpSampledSpectrum.from_continuous(continuous_spectrum, design_matrices.get(
+        row.loc[f'{band}_basis_function_id']), truncation=recommended_truncation)
     return spectrum
 
 
 def _create_spectra(parsed_input_data, truncation, design_matrices):
-    def create_xp_spectra(row, truncation, design_matrices):
+    def create_xp_spectra(row, _truncation, _design_matrices):
         spectra_list = []
         for band in BANDS:
             try:
-                spectrum_xp = _create_spectrum(row, truncation, design_matrices, band)
+                spectrum_xp = _create_spectrum(row, _truncation, _design_matrices, band)
             except BaseException:
                 # Band not available
                 continue
             spectra_list.append(spectrum_xp)
         return spectra_list
 
-    spectra_series = parsed_input_data.progress_apply(lambda row: \
-                                                          create_xp_spectra(row, truncation, design_matrices), axis=1)
+    spectra_series = parsed_input_data.progress_apply(lambda row: create_xp_spectra(row, truncation, design_matrices),
+                                                      axis=1)
     spectra_df = spectra_series.to_frame()
     spectra_df = spectra_df.explode(0)  # Explode spectra column
     positions = spectra_df[0].iloc[0]._get_positions()
@@ -177,8 +165,8 @@ def get_unique_basis_ids(parsed_input_data):
     Get the IDs of the unique basis required to sample all spectra in the input files.
 
     Args:
-        parsed_input_data (DataFrame): Pandas DataFrame populated with the content
-            of the file containing the mean spectra in continuous representation.
+        parsed_input_data (DataFrame): Pandas DataFrame populated with the content of the file containing the mean
+            spectra in continuous representation.
 
     Returns:
         set: A set containing all the required unique basis function IDs.
@@ -188,10 +176,8 @@ def get_unique_basis_ids(parsed_input_data):
     def remove_nans(_set):
         return {int(element) for element in _set if element == element}
 
-    set_bp = set(
-        [basis for basis in parsed_input_data[f'{BANDS.bp}_basis_function_id'] if isinstance(basis, numbers.Number)])
-    set_rp = set(
-        [basis for basis in parsed_input_data[f'{BANDS.rp}_basis_function_id'] if isinstance(basis, numbers.Number)])
+    set_bp = set([basis for basis in parsed_input_data[f'{BANDS.bp}_basis_function_id'] if isinstance(basis, Number)])
+    set_rp = set([basis for basis in parsed_input_data[f'{BANDS.rp}_basis_function_id'] if isinstance(basis, Number)])
     return remove_nans(set_bp).union(remove_nans(set_rp))
 
 
@@ -200,17 +186,11 @@ def get_design_matrices(unique_bases_ids, sampling, config_df):
     Get the design matrices corresponding to the input bases.
 
     Args:
-        unique_bases_ids (set): A set containing the basis function IDs
-            for which the design matrix is required.
+        unique_bases_ids (set): A set containing the basis function IDs for which the design matrix is required.
         sampling (ndarray): 1D array containing the sampling grid.
-        config_df (DataFrame): A DataFrame containing the configuration for
-            all sets of basis functions.
+        config_df (DataFrame): A DataFrame containing the configuration for all sets of basis functions.
 
     Returns:
         list: a list of the design matrices for the input list of bases.
     """
-    design_matrices = {}
-    for id in unique_bases_ids:
-        design_matrices.update({id: SampledBasisFunctions.from_config(
-            sampling, get_config(config_df, id))})
-    return design_matrices
+    return {_id: SampledBasisFunctions.from_config(sampling, get_config(config_df, _id)) for _id in unique_bases_ids}

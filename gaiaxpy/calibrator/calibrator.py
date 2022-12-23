@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from gaiaxpy.config.paths import config_file, config_path
+from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_xml
 from gaiaxpy.core.generic_functions import cast_output, _get_spectra_type, _validate_arguments, _validate_wl_sampling
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
@@ -125,7 +125,7 @@ def _generate_xp_matrices_and_merge(label, sampling, bp_model, rp_model):
 
     def _get_file_for_xp(_xp, key, _bp_model=bp_model, _rp_model=rp_model):
         config_parser = ConfigParser()
-        config_parser.read(config_file)
+        config_parser.read(join(config_path, 'config.ini'))
         file_name = config_parser.get(label, key)
         if _xp == BANDS.bp:
             model = _bp_model

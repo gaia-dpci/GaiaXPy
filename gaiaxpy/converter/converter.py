@@ -27,48 +27,29 @@ from .config import get_config, load_config
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
 config_file = path.join(config_path, config_parser.get('converter', 'optimised_bases'))
-tqdm.pandas(desc='Processing data', unit=pbar_units['converter'], leave=False,
-            colour=pbar_colour)  # Activate tqdm for pandas
+# Activate tqdm for pandas
+tqdm.pandas(desc='Processing data', unit=pbar_units['converter'], leave=False, colour=pbar_colour)
 
 
-def convert(
-        input_object,
-        sampling=np.linspace(
-            0,
-            60,
-            600),
-        truncation=False,
-        output_path='.',
-        output_file='output_spectra',
-        output_format=None,
-        save_file=True,
-        username=None,
-        password=None):
+def convert(input_object, sampling=np.linspace(0, 60, 600), truncation=False, output_path='.',
+            output_file='output_spectra', output_format=None, save_file=True, username=None, password=None):
     """
-    Conversion utility: converts the input internally calibrated mean
-    spectra from the continuous representation to a sampled form. The
-    sampling grid can be defined by the user, alternatively a default
-    will be adopted. Optionally, the continuous representation can be
-    truncated dropping the bases functions (and corresponding coefficients)
-    that were considered not to be significant considering the errors
-    on the reconstructed mean spectra.
+    Conversion utility: converts the input internally calibrated mean spectra from the continuous representation to a
+    sampled form. The sampling grid can be defined by the user, alternatively a default will be adopted. Optionally,
+    the continuous representation can be truncated dropping the bases functions (and corresponding coefficients) that
+    were considered not to be significant considering the errors on the reconstructed mean spectra.
 
     Args:
-        input_object (object): Path to the file containing the mean spectra
-             as downloaded from the archive in their continuous representation,
-             a list of sources ids (string or long), or a pandas DataFrame.
-        sampling (ndarray): 1D array containing the desired sampling in
-             pseudo-wavelengths.
-        truncation (bool): Toggle truncation of the set of bases. The level
-             of truncation to be applied is defined by the recommended value in
-             the input files.
+        input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
+            continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
+        sampling (ndarray): 1D array containing the desired sampling in pseudo-wavelengths.
+        truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
+            the recommended value in the input files.
         output_path (str): Path where to save the output data.
         output_file (str): Name of the output file.
-        output_format (str): Format to be used for the output file. If no format
-            is given, then the output file will be in the same format as the
-            input file.
-        save_file (bool): Whether to save the output in a file. If false, output_format
-            and output_file are ignored.
+        output_format (str): Format to be used for the output file. If no format is given, then the output file will be
+            in the same format as the input file.
+        save_file (bool): Whether to save the output in a file. If false, output_format and output_file will be ignored.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
 
@@ -100,27 +81,21 @@ def convert(
 def _create_continuous_spectrum(row, band):
     covariance_matrix = _get_covariance_matrix(row, band)
     if covariance_matrix is not None:
-        continuous_spectrum = XpContinuousSpectrum(
-            row['source_id'],
-            band.upper(),
-            row[f'{band}_coefficients'],
-            covariance_matrix,
-            row[f'{band}_standard_deviation'])
+        continuous_spectrum = XpContinuousSpectrum(row['source_id'], band.upper(), row[f'{band}_coefficients'],
+                                                   covariance_matrix, row[f'{band}_standard_deviation'])
         return continuous_spectrum
 
 
 def _create_spectrum(row, truncation, design_matrices, band):
     """
-    Create a single sampled spectrum from the input continuously-represented
-    mean spectrum and design matrix.
+    Create a single sampled spectrum from the input continuously-represented mean spectrum and design matrix.
 
     Args:
-        row (DataFrame): Single row in a DataFrame containing the entry
-            for one source in the mean spectra file. This will include columns for
-            both bands (although one could be missing).
+        row (DataFrame): Single row in a DataFrame containing the entry for one source in the mean spectra file. This
+            will include columns for both bands (although one could be missing).
         truncation (bool): Toggle truncation of the set of bases.
-        design_matrices (ndarray): 2D array containing the basis functions
-            sampled on the pseudo-wavelength grid (either user-defined or default).
+        design_matrices (ndarray): 2D array containing the basis functions sampled on the pseudo-wavelength grid (either
+            user-defined or default).
         band (str): BP/RP band.
 
     Returns:

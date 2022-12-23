@@ -10,21 +10,20 @@ from os.path import abspath, dirname, join
 from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
 
 
-def _standardise_output_format(format):
+def _standardise_output_format(_format):
     """
-    Standardise the output format provided by the user which can contain or not
-    an initial dot, and can contain a mixture of uppercase and lowercase letters.
+    Standardise the output format provided by the user which can contain or not an initial dot, and can contain a
+        mixture of uppercase and lowercase letters.
 
     Args:
-        format (str): Output format for the file as provided by the user.
+        _format (str): Output format for the file as provided by the user.
 
     Returns:
         str: The format in lowercase letters and with no initial dot (eg.: 'csv').
     """
     # Remove initial dot if present
-    if format[0] == '.':
-        format = format[1:]
-    return format.lower()
+    _format = _format[1:] if _format[0] == '.' else _format
+    return _format.lower()
 
 
 def _load_header_dict():
@@ -105,7 +104,7 @@ class OutputData(object):
         """
         if save_file:
             if output_file is None:
-                raise ValueError('output_file cannot be None.')
+                raise ValueError('The parameter output_file cannot be None.')
             if output_format is None:
                 output_format = extension
             output_format = _standardise_output_format(output_format)

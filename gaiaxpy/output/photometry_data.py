@@ -30,14 +30,8 @@ class PhotometryData(OutputData):
         """
 
         def build_field(keys):
-            fields = []
-            for key in keys:
-                if key == 'source_id':
-                    field = {'name': key, 'type': 'long'}
-                else:
-                    field = {'name': key, 'type': 'float'}
-                fields.append(field)
-            return fields
+            return [{'name': key, 'type': 'long'} if key == 'source_id' else {'name': key, 'type': 'float'} for key in
+                    keys]
 
         phot_list = self.data.to_dict('records')
         schema = {

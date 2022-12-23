@@ -4,7 +4,7 @@ parse_generic.py
 Module to parse input files containing spectra.
 """
 
-import os
+from os.path import splitext
 
 import pandas as pd
 from astropy.io.votable import parse_single_table
@@ -26,7 +26,8 @@ class DataMismatchError(RuntimeError):
     """
 
     def __init__(self):
-        message = 'The file contains invalid data, the data does not match the file extension or the file does not exist.'
+        message = 'The file contains invalid data, the data does not match the file extension or the file does not' \
+                  ' exist.'
         Exception.__init__(self, message)
 
 
@@ -93,9 +94,8 @@ class GenericParser(object):
         Args:
             csv_file (str): Path to a CSV file.
             array_columns (list): List of columns in the file that contain arrays as strings.
-            matrix_columns (list of tuples): List of tuples where the first element is the number
-            of rows/columns of a square matrix which values are those contained in the second
-            element of the tuple.
+            matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
+                square matrix which values are those contained in the second element of the tuple.
 
         Returns:
             DataFrame: A pandas DataFrame representing the CSV file.
@@ -170,5 +170,5 @@ def _get_file_extension(file_path):
     Returns:
         str: File extension (e.g.: '.csv')
     """
-    filename, file_extension = os.path.splitext(file_path)
+    _, file_extension = splitext(file_path)
     return file_extension[1:]

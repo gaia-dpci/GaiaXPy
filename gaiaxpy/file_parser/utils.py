@@ -8,9 +8,9 @@ import operator
 from functools import reduce
 
 
-def _get_from_dict(dictionary, map):
+def _get_from_dict(dictionary, _map):
     try:
-        return reduce(operator.getitem, map, dictionary)
+        return reduce(operator.getitem, _map, dictionary)
     except TypeError:
         return None
 

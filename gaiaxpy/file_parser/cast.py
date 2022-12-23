@@ -7,40 +7,22 @@ import numpy as np
 from numpy.ma import MaskError, getdata
 
 # Fields of all formats including AVRO.
-__type_map = {'source_id': 'int64',
-              'solution_id': 'int64',
-              'rp_n_parameters': 'int64',
-              'bp_n_parameters': 'int64',
-              'rp_n_rejected_measurements': 'int64',
-              'bp_n_rejected_measurements': 'int64',
-              'rp_n_measurements': 'int64',
-              'bp_n_measurements': 'int64',
-              'rp_standard_deviation': 'float64',
-              'bp_standard_deviation': 'float64',
-              'rp_num_of_transits': 'int64',
-              'bp_num_of_transits': 'int64',
-              'rp_num_of_blended_transits': 'int64',
-              'bp_num_of_blended_transits': 'int64',
-              'rp_num_of_contaminated_transits': 'int64',
-              'bp_num_of_contaminated_transits': 'int64',
-              'rp_coefficients': 'O',
-              'bp_coefficients': 'O',
-              'rp_coefficient_covariances': 'O',
-              'bp_coefficient_covariances': 'O',
-              'rp_degrees_of_freedom': 'int64',
-              'bp_degrees_of_freedom': 'int64',
-              'rp_n_relevant_bases': 'int64',
-              'bp_n_relevant_bases': 'int64',
-              'rp_basis_function_id': 'int64',
-              'bp_basis_function_id': 'int64',
-              'rp_chi_squared': 'float64',
-              'bp_chi_squared': 'float64',
-              'rp_coefficient_errors': 'O',
-              'bp_coefficient_errors': 'O',
-              'rp_coefficient_correlations': 'O',
-              'bp_coefficient_correlations': 'O',
-              'rp_relative_shrinking': 'float64',
-              'bp_relative_shrinking': 'float64'}
+__type_map = {'source_id': 'int64', 'solution_id': 'int64', 'rp_n_parameters': 'int64', 'bp_n_parameters': 'int64',
+              'rp_n_rejected_measurements': 'int64', 'bp_n_rejected_measurements': 'int64',
+              'rp_n_measurements': 'int64', 'bp_n_measurements': 'int64',
+              'rp_standard_deviation': 'float64', 'bp_standard_deviation': 'float64',
+              'rp_num_of_transits': 'int64', 'bp_num_of_transits': 'int64',
+              'rp_num_of_blended_transits': 'int64', 'bp_num_of_blended_transits': 'int64',
+              'rp_num_of_contaminated_transits': 'int64', 'bp_num_of_contaminated_transits': 'int64',
+              'rp_coefficients': 'O', 'bp_coefficients': 'O',
+              'rp_coefficient_covariances': 'O', 'bp_coefficient_covariances': 'O',
+              'rp_degrees_of_freedom': 'int64', 'bp_degrees_of_freedom': 'int64',
+              'rp_n_relevant_bases': 'int64', 'bp_n_relevant_bases': 'int64',
+              'rp_basis_function_id': 'int64', 'bp_basis_function_id': 'int64',
+              'rp_chi_squared': 'float64', 'bp_chi_squared': 'float64',
+              'rp_coefficient_errors': 'O', 'bp_coefficient_errors': 'O',
+              'rp_coefficient_correlations': 'O', 'bp_coefficient_correlations': 'O',
+              'rp_relative_shrinking': 'float64', 'bp_relative_shrinking': 'float64'}
 
 
 def __replace_masked_constant(value):
@@ -60,6 +42,7 @@ def __replace_masked_array(value):
 def _cast(df):
     """
     Cast types to the defined ones to standardise the different input formats.
+
     Args:
         df (DataFrame): a DataFrame with parsed data from input files.
     """

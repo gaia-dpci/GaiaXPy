@@ -14,8 +14,8 @@ class InternalSampledParser(GenericParser):
 
     def _parse_csv(self, csv_file):
         """
-        Parse the input CSV file and store the result in a pandas DataFrame if it
-        contains internally calibrated sampled spectra.
+        Parse the input CSV file and store the result in a pandas DataFrame if it contains internally calibrated sampled
+            spectra.
 
         Args:
             csv_file (str): Path to a CSV file.
@@ -23,8 +23,4 @@ class InternalSampledParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
         """
-        return super()._parse_csv(
-            csv_file,
-            array_columns=[
-                'flux',
-                'error'])
+        return super()._parse_csv(csv_file, array_columns=['flux', 'error'])

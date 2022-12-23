@@ -31,6 +31,7 @@ class DataFrameReader(object):
         return list(set(str_columns))
 
     def __get_np_columns(self):
+        # TODO: Check this function
         np_columns = []
         content = self.content
         rows = content.iloc[0:2]
@@ -41,12 +42,10 @@ class DataFrameReader(object):
 
     def _read_df(self):
         content = self.content
-        columns = content.columns
         str_array_columns = self.__get_str_columns()
         np_array_columns = self.__get_np_columns()
         if str_array_columns:
-            # Call string reader
-            data = DataFrameStringArrayReader(content, str_array_columns)._parse()
+            data = DataFrameStringArrayReader(content, str_array_columns)._parse()  # Call string reader
             array_columns = str_array_columns
         elif np_array_columns:
             data = DataFrameNumPyArrayReader(content, np_array_columns)._parse()

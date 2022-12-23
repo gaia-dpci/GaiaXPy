@@ -17,7 +17,6 @@ class DataFrameStringArrayReader(object):
         df = self.content
         array_columns = self.array_columns
         for column in array_columns:
-            # String column to NumPy array
             df[column] = df[column].apply(lambda x: str_to_array(x))
         return df
 

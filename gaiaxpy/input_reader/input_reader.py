@@ -53,6 +53,7 @@ class InputReader(object):
             parsed_data, extension = self._string_reader()
         else:
             raise ValueError('The input provided does not match any of the expected input types.')
+        # TODO: Try "if not extension", previously failed.
         if extension is None:
             extension = default_extension
         parsed_data['source_id'] = parsed_data['source_id'].astype('int64')

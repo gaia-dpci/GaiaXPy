@@ -14,7 +14,7 @@ current_path = path.abspath(path.dirname(__file__))
 
 
 def get_property(prop):
-    result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open('gaiaxpy' + '/__init__.py').read())
+    result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open('gaiaxpy' + '/core/version.py').read())
     return result.group(1)
 
 

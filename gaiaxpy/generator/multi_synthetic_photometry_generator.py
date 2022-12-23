@@ -19,20 +19,15 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
     def _generate(self, parsed_input_data, extension, output_file, output_format, save_file):
         # Recover attributes
         systems = self.photometric_system
-        system_names = [system.get_system_name() for system in systems]
-        system_labels = [system.get_system_label() for system in systems]
         internal_systems = [system.value for system in systems]
-        bp_model = self.bp_model
-        rp_model = self.rp_model
         # Generate XP variables
-        xp_sampling_list = [system._load_xpsampling_from_xml(bp_model, rp_model) for system in internal_systems]
-        xp_sampling_grid_xp_merge_tuples_list = [system._load_xpmerge_from_xml(bp_model=bp_model, rp_model=rp_model)
-                                                 for system in internal_systems]
+        xp_sampling_list = [system._load_xpsampling_from_xml() for system in internal_systems]
+        xp_sampling_grid_xp_merge_tuples_list = [system._load_xpmerge_from_xml() for system in internal_systems]
         xp_sampling_grid_list = [element[0] for element in xp_sampling_grid_xp_merge_tuples_list]
         xp_merge_list = [element[1] for element in xp_sampling_grid_xp_merge_tuples_list]
         # Get basis functions list
-        sampled_basis_func_list = [self._get_sampled_basis_functions(xp_sampling, xp_sampling_grid)
-                                   for xp_sampling, xp_sampling_grid in zip(xp_sampling_list, xp_sampling_grid_list)]
+        sampled_basis_func_list = [self._get_sampled_basis_functions(xp_sampling, xp_sampling_grid) for xp_sampling,
+        xp_sampling_grid in zip(xp_sampling_list, xp_sampling_grid_list)]
         # One list per system
         photometry_list_of_lists = [self._create_photometry_list(parsed_input_data, phot_system, sampled_basis_func,
                                                                  xp_merge) for phot_system, sampled_basis_func, xp_merge

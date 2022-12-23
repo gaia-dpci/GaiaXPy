@@ -122,7 +122,8 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
                 is NOT included as it is expected to be the same for a batch of spectra. The array of positions can be
                 retrieved calling the sampling_to_dict method.
         """
-        return {'source_id': self.source_id, 'flux': _list_to_array(self.flux), 'flux_error': _list_to_array(self.error)}
+        return {'source_id': self.source_id, 'flux': _list_to_array(self.flux),
+                'flux_error': _list_to_array(self.error)}
 
     def _sampling_to_dict(self):
         """

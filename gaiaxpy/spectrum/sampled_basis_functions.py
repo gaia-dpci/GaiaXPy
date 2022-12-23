@@ -51,8 +51,9 @@ class SampledBasisFunctions(object):
         """
         n_samples = len(sampling)
         scale = (external_instrument_model.bases['normRangeMax'][0] - external_instrument_model.bases['normRangeMin'][
-            0]) / (external_instrument_model.bases['pwlRangeMax'][0] - external_instrument_model.bases['pwlRangeMin'][0])
-        offset = external_instrument_model.bases['normRangeMin'][0] - external_instrument_model.bases['pwlRangeMin'][0]\
+            0]) / (external_instrument_model.bases['pwlRangeMax'][0] - external_instrument_model.bases['pwlRangeMin'][
+            0])
+        offset = external_instrument_model.bases['normRangeMin'][0] - external_instrument_model.bases['pwlRangeMin'][0] \
                  * scale
 
         sampling_pwl = external_instrument_model._wl_to_pwl(sampling)

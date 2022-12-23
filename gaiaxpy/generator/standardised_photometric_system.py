@@ -9,14 +9,14 @@ from .internal_photometric_system import InternalPhotometricSystem
 
 class StandardisedPhotometricSystem(InternalPhotometricSystem):
 
-    def __init__(self, name):
+    def __init__(self, name, config_file=None):
         """
         A photometric system is defined by the set of bands available.
 
         Args:
             name (str): Name of the PhotometricSystem
         """
-        super().__init__(name)
+        super().__init__(name, config_file)
         self._load_offset_from_xml()
 
     def _correct_flux(self, flux):

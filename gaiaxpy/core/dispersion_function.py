@@ -59,8 +59,7 @@ rp_wl_range = [RP_WL.low, RP_WL.high]
 
 def pwl_to_wl(band, pwl):
     """
-    Convert the input pseudo-wavelength value(s) into absolute wavelength for the input
-    band (BP or RP).
+    Convert the input pseudo-wavelength value(s) into absolute wavelength for the input band (BP or RP).
 
     Args:
         band (str): BP or RP.
@@ -77,13 +76,12 @@ def pwl_to_wl(band, pwl):
     elif band.lower() == BANDS.rp:
         return rp_pwl_to_wl(pwl)
     else:
-        raise ValueError("Unrecognised input band. Only 'BP' or 'RP' values are recognised.")
+        raise ValueError("Unrecognised input band. Only 'BP' or 'RP' values are valid.")
 
 
 def wl_to_pwl(band, wl):
     """
-    Convert the input wavelength value(s) into pseudo-wavelength for the input
-    band (BP or RP).
+    Convert the input wavelength value(s) into pseudo-wavelength for the input band (BP or RP).
 
     Args:
         band (str): BP or RP.
@@ -104,7 +102,7 @@ def wl_to_pwl(band, wl):
 
 
 def pwl_range(band):
-    '''
+    """
     Return the range where the dispersion function is interpolated. Outside this range extrapolation will occur.
 
     Args:
@@ -115,7 +113,7 @@ def pwl_range(band):
 
     Raises:
         ValueError: If the band string is not equal to BP or RP.
-    '''
+    """
     if band.lower() == BANDS.bp:
         return bp_pwl_range
     elif band.lower() == BANDS.rp:
@@ -125,7 +123,7 @@ def pwl_range(band):
 
 
 def wl_range(band):
-    '''
+    """
     Return the range where the dispersion function is interpolated. Outside this range extrapolation will occur.
 
     Args:
@@ -136,7 +134,7 @@ def wl_range(band):
 
     Raises:
         ValueError: If the band string is not equal to BP or RP.
-    '''
+    """
     if band.lower() == BANDS.bp:
         return bp_wl_range
     elif band.lower() == BANDS.rp:

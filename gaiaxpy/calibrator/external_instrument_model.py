@@ -16,22 +16,17 @@ class ExternalInstrumentModel(object):
     External calibration instrument model.
     """
 
-    def __init__(self,
-                 dispersion,
-                 response,
-                 bases):
+    def __init__(self, dispersion, response, bases):
         """
-        Initialise a external instrument model.
+        Initialise an external instrument model.
 
         Args:
-        dispersion (dict): A dictionary contained the dispersion function
-            sampled on a high resolution grid (simple spline interpolation will be used to
-            estimate the dispersion at different locations).
-        response (dict): A dictionary containing the response curve
-            sampled on a high resolution grid (simple spline interpolation will be used to
-            estimate the dispersion at different locations).
-        bases (DataFrame): A DataFrame containing the definition of the inverse bases,
-            required to reconstruct the absolute spectrum.
+        dispersion (dict): A dictionary contained the dispersion function sampled on a high resolution grid (simple
+            spline interpolation will be used to estimate the dispersion at different locations).
+        response (dict): A dictionary containing the response curve sampled on a high resolution grid (simple spline
+            interpolation will be used to estimate the dispersion at different locations).
+        bases (DataFrame): A DataFrame containing the definition of the inverse bases, required to reconstruct the
+            absolute spectrum.
         """
         self.dispersion = dispersion
         self.response = response
@@ -52,8 +47,7 @@ class ExternalInstrumentModel(object):
         """
         # Dispersion
         _disp = np.genfromtxt(dispersion_path, delimiter=',')
-        dispersion = dict(
-            zip(['wavelength', 'pseudo-wavelength'], [_disp[0], _disp[1]]))
+        dispersion = dict(zip(['wavelength', 'pseudo-wavelength'], [_disp[0], _disp[1]]))
 
         # Response
         _resp = np.genfromtxt(response_path, delimiter=',')
@@ -79,10 +73,7 @@ class ExternalInstrumentModel(object):
         Returns:
             float: The response of the mean instrument at the input wavelength.
         """
-        tck = interpolate.splrep(
-            self.response.get("wavelength"),
-            self.response.get("response"),
-            s=0)
+        tck = interpolate.splrep(self.response.get("wavelength"), self.response.get("response"), s=0)
         return interpolate.splev(wavelength, tck, der=0)
 
     def _wl_to_pwl(self, wavelength):
@@ -95,10 +86,7 @@ class ExternalInstrumentModel(object):
         Returns:
             float: The corresponding pseudo-wavelength value.
         """
-        tck = interpolate.splrep(
-            self.dispersion.get("wavelength"),
-            self.dispersion.get("pseudo-wavelength"),
-            s=0)
+        tck = interpolate.splrep(self.dispersion.get("wavelength"), self.dispersion.get("pseudo-wavelength"), s=0)
         return interpolate.splev(wavelength, tck, der=0)
 
 
@@ -118,7 +106,5 @@ class _InverseBasesParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame populated with the content of the CSV file.
         """
-        return super()._parse_csv(
-            csv_file,
-            array_columns=['inverseBasesCoefficients', 'transformationMatrix'],
-            matrix_columns=[])
+        return super()._parse_csv(csv_file, array_columns=['inverseBasesCoefficients', 'transformationMatrix'],
+                                  matrix_columns=[])

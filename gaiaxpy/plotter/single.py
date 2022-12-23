@@ -10,11 +10,6 @@ from .plotter import Plotter
 
 
 class SinglePlotter(Plotter):
-    '''
-    for index, spectrum in spectra_df.iterrows():
-        x, y, e = self._get_inputs(spectrum)
-        ax.plot(x, y, lw=2, alpha=0.95, label=spectrum.source_id)
-    '''
 
     def _plot_single(self, spectrum):
         spectra_class = self.spectra_class
@@ -32,7 +27,8 @@ class SinglePlotter(Plotter):
         n_spectra = len(self.spectra)
         if n_spectra > self.max_spectra_on_single:
             raise ValueError(
-                f'Spectra list is too long. This functionality can only show up to {self.max_spectra_on_single} single plots. Try saving the plots without showing them using the option output_path.')
+                f'Spectra list is too long. This functionality can only show up to {self.max_spectra_on_single} '
+                f'single plots. Try saving the plots without showing them using the option output_path.')
         for index, spectrum in self.spectra.iterrows():
             self._plot_single(spectrum)
             if self.output_path:

@@ -42,8 +42,9 @@ class MultiXpPlotter(Plotter):
     def _plot(self):
         n_spectra = len(self.spectra)
         if self.show_plot and self.legend and n_spectra > self.max_spectra_on_multi:
-            raise ValueError(
-                f'The legend can only be shown for a list of spectra no longer than {self.max_spectra_on_multi} elements. Try setting legend to False or retry with a shorter list.')
+            raise ValueError(f'The legend can only be shown for a list of spectra no longer than '
+                             f'{self.max_spectra_on_multi} elements. Try setting legend to False or retry with a '
+                             f'shorter list.')
         self._plot_multi_xp()
         if self.output_path:
             self._save_figure(self.output_path, self.output_file, self.format)

@@ -11,7 +11,7 @@ from gaiaxpy.config.paths import config_path, filters_path
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.xml_utils import get_file_root, get_array_text, get_xp_merge, get_xp_sampling_matrix
 
-_ADDITIONAL_SYSTEM_PREFIX = 'USER'
+ADDITIONAL_SYSTEM_PREFIX = 'USER'
 
 
 def get_file_path(config_file=None):
@@ -41,7 +41,7 @@ def replace_file_name(_config_file, label, key, bp_model, rp_model, system):
     version = get_filter_version_from_config(_config_parser)
     if version:
         file_name = _config_parser.get(label, key).replace('version', version)
-        system = system.replace(f'{_ADDITIONAL_SYSTEM_PREFIX}_', '')
+        system = system.replace(f'{ADDITIONAL_SYSTEM_PREFIX}_', '')
     else:
         file_name = _config_parser.get(label, key).format(label, key).replace('model', f'{bp_model}{rp_model}')
     file_name = file_name.replace('system', system) if system else file_name.replace('system_', '')

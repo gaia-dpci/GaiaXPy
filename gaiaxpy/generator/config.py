@@ -1,5 +1,4 @@
 from configparser import ConfigParser
-from dataclasses import asdict, dataclass
 from os import walk
 from os.path import isdir
 from pathlib import Path
@@ -10,15 +9,14 @@ from gaiaxpy.core.config import ADDITIONAL_SYSTEM_PREFIX
 _CFG_FILE_PATH = Path('~/.gaiaxpyrc').expanduser()
 
 
-@dataclass(frozen=True)
 class GenCfg:
-    filters_dir: str
-    version: str
-    filter: str = 'system.gaiaXPy_dr3_version.xml'
 
-    def __post_init__(self):
-        if not isdir(self.filters_dir):
-            raise ValueError(f'{self.filters_dir} is not a path to a valid directory.')
+    def __init__(self, filters_dir, version):
+        if not isdir(filters_dir):
+            raise ValueError(f'{filters_dir} is not a path to a valid directory.')
+        self.filters_dir = filters_dir
+        self.version = version
+        self.filter = 'system.gaiaXPy_dr3_version.xml'
 
 
 def get_file_names_recursively(dir_path):
@@ -50,7 +48,7 @@ def create_config(filters_path=None, config_file=None):
 def write_config(cfg_details, config_file=None):
     config_file = _CFG_FILE_PATH if not config_file else config_file
     config = ConfigParser()
-    config['filter'] = asdict(cfg_details)
+    config['filter'] = vars(cfg_details)
     with open(config_file, 'w') as cf:
         config.write(cf)
     print(f"Configuration saved. Filters version {cfg_details.version}.")

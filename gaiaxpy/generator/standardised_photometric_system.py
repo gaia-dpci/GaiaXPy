@@ -5,12 +5,11 @@ Module to represent a standardised photometric system.
 """
 
 from .internal_photometric_system import InternalPhotometricSystem
-from gaiaxpy.core.config import _load_offset_from_csv
 
 
 class StandardisedPhotometricSystem(InternalPhotometricSystem):
 
-    def __init__(self, name):
+    def __init__(self, name, config_file=None):
         """
         A photometric system is defined by the set of bands available.
 
@@ -18,8 +17,7 @@ class StandardisedPhotometricSystem(InternalPhotometricSystem):
             name (str): Name of the PhotometricSystem
         """
         super().__init__(name)
-        offsets = _load_offset_from_csv(name)
-        self.set_offsets(offsets)
+        self._load_offset_from_xml()
 
     def _correct_flux(self, flux):
         flux_corr = flux + self.offsets

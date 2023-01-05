@@ -1,10 +1,12 @@
 import unittest
+from os import path
+
 import pandas as pd
 from numpy import ndarray, dtype
-from os import path
+
 from gaiaxpy.file_parser.parse_generic import DataMismatchError
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
-from tests.files import files_path
+from tests.files.paths import files_path
 
 # Files to test parse
 csv_file = path.join(files_path, 'converter_solution', 'SampledMeanSpectrum.csv')

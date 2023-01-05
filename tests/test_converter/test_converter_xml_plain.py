@@ -1,25 +1,27 @@
 import unittest
-import numpy as np
-import pandas as pd
-import numpy.testing as npt
-import pandas.testing as pdt
 from ast import literal_eval
 from configparser import ConfigParser
 from itertools import islice
+from os.path import abspath, dirname, join
+
+import numpy as np
+import numpy.testing as npt
+import pandas as pd
+import pandas.testing as pdt
+
+from gaiaxpy import convert
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices, \
-                                        get_unique_basis_ids
 from gaiaxpy.converter.config import load_config
+from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices, \
+    get_unique_basis_ids
+from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-from os.path import abspath, dirname, join
-from tests.files import files_path
-from tests.utils import df_columns_to_array, get_spectrum_with_source_id_and_xp
-
-from gaiaxpy import convert
+from tests.files.paths import files_path
+from tests.utils.utils import get_spectrum_with_source_id_and_xp
 
 current_path = abspath(dirname(__file__))
 configparser = ConfigParser()
@@ -27,14 +29,16 @@ configparser.read(join(config_path, 'config.ini'))
 config_file = join(config_path, configparser.get('converter', 'optimised_bases'))
 config_df = load_config(config_file)
 
+# Generate converters
+columns_to_parse = ['flux', 'flux_error']
+converters = dict([(column, lambda x: str_to_array(x)) for column in columns_to_parse])
+
 # File under test
 continuous_path = join(files_path, 'xp_continuous')
 input_file = join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 converter_solution_path = join(files_path, 'converter_solution')
 converter_solution_df = pd.read_csv(join(converter_solution_path, 'converter_solution_0_60_481.csv'),
-                                    float_precision='round_trip')
-columns_to_parse = ['flux', 'flux_error']
-converter_solution_df = df_columns_to_array(converter_solution_df, columns_to_parse)
+                                    float_precision='round_trip', converters=converters)
 missing_band_solution = join(converter_solution_path, 'missing_band_default_sampling_solution.csv')
 
 # Parsers
@@ -57,6 +61,7 @@ ref_sampled, _ = sampled_parser.parse(ref_sampled_csv)
 ref_sampled_truncated, _ = sampled_parser.parse(ref_sampled_truncated_csv)
 
 TOL = 4
+_rtol, _atol = 1e-11, 1e-11
 
 
 class TestGetMethods(unittest.TestCase):
@@ -94,9 +99,8 @@ class TestConverter(unittest.TestCase):
 
     def test_converter_both_types(self):
         self.assertIsInstance(converted_df, pd.DataFrame)
-        self.assertTrue((converted_df.columns == converter_solution_df.columns).all())
         self.assertEqual(len(converted_df), 4)
-        pdt.assert_frame_equal(converted_df, converter_solution_df)
+        pdt.assert_frame_equal(converted_df, converter_solution_df, rtol=_rtol, atol=_atol)
 
     def test_conversion(self):
         for index, spectrum in converted_df.iterrows():
@@ -152,4 +156,5 @@ class TestConverterMissingBand(unittest.TestCase):
         self.assertEqual(converted_spectra['source_id'], solution_values['source_id'])
         self.assertEqual(converted_spectra['xp'], solution_values['xp'])
         npt.assert_array_almost_equal(converted_spectra['flux'], np.array(literal_eval(solution_values['flux'])))
-        npt.assert_array_almost_equal(converted_spectra['flux_error'], np.array(literal_eval(solution_values['flux_error'])))
+        npt.assert_array_almost_equal(converted_spectra['flux_error'],
+                                      np.array(literal_eval(solution_values['flux_error'])))

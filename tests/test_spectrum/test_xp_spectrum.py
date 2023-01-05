@@ -1,6 +1,7 @@
 import unittest
-from gaiaxpy.spectrum.xp_spectrum import XpSpectrum
+
 from gaiaxpy.core.satellite import BANDS
+from gaiaxpy.spectrum.xp_spectrum import XpSpectrum
 
 
 class TestXpSpectrum(unittest.TestCase):

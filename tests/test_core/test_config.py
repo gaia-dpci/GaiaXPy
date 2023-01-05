@@ -7,7 +7,7 @@ from numpy import ndarray
 import pytest
 
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.config import get_file, _load_xpmerge_from_xml, _load_xpsampling_from_xml
+from gaiaxpy.core.config import get_file
 from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
 
 system = InternalPhotometricSystem('JKC')

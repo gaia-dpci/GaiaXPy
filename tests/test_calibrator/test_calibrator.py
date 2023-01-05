@@ -9,20 +9,21 @@ from pandas import testing as pdt
 from gaiaxpy import calibrate
 from gaiaxpy.calibrator.calibrator import _calibrate, _create_spectrum
 from gaiaxpy.core import satellite
-from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
+from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_xml
+from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from tests.files import files_path
-from tests.utils import df_columns_to_array, pos_file_to_array
+from tests.files.paths import files_path
+from tests.utils.utils import pos_file_to_array
 
 parser = InternalContinuousParser()
 
 # Load variables
 label = 'calibrator'
 bp_model = 'v211w'  # Alternative bp model
-xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(label, bp_model=bp_model)
-xp_design_matrices = _load_xpsampling_from_csv(label, bp_model=bp_model)
+xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(bp_model=bp_model)
+xp_design_matrices = _load_xpsampling_from_xml(bp_model=bp_model)
 
 # Path to solution files
 calibrator_sol_path = join(files_path, 'calibrator_solution')
@@ -40,13 +41,17 @@ spectra_df_fits = _calibrate(mean_spectrum_fits, save_file=False, bp_model=bp_mo
 spectra_df_xml = _calibrate(mean_spectrum_xml, save_file=False, bp_model=bp_model)
 spectra_df_xml_plain = _calibrate(mean_spectrum_xml_plain, save_file=False, bp_model=bp_model)
 
+# Generate converters
+columns_to_parse = ['flux', 'flux_error']
+converters = dict([(column, lambda x: str_to_array(x)) for column in columns_to_parse])
+
 # Load solution files, default model
 solution_default_sampling = pos_file_to_array(join(calibrator_sol_path, 'calibrator_solution_default_sampling.csv'))
 solution_custom_sampling = pos_file_to_array(join(calibrator_sol_path, 'calibrator_solution_custom_sampling.csv'))
 solution_default_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_default.csv'),
-                                  float_precision='round_trip')
+                                  float_precision='round_trip', converters=converters)
 solution_custom_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_custom.csv'),
-                                 float_precision='round_trip')
+                                 float_precision='round_trip', converters=converters)
 
 # Load solution files, v211w model
 solution_v211w_default_sampling = pos_file_to_array(join(calibrator_sol_path,
@@ -54,19 +59,12 @@ solution_v211w_default_sampling = pos_file_to_array(join(calibrator_sol_path,
 solution_v211w_custom_sampling = pos_file_to_array(join(calibrator_sol_path,
                                                         'calibrator_solution_v211w_custom_sampling.csv'))
 solution_v211w_default_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_v211w_default.csv'),
-                                        float_precision='round_trip')
+                                        float_precision='round_trip', converters=converters)
 solution_v211w_custom_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_v211w_custom.csv'),
-                                       float_precision='round_trip')
+                                       float_precision='round_trip', converters=converters)
 
-# Parse arrays in solution_df
-columns_to_parse = ['flux', 'flux_error']
-solution_default_df = df_columns_to_array(solution_default_df, columns_to_parse)
-solution_custom_df = df_columns_to_array(solution_custom_df, columns_to_parse)
-solution_v211w_default_df = df_columns_to_array(solution_v211w_default_df, columns_to_parse)
-solution_v211w_custom_df = df_columns_to_array(solution_v211w_custom_df, columns_to_parse)
+_rtol, _atol = 1e-23, 1e-23
 
-
-_rtol, _atol = 1e-18, 1e-18
 
 class TestCalibratorCSV(unittest.TestCase):
 

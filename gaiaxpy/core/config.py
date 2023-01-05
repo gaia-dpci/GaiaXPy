@@ -4,143 +4,88 @@ config.py
 Module to handle the calibrator and generator configuration files.
 """
 
-import numpy as np
 from configparser import ConfigParser
-from numbers import Number
-from os import path
+from os.path import join
+
 from gaiaxpy.config.paths import config_path, filters_path
 from gaiaxpy.core.satellite import BANDS
-
-config_parser = ConfigParser()
-config_parser.read(path.join(config_path, 'config.ini'))
+from gaiaxpy.core.xml_utils import get_file_root, get_array_text, get_xp_merge, get_xp_sampling_matrix
 
 
-def get_file(label, key, system, bp_model, rp_model):
+def get_file_path(config_file=None):
+    if not config_file:
+        return filters_path
+    _config_parser = ConfigParser()
+    _config_parser.read(config_file)
+    try:
+        file_path = _config_parser['filter']['filters_dir']
+    except KeyError:
+        return filters_path
+    return file_path
+
+def replace_file_name(_config_file, label, key, bp_model, rp_model, system):
+    _config_parser = ConfigParser()
+    _config_parser.read(_config_file)
+    file_name = _config_parser.get(label, key).format(label, key).replace('model', f'{bp_model}{rp_model}')
+    file_name = file_name.replace('system', system) if system else file_name.replace('system_', '')
+    return file_name
+
+
+def get_file(label, key, system, bp_model, rp_model, config_file=None):
     """
     Get the file path corresponding to the given label and key.
-
     Args:
         label (str): Label of the photometric system or functionality (e.g.: 'Johnson' or 'calibrator').
         key (str): Type of file to load ('zeropoint', 'merge', 'sampling').
-
+        system (str): Photometric system name, can be None in which case the generic configuration is loaded.
+        bp_model (str): BP model.
+        rp_model (str): RP model.
+        config_file: Path to configuration file.
     Returns:
         str: Path of a file.
     """
-    filter_config_file_path = path.join(filters_path, config_parser.get(label, key))
-    generic_file_name = filter_config_file_path.format(label, key).replace('model', f'{bp_model}{rp_model}')
-    if system:
-        # Split path and get only the file name
-        head, tail = path.split(generic_file_name)
-        tail = tail.replace('system', system)
-        # Rejoin modified path
-        generic_file_name = path.join(head, tail)
-    return generic_file_name
+    _config_file = join(config_path, 'config.ini') if config_file is None else config_file
+    file_name = replace_file_name(_config_file, label, key, bp_model, rp_model, system)
+    file_path = get_file_path(config_file)
+    return join(file_path, file_name)
 
 
-def _load_offset_from_csv(system, label = 'photsystem', bp_model='v375wi', rp_model='v142r'):
+def _load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r', config_file=None):
     """
-    Load the offset of a standard photometric system.
-    """
-    file_path = get_file(label, 'offset', system, bp_model, rp_model)
-    try:
-        offset = np.genfromtxt(file_path, delimiter=',', dtype=float)
-    except OSError:
-         raise ValueError('Offset file not present. Is this a standard system?')
-    return offset
-
-
-def _load_xpzeropoint_from_csv(system, label='photsystem', bp_model='v375wi',
-                               rp_model='v142r'):
-    """
-    Load the zero-points for each band.
-
+    Load the XpMerge table from the filter XML file.
     Args:
-        label (str): Label of the photometric system or functionality.
-
+        system (str): Name of the photometric system if it corresponds.
+        bp_model (str): BP model.
+        rp_model (str): RP model.
     Returns:
-        ndarray: Loaded zero-points from the CSV file.
-    """
-    def _make_iterable(variable):
-        if isinstance(variable, str):
-            return np.array([variable])
-        return variable
-    bands, zero_points =  np.genfromtxt(
-            get_file(label, 'zeropoint', system, bp_model, rp_model),
-            delimiter=',', dtype=str)
-    bands = _make_iterable(bands).astype(str)
-    zero_points = _make_iterable(zero_points).astype(float)
-    return bands, zero_points
-
-
-def _load_xpmerge_from_csv(
-        label,
-        system=None,
-        bp_model=None,
-        rp_model='v142r'):
-    """
-    Load the XpMerge table as provided by PMN in CSV.
-
-    Args:
-        label (str): Label of the photometric system or functionality.
-
-    Returns:
-        ndarray: Array containing the samplig grid values.
+        ndarray: Array containing the sampling grid values.
         dict: A dictionary containing the XpMerge table with one entry for BP and one for RP.
     """
-    def _parse_merge(_xpmerge):
-        # np.genfromtxt can only return numbers and NumPy arrays.
-        if isinstance(_xpmerge[0], Number):
-            # Make iterable
-            _xpmerge = [np.array([element]) for element in _xpmerge]
-            sampling_grid = _xpmerge[0]
-            bp_merge = _xpmerge[1]
-            rp_merge = _xpmerge[2]
-        else:
-            sampling_grid = _xpmerge[0, :]
-            bp_merge = _xpmerge[1, :]
-            rp_merge = _xpmerge[2, :]
-        return sampling_grid, bp_merge, rp_merge
-    if not bp_model:
-        bp_model = 'v375wi'
-    file_name = get_file(label, 'merge', system, bp_model, rp_model)
-    _xpmerge = np.genfromtxt(
-        file_name,
-        skip_header=1,
-        delimiter=',',
-        dtype=float)
-    sampling_grid, bp_merge, rp_merge = _parse_merge(_xpmerge)
+    bp_model = bp_model if bp_model else 'v375wi'
+    label = key = 'filter'
+    file_path = get_file(label, key, system, bp_model, rp_model, config_file=config_file)
+    x_root = get_file_root(file_path)
+    sampling_grid, bp_merge, rp_merge = get_xp_merge(x_root)
     return sampling_grid, dict(zip(BANDS, [bp_merge, rp_merge]))
 
 
-def _load_xpsampling_from_csv(
-        label,
-        system=None,
-        bp_model=None,
-        rp_model='v142r'):
+def _load_xpsampling_from_xml(system=None, bp_model=None, rp_model='v142r', config_file=None):
     """
-    Load the XpSampling table as provided by PMN in CSV.
-
+    Load the XpSampling table from the XML filter file.
     Args:
-        label (str): Label of the photometric system or functionality.
-
+        system (str): Photometric system name, can be None in which case the generic configuration is loaded.
+        bp_model (str): BP model.
+        rp_model (str): RP model.
     Returns:
         dict: A dictionary containing the XpSampling table with one entry for BP and one for RP.
     """
-    if not bp_model:
-        bp_model = 'v375wi'
-    file_name = get_file(label, 'sampling', system, bp_model, rp_model)
-    _xpsampling = np.genfromtxt(
-        file_name,
-        skip_header=1,
-        delimiter=',',
-        dtype=float)
-    n_wl = int(_xpsampling.shape[0] / 2)
+    bp_model = bp_model if bp_model else 'v375wi'
+    xml_file = get_file('filter', 'filter', system, bp_model, rp_model, config_file=config_file)
+    x_root = get_file_root(xml_file)
+    _, nbands = get_array_text(x_root, 'bands')
 
-    bp_sampling = _xpsampling[:n_wl, :]
-    bp_sampling = np.transpose(bp_sampling)
+    bp_sampling = get_xp_sampling_matrix(x_root, 'bp', nbands)
+    rp_sampling = get_xp_sampling_matrix(x_root, 'rp', nbands)
 
-    rp_sampling = _xpsampling[n_wl:, :]
-    rp_sampling = np.transpose(rp_sampling)
-
-    xpsampling = dict(zip(BANDS, [bp_sampling, rp_sampling]))
-    return xpsampling
+    xp_sampling = dict(zip(BANDS, [bp_sampling, rp_sampling]))
+    return xp_sampling

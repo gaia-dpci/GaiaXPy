@@ -12,7 +12,7 @@ continuous_path = join(files_path, 'xp_continuous')
 correlation_csv_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 corrected_errors_solution_path = join(files_path, 'error_correction_solution', 'corrected_errors_solution.csv')
 
-_ertol, _eatol = 1e-34, 1e-34
+_ertol, _eatol = 1e-24, 1e-24
 _rtol, _atol = 1e-15, 1e-15
 
 

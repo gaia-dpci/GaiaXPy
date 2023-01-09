@@ -57,7 +57,7 @@ def generate(input_object, photometric_system, output_path='.', output_file='out
     # Load data
     parsed_input_data, extension = InputReader(input_object, generate, username, password)._read()
     # Prepare systems, keep track of original systems
-    internal_photometric_system = photometric_system.copy() if isinstance(photometric_system, list) else\
+    internal_photometric_system = photometric_system.copy() if isinstance(photometric_system, list) else \
         [photometric_system].copy()
     gaia_system = PhotometricSystem.Gaia_DR3_Vega
     # Create multi generator

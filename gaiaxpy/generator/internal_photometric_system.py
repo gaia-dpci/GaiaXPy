@@ -9,7 +9,7 @@ from os import remove
 from os.path import join, exists
 
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core.config import get_filter_version_from_config, replace_file_name, get_file_path,\
+from gaiaxpy.core.config import get_filter_version_from_config, replace_file_name, get_file_path, \
     ADDITIONAL_SYSTEM_PREFIX
 from gaiaxpy.core.generic_functions import _get_system_label
 from gaiaxpy.core.satellite import BANDS

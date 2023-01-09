@@ -57,7 +57,7 @@ def _system_is_standard(system_name):
 
 
 def create_system(name, systems_path=None):
-    return StandardisedPhotometricSystem(name, systems_path) if _system_is_standard(name)\
+    return StandardisedPhotometricSystem(name, systems_path) if _system_is_standard(name) \
         else RegularPhotometricSystem(name, systems_path)
 
 

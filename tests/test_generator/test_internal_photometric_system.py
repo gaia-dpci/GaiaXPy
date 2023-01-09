@@ -13,8 +13,8 @@ phot_systems_specs = pd.read_csv(join(files_path, 'PhotometricSystemSpecs.csv'),
                                              'zero_points': lambda y: np.array(y[1:-1].split(',')).astype(float)},
                                  float_precision='round_trip')
 
-# An InternalPhotometricSystem is created from a label, not from a name (i.e from GaiaDr3Ab, not from GAIA_DR3_AB)
-available_systems = list(phot_systems_specs['label'])
+# An InternalPhotometricSystem is created from a label, not from a name (i.e. from GaiaDr3Ab, not from GAIA_DR3_AB)
+available_systems = list(phot_systems_specs['name'])
 all_systems = [InternalPhotometricSystem(system) for system in available_systems]
 
 

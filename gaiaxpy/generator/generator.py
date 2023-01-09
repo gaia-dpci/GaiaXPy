@@ -30,7 +30,7 @@ def generate(input_object, photometric_system, output_path='.', output_file='out
             underestimated errors (see Montegriffo et al., 2022, for more details).
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
-
+        
     Returns:
         DataFrame: A DataFrame of all synthetic photometry results.
     """

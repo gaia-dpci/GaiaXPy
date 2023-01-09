@@ -9,6 +9,8 @@ from collections.abc import Iterable
 from numbers import Number
 from os.path import join
 from string import capwords
+from os.path import join
+from gaiaxpy.config.paths import config_path
 
 import numpy as np
 import pandas as pd
@@ -189,3 +191,7 @@ def _extract_systems_from_data(data_columns, photometric_system=None):
         column_list = [column.split('_')[0] for column in columns]
         systems = list(dict.fromkeys(column_list))
     return systems
+
+def _get_built_in_systems() -> list:
+    f = open(join(config_path, 'available_systems.txt'), 'r')
+    return f.read().splitlines()

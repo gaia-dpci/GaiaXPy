@@ -5,8 +5,7 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 from numpy import ndarray
-
-from gaiaxpy.generator.photometric_system import PhotometricSystem
+from gaiaxpy.generator.photometric_system import PhotometricSystem, _system_is_standard
 from tests.files.paths import files_path
 
 
@@ -21,6 +20,27 @@ phot_systems_specs = pd.read_csv(path.join(files_path, 'PhotometricSystemSpecs.c
                                              'zero_points': lambda y: np.array(y[1:-1].split(',')).astype(float)},
                                  float_precision='round_trip')
 available_systems = list(phot_systems_specs['name'])
+
+
+class TestSystemIsStandard(unittest.TestCase):
+
+    def test_system_is_standard(self):
+        """
+        Check class assigned to each photometric system. Will raise an error if a system is missing in the solution
+        dictionary.
+        """
+        all_phot_systems = [PhotometricSystem[s] for s in PhotometricSystem.get_available_systems().split(', ')]
+        regular_systems = ["DECam", "Els_Custom_W09_S2", "Euclid_VIS", "Gaia_2", "Gaia_DR3_Vega", "Halpha_Custom_AB",
+                           "H_Custom", "Hipparcos_Tycho", "HST_ACSWFC", "HST_WFC3UVIS", "HST_WFPC2", "IPHAS", "JKC",
+                           "JPAS", "JPLUS", "JWST_NIRCAM", "LSST", "PanSTARRS1", "Pristine", "SDSS", "Sky_Mapper",
+                           "Stromgren", "WFIRST"]
+        standardised_systems = ["HST_HUGS_Std", "JKC_Std", "PanSTARRS1_Std", "SDSS_Std", "Stromgren_Std"]
+        regular_dict = {s: "RegularPhotometricSystem" for s in regular_systems}
+        standardised_dict = {s: "StandardisedPhotometricSystem" for s in standardised_systems}
+        solution_dict = {**regular_dict, **standardised_dict}
+        for system in all_phot_systems:
+            self.assertEqual(system.value.__class__.__name__, solution_dict[system.name],
+                             f'Test has failed for system {system.name}.')
 
 
 class TestPhotometricSystem(unittest.TestCase):

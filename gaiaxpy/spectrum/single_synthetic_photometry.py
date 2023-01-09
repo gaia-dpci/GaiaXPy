@@ -22,7 +22,6 @@ class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
     def __init__(self, source_id, xp_spectra, sampled_bases, merge, photometric_system):
         """
         Initialise a synthetic photometry in a single photometric system.
-
         Args:
             source_id (str): Source identifier.
             xp_spectra (dict): A dictionary containing the BP and RP continuous spectra.
@@ -47,11 +46,9 @@ class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
     def flux_to_mag(self, flux, zero_point):
         """
         Convert flux to magnitude.
-
         Args:
             flux (float): Flux value.
             zero_point (float): Photometric zero-point.
-
         Returns:
             float: The magnitude.
         """
@@ -63,7 +60,6 @@ class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
     def _photometry_to_dict(self):
         """
         Represent the photometry as a dictionary.
-
         Returns:
             dict: A dictionary containing the source identifier and the
                 synthetic photometry.
@@ -77,7 +73,6 @@ class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
     def _field_to_dict(self, field, name):
         """
         Represent the field as a dictionary.
-
         Returns:
             dict: A dictionary containing a particular field of the synthetic photometry.
         """

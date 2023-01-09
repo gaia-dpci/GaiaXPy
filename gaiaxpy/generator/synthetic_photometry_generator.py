@@ -35,7 +35,7 @@ class SyntheticPhotometryGenerator(object):
 def _generate_synthetic_photometry(row, design_matrix, merge, photometric_system):
     """
     Create the synthetic photometry from the input continuously-represented mean spectrum and design matrix.
-
+    
     Args:
         row (DataFrame): Single row in a DataFrame containing the entry for one source in the mean spectra file. This
             will include columns for both bands (although one could be missing).
@@ -43,7 +43,7 @@ def _generate_synthetic_photometry(row, design_matrix, merge, photometric_system
         merge (dict): Dictionary containing an array of weights per BP and one for RP. These have one value per sample
             and define the contributions from BP and RP to the joined absolute spectrum.
         photometric_system (obj): Photometric system object containing the zero-points.
-
+        
     Returns:
         SingleSyntheticPhotometry: The output synthetic photometry.
     """

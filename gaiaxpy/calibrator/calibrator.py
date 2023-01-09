@@ -50,7 +50,7 @@ def calibrate(input_object, sampling=None, truncation=False, output_path='.', ou
         save_file (bool): Whether to save the output in a file. If false, output_format and output_file are ignored.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
-
+        
     Returns:
         (tuple): tuple containing:
             DataFrame: The values for all sampled absolute spectra.
@@ -65,15 +65,15 @@ def _calibrate(input_object, sampling=None, truncation=False, output_path='.', o
                output_format=None, save_file=True, bp_model='v375wi', rp_model='v142r', username=None, password=None):
     """
     Internal method of the calibration utility. Refer to "calibrate".
-
+    
     Args:
         bp_model (str): BP model to use.
         rp_model (str): RP model to use.
-
+    
     Returns:
         DataFrame: A list of all sampled absolute spectra.
         ndarray: The sampling used to calibrate the spectra.
-
+    
     Raises:
         ValueError: If the sampling is out of the expected boundaries.
     """
@@ -95,11 +95,11 @@ def _calibrate(input_object, sampling=None, truncation=False, output_path='.', o
 def _create_merge(xp, sampling):
     """
     Create the weight information on the input sampling grid.
-
+    
     Args:
         xp (str): Band (either BP or RP).
         sampling (ndarray): 1D array containing the sampling grid.
-
+    
     Returns:
         dict: A dictionary containing a BP and an RP array with weights.
     """

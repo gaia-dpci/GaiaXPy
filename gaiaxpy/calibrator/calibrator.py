@@ -13,7 +13,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core.config import _load_xpmerge_from_csv, _load_xpsampling_from_csv
+from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_xml
 from gaiaxpy.core.generic_functions import cast_output, _get_spectra_type, _validate_arguments, _validate_wl_sampling
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
@@ -32,34 +32,25 @@ tqdm.pandas(desc='Processing data', unit=pbar_units['calibrator'], leave=False, 
 def calibrate(input_object, sampling=None, truncation=False, output_path='.', output_file='output_spectra',
               output_format=None, save_file=True, username=None, password=None):
     """
-    Calibration utility: calibrates the input internally-calibrated
-    continuously-represented mean spectra to the absolute system. An absolute
-    spectrum sampled on a user-defined or default wavelength grid is created
-    for each set of BP and RP input spectra. If either band is missing, the
-    output spectrum will only cover the range covered by the available data.
-
+    Calibration utility: calibrates the input internally-calibrated continuously-represented mean spectra to the
+    absolute system. An absolute spectrum sampled on a user-defined or default wavelength grid is created for each
+    set of BP and RP input spectra. If either band is missing, the output spectrum will only cover the range covered
+    by the available data.
     Args:
-        input_object (object): Path to the file containing the mean spectra
-             as downloaded from the archive in their continuous representation,
-             a list of sources ids (string or long), or a pandas DataFrame.
-        sampling (ndarray): 1D array containing the desired sampling in
-             absolute wavelengths [nm].
-        truncation (bool): Toggle truncation of the set of bases. The level
-             of truncation to be applied is defined by the recommended value in
-             the input files.
+        input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
+            continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
+        sampling (ndarray): 1D array containing the desired sampling in absolute wavelengths [nm].
+        truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
+            the recommended value in the input files.
         output_path (str): Path where to save the output data.
         output_file (str): Name of the output file.
-        output_format (str): Format to be used for the output file. If no format
-            is given, then the output file will be in the same format as the
-            input file.
-        save_file (bool): Whether to save the output in a file. If false, output_format
-            and output_file are ignored.
+        output_format (str): Format to be used for the output file. If no format is given, then the output file will be
+            in the same format as the input file.
+        save_file (bool): Whether to save the output in a file. If false, output_format and output_file are ignored.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
-
     Returns:
         (tuple): tuple containing:
-
             DataFrame: The values for all sampled absolute spectra.
             ndarray: The sampling used to calibrate the input spectra (user-provided or default).
     """
@@ -72,15 +63,12 @@ def _calibrate(input_object, sampling=None, truncation=False, output_path='.', o
                output_format=None, save_file=True, bp_model='v375wi', rp_model='v142r', username=None, password=None):
     """
     Internal method of the calibration utility. Refer to "calibrate".
-
     Args:
         bp_model (str): BP model to use.
         rp_model (str): RP model to use.
-
     Returns:
         DataFrame: A list of all sampled absolute spectra.
         ndarray: The sampling used to calibrate the spectra.
-
     Raises:
         ValueError: If the sampling is out of the expected boundaries.
     """
@@ -102,11 +90,9 @@ def _calibrate(input_object, sampling=None, truncation=False, output_path='.', o
 def _create_merge(xp, sampling):
     """
     Create the weight information on the input sampling grid.
-
     Args:
         xp (str): Band (either BP or RP).
         sampling (ndarray): 1D array containing the sampling grid.
-
     Returns:
         dict: A dictionary containing a BP and an RP array with weights.
     """
@@ -143,8 +129,8 @@ def _generate_xp_matrices_and_merge(label, sampling, bp_model, rp_model):
 
     xp_design_matrices = {}
     if sampling is None:
-        xp_sampling_grid, xp_merge = _load_xpmerge_from_csv(label, bp_model=bp_model)
-        xp_design_matrices = _load_xpsampling_from_csv(label, bp_model=bp_model)
+        xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(bp_model=bp_model)
+        xp_design_matrices = _load_xpsampling_from_xml(bp_model=bp_model)
         for xp in BANDS:
             xp_design_matrices[xp] = SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[xp])
     else:
@@ -172,26 +158,21 @@ def _create_spectra(parsed_spectrum_file, truncation, design_matrices, merge):
 
 def _create_spectrum(row, truncation, design_matrix, merge):
     """
-    Create a single sampled absolute spectrum from the input continuously-represented
-    mean spectrum and design matrix.
-
+    Create a single sampled absolute spectrum from the input continuously-represented mean spectrum and design matrix.
     Args:
-        row (DataFrame): Single row in a DataFrame containing the entry
-            for one source in the mean spectra file. This will include columns for
-            both bands (although one could be missing).
+        row (DataFrame): Single row in a DataFrame containing the entry for one source in the mean spectra file. This
+            will include columns for both bands (although one could be missing).
         truncation (bool): Toggle truncation of the set of bases.
-        design_matrix (ndarray): 2D array containing the basis functions
-            sampled on the pseudo-wavelength grid (either user-defined or default).
-        merge (dict): Dictionary containing an array of weights per BP and one for RP.
-            These have one value per sample and define the contributions from BP and RP
-            to the joined absolute spectrum.
-
+        design_matrix (ndarray): 2D array containing the basis functions sampled on the pseudo-wavelength grid (either
+            user-defined or default).
+        merge (dict): Dictionary containing an array of weights per BP and one for RP. These have one value per sample
+            and define the contributions from BP and RP to the joined absolute spectrum.
     Returns:
         AbsoluteSampledSpectrum: The sampled absolute spectrum.
     """
     source_id = row['source_id']
-    cont_dict = {}
-    recommended_truncation = {}
+    cont_dict = dict()
+    recommended_truncation = dict()
     # Split both bands
     for band in BANDS:
         try:
@@ -202,6 +183,7 @@ def _create_spectrum(row, truncation, design_matrix, merge):
                 cont_dict[band] = continuous_object
             if truncation:
                 recommended_truncation[band] = row[f'{band}_n_relevant_bases']
+        # TODO: Use specific exception. May depend on library version.
         except Exception:
             # If the band is not present, ignore it
             continue

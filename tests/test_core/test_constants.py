@@ -1,7 +1,9 @@
 import unittest
+
 from gaiaxpy.core.nature import PLANCK, C
 from gaiaxpy.core.satellite import TELESCOPE_PUPIL_AREA, BP_WL, RP_WL, BANDS
 from gaiaxpy.core.server import gaia_server, data_release
+
 
 class TestConfig(unittest.TestCase):
 

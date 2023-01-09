@@ -10,12 +10,6 @@ import matplotlib.pyplot as plt
 
 class SinglePlotter(Plotter):
 
-    '''
-    for index, spectrum in spectra_df.iterrows():
-        x, y, e = self._get_inputs(spectrum)
-        ax.plot(x, y, lw=2, alpha=0.95, label=spectrum.source_id)
-    '''
-
     def _plot_single(self, spectrum):
         spectra_class = self.spectra_class
         source_id = spectrum.source_id

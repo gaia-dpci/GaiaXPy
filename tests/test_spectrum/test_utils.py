@@ -1,10 +1,12 @@
 import unittest
-import numpy as np
 from os import path
+
+import numpy as np
+
+from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
-from gaiaxpy.core.satellite import BANDS
-from tests.files import files_path
+from tests.files.paths import files_path
 
 # Files to test parse
 continuous_path = path.join(files_path, 'xp_continuous')
@@ -25,7 +27,6 @@ rel_tol = 1.e-6
 class TestUtils(unittest.TestCase):
 
     def test_correlation_to_covariance_bp(self):
-
         correlation_matrix = parsed_correlation[f'{BANDS.bp}_coefficient_correlations'][0]
         formal_errors = parsed_correlation[f'{BANDS.bp}_coefficient_errors'][0]
         standard_deviation = parsed_correlation[f'{BANDS.bp}_standard_deviation'][0]

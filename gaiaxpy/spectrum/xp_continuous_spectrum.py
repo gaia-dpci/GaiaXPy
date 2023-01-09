@@ -123,9 +123,9 @@ class XpContinuousSpectrum(XpSpectrum):
 
 
 def _extract_lower_triangle(matrix):
-    '''
+    """
     Extract the lower triangle of the matrix without including the diagonal.
-    '''
+    """
     # Get the indices
     indices = np.tril_indices(matrix.shape[0], k=-1)
     values = []

@@ -1,12 +1,14 @@
 import unittest
+from os import path
+
 import numpy.testing as npt
 import pandas as pd
 from numpy import ndarray, dtype
-from os import path
-from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+
 from gaiaxpy.core.satellite import BANDS
-from tests.files import files_path
-from tests.utils import get_spectrum_with_source_id
+from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+from tests.files.paths import files_path
+from tests.utils.utils import get_spectrum_with_source_id
 
 # Files to test parse
 continuous_path = path.join(files_path, 'xp_continuous')

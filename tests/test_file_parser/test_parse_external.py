@@ -1,10 +1,12 @@
 import unittest
+from os import path
+
 import pandas as pd
 from numpy import ndarray, dtype
-from os import path
-from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
+
 from gaiaxpy.file_parser.parse_external import ExternalParser
-from tests.files import files_path
+from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
+from tests.files.paths import files_path
 
 # Files to test parse
 mini_path = path.join(files_path, 'mini_files')

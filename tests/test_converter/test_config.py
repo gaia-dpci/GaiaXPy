@@ -1,7 +1,9 @@
 import unittest
-import pandas as pd
 from configparser import ConfigParser
 from os import path
+
+import pandas as pd
+
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.converter import config
 

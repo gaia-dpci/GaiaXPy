@@ -39,8 +39,7 @@ def compare_frames(file1, file2, extension, function_name):
 
 def run_output_test(self, function, filename, output_format, sampling=None, phot_systems=None):
     """
-    This class generates GaiaXPy output files. Then, it compares them with the
-    output solution files using filecmp.
+    This class generates GaiaXPy output files. Then, it compares them with the output solution files using filecmp.
     """
     if sampling is not None:
         function(mean_spectrum, sampling=sampling, output_path=output_path, output_file=filename,

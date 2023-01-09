@@ -53,7 +53,6 @@ def calibrate(input_object, sampling=None, truncation=False, output_path='.', ou
 
     Returns:
         (tuple): tuple containing:
-
             DataFrame: The values for all sampled absolute spectra.
             ndarray: The sampling used to calibrate the input spectra (user-provided or default).
     """

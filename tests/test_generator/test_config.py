@@ -16,7 +16,7 @@ _rtol, _atol = 1e-24, 1e-24
 
 class TestConfig(unittest.TestCase):
 
-    def test_load_xpsampling_from_csv_type(self):
+    def test_load_xpsampling_from_xml_type(self):
         xp_sampling = _load_xpsampling_from_xml(system=system_label)
         self.assertIsInstance(xp_sampling, dict)
 
@@ -32,7 +32,6 @@ class TestConfig(unittest.TestCase):
         npt.assert_array_equal(bands, np.array(['U', 'B', 'V', 'R', 'I']))
 
     def test_load_xpoffset(self):
-        # TODO: Remove duplicate tests in test core config
 
         # Standard system has got an offset file
         system = InternalPhotometricSystem('JKC_Std')

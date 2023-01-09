@@ -1,17 +1,30 @@
 Release notes
 =============
 
+Version 1.2.4
+-------------
+Released on 2023/01/09.
+
+* Fixed problem in the application of the flux offset for the standardised system PanSTARRS1 (PhotometricSystem.PanSTARRS1_Std). The flux offset is part of the standardisation process described in Section 2.2.1 and equation 13 in `Gaia Collaboration, Montegriffo, et al., 2022 <https://ui.adsabs.harvard.edu/abs/2022arXiv220606215G/abstract>`_. In previous versions no flux offset was applied to the flux. Flux error and magnitude were derived consistently.
+* Replaced SDSS filters (available as PhotometricSystem.SDSS) with those defined in `Doi et al. 2010, AJ, 141, 47 <https://ui.adsabs.harvard.edu/abs/2010AJ....139.1628D/abstract>`_. Note that the standardised version (PhotometricSystem.SDSS_Std) was already based on Doi et al. 2010, AJ, 141, 47 and is therefore unchanged with respect to previous versions of GaiaXPy.
+
 Version 1.2.3
 -------------
+Released on 2022/11/28.
+
 * Removed matplotlib version constraint.
 
 Version 1.2.2
 -------------
+Released on 2022/11/22.
+
 * Removed fastavro version constraint.
 * Fixed bug in calibrator with truncation (only RP value was being used).
 
 Version 1.2.1
 -------------
+Released on 2022/11/28.
+
 * Added LSST filter.
 
 Version 1.2.0

@@ -99,11 +99,7 @@ class InternalPhotometricSystem(object):
         """
         file_name = replace_file_name(self.config_file, 'filter', 'filter', bp_model, rp_model, self.label)
         file_path = get_file_path(self.config_file)
-        # Search file in file path to obtain the actual path
-        actual_path = glob(file_path + f"/**/{file_name}", recursive=True)
-        if len(actual_path) == 0:
-            raise ValueError(f'Filter file {file_name} not found in given path.')
-        self.filter_file = actual_path[0]
+        self.filter_file = join(file_path, file_name)
 
     def _load_offset_from_xml(self):
         """

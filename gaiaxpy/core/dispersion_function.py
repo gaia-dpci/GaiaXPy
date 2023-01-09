@@ -102,7 +102,7 @@ def wl_to_pwl(band, wl):
 
 
 def pwl_range(band):
-    '''
+    """
     Return the range where the dispersion function is interpolated. Outside this range extrapolation will occur.
 
     Args:
@@ -113,7 +113,7 @@ def pwl_range(band):
 
     Raises:
         ValueError: If the band string is not equal to BP or RP.
-    '''
+    """
     if band.lower() == BANDS.bp:
         return bp_pwl_range
     elif band.lower() == BANDS.rp:
@@ -123,7 +123,7 @@ def pwl_range(band):
 
 
 def wl_range(band):
-    '''
+    """
     Return the range where the dispersion function is interpolated. Outside this range extrapolation will occur.
 
     Args:
@@ -134,7 +134,7 @@ def wl_range(band):
 
     Raises:
         ValueError: If the band string is not equal to BP or RP.
-    '''
+    """
     if band.lower() == BANDS.bp:
         return bp_wl_range
     elif band.lower() == BANDS.rp:

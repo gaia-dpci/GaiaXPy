@@ -12,8 +12,10 @@ def generate(input_object, photometric_system, output_path='.', output_file='out
     """
     Synthetic photometry utility: generates synthetic photometry in a set of available systems from the input
         internally-calibrated continuously-represented mean spectra.
+
         Some standardised photometric systems include a colour-correction to the U bands which will be applied
         automatically when generating the corresponding synthetic photometry.
+
     Args:
         input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
             continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
@@ -28,6 +30,7 @@ def generate(input_object, photometric_system, output_path='.', output_file='out
             underestimated errors (see Montegriffo et al., 2022, for more details).
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
+        
     Returns:
         DataFrame: A DataFrame of all synthetic photometry results.
     """

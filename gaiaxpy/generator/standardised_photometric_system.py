@@ -16,7 +16,7 @@ class StandardisedPhotometricSystem(InternalPhotometricSystem):
         Args:
             name (str): Name of the PhotometricSystem
         """
-        super().__init__(name)
+        super().__init__(name, config_file)
         self._load_offset_from_xml()
 
     def _correct_flux(self, flux):

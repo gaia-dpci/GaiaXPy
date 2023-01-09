@@ -4,14 +4,14 @@ parse_generic.py
 Module to parse input files containing spectra.
 """
 
-import os
-import numpy as np
-import pandas as pd
-from astropy.table import Table
-from astropy.io.votable import parse_single_table
-from .cast import _cast
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
+from os.path import splitext
 
+import pandas as pd
+from astropy.io.votable import parse_single_table
+from astropy.table import Table
+
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
+from .cast import _cast
 
 valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']
 
@@ -26,7 +26,8 @@ class DataMismatchError(RuntimeError):
     """
 
     def __init__(self):
-        message = 'The file contains invalid data, the data does not match the file extension or the file does not exist.'
+        message = 'The file contains invalid data, the data does not match the file extension or the file does not' \
+                  ' exist.'
         Exception.__init__(self, message)
 
 
@@ -93,9 +94,8 @@ class GenericParser(object):
         Args:
             csv_file (str): Path to a CSV file.
             array_columns (list): List of columns in the file that contain arrays as strings.
-            matrix_columns (list of tuples): List of tuples where the first element is the number
-            of rows/columns of a square matrix which values are those contained in the second
-            element of the tuple.
+            matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
+                square matrix which values are those contained in the second element of the tuple.
 
         Returns:
             DataFrame: A pandas DataFrame representing the CSV file.
@@ -109,11 +109,9 @@ class GenericParser(object):
             raise DataMismatchError()
         if matrix_columns is not None:
             for size_column, values_column in matrix_columns:
-                df[values_column] = df.apply(lambda row: \
-                array_to_symmetric_matrix(str_to_array(row[values_column]), \
-                row[size_column]), axis=1)
+                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(str_to_array(row[values_column]),
+                                                                                   row[size_column]), axis=1)
         return df
-
 
     def _parse_fits(self, fits_file, array_columns=None, matrix_columns=None):
         """
@@ -134,9 +132,8 @@ class GenericParser(object):
         df = pd.DataFrame(fits_as_gen, columns=columns)
         if matrix_columns is not None:
             for size_column, values_column in matrix_columns:
-                df[values_column] = df.apply(lambda row: \
-                array_to_symmetric_matrix(row[values_column], \
-                row[size_column]), axis=1)
+                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column],
+                                                                                   row[size_column]), axis=1)
         return df
 
     def _parse_xml(self, xml_file, array_columns=None):
@@ -157,9 +154,8 @@ class GenericParser(object):
             raise DataMismatchError()
         if array_columns:
             columns = list(votable.columns)
-            votable_as_list = ([votable[column][index].filled() if column in \
-                                array_columns else votable[column][index] for \
-                                column in columns] for index, _ in enumerate(votable))
+            votable_as_list = ([votable[column][index].filled() if column in array_columns else votable[column][index]
+                                for column in columns] for index, _ in enumerate(votable))
             return pd.DataFrame(votable_as_list, columns=columns)
         return votable.to_pandas()
 
@@ -174,5 +170,5 @@ def _get_file_extension(file_path):
     Returns:
         str: File extension (e.g.: '.csv')
     """
-    filename, file_extension = os.path.splitext(file_path)
+    _, file_extension = splitext(file_path)
     return file_extension[1:]

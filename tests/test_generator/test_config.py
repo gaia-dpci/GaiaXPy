@@ -32,6 +32,7 @@ class TestConfig(unittest.TestCase):
         npt.assert_array_equal(bands, np.array(['U', 'B', 'V', 'R', 'I']))
 
     def test_load_xpoffset(self):
+
         # Standard system has got an offset file
         system = InternalPhotometricSystem('JKC_Std')
         xp_offset = system.offsets

@@ -5,22 +5,22 @@ Module to parse input files containing internally calibrated continuous spectra.
 """
 
 import re
+
 import numpy as np
 import pandas as pd
+from astropy.io.votable import parse_single_table
 from fastavro import __version__ as fa_version
 from packaging import version
-from astropy.io.votable import parse_single_table
+
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
+from gaiaxpy.file_parser.parse_generic import DataMismatchError
 from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
-from gaiaxpy.file_parser.parse_generic import DataMismatchError
 
 # Columns that contain arrays (as strings)
-array_columns = ['bp_coefficients', 'bp_coefficient_errors',
-                 'rp_coefficients', 'rp_coefficient_errors']
-# Pairs of the form (matrix_size (N), values_to_put_in_matrix) for columns
-# that contain matrices as strings
+array_columns = ['bp_coefficients', 'bp_coefficient_errors', 'rp_coefficients', 'rp_coefficient_errors']
+# Pairs of the form (matrix_size (N), values_to_put_in_matrix) for columns that contain matrices as strings
 matrix_columns = [('bp_n_parameters', 'bp_coefficient_correlations'),
                   ('rp_n_parameters', 'rp_coefficient_correlations')]
 
@@ -32,8 +32,8 @@ class InternalContinuousParser(GenericParser):
 
     def _parse_csv(self, csv_file):
         """
-        Parse the input CSV file and store the result in a pandas DataFrame if it
-        contains internally calibrated continuous spectra.
+        Parse the input CSV file and store the result in a pandas DataFrame if it contains internally calibrated
+            continuous spectra.
 
         Args:
             csv_file (str): Path to a CSV file.
@@ -41,15 +41,12 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
         """
-        return super()._parse_csv(
-            csv_file,
-            array_columns=array_columns,
-            matrix_columns=matrix_columns)
+        return super()._parse_csv(csv_file, array_columns=array_columns, matrix_columns=matrix_columns)
 
     def _parse_fits(self, fits_file):
         """
-        Parse the input FITS file and store the result in a pandas DataFrame if it
-        contains internally calibrated continuous spectra.
+        Parse the input FITS file and store the result in a pandas DataFrame if it contains internally calibrated
+            continuous spectra.
 
         Args:
             fits_file (str): Path to a FITS file.
@@ -65,9 +62,11 @@ class InternalContinuousParser(GenericParser):
     def _parse_xml(self, xml_file):
         """
         Parse the input XML file and store the result in a pandas DataFrame.
+
         Args:
             xml_file (str): Path to an XML file.
             array_columns (list): List of columns in the file that contain arrays as strings.
+
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
         """
@@ -91,10 +90,10 @@ class InternalContinuousParser(GenericParser):
 
     @staticmethod
     def __process_avro_record(record):
-        return {key: np.array(_get_from_dict(record, _csv_to_avro_map[key]))
-        if isinstance(_get_from_dict(record, _csv_to_avro_map[key]),
-                      list) else _get_from_dict(record, _csv_to_avro_map[key]) for
-                key in _csv_to_avro_map.keys()}
+        return {key: np.array(_get_from_dict(record, _csv_to_avro_map[key])) if
+        isinstance(_get_from_dict(record, _csv_to_avro_map[key]), list) else
+        _get_from_dict(record, _csv_to_avro_map[key]) for key in _csv_to_avro_map.keys()}
+
     @staticmethod
     def __get_records_up_to_1_4_7(avro_file):
         from fastavro import reader
@@ -121,6 +120,7 @@ class InternalContinuousParser(GenericParser):
                 for block in block_reader(fo):
                     for rec in block:
                         yield rec
+
         records = __yield_records(avro_file)
         for record in records:
             yield InternalContinuousParser.__process_avro_record(record)

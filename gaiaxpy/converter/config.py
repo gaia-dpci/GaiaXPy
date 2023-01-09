@@ -4,9 +4,10 @@ config.py
 Module to work with the converter's configuration.
 """
 
+import xml.etree.ElementTree as et
+
 import numpy as np
 import pandas as pd
-import xml.etree.ElementTree as et
 
 
 def parse_configuration_file(xml_file, columns):
@@ -30,18 +31,13 @@ def parse_configuration_file(xml_file, columns):
             for element in columns[:]:
                 if 'range' in element.lower():
                     if xp is not None and xp.find(element) is not None:
-                        result = (
-                            float(
-                                xp.find(element).get('from')), float(
-                                xp.find(element).get('to')))
+                        result = (float(xp.find(element).get('from')), float(xp.find(element).get('to')))
                         results.append(np.array(result))
                     else:
                         results.append(None)
                 elif 'matrix' in element.lower():
                     if xp is not None and xp.find(element) is not None:
-                        values = []
-                        for value in xp.find(element).iter('value'):
-                            values.append(float(value.text))
+                        values = [float(value.text) for value in xp.find(element).iter('value')]
                         results.append(np.array(values))
                     else:
                         results.append(None)
@@ -65,24 +61,19 @@ def load_config(path):
     Returns:
         DataFrame: A DataFrame containing the columns and values of the configuration file.
     """
-    return parse_configuration_file(path,
-                                    ['uniqueId',
-                                     'dimension',
-                                     'range',
-                                     'normalizedRange',
-                                     'transformedSetDimension',
-                                     'transformationMatrix'])
+    return parse_configuration_file(path, ['uniqueId', 'dimension', 'range', 'normalizedRange',
+                                           'transformedSetDimension', 'transformationMatrix'])
 
 
-def get_config(config, id):
+def get_config(config, _id):
     """
     Access the group of rows in the configuration for the given ID.
 
     Args:
-        config (str): A DataFrame containing the configuration columns and values.
-        id (int): An identifier of a set of configurations.
+        config (DataFrame): A DataFrame containing the configuration columns and values.
+        _id (int): An identifier of a set of configurations.
 
     Returns:
         DataFrame: A DataFrame containing the configuration values.
     """
-    return config.loc[config['uniqueId'] == str(id)]
+    return config.loc[config['uniqueId'] == str(_id)]

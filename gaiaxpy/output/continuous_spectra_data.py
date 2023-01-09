@@ -4,16 +4,18 @@ continuous_spectra_data.py
 Module to represent continuous spectra data.
 """
 
+from os.path import join
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from pathlib import Path
 from astropy.io import fits
 from astropy.io.votable.tree import Field, Resource, Table, VOTableFile
 from fastavro import parse_schema, writer
 from fastavro.validation import validate_many
-from os.path import join
-from .output_data import OutputData, _add_header, _build_regular_header
+
 from gaiaxpy.core.satellite import BANDS
+from .output_data import OutputData, _add_header, _build_regular_header
 
 
 class ContinuousSpectraData(OutputData):
@@ -29,12 +31,13 @@ class ContinuousSpectraData(OutputData):
             output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
-        def _generate_avro_schema(spectra_dicts):
+
+        def _generate_avro_schema(_spectra_dicts):
             """
             Generate the AVRO schema required to store the output.
 
             Args:
-                spectra_dicts (list): A list of dictionaries containing spectra.
+                _spectra_dicts (list): A list of dictionaries containing spectra.
 
             Returns:
                 dict: A dictionary containing the parsed schema that matches the input.
@@ -43,18 +46,12 @@ class ContinuousSpectraData(OutputData):
             """
             field_to_type = {
                 'source_id': 'long',
-                'bp_standard_deviation': 'float',
-                'bp_coefficients': 'string',
-                'bp_coefficient_correlations': 'string',
-                'bp_coefficient_errors': 'string',
-                'bp_n_parameters': 'int',
-                'bp_basis_function_id': 'int',
-                'rp_standard_deviation': 'float',
-                'rp_coefficients': 'string',
-                'rp_coefficient_correlations': 'string',
-                'rp_coefficient_errors': 'string',
-                'rp_n_parameters': 'int',
-                'rp_basis_function_id': 'int'
+                'bp_standard_deviation': 'float', 'rp_standard_deviation': 'float',
+                'bp_coefficients': 'string', 'rp_coefficients': 'string',
+                'bp_coefficient_correlations': 'string', 'rp_coefficient_correlations': 'string',
+                'bp_coefficient_errors': 'string', 'rp_coefficient_errors': 'string',
+                'bp_n_parameters': 'int', 'rp_n_parameters': 'int',
+                'bp_basis_function_id': 'int', 'rp_basis_function_id': 'int'
             }
 
             def build_field(keys):
@@ -63,21 +60,23 @@ class ContinuousSpectraData(OutputData):
                     field = {'name': key, 'type': field_to_type[key]}
                     fields.append(field)
                 return fields
+
             schema = {
                 'doc': 'Spectrum output.',
                 'name': 'Spectra',
                 'namespace': 'spectrum',
                 'type': 'record',
-                'fields': build_field(spectra_dicts[0].keys()),
+                'fields': build_field(_spectra_dicts[0].keys()),
             }
             # Spectrum fields to string
-            for spectrum in spectra_dicts:
-                for field, type in field_to_type.items():
-                    if type == 'string':
-                            spectrum[field] = str(tuple(spectrum[field]))
+            for spectrum in _spectra_dicts:
+                for field, _type in field_to_type.items():
+                    if _type == 'string':
+                        spectrum[field] = str(tuple(spectrum[field]))
             # Validate that records match the schema
-            validate_many(spectra_dicts, schema)
-            return parse_schema(schema), spectra_dicts
+            validate_many(_spectra_dicts, schema)
+            return parse_schema(schema), _spectra_dicts
+
         data = self.data
         # List with one dictionary per source
         spectra_dicts = data.to_dict('records')
@@ -133,18 +132,12 @@ class ContinuousSpectraData(OutputData):
         # Define formats for each type according to FITS
         column_formats = {
             'source_id': 'K',
-            'bp_standard_deviation': 'D',
-            'bp_coefficients': coefficients_format,
-            'bp_coefficient_correlations': correlations_format,
-            'bp_coefficient_errors': coefficients_format,
-            'bp_n_parameters': 'I',
-            'bp_basis_function_id': 'I',
-            'rp_standard_deviation': 'D',
-            'rp_coefficients': coefficients_format,
-            'rp_coefficient_correlations': correlations_format,
-            'rp_coefficient_errors': coefficients_format,
-            'rp_n_parameters': 'I',
-            'rp_basis_function_id': 'I'}
+            'bp_standard_deviation': 'D', 'rp_standard_deviation': 'D',
+            'bp_coefficients': coefficients_format, 'rp_coefficients': coefficients_format,
+            'bp_coefficient_correlations': correlations_format, 'rp_coefficient_correlations': correlations_format,
+            'bp_coefficient_errors': coefficients_format, 'rp_coefficient_errors': coefficients_format,
+            'bp_n_parameters': 'I', 'rp_n_parameters': 'I',
+            'bp_basis_function_id': 'I', 'rp_basis_function_id': 'I'}
         # create a list of HDUs
         hdu_list = []
         # create a header to include the sampling
@@ -156,9 +149,8 @@ class ContinuousSpectraData(OutputData):
         # Remove index from output dict
         output_by_column_dict.pop('index', None)
         spectra_keys = output_by_column_dict.keys()
-        columns = []
-        for key in spectra_keys:
-            columns.append(fits.Column(name=key, array=np.array(output_by_column_dict[key]), format=column_formats[key]))
+        columns = [fits.Column(name=key, array=np.array(output_by_column_dict[key]), format=column_formats[key]) for
+                   key in spectra_keys()]
         header = fits.Header()
         hdu = fits.BinTableHDU.from_columns(columns, header=header)
         hdu_list.append(hdu)
@@ -177,38 +169,29 @@ class ContinuousSpectraData(OutputData):
             output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
+
         def _create_fields(votable, columns):
             # self.basis_function_id = {BANDS.bp: 56, BANDS.rp: 57}
             fields_datatypes = {'source_id': 'long',
-                                f'{BANDS.bp}_standard_deviation': 'double',
-                                f'{BANDS.bp}_coefficients': 'double',
+                                f'{BANDS.bp}_standard_deviation': 'double', f'{BANDS.rp}_standard_deviation': 'double',
+                                f'{BANDS.bp}_coefficients': 'double', f'{BANDS.rp}_coefficients': 'double',
                                 f'{BANDS.bp}_coefficient_correlations': 'double',
-                                f'{BANDS.bp}_coefficient_errors': 'double',
-                                f'{BANDS.bp}_n_parameters': 'int',
-                                f'{BANDS.bp}_basis_function_id': 'int',
-                                f'{BANDS.rp}_standard_deviation': 'double',
-                                f'{BANDS.rp}_coefficients': 'double',
                                 f'{BANDS.rp}_coefficient_correlations': 'double',
-                                f'{BANDS.rp}_coefficient_errors': 'double',
-                                f'{BANDS.rp}_n_parameters': 'int',
-                                f'{BANDS.rp}_basis_function_id': 'int'}
-            fields_arraysize = {'source_id': '',
-                                f'{BANDS.bp}_standard_deviation': '',
-                                f'{BANDS.bp}_coefficients': '*',
-                                f'{BANDS.bp}_coefficient_correlations': '*',
-                                f'{BANDS.bp}_coefficient_errors': '*',
-                                f'{BANDS.bp}_n_parameters': '',
-                                f'{BANDS.bp}_basis_function_id': '',
-                                f'{BANDS.rp}_standard_deviation': '',
-                                f'{BANDS.rp}_coefficients': '*',
-                                f'{BANDS.rp}_coefficient_correlations': '*',
-                                f'{BANDS.rp}_coefficient_errors': '*',
-                                f'{BANDS.rp}_n_parameters': '',
-                                f'{BANDS.rp}_basis_function_id': ''}
-            fields = [Field(votable, name=column, datatype=fields_datatypes[column], arraysize=fields_arraysize[column])
-                      if fields_arraysize[column] != '' else Field(votable, name=column,
-                      datatype=fields_datatypes[column]) for column in columns]
-            return fields
+                                f'{BANDS.bp}_coefficient_errors': 'double', f'{BANDS.rp}_coefficient_errors': 'double',
+                                f'{BANDS.bp}_n_parameters': 'int', f'{BANDS.rp}_n_parameters': 'int',
+                                f'{BANDS.bp}_basis_function_id': 'int', f'{BANDS.rp}_basis_function_id': 'int'}
+            fields_array_size = {'source_id': '',
+                                 f'{BANDS.bp}_standard_deviation': '', f'{BANDS.rp}_standard_deviation': '',
+                                 f'{BANDS.bp}_coefficients': '*', f'{BANDS.rp}_coefficients': '*',
+                                 f'{BANDS.bp}_coefficient_correlations': '*',
+                                 f'{BANDS.rp}_coefficient_correlations': '*',
+                                 f'{BANDS.bp}_coefficient_errors': '*', f'{BANDS.rp}_coefficient_errors': '*',
+                                 f'{BANDS.bp}_n_parameters': '', f'{BANDS.rp}_n_parameters': '',
+                                 f'{BANDS.bp}_basis_function_id': '', f'{BANDS.rp}_basis_function_id': ''}
+            return [Field(votable, name=column, datatype=fields_datatypes[column], arraysize=fields_array_size[column])
+                    if fields_array_size[column] != '' else
+                    Field(votable, name=column, datatype=fields_datatypes[column]) for column in columns]
+
         spectra_df = self.data
         # Create a new VOTable file
         votable = VOTableFile()
@@ -233,10 +216,8 @@ class ContinuousSpectraData(OutputData):
 
     def _get_spectra_df(self):
         data = self.data
-        spectra_bp_df = pd.DataFrame.from_records(
-                        [spectrum[BANDS.bp]._spectrum_to_dict() for spectrum in data])
-        spectra_rp_df = pd.DataFrame.from_records(
-                        [spectrum[BANDS.rp]._spectrum_to_dict() for spectrum in data])
+        spectra_bp_df = pd.DataFrame.from_records([spectrum[BANDS.bp]._spectrum_to_dict() for spectrum in data])
+        spectra_rp_df = pd.DataFrame.from_records([spectrum[BANDS.rp]._spectrum_to_dict() for spectrum in data])
         spectra_df = spectra_bp_df.merge(spectra_rp_df, on='source_id', how='outer')
         for col in spectra_df.columns:
             if 'xp' in col:

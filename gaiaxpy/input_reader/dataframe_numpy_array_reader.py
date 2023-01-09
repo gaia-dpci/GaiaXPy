@@ -1,5 +1,3 @@
-
-
 class DataFrameNumPyArrayReader(object):
 
     def __init__(self, content, array_columns):

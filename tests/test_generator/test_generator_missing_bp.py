@@ -13,8 +13,8 @@ _rtol, _atol = 1e-7, 1e-7
 no_correction_solution_path = join(files_path, 'generator_solution', 'generator_solution_with_missing_BP.csv')
 correction_solution_path = join(files_path, 'generator_solution',
                                 'generator_solution_with_missing_BP_error_correction.csv')
-solution_df_no_corr = pd.read_csv(no_correction_solution_path)
-solution_df_with_corr = pd.read_csv(correction_solution_path)
+solution_df_no_corr = pd.read_csv(no_correction_solution_path, float_precision='round_trip')
+solution_df_with_corr = pd.read_csv(correction_solution_path, float_precision='round_trip')
 
 phot_systems = [PhotometricSystem.Els_Custom_W09_S2, PhotometricSystem.Euclid_VIS, PhotometricSystem.Gaia_2,
                 PhotometricSystem.Gaia_DR3_Vega, PhotometricSystem.Halpha_Custom_AB, PhotometricSystem.H_Custom,

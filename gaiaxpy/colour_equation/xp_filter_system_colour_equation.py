@@ -12,7 +12,6 @@ from tqdm import tqdm
 from gaiaxpy.config.paths import filters_path
 from gaiaxpy.core.generic_functions import cast_output, _validate_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
-from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
 from gaiaxpy.generator.photometric_system import PhotometricSystem
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData

@@ -1,12 +1,13 @@
+import tempfile
 from configparser import ConfigParser
 from os import walk
-from os.path import isdir
-from pathlib import Path
 from re import match
+from os.path import isdir
 
 from gaiaxpy.core.config import ADDITIONAL_SYSTEM_PREFIX
 
-_CFG_FILE_PATH = Path('~/.gaiaxpyrc').expanduser()
+tmp_config_file = tempfile.NamedTemporaryFile()
+_CFG_FILE_PATH = tmp_config_file.name
 
 
 class GenCfg:
@@ -51,7 +52,7 @@ def write_config(cfg_details, config_file=None):
     config['filter'] = vars(cfg_details)
     with open(config_file, 'w') as cf:
         config.write(cf)
-    print(f"Configuration saved. Additional systems version: {cfg_details.version}.")
+    print(f"Loading systems... Additional systems version is: {cfg_details.version}.")
 
 
 def load_config(config_file=None):
@@ -66,8 +67,17 @@ def get_additional_filters_path(config_file=None):
     try:
         config = load_config(config_file)
         return config['filter']['filters_dir']
-    except IOError:
+    except (IOError, KeyError):
         return None
+
+
+def contains_filter_key(config_file=None):
+        config = load_config(config_file)
+        try:
+            k =  bool(config['filter']['filters_dir'])
+        except (IOError, KeyError):
+            return False
+        return bool(k)
 
 
 def get_additional_filters_names(config_file=None):

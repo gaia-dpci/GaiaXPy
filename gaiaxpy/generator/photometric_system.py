@@ -126,21 +126,3 @@ def __load_additional_systems(_filters_path=None, config_file=None):
     else:
         create_config(_filters_path, config_file)
     return AutoName('PhotometricSystem', _get_system_tuples())
-
-
-def remove_additional_systems():
-    """
-    Remove previously loaded additional photometric systems. If no additional systems have been added, no changes will
-    be made.
-
-    Returns:
-        Enum: PhotometricSystem object corresponding to an enumeration of the updated available systems.
-    """
-    if exists(_CFG_FILE_PATH):
-        remove(_CFG_FILE_PATH)
-        print('Additional systems configuration successfully removed.')
-    else:
-        print('No additional configuration exists.')
-    _PhotometricSystem = AutoName('PhotometricSystem', _get_system_tuples())
-    _PhotometricSystem.get_available_systems = get_available_systems
-    return _PhotometricSystem

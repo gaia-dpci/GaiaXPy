@@ -1,11 +1,15 @@
 import unittest
 from os import path
+from os.path import join
 
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
 from numpy import ndarray
-from gaiaxpy.generator.photometric_system import PhotometricSystem, _system_is_standard
+
+from gaiaxpy import generate
+from gaiaxpy.core.generic_functions import _get_built_in_systems
+from gaiaxpy.generator.photometric_system import PhotometricSystem, load_additional_systems, remove_additional_systems
 from tests.files.paths import files_path
 
 
@@ -83,3 +87,25 @@ class TestPhotometricSystem(unittest.TestCase):
     def tearDown(self):
         del self.phot_system_names
         del self.phot_systems
+
+
+class TestAdditionalSystems(unittest.TestCase):
+
+    def test_user_interaction(self):
+        phot_system_list = [s for s in PhotometricSystem.get_available_systems().split(', ')]
+        built_in_systems = _get_built_in_systems()
+        self.assertEqual(set(phot_system_list), set(built_in_systems))
+        _PhotometricSystem = load_additional_systems(join(files_path, 'additional_filters'))
+        new_phot_systems = [s for s in _PhotometricSystem.get_available_systems().split(', ')]
+        self.assertEqual(len(phot_system_list) + 3, len(new_phot_systems))
+        ps = [_PhotometricSystem[s] for s in ['Pristine', 'SDSS', 'PanSTARRS1_Std', 'USER_Panstarrs1Std', 'USER_Sdss',
+                                              'USER_Pristine']]
+        output = generate(join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.ecsv'),
+                          photometric_system=ps)
+        built_in_columns = [c for c in output.columns if not c.startswith('USER')]
+        built_in_columns.remove('source_id')
+        for column in built_in_columns:
+            npt.assert_array_equal(output[column].values, output[f'USER_{column}'].values)
+        _PhotometricSystem = remove_additional_systems()
+        phot_system_list = [s for s in _PhotometricSystem.get_available_systems().split(', ')]
+        self.assertEqual(set(phot_system_list), set(built_in_systems))

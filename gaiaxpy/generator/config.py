@@ -1,13 +1,12 @@
 import tempfile
 from configparser import ConfigParser
-from os import walk
+from os import walk, urandom
 from re import match
-from os.path import isdir
+from os.path import isdir, join
 
 from gaiaxpy.core.config import ADDITIONAL_SYSTEM_PREFIX
 
-tmp_config_file = tempfile.NamedTemporaryFile()
-_CFG_FILE_PATH = tmp_config_file.name
+_CFG_FILE_PATH = join(tempfile.gettempdir(), urandom(24).hex())
 
 
 class GenCfg:

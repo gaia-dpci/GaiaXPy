@@ -5,6 +5,7 @@ Module for the management of photometric systems.
 """
 
 from configparser import ConfigParser
+from os import remove
 from os.path import exists
 
 from aenum import Enum
@@ -92,14 +93,18 @@ def get_current_filters_path():
     return _config_parser['filter']['filters_dir']
 
 
-def load_additional_systems(_filters_path=None):
+def load_additional_systems(_systems_path=None):
     """
     Load additional photometric systems.
 
     Args:
-        _filters_path (str): Path to directory containing the additional filter files.
+        _systems_path (str): Path to directory containing the additional filter files. If not provided, the program
+        will ask the user to input one.
+
+    Returns:
+        Enum: PhotometricSystem object corresponding to an enumeration of the updated available systems.
     """
-    updated_enum = __load_additional_systems(_filters_path, _CFG_FILE_PATH)
+    updated_enum = __load_additional_systems(_systems_path, _CFG_FILE_PATH)
     updated_enum.get_available_systems = get_available_systems
     return updated_enum
 
@@ -121,3 +126,21 @@ def __load_additional_systems(_filters_path=None, config_file=None):
     else:
         create_config(_filters_path, config_file)
     return AutoName('PhotometricSystem', _get_system_tuples())
+
+
+def remove_additional_systems():
+    """
+    Remove previously loaded additional photometric systems. If no additional systems have been added, no changes will
+    be made.
+
+    Returns:
+        Enum: PhotometricSystem object corresponding to an enumeration of the updated available systems.
+    """
+    if exists(_CFG_FILE_PATH):
+        remove(_CFG_FILE_PATH)
+        print('Additional systems configuration successfully removed.')
+    else:
+        print('No additional configuration exists.')
+    _PhotometricSystem = AutoName('PhotometricSystem', _get_system_tuples())
+    _PhotometricSystem.get_available_systems = get_available_systems
+    return _PhotometricSystem

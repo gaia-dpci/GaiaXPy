@@ -123,8 +123,8 @@ class InternalPhotometricSystem(object):
             # Remove configuration file if it exists to avoid issues on reloading
             if exists(_CFG_FILE_PATH):
                 remove(_CFG_FILE_PATH)
-            raise ValueError(f'More than one filter named {self.label.replace(f"{ADDITIONAL_SYSTEM_PREFIX}_", "")}'
-                             f' were found. Filter names in the given directory should be unique. Operation aborted.')
+            raise ValueError(f'More than one system named {self.label.replace(f"{ADDITIONAL_SYSTEM_PREFIX}_", "")}'
+                             f' were found. System names in the given directory should be unique. Operation aborted.')
         self.filter_file = actual_path[0]
 
     def _load_offset_from_xml(self):

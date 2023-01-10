@@ -29,19 +29,19 @@ def file_name_is_compliant(file_name):
     return match(regex, file_name) is not None
 
 
-def create_config(filters_path=None, config_file=None):
+def create_config(systems_path=None, config_file=None):
     quotes = ["'", '"']
-    if not filters_path:
-        filters_path = input('Please enter the path to the filters directory: ')
-    filters_path = filters_path[1:-1] if filters_path[0] in quotes and filters_path[-1] in quotes else filters_path
+    if not systems_path:
+        systems_path = input('Please enter the path to the systems directory: ')
+    systems_path = systems_path[1:-1] if systems_path[0] in quotes and systems_path[-1] in quotes else systems_path
     # Get filters version
-    files = get_file_names_recursively(filters_path)
+    files = get_file_names_recursively(systems_path)
     version = [f.split('.')[1].split('_')[-1] for f in files]
     if len(set(version)) != 1:
-        raise ValueError('More than one version detected in the additional filters. This is currently not allowed.')
+        raise ValueError('More than one version detected in the additional systems. This is currently not allowed.')
     elif len(set(version)) == 1:
         version = version[0]
-    cfg_details = GenCfg(filters_path, version)
+    cfg_details = GenCfg(systems_path, version)
     write_config(cfg_details, config_file)
 
 
@@ -51,7 +51,7 @@ def write_config(cfg_details, config_file=None):
     config['filter'] = vars(cfg_details)
     with open(config_file, 'w') as cf:
         config.write(cf)
-    print(f"Configuration saved. Filters version {cfg_details.version}.")
+    print(f"Configuration saved. Additional systems version: {cfg_details.version}.")
 
 
 def load_config(config_file=None):

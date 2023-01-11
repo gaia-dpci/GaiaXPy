@@ -1,6 +1,12 @@
 Release notes
 =============
 
+Version 2.0.0
+-------------
+Released on 2023/01/11.
+
+* Added functionality to load external files that contain photometric systems.
+
 Version 1.2.4
 -------------
 Released on 2023/01/09.

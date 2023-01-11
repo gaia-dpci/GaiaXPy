@@ -3,13 +3,15 @@ photometry_dataframe.py
 ====================================
 Module to represent a photometry dataframe.
 """
+from os.path import join
 from pathlib import Path
-from fastavro import parse_schema, writer
+
 from astropy.io import fits
 from astropy.io.votable import from_table, writeto
 from astropy.table import Table
+from fastavro import parse_schema, writer
 from fastavro.validation import validate_many
-from os.path import join
+
 from .output_data import OutputData, _add_header, _build_photometry_header
 
 
@@ -26,15 +28,11 @@ class PhotometryData(OutputData):
             output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
+
         def build_field(keys):
-            fields = []
-            for key in keys:
-                if key == 'source_id':
-                    field = {'name': key, 'type': 'long'}
-                else:
-                    field = {'name': key, 'type': 'float'}
-                fields.append(field)
-            return fields
+            return [{'name': key, 'type': 'long'} if key == 'source_id' else {'name': key, 'type': 'float'} for key in
+                    keys]
+
         phot_list = self.data.to_dict('records')
         schema = {
             'doc': 'Output photometry.',

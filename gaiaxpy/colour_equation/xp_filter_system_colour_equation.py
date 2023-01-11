@@ -52,9 +52,8 @@ def _fill_systems_details(systems_to_correct):
 
 def _create_rows(single_system_df, system, colour_band_0, colour_band_1, systems_details):
     new_system_rows = [_generate_output_row(row, system, colour_band_0, colour_band_1, systems_details) for index, row
-                       in
-                       tqdm(single_system_df.iterrows(), desc='Applying colour equation', total=len(single_system_df),
-                            unit=pbar_units['colour_eq'], colour=pbar_colour, leave=False)]
+                       in tqdm(single_system_df.iterrows(), desc='Applying colour equation', total=len(single_system_df),
+                               unit=pbar_units['colour_eq'], colour=pbar_colour, leave=False)]
     return pd.DataFrame(new_system_rows)
 
 
@@ -163,6 +162,7 @@ def apply_colour_equation(input_synthetic_photometry, photometric_system=None, o
                           output_file='corrected_photometry', output_format=None, save_file=True):
     """
     Apply the available colour correction to the input photometric system(s).
+    
     Args:
         input_synthetic_photometry (DataFrame): Input photometry as returned by GaiaXPy generator.
         photometric_system (PhotometricSystem, list of PhotometricSystem): The photometric systems over which to apply
@@ -171,6 +171,7 @@ def apply_colour_equation(input_synthetic_photometry, photometric_system=None, o
         output_file (str): The name of the output file.
         output_format (str): The format of the output file (csv, fits, xml).
         save_file (bool): Whether to save the output file.
+    
     Returns:
         DataFrame: The input photometry with colour equations applied if it corresponds.
     """

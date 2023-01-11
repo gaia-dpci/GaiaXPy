@@ -12,8 +12,10 @@ def generate(input_object, photometric_system, output_path='.', output_file='out
     """
     Synthetic photometry utility: generates synthetic photometry in a set of available systems from the input
         internally-calibrated continuously-represented mean spectra.
+
         Some standardised photometric systems include a colour-correction to the U bands which will be applied
         automatically when generating the corresponding synthetic photometry.
+
     Args:
         input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
             continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
@@ -28,18 +30,10 @@ def generate(input_object, photometric_system, output_path='.', output_file='out
             underestimated errors (see Montegriffo et al., 2022, for more details).
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
+        
     Returns:
         DataFrame: A DataFrame of all synthetic photometry results.
     """
-
-    def create_internal_systems(_photometric_system):
-        if isinstance(_photometric_system, PhotometricSystem):
-            _internal_photometric_system = [_photometric_system].copy()
-        elif isinstance(_photometric_system, list):
-            _internal_photometric_system = _photometric_system.copy()
-        else:
-            raise ValueError('Parameter photometric_system must be either a PhotometricSystem or a list.')
-        return _internal_photometric_system, _internal_photometric_system.copy()
 
     def is_gaia_initially_in_systems(_internal_photometric_system, _gaia_system):
         system_names = [s.name for s in _internal_photometric_system]
@@ -47,7 +41,7 @@ def generate(input_object, photometric_system, output_path='.', output_file='out
 
     # colour_equation should be always true as it is part of the definition of standardised systems.
     colour_equation = True
-    # TODO: merge this statement with _validate_arguments. "If not photometric system" did not seem to work, check.
+    # TODO: merge this statement with _validate_arguments. "if not photometric_system" didn't seem to work, check again.
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')
     _validate_arguments(generate.__defaults__[1], output_file, save_file)

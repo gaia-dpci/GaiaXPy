@@ -1,5 +1,3 @@
-
-
 class ArchiveReader(object):
 
     def __init__(self, function, user, password):

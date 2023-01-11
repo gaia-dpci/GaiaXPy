@@ -101,6 +101,7 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
                            output_file='output_corrected_photometry', output_format=None, save_file=True):
     """
     Apply error correction (see Montegriffo et al., 2022, for more details). Infer photometric systems if not specified.
+
     Args:
         input_multi_photometry (DataFrame): Photometry DataFrame, can contain photometry for one or more systems.
         photometric_system (obj): Desired photometric system or list of photometric systems.
@@ -110,6 +111,7 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
             in the same format as the input file.
         save_file (bool): Whether to save the output in a file. If false, output_format and output_file_name are
             ignored.
+
     Returns:
         DataFrame: A DataFrame of all synthetic photometry with corrected errors for the systems for which it is
             possible.

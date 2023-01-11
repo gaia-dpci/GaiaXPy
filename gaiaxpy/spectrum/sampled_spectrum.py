@@ -5,33 +5,30 @@ Module to represent a sampled spectrum.
 """
 
 import math
-import numpy as np
-import matplotlib.pyplot as plt
-from os import path
+from os.path import join
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 from .generic_spectrum import Spectrum
 
 
 class SampledSpectrum(Spectrum):
     """
-    A spectrum defined by a set of discrete measurements. Each measurement is
-    defined by a position in wavelength (or pseudo-wavelength), a measured flux
-    and an associated flux error.
-    Specific implementations of this class will define the units in use for
-    positions and fluxes.
+    A spectrum defined by a set of discrete measurements. Each measurement is defined by a position in wavelength
+        (or pseudo-wavelength), a measured flux and an associated flux error. Specific implementations of this class
+        will define the units in use for positions and fluxes.
     """
 
-    def __init__(
-            self,
-            source_id,
-            sampling_grid):
+    def __init__(self, source_id, sampling_grid):
         """
         Initialise a sampled spectrum.
 
         Args:
             source_id (str): Source identifier.
-            sampling_grid (ndarray): 1D array containing the positions of the samples
-                (or discrete measurements) for this spectrum.
+            sampling_grid (ndarray): 1D array containing the positions of the samples (or discrete measurements) for
+                this spectrum.
         """
         Spectrum.__init__(self, source_id)
         self.n_samples = np.size(sampling_grid)
@@ -91,24 +88,20 @@ class SampledSpectrum(Spectrum):
     def _save_figure(self, output_path, file_name, format):
         if output_path:
             Path(output_path).mkdir(parents=True, exist_ok=True)
-            plt.savefig(
-                path.join(output_path, f'{file_name}.{format}'),
-                format=format,
-                transparent=False)
+            plt.savefig(join(output_path, f'{file_name}.{format}'), format=format, transparent=False)
 
     @staticmethod
     def _sample_flux(coefficients, design_matrix):
         """
-        Given a set of coefficients to be applied to a set of basis functions and
-        a design matrix containing the evaluation of each basis function at the
-        positions corresponding to the samples, this method computes the flux values
-        for each sample.
+        Given a set of coefficients to be applied to a set of basis functions and a design matrix containing the
+            evaluation of each basis function at the positions corresponding to the samples, this method computes the
+            flux values for each sample.
 
         Args:
-            coefficients (ndarray): 1D array containing the coefficients multiplying
-                the basis functions in the continuous representation.
-            design_matrix (ndarray): 2D array containing the evaluation of the basis
-                functions on the desired sampling grid.
+            coefficients (ndarray): 1D array containing the coefficients multiplying the basis functions in the
+                continuous representation.
+            design_matrix (ndarray): 2D array containing the evaluation of the basis functions on the desired sampling
+                grid.
 
         Returns:
             ndarray: 1D array containing the flux values for all samples.
@@ -118,25 +111,21 @@ class SampledSpectrum(Spectrum):
     @staticmethod
     def _sample_error(covariance, design_matrix, standard_deviation):
         """
-        Given the covariance matrix and standard deviation of the least squares
-        solution defining the continuous representation of the spectrum in terms
-        of basis functions and a design matrix containing the evaluation of each
-        basis function at the positions corresponding to the samples, this method
-        computes the error associated to the flux value for each sample.
+        Given the covariance matrix and standard deviation of the least squares solution defining the continuous
+            representation of the spectrum in terms of basis functions and a design matrix containing the evaluation
+            of each basis function at the positions corresponding to the samples, this method computes the error
+            associated to the flux value for each sample.
 
         Args:
-            covariance (ndarray): 2D array containing the elements of the covariance
-                    matrix.
-            design_matrix (ndarray): 2D array containing the evaluation of the basis
-                    functions on the desired sampling grid.
+            covariance (ndarray): 2D array containing the elements of the covariance matrix.
+            design_matrix (ndarray): 2D array containing the evaluation of the basis functions on the desired sampling
+                grid.
             standard_deviation (float): Standard deviation.
 
         Returns:
             ndarray: 1D array containing the errors in flux for all samples.
         """
         n_samples = design_matrix.shape[1]
-        error = np.zeros(n_samples)
-        for i in range(n_samples):
-            error[i] = math.sqrt(design_matrix[:, i].dot(covariance).dot(
-                design_matrix[:, i])) * standard_deviation
-        return error
+        error = [math.sqrt(design_matrix[:, i].dot(covariance).dot(design_matrix[:, i])) * standard_deviation for i in
+                 range(n_samples)]
+        return np.array(error)

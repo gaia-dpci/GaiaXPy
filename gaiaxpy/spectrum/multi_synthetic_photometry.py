@@ -28,18 +28,12 @@ class MultiSyntheticPhotometry(object):
     Synthetic photometry derived from Gaia spectra in multiple photometric systems.
     """
 
-    def __init__(
-            self,
-            photometric_system,
-            photometries
-            ):
+    def __init__(self, photometric_system, photometries):
         """
         Initialise a synthetic photometry in multiple photometric systems.
-
-        TODO: add args.
         """
         self.photometric_system = photometric_system
-        # One element per source_id, each subelement corresponds to one photometric_system
+        # One element per source_id, each sub element corresponds to one photometric_system
         self.photometries = photometries
         self.source_ids = _get_source_ids(photometries)
         self.mags, self.fluxes, self.errors = _generate_variables(photometries)
@@ -66,16 +60,17 @@ class MultiSyntheticPhotometry(object):
         return pd.DataFrame(list_of_dicts)
 
     def _field_to_dict(self, values, name):
-        def _build_dict_keys(system_bands_tuples, name):
+        def _build_dict_keys(_system_bands_tuples, _name):
             dict_keys = []
-            for system_bands in system_bands_tuples:
+            for system_bands in _system_bands_tuples:
                 system = system_bands[0]
                 bands = system_bands[1]
                 for band in bands:
-                    dict_keys.append(f'{system}_{name}_{band}')
+                    dict_keys.append(f'{system}_{_name}_{band}')
             return dict_keys
-        system_bands_tuples = [(phot_system.get_system_label(), phot_system.get_bands())
-                                for phot_system in self.photometric_system]
+
+        system_bands_tuples = [(phot_system.get_system_label(), phot_system.get_bands()) for phot_system in
+                               self.photometric_system]
         keys_list = _build_dict_keys(system_bands_tuples, name)
         values = _flatten_list(values)
         return {key: value for key, value in zip(keys_list, values)}

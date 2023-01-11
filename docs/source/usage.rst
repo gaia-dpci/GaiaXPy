@@ -178,8 +178,8 @@ Synthetic photometry generator
 The synthetic photometry utility uses the method :python:`generate` to return a DataFrame with the generated synthetic photometry results.
 Magnitudes, fluxes and flux errors are computed for each filter. The synthetic fluxes are given in units
 of W nm :superscript:`-1` m :superscript:`-2` for photometric systems on VEGAMAG and W Hz :superscript:`-1` m :superscript:`-2`
-for systems in AB. See also Gaia Collaboration, Montegriffo et al. 2022, Gaia Data Release 3: The Galaxy in your preferred
-colours. Synthetic photometry from Gaia low-resolution spectra.
+for systems in AB. See also `Gaia Collaboration, Montegriffo et al. 2022, Gaia Data Release 3: The Galaxy in your preferred
+colours. Synthetic photometry from Gaia low-resolution spectra <https://arxiv.org/abs/2206.06215>`_.
 
 .. code-block:: python
 
@@ -190,8 +190,7 @@ colours. Synthetic photometry from Gaia low-resolution spectra.
     generated_data = generate(mean_spectrum_file, phot_system, save_file=False)
 
 `This table <_static/images/PhotometricSystem_table.pdf>`_ lists the available systems providing references for the passband definitions.
-The last column indicates the presence of a standardised version of the same set of filters (see
-Gaia Collaboration, Montegriffo et al. 2022 for details). The asterisk for the HST WFC3 UVIS and
+The last column indicates the presence of a standardised version of the same set of filters (see `Gaia Collaboration, Montegriffo et al. 2022 <https://arxiv.org/abs/2206.06215>`_ for details). The asterisk for the HST WFC3 UVIS and
 ACS WFC systems indicates that only a small selection (f438w, f606w, f814w) of the bands in these
 two systems have been standardised using the HUGS catalogue (Nardiello, D., et al. 2018, The Hubble Space Telescope UV Legacy Survey of Galactic Globular
 Clusters - XVII. Public Catalogue Release, 481, 3382–3393). These are available as HST_HUGS in GaiaXPy.
@@ -206,6 +205,8 @@ The complete list of the systems included in the package can also be obtained as
 
     PhotometricSystem.get_available_systems()
 
+Request photometric systems
+---------------------------
 Users can request the addition of other photometric systems by raising an `issue via GitHub <https://github.com/gaia-dpci/GaiaXPy/issues>`_.
 The main conditions for adding a new system are the following:
 
@@ -220,6 +221,17 @@ The main conditions for adding a new system are the following:
   * a reference for the source of all the above info (especially the transmission curves) must be provided.
 
 All the available options for this method can be found in :ref:`generate <generate>`.
+
+Downloadable SVO systems
+------------------------
+The Spanish Virtual Observatory (`SVO <https://svo.cab.inta-csic.es/main/index.php>`_) will shortly provide additional files that
+can be downloaded from their webpage and then loaded into GaiaXPy version 2.0.0 or later.
+
+These files will contain additional photometric systems from which synthetic photometry can be generated in the same way it is done with the built-in GaiaXPy systems.
+
+A tutorial on how to use this functionality will be available in the main GaiaXPy webpage.
+
+The relevant links will be available here.
 
 -------
 Plotter

@@ -1,10 +1,11 @@
-import pandas as pd
 from os import path
+
+import pandas as pd
+
 from .dataframe_reader import DataFrameReader
 from .file_reader import FileReader
 from .list_reader import ListReader
 from .query_reader import QueryReader
-
 
 default_extension = 'csv'
 
@@ -52,6 +53,7 @@ class InputReader(object):
             parsed_data, extension = self._string_reader()
         else:
             raise ValueError('The input provided does not match any of the expected input types.')
+        # TODO: Try "if not extension", previously failed.
         if extension is None:
             extension = default_extension
         parsed_data['source_id'] = parsed_data['source_id'].astype('int64')

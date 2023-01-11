@@ -40,4 +40,4 @@ Since GaiaXPy was originally published, two issues with photometric filters have
 
 **PanSTARRS1_Std**: Due to a bug in GaiaXPy, the synthetic photometry for the standardized PanSTARRS1 y band (contained in the fields y_ps1_flux, y_ps1_flux_error and y_ps1_mag) has been generated without applying the flux offset mitigating the systematic effect at the faint end due to background issues (also referred to as hockey-stick, see Section 2.2.1 and equation 13 in `Gaia Collaboration, Montegriffo, et al., 2022 <https://ui.adsabs.harvard.edu/abs/2022arXiv220606215G/abstract>`_). The offset should have been applied to the synthetic flux and then propagated to the flux error and magnitude. However, no offset was being applied.
 
-Both issues were fixed in GaiaXPy version 1.2.4.
+Both issues were **fixed in GaiaXPy version 1.2.4**.

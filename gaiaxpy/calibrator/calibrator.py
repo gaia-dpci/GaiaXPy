@@ -36,6 +36,7 @@ def calibrate(input_object, sampling=None, truncation=False, output_path='.', ou
     absolute system. An absolute spectrum sampled on a user-defined or default wavelength grid is created for each
     set of BP and RP input spectra. If either band is missing, the output spectrum will only cover the range covered
     by the available data.
+
     Args:
         input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
             continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
@@ -49,6 +50,7 @@ def calibrate(input_object, sampling=None, truncation=False, output_path='.', ou
         save_file (bool): Whether to save the output in a file. If false, output_format and output_file are ignored.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
+        
     Returns:
         (tuple): tuple containing:
             DataFrame: The values for all sampled absolute spectra.
@@ -63,12 +65,15 @@ def _calibrate(input_object, sampling=None, truncation=False, output_path='.', o
                output_format=None, save_file=True, bp_model='v375wi', rp_model='v142r', username=None, password=None):
     """
     Internal method of the calibration utility. Refer to "calibrate".
+    
     Args:
         bp_model (str): BP model to use.
         rp_model (str): RP model to use.
+    
     Returns:
         DataFrame: A list of all sampled absolute spectra.
         ndarray: The sampling used to calibrate the spectra.
+    
     Raises:
         ValueError: If the sampling is out of the expected boundaries.
     """
@@ -90,9 +95,11 @@ def _calibrate(input_object, sampling=None, truncation=False, output_path='.', o
 def _create_merge(xp, sampling):
     """
     Create the weight information on the input sampling grid.
+    
     Args:
         xp (str): Band (either BP or RP).
         sampling (ndarray): 1D array containing the sampling grid.
+    
     Returns:
         dict: A dictionary containing a BP and an RP array with weights.
     """
@@ -159,6 +166,7 @@ def _create_spectra(parsed_spectrum_file, truncation, design_matrices, merge):
 def _create_spectrum(row, truncation, design_matrix, merge):
     """
     Create a single sampled absolute spectrum from the input continuously-represented mean spectrum and design matrix.
+
     Args:
         row (DataFrame): Single row in a DataFrame containing the entry for one source in the mean spectra file. This
             will include columns for both bands (although one could be missing).
@@ -167,6 +175,7 @@ def _create_spectrum(row, truncation, design_matrix, merge):
             user-defined or default).
         merge (dict): Dictionary containing an array of weights per BP and one for RP. These have one value per sample
             and define the contributions from BP and RP to the joined absolute spectrum.
+
     Returns:
         AbsoluteSampledSpectrum: The sampled absolute spectrum.
     """

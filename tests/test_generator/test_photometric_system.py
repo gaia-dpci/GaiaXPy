@@ -101,7 +101,7 @@ class TestAdditionalSystems(unittest.TestCase):
         ps = [_PhotometricSystem[s] for s in ['Pristine', 'SDSS', 'PanSTARRS1_Std', 'USER_Panstarrs1Std', 'USER_Sdss',
                                               'USER_Pristine']]
         output = generate(join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.ecsv'),
-                          photometric_system=ps)
+                          photometric_system=ps, save_file=False)
         built_in_columns = [c for c in output.columns if not c.startswith('USER')]
         built_in_columns.remove('source_id')
         for column in built_in_columns:

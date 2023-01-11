@@ -1,4 +1,5 @@
 import tempfile
+import sys
 from configparser import ConfigParser
 from os import walk, urandom
 from re import match
@@ -21,7 +22,13 @@ class GenCfg:
 
 def get_file_names_recursively(dir_path):
     all_files = [f for _, _, fn in walk(dir_path) for f in fn]
-    return [f for f in all_files if file_name_is_compliant(f)]
+    compliant_files = [f for f in all_files if file_name_is_compliant(f)]
+    if len(compliant_files) == 0:
+        raise ValueError('No system files found in the given directory. Please check your files.')
+    elif len(compliant_files) < len(all_files):
+        message = 'Some files in the directory do not correspond to system files. The program will ignore them.'
+        print(f'UserWarning: {message}', file=sys.stderr)
+    return compliant_files
 
 
 def file_name_is_compliant(file_name):

@@ -5,7 +5,7 @@ Module that implements the Cholesky functionality.
 """
 
 import pandas as pd
-from numpy import diag, dot, identity
+from numpy import diag, dot, identity, ndarray, sqrt
 from scipy.linalg import cholesky, solve_triangular
 
 from gaiaxpy.core.satellite import BANDS
@@ -39,13 +39,13 @@ def get_inverse_covariance_matrix(input_object, band=None):
         input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
             continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
         band (str): Chosen band: 'bp' or 'rp'. If no band is passed, the function will compute the inverse covariance
-            for both 'bp' and 'rp'.
+            for both 'bp' and 'rp''
 
     Returns:
         DataFrame or ndarray: DataFrame containing the source IDs and the output inverse covariance matrices for the
             sources in the input object if it contains more than one source or no band is passed to the function.
             The function will return a ndarray (of shape (55, 55)) if there is only one source ID in the input data and
-                a single band is selected.
+            a single band is selected.
     """
     parsed_input_data, extension = InputReader(input_object, get_inverse_covariance_matrix)._read()
     bands_output = []
@@ -55,9 +55,10 @@ def get_inverse_covariance_matrix(input_object, band=None):
     else:
         bands_to_process = [band]
         output_columns = ['source_id', f'{band}_inverse_covariance']
-    for xp in bands_to_process:
-        xp_errors = parsed_input_data[f'{xp}_coefficient_errors']
-        xp_correlation_matrix = parsed_input_data[f'{xp}_coefficient_correlations']
+    for b in bands_to_process:
+        # The formal errors need to be scaled by the inverse standard deviation.
+        xp_errors = parsed_input_data[f'{b}_coefficient_errors'] /parsed_input_data[f'{b}_standard_deviation']
+        xp_correlation_matrix = parsed_input_data[f'{b}_coefficient_correlations']
         L_inv_iterable = map(__get_inv_cholesky_decomp_lower, xp_errors, xp_correlation_matrix)
         band_output = map(__get_dot_product, L_inv_iterable)
         bands_output.append(band_output)
@@ -70,14 +71,22 @@ def get_inverse_covariance_matrix(input_object, band=None):
     else:
         return output_df
 
+def get_inverse_square_root_covariance_matrix(input_object, band=None):
+    inverse_covariance = get_inverse_covariance_matrix(input_object, band)
+    if isinstance(inverse_covariance, ndarray):
+        return sqrt(inverse_covariance)
+    elif isinstance(inverse_covariance, pd.DataFrame):
+        pass
 
-def get_chi2(L_inv, residuals):
+
+def get_chi_square(L_inv, residuals):
     """
-    Compute chi2 from given inverse Cholesky and a residual vector (= data - model). This function defines = inverse *
-        residuals such that chi2 = |x|^2., which guarantees that chi2 >= 0.
+    Compute chi square from given inverse Cholesky and a residual vector (= data - model). This function defines =
+        inverse * residuals such that chi2 = |x|^2., which guarantees that chi2 >= 0.
 
     Args:
-        L_inv (ndarray): Inverse Cholesky of the covariance as computed from the function get_inverse_covariance_matrix.
+        L_inv (ndarray): Square root of inverse Cholesky of the covariance as computed from the function
+            get_inverse_square_root_covariance_matrix.
         residuals (ndarray): Difference between the observed coefficient vector and some model prediction of it.
 
     Returns:

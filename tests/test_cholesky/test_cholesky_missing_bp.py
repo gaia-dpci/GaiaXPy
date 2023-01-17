@@ -8,7 +8,7 @@ import pandas.testing as pdt
 from gaiaxpy import get_inverse_covariance_matrix
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
-from tests.files import files_path
+from tests.files.paths import files_path
 from tests.utils.utils import parse_matrices
 
 input_path = join(files_path, 'xp_continuous')

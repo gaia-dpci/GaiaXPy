@@ -1,5 +1,5 @@
 from .calibrator.calibrator import calibrate
-from .cholesky.cholesky import get_inverse_covariance_matrix, get_chi2
+from .cholesky.cholesky import get_chi2, get_inverse_covariance_matrix, get_inverse_square_root_covariance_matrix
 from .converter.converter import convert
 from .core.dispersion_function import pwl_to_wl, wl_to_pwl, pwl_range, wl_range
 from .core.version import __version__

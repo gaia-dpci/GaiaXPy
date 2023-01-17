@@ -8,7 +8,7 @@ import pandas.testing as pdt
 from gaiaxpy import get_inverse_covariance_matrix
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
-from tests.files.paths import files_path
+from tests.files import files_path
 from tests.utils.utils import parse_matrices
 
 input_path = join(files_path, 'xp_continuous')
@@ -23,14 +23,12 @@ solution_array_columns = [f'{band}_inverse_covariance' for band in BANDS]
 solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
 solution_df = pd.read_csv(solution_file, converters=solution_converters)
 
-_rtol, _atol = 1e-8, 1e-8
-
 
 class TestCholeskyMissingBP(unittest.TestCase):
 
     def test_covariance_missing_bp(self):
         output_df = get_inverse_covariance_matrix(input_file)
-        pdt.assert_frame_equal(output_df, solution_df, rtol=_rtol, atol=_atol)
+        pdt.assert_frame_equal(output_df, solution_df)
 
     def test_covariance_missing_bp_isolated_source(self):
         missing_bp_source_id = 5405570973190252288
@@ -38,7 +36,7 @@ class TestCholeskyMissingBP(unittest.TestCase):
         df = df[df['source_id'] == missing_bp_source_id]
         output_df = get_inverse_covariance_matrix(df)
         filtered_solution_df = solution_df[solution_df['source_id'] == missing_bp_source_id].reset_index(drop=True)
-        pdt.assert_frame_equal(output_df, filtered_solution_df, rtol=_rtol, atol=_atol)
+        pdt.assert_frame_equal(output_df, filtered_solution_df)
 
     def test_covariance_missing_bp_isolated_source_bp(self):
         band = 'bp'

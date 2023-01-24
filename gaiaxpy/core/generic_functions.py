@@ -17,6 +17,7 @@ import pandas as pd
 from numpy import ndarray
 
 from gaiaxpy.config.paths import filters_path, config_path
+from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.generator.config import get_additional_filters_path
 
 
@@ -39,6 +40,17 @@ def cast_output(output):
         except KeyError:
             continue
     return df
+
+
+def parse_band(band):
+    if isinstance(band, str):
+        band = band.lower()
+    elif isinstance(band, list) and len(band) == 1:
+        band = band[0].lower()
+    if band in BANDS:
+        return band
+    else:
+        raise ValueError(f"String {band} is not a valid band. Band must be either 'bp' or 'rp'.")
 
 
 def str_to_array(str_array):

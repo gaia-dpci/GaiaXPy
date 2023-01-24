@@ -1,6 +1,14 @@
 Release notes
 =============
 
+Version 2.0.1
+-------------
+Released on 2023/01/24.
+
+* Fixed issue in function for computing the inverse of the covariance matrix (``get_inverse_covariance_matrix``).
+* Fixed issue in function to get chi-squared from an input inverse square root of covariance matrix (``get_chi2``).
+* Added function to compute the inverse square root of the covariance matrix (``get_inverse_square_root_covariance_matrix``).
+
 Version 2.0.0
 -------------
 Released on 2023/01/11.
@@ -11,8 +19,8 @@ Version 1.2.4
 -------------
 Released on 2023/01/09.
 
-* Fixed problem in the application of the flux offset for the standardised system PanSTARRS1 (PhotometricSystem.PanSTARRS1_Std). The flux offset is part of the standardisation process described in Section 2.2.1 and equation 13 in `Gaia Collaboration, Montegriffo, et al., 2022 <https://ui.adsabs.harvard.edu/abs/2022arXiv220606215G/abstract>`_. In previous versions no flux offset was applied to the flux. Flux error and magnitude were derived consistently.
-* Replaced SDSS filters (available as PhotometricSystem.SDSS) with those defined in `Doi et al. 2010, AJ, 141, 47 <https://ui.adsabs.harvard.edu/abs/2010AJ....139.1628D/abstract>`_. Note that the standardised version (PhotometricSystem.SDSS_Std) was already based on Doi et al. 2010, AJ, 141, 47 and is therefore unchanged with respect to previous versions of GaiaXPy.
+* Fixed problem in the application of the flux offset for the standardised system PanSTARRS1 (``PhotometricSystem.PanSTARRS1_Std``). The flux offset is part of the standardisation process described in Section 2.2.1 and equation 13 in `Gaia Collaboration, Montegriffo, et al., 2022 <https://ui.adsabs.harvard.edu/abs/2022arXiv220606215G/abstract>`_. In previous versions no flux offset was applied to the flux. Flux error and magnitude were derived consistently.
+* Replaced SDSS filters (available as ``PhotometricSystem.SDSS``) with those defined in `Doi et al. 2010, AJ, 141, 47 <https://ui.adsabs.harvard.edu/abs/2010AJ....139.1628D/abstract>`_. Note that the standardised version (``PhotometricSystem.SDSS_Std``) was already based on Doi et al. 2010, AJ, 141, 47 and is therefore unchanged with respect to previous versions of GaiaXPy.
 
 Version 1.2.3
 -------------
@@ -71,14 +79,14 @@ Released on 2022/06/13.
 * Query official Gaia Archive.
 * Updated Hipparcos-Tycho bases.
 * Added fix for single band source with lists and queries.
-* Added error correction tables for Gaia_DR3_Vega, Els_Custom_W09_S2, Pristine and Sky_Mapper.
+* Added error correction tables for ``Gaia_DR3_Vega``, ``Els_Custom_W09_S2``, ``Pristine`` and ``Sky_Mapper``.
 * Fixed but in error correction caused when a regular system and its standardised version where requested on the same data frame.
 
 Version 1.1.0
 -------------
 Released 2022/06/08.
 
-* Fixed error correction bug in system HST_ACSWFC.
+* Fixed error correction bug in system ``HST_ACSWFC``.
 * Fixed error when passing a single PhotometricSystem to error correction.
 * Added SkyMapper filter.
 * Fixed Windows compatibility.

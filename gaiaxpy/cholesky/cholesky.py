@@ -146,5 +146,5 @@ def get_chi2(L_inv, residuals):
         raise ValueError('Inverse covariance matrix shape must be (55, 55).')
     if residuals.shape != (55,):
         raise ValueError('Residuals shape must be (55,).')
-    x = dot(L_inv.T, residuals)
+    x = dot(L_inv, residuals)
     return dot(x.T, x)

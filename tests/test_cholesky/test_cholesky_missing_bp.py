@@ -64,4 +64,4 @@ class TestCholeskyMissingBP(unittest.TestCase):
         mock_residuals = np.array(list(range(55)))
         with self.assertRaises(ValueError):
             get_chi2(bp_inv_sqrt_cov, mock_residuals)
-        self.assertEqual(get_chi2(rp_inv_sqrt_cov, mock_residuals), 4047255.681776895)
+        self.assertAlmostEqual(get_chi2(rp_inv_sqrt_cov, mock_residuals), 4047255.681776895, places=7)

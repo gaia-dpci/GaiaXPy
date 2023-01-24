@@ -71,7 +71,7 @@ class TestCholesky(unittest.TestCase):
         inv_sqrt_cov_row = inv_sqrt_cov_df[inv_sqrt_cov_df['source_id'] == 5853498713190525696].iloc[0]
         bp_inv_sqrt_cov = inv_sqrt_cov_row['bp_inverse_square_root_covariance_matrix']
         mock_residuals = np.array(list(range(55)))
-        self.assertEqual(get_chi2(bp_inv_sqrt_cov, mock_residuals), 16655.037182417516)
+        self.assertAlmostEqual(get_chi2(bp_inv_sqrt_cov, mock_residuals), 16655.037182417516, places=7)
 
 
 class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):

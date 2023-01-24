@@ -131,8 +131,8 @@ def get_inverse_covariance_matrix(input_object, band=None):
 
 def get_chi2(L_inv, residuals):
     """
-    Compute chi2 from given inverse Cholesky and a residual vector (= data - model). This function defines = inverse
-        * residuals such that chi2 = |x|^2., which guarantees that chi2 >= 0.
+    Compute chi-squared (chi2) from given inverse Cholesky of the covariance matrix (L^-1) and a residual vector
+    (r = data - model). This function defines x = L^-1 * r such that chi2 = |x|^2, which guarantees that chi2 >= 0.
 
     Args:
         L_inv (ndarray): Inverse square root of the covariance, as computed from the function

@@ -142,6 +142,8 @@ def get_chi2(L_inv, residuals):
     Returns:
         float: Chi-squared value.
     """
+    if L_inv is None or residuals is None: # Cannot be checked with 'not' as the truth value of an array is ambiguous.
+        raise ValueError('Input parameters cannot be None.')
     if L_inv.shape != (55, 55):
         raise ValueError('Inverse covariance matrix shape must be (55, 55).')
     if residuals.shape != (55,):

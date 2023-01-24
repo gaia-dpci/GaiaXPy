@@ -1,17 +1,15 @@
-import unittest
-from os.path import join
-
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
-
+import unittest
 from gaiaxpy import get_chi2, get_inverse_covariance_matrix
-from gaiaxpy.cholesky.cholesky import _get_inverse_square_root_covariance_matrix_aux,\
+from gaiaxpy.cholesky.cholesky import _get_inverse_square_root_covariance_matrix_aux, \
     get_inverse_square_root_covariance_matrix
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
+from os.path import join
 from tests.files.paths import files_path
 from tests.utils.utils import parse_matrices
 
@@ -67,6 +65,14 @@ class TestCholesky(unittest.TestCase):
         with self.assertRaises(ValueError):
             output = get_chi2(matrix, residuals)
 
+    def test_get_chi2_values(self):
+        f = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
+        inv_sqrt_cov_df = get_inverse_square_root_covariance_matrix(f)
+        inv_sqrt_cov_row = inv_sqrt_cov_df[inv_sqrt_cov_df['source_id'] == 5853498713190525696].iloc[0]
+        bp_inv_sqrt_cov = inv_sqrt_cov_row['bp_inverse_square_root_covariance_matrix']
+        mock_residuals = np.array(list(range(55)))
+        self.assertEqual(get_chi2(bp_inv_sqrt_cov, mock_residuals), 16655.037182417516)
+
 
 class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
 
@@ -90,7 +96,6 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
         solution_df = pd.read_csv(join(cholesky_path, 'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
                                   converters=solution_converters)
         pdt.assert_frame_equal(output_df, solution_df)
-
 
     def test_internal_inverse_square_root_covariance_matrix_with_missing_bands(self):
         input_object = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv')

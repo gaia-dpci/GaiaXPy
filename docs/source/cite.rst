@@ -18,6 +18,8 @@ To find out which version of the package you're using, simply run:
 
 DOIs
 ----
+* **DOI v2.0.1**: 10.5281/zenodo.7566303
+
 * **DOI v2.0.0**: 10.5281/zenodo.7524744
 
 * **DOI v1.2.4**: 10.5281/zenodo.7515812

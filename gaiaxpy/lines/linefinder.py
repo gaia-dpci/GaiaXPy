@@ -8,7 +8,7 @@ def _get_values_continuum_atroots(roots):
 def _get_values_atroots(roots):
   return roots
 
-def find_lines(config, n_bases , lines, line_names):
+def linefinder(config, n_bases , lines, line_names):
      # return line `depth` and `width`  
      # `depth` - difference between flux value at extremum and average value of two nearby inflexion points
      # `width` - distance between two nearby inflexion points

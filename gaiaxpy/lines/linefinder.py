@@ -1,14 +1,90 @@
+"""
+linefinder.py
+===========================
+Module for the line finding.
+"""
 
+from configparser import ConfigParser
 
+from gaiaxpy.config.paths import config_path
+from gaiaxpy.converter.config import load_config
+from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.lines.herm import HermiteDer
 
+from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
+
+config_parser = ConfigParser()
+config_parser.read(path.join(config_path, 'config.ini'))
+config_file = path.join(config_path, config_parser.get('converter', 'optimised_bases'))
 
 def _get_values_continuum_atroots(roots):
-  return None
+    xpss = XpSampledSpectrum()
+    return xpss.from_continuous(continuous_spectrum, sampled_basis_functions)
 def _get_values_atroots(roots):
-  return roots
+    xpss = XpSampledSpectrum()
+    return xpss.from_continuous(continuous_spectrum, sampled_basis_functions, truncation=2)
+def _get_configuration(config):
+   # bp rp?
+   # are the bases symetric ie. config[dimesion]==config[transformedSetDimension]???
+    """
+    Get info from config file.
+    
+    Args:
+        config (DataFrame): The configuration of the set of bases
+                loaded into a DataFrame.
+    
+    Returns:
+        (tuple): bases_transformation, n_bases, scale, offset
+    """
+    scale = (config['normalizedRange'].iloc(0)[0][1] - config['normalizedRange'].iloc(0)
+    [0][0]) / (config['range'].iloc(0)[0][1] - config['range'].iloc(0)[0][0])
+    offset = config['normalizedRange'].iloc(0)[0][0] - config['range'].iloc(0)[0][0] * scale
+    bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(
+        int(config['dimension']), int(config['transformedSetDimension']))
+    return bases_transformation, int(config['dimension']), scale, offset
+    
+def _get_dispersion(config_path):
+    rp_dispersion = np.loadtxt(config_path + '/rpC03_v142r_dispersion.csv', delimiter = ',')
+    bp_dispersion = np.loadtxt(config_path + '/bpC03_v375wi_dispersion.csv', delimiter = ',')
+    return bp_dispersion, rp_dispersion
 
-def linefinder(config, n_bases , lines, line_names):
+  
+def linefinder(input_object, sampling=np.linspace(0, 60, 600), lines=None, sourcetype=None, redshift=None, plot=False, 
+              username=None, password=None):
+  #def linefinder(input_object, sampling=np.linspace(0, 60, 600), lines=None, sourcetype='STAR', redshift=0.):
+  # should star type and redshift =0 be a default values
+  # no need for sampling argument?
+    """
+    Line finding: get the input interally calobrated man spectra from the continuous represenation to a 
+    sampled form. In between it looks for emission and obsorption lines. The lines can be defined by user 
+    or chosen from internal library, the source redshift and type can be specified.
+    
+    Args:
+        input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
+            continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
+        sampling (ndarray): 1D array containing the desired sampling in pseudo-wavelengths.
+        lines (tuple): Tuple containing a list of line wavelengths and names
+        source_type (str): Source type: STAR or QSO 
+        redshift (list): List of redshifts
+        plot (bool): Whether to plot spectrum with lines.
+        
+    Returns:
+        (tuple): tuple with a list of found lines and thier properties
+    """
+    parsed_input_data, extension = InputReader(input_object, convert, username, password)._read()
+    config_df = load_config(config_file)
+    tm, n, scale, offset = _get_configuration(config_df)
+    bp_dispersion, rp_dispersion = _get_dispersion(config_path)
+    
+    # coeff from parsedinputdata
+    # prep lines
+    # run line finder
+    # if plot == True: plotting
+    
+    return lines
+    
+    
+def find(config, n_bases , lines, line_names):
      # return line `depth` and `width`  
      # `depth` - difference between flux value at extremum and average value of two nearby inflexion points
      # `width` - distance between two nearby inflexion points
@@ -36,3 +112,6 @@ def linefinder(config, n_bases , lines, line_names):
           pass
           
      return found_lines 
+  
+  
+  

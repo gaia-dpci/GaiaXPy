@@ -8,11 +8,8 @@ class HermiteDer():
    self.coeff = coeff
    self.bt = config.transformationMatrix.reshape(config.transformedSetDimension, config.dimension) #bases_transformation
    self.coeffbt = self.coeff.dot(self.bt)
-
-
  
-
-  def get_roots_firstder (self):
+ def get_roots_firstder (self):
 
    N = self.n_bases
    coeff1 = np.r_[self.coeffbt,[0]]
@@ -43,7 +40,7 @@ class HermiteDer():
 
    return rootspwl
 
-def get_roots_secondder (self):
+ def get_roots_secondder (self):
 
    # 2nd derivative : 1st method direct from spectrum coefficients
    N = self.n_bases

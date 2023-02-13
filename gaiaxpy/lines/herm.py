@@ -4,14 +4,12 @@ from numpy import linalg as LA
 class HermiteDer():
   
  def __init__(self, config, coeff):
-   # check if transformation matrix is a square matrix 
-   if config.transformedSetDimension == config.dimension:
+  
       self.n_bases = int(config.dimension)
       self.coeff = coeff
       self.bt = config.transformationMatrix.reshape(config.transformedSetDimension, config.dimension) #bases_transformation
       self.coeffbt = self.coeff.dot(self.bt)
-   else:
-      raise Exception("Transformation matrix is not square. I don't know what to do :(.")
+   
       
  def get_roots_firstder(self):
 

@@ -65,7 +65,8 @@ def _wl_to_pwl(wavelength, dispersion):
         """
         tck = interpolate.splrep(dispersion.get("wavelength"), dispersion.get("pseudo-wavelength"), s=0)
         return interpolate.splev(wavelength, tck, der=0)
-def _x_to_pwl(x, scale, offset)
+
+def _x_to_pwl(x, scale, offset):    
     return (x * scale) + offset
     
 

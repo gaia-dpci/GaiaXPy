@@ -8,14 +8,16 @@ from configparser import ConfigParser
 
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.converter.config import load_config
+from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.lines.herm import HermiteDer
-
+from gaiaxpy.calibrator.externl_instrument_model import ExternalInstrumentModel
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
 config_file = path.join(config_path, config_parser.get('converter', 'optimised_bases'))
+dispersion_file = path.join(config_path, config_parser.get('core', 'dispersion_function'))
 
 def _get_values_continuum_atroots(roots):
     xpss = XpSampledSpectrum()
@@ -36,24 +38,43 @@ def _get_configuration(config):
     Returns:
         (tuple): bases_transformation, n_bases, scale, offset
     """
-    scale = (config['normalizedRange'].iloc(0)[0][1] - config['normalizedRange'].iloc(0)
-    [0][0]) / (config['range'].iloc(0)[0][1] - config['range'].iloc(0)[0][0])
-    offset = config['normalizedRange'].iloc(0)[0][0] - config['range'].iloc(0)[0][0] * scale
-    bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(
-        int(config['dimension']), int(config['transformedSetDimension']))
-    return bases_transformation, int(config['dimension']), scale, offset
+    if config['transformedSetDimension'] == config['dimension']:
+       scale = (config['normalizedRange'].iloc(0)[0][1] - config['normalizedRange'].iloc(0)
+       [0][0]) / (config['range'].iloc(0)[0][1] - config['range'].iloc(0)[0][0])
+       offset = config['normalizedRange'].iloc(0)[0][0] - config['range'].iloc(0)[0][0] * scale
+       bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(
+       int(config['dimension']), int(config['transformedSetDimension']))
+       return bases_transformation, int(config['dimension']), scale, offset
+    else:
+       raise Exception("Transformation matrix is not square. I don't know what to do :(.")
     
-def _get_dispersion(config_path):
-    rp_dispersion = np.loadtxt(config_path + '/rpC03_v142r_dispersion.csv', delimiter = ',')
-    bp_dispersion = np.loadtxt(config_path + '/bpC03_v375wi_dispersion.csv', delimiter = ',')
+def _get_dispersion(dispersion_file):
+    wv, dispersion = np.loadtxt(dispersion_file, delimiter = ',')
+    bp_dispersion = 
     return bp_dispersion, rp_dispersion
+
+def _wl_to_pwl(wavelength, dispersion):
+    # copied and adapted from external_instrument_model.py
+    # maybe we can changed it there to visible outside class
+        """
+        Convert the input absolute wavelength to a pseudo-wavelength.
+        Args:
+            wavelength (float): Absolute wavelength.
+        Returns:
+            float: The corresponding pseudo-wavelength value.
+        """
+        tck = interpolate.splrep(dispersion.get("wavelength"), dispersion.get("pseudo-wavelength"), s=0)
+        return interpolate.splev(wavelength, tck, der=0)
+def _x_to_pwl(x, scale, offset)
+    return (x * scale) + offset
+    
 
   
 def linefinder(input_object, sampling=np.linspace(0, 60, 600), lines=None, sourcetype=None, redshift=None, plot=False, 
               username=None, password=None):
   #def linefinder(input_object, sampling=np.linspace(0, 60, 600), lines=None, sourcetype='STAR', redshift=0.):
   # should star type and redshift =0 be a default values
-  # no need for sampling argument?
+  # no need for sampling argument? we will use default sampling?
     """
     Line finding: get the input interally calobrated man spectra from the continuous represenation to a 
     sampled form. In between it looks for emission and obsorption lines. The lines can be defined by user 
@@ -71,10 +92,16 @@ def linefinder(input_object, sampling=np.linspace(0, 60, 600), lines=None, sourc
     Returns:
         (tuple): tuple with a list of found lines and thier properties
     """
-    parsed_input_data, extension = InputReader(input_object, convert, username, password)._read()
     config_df = load_config(config_file)
     tm, n, scale, offset = _get_configuration(config_df)
-    bp_dispersion, rp_dispersion = _get_dispersion(config_path)
+    parsed_input_data, extension = InputReader(input_object, convert, username, password)._read()
+    config_df = load_config(config_file)
+    
+    for xp in BANDS:
+            instr_model = ExternalInstrumentModel.from_config_csv(_get_file_for_xp(xp, 'dispersion'),
+                                                                  _get_file_for_xp(xp, 'response'),
+                                                                  _get_file_for_xp(xp, 'bases'))
+
     
     # coeff from parsedinputdata
     # prep lines

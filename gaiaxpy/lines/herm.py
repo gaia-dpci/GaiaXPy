@@ -4,12 +4,16 @@ from numpy import linalg as LA
 class HermiteDer():
   
  def __init__(self, config, coeff):
-   self.n_bases = int(config.dimension)
-   self.coeff = coeff
-   self.bt = config.transformationMatrix.reshape(config.transformedSetDimension, config.dimension) #bases_transformation
-   self.coeffbt = self.coeff.dot(self.bt)
- 
- def get_roots_firstder (self):
+   # check if transformation matrix is a square matrix 
+   if config.transformedSetDimension == config.dimension:
+      self.n_bases = int(config.dimension)
+      self.coeff = coeff
+      self.bt = config.transformationMatrix.reshape(config.transformedSetDimension, config.dimension) #bases_transformation
+      self.coeffbt = self.coeff.dot(self.bt)
+   else:
+      raise Exception("Transformation matrix is not square. I don't know what to do :(.")
+      
+ def get_roots_firstder(self):
 
    N = self.n_bases
    coeff1 = np.r_[self.coeffbt,[0]]
@@ -30,15 +34,15 @@ class HermiteDer():
       b[i-1,i] = np.sqrt(i)/np.sqrt(2.)
 
    for i in np.arange(0,N):
-      b[N-1,i] -= np.sqrt(N/2.)*coeffder[i]/coeffder[N]
+      b[N-1,i] -= np.sqrt(N/2.)*coeffder[i]/coeffder[-1]
 
    eigval = LA.eigvals(b)
 
    # 1st derivative zeropoints = extrema in spectrum
    roots = np.sort(eigval[np.isreal(eigval)].real)
-   rootspwl = (1./self.scale)*(roots-self.offset)
+   # roots have to be rescaled to pwl
 
-   return rootspwl
+   return roots
 
  def get_roots_secondder (self):
 
@@ -70,6 +74,5 @@ class HermiteDer():
    eigval2 = LA.eigvals(b2)
 
    roots2 = np.sort(eigval2[np.isreal(eigval2)].real)
-   rootspwl2 = (1./self.scale)*(roots2-self.offset) 
 
-   return rootspwl2
+   return roots2

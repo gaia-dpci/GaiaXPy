@@ -4,6 +4,10 @@ linefinder.py
 Module for the line finding.
 """
 
+from os import path
+import numpy as np
+from scipy import interpolate
+
 from configparser import ConfigParser
 
 from gaiaxpy.config.paths import config_path
@@ -38,7 +42,7 @@ def _get_configuration(config):
     Returns:
         (tuple): bases_transformation, n_bases, scale, offset
     """
-    if config['transformedSetDimension'] == config['dimension']:
+    if int(config['transformedSetDimension']) == int(config['dimension']):
        scale = (config['normalizedRange'].iloc(0)[0][1] - config['normalizedRange'].iloc(0)
        [0][0]) / (config['range'].iloc(0)[0][1] - config['range'].iloc(0)[0][0])
        offset = config['normalizedRange'].iloc(0)[0][0] - config['range'].iloc(0)[0][0] * scale
@@ -49,13 +53,14 @@ def _get_configuration(config):
        raise Exception("Transformation matrix is not square. I don't know what to do :(.")
     
 def _get_dispersion(dispersion_file):
-    wv, dispersion = np.loadtxt(dispersion_file, delimiter = ',')
-    bp_dispersion = 
+    wl_nm, bp_pwl, rp_pwl = np.genfromtxt(dispersion_file, delimiter = ',', names=True, unpack=True)
+    bp_dispersion = {"wavelength": wl_nm, "pseudo-wavelength": bp_pwl}
+    rp_dispersion = {"wavelength": wl_nm, "pseudo-wavelength": rp_pwl}
     return bp_dispersion, rp_dispersion
 
 def _wl_to_pwl(wavelength, dispersion):
     # copied and adapted from external_instrument_model.py
-    # maybe we can changed it there to visible outside class
+    
         """
         Convert the input absolute wavelength to a pseudo-wavelength.
         Args:
@@ -65,6 +70,19 @@ def _wl_to_pwl(wavelength, dispersion):
         """
         tck = interpolate.splrep(dispersion.get("wavelength"), dispersion.get("pseudo-wavelength"), s=0)
         return interpolate.splev(wavelength, tck, der=0)
+    
+def _pwl_to_wl(pseudowavelength, dispersion):
+   
+        """
+        Convert the input pseudo-wavelength to an absolute wavelength.
+        Args:
+            pseudowavelength (float): Pseudo-wavelength.
+        Returns:
+            float: The corresponding absolute wavelength value.
+        """
+        idx = np.argsort(dispersion.get("pseudo-wavelength"))
+        tck = interpolate.splrep(dispersion.get("pseudo-wavelength")[idx], dispersion.get("wavelength")[idx], s=0)
+        return interpolate.splev(pseudowavelength, tck, der=0)
 
 def _x_to_pwl(x, scale, offset):    
     return (x * scale) + offset
@@ -94,14 +112,14 @@ def linefinder(input_object, sampling=np.linspace(0, 60, 600), lines=None, sourc
         (tuple): tuple with a list of found lines and thier properties
     """
     config_df = load_config(config_file)
-    tm, n, scale, offset = _get_configuration(config_df)
-    parsed_input_data, extension = InputReader(input_object, convert, username, password)._read()
-    config_df = load_config(config_file)
+    bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df,56))
+    rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df,57))
+    bp_dispersion, rp_dispersion = _get_dispersion(dispersion_file)
     
-    for xp in BANDS:
-            instr_model = ExternalInstrumentModel.from_config_csv(_get_file_for_xp(xp, 'dispersion'),
-                                                                  _get_file_for_xp(xp, 'response'),
-                                                                  _get_file_for_xp(xp, 'bases'))
+    parsed_input_data, extension = InputReader(input_object, convert, username, password)._read()
+   
+    
+
 
     
     # coeff from parsedinputdata

@@ -40,11 +40,11 @@ class Lines():
     # redshifted lines in wavelength
     inputlines = inputlines * (1. + zet)
     if self.xp == BANDS.bp:
-         mask = (inputlines)>BP_WL.low)&(inputlines<BP_WL.high)  # mask outside wavelength range range
+         mask = (inputlines>BP_WL.low)&(inputlines<BP_WL.high)  # mask outside wavelength range range
          line_pwl = wl_to_pwl(self.xp, inputlines[mask])
          lines = (np.asarray(inputlinenames)[mask], line_pwl)
     elif self.xp == BANDS.rp:
-         mask = (inputlines)>RP_WL.low)&(inputlines<RP_WL.high)  # mask outside wavelength range range
+         mask = (inputlines>RP_WL.low)&(inputlines<RP_WL.high)  # mask outside wavelength range range
          line_pwl = wl_to_pwl(self.xp, inputlines[mask])
          lines = (np.asarray(inputlinenames)[mask], line_pwl)
         

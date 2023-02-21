@@ -3,17 +3,17 @@ from numpy import linalg as LA
 
 class HermiteDer():
   
- def __init__(self, config, coeff):
+ def __init__(self, tm, n, coeff):
   
-      self.n_bases = int(config.dimension)
+      self.n = n
       self.coeff = coeff
-      self.bt = config.transformationMatrix.reshape(config.transformedSetDimension, config.dimension) #bases_transformation
+      self.bt = tm  #bases_transformation
       self.coeffbt = self.coeff.dot(self.bt)
    
       
  def get_roots_firstder(self):
 
-   N = self.n_bases
+   N = self.n
    coeff1 = np.r_[self.coeffbt,[0]]
 
    D = np.zeros((N+1,N+1))
@@ -45,7 +45,9 @@ class HermiteDer():
  def get_roots_secondder (self):
 
    # 2nd derivative : 1st method direct from spectrum coefficients
-   N = self.n_bases
+   N = self.n
+   coeff2 = np.r_[self.coeffbt,[0,0]]
+  
    D2 = np.zeros((N+2,N+2))
    for i in np.arange(0,N+2):
       D2[i,i] = 0.5 - i-1
@@ -53,8 +55,6 @@ class HermiteDer():
    for i in np.arange(2,N+2):
       D2[i,i-2] = 0.5*np.sqrt(i*(i-1))
       D2[i-2,i] = 0.5*np.sqrt(i*(i-1))
-
-   coeff2 = np.r_[self.coeffbt,[0,0]]
 
    # 2nd derivative coefficients:
    coeffder2 = D2.dot(coeff2)

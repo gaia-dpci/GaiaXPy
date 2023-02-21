@@ -110,7 +110,6 @@ def linefinder(input_object, sampling=np.linspace(0, 60, 600), lines=None, sourc
     """
     config_df = load_config(config_file)
     
-    bp_dispersion, rp_dispersion = _get_dispersion(dispersion_file)
     
     parsed_input_data, extension = InputReader(input_object, convert, username, password)._read()
    
@@ -119,9 +118,9 @@ def linefinder(input_object, sampling=np.linspace(0, 60, 600), lines=None, sourc
     rpcoeff = parsed_input_data.iloc[0]['rp_coefficients']
     
     # prep lines
-    bplines = Lines(BANDS.bp,'star',bp_dispersion)
+    bplines = Lines(BANDS.bp,'star')
     bplines_pwl, bpline_names = bplines.get_lines_pwl()
-    rplines = Lines(BANDS.rp,'star',rp_dispersion)
+    rplines = Lines(BANDS.rp,'star')
     rplines_pwl, rpline_names = rplines.get_lines_pwl()
     
     

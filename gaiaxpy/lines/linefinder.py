@@ -15,8 +15,9 @@ from gaiaxpy.converter.config import load_config
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.lines.herm import HermiteDer
-from gaiaxpy.calibrator.externl_instrument_model import ExternalInstrumentModel
+from gaiaxpy.lines.lines import Lines
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
+
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
@@ -25,13 +26,11 @@ dispersion_file = path.join(config_path, config_parser.get('core', 'dispersion_f
 
 def _get_values_continuum_atroots(roots):
     xpss = XpSampledSpectrum()
-    return xpss.from_continuous(continuous_spectrum, sampled_basis_functions)
+    return xpss.from_continuous(continuous_spectrum, sampled_basis_functions, truncation=2)
 def _get_values_atroots(roots):
     xpss = XpSampledSpectrum()
-    return xpss.from_continuous(continuous_spectrum, sampled_basis_functions, truncation=2)
+    return xpss.from_continuous(continuous_spectrum, sampled_basis_functions)
 def _get_configuration(config):
-   # bp rp?
-   # are the bases symetric ie. config[dimesion]==config[transformedSetDimension]???
     """
     Get info from config file.
     
@@ -86,8 +85,6 @@ def _pwl_to_wl(pseudowavelength, dispersion):
 
 def _x_to_pwl(x, scale, offset):    
     return (x * scale) + offset
-    
-
   
 def linefinder(input_object, sampling=np.linspace(0, 60, 600), lines=None, sourcetype=None, redshift=None, plot=False, 
               username=None, password=None):
@@ -112,34 +109,42 @@ def linefinder(input_object, sampling=np.linspace(0, 60, 600), lines=None, sourc
         (tuple): tuple with a list of found lines and thier properties
     """
     config_df = load_config(config_file)
-    bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df,56))
-    rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df,57))
+    
     bp_dispersion, rp_dispersion = _get_dispersion(dispersion_file)
     
     parsed_input_data, extension = InputReader(input_object, convert, username, password)._read()
    
-    
-
-
-    
     # coeff from parsedinputdata
+    bpcoeff = parsed_input_data.iloc[0]['bp_coefficients']
+    rpcoeff = parsed_input_data.iloc[0]['rp_coefficients']
+    
     # prep lines
-    # run line finder
+    bplines = Lines(BANDS.bp,'star',bp_dispersion)
+    bplines_pwl, bpline_names = bplines.get_lines_pwl()
+    rplines = Lines(BANDS.rp,'star',rp_dispersion)
+    rplines_pwl, rpline_names = rplines.get_lines_pwl()
+    
+    
+    # run line finder for BP
+    bp_found_lines = find(config_df, 56, bpcoeff, bplines_pwl, bpline_names)
+    # run line finder for RP
+    rp_found_lines = find(config_df, 57, rpcoeff, rplines_pwl, rpline_names)
     # if plot == True: plotting
     
     return lines
     
-    
-def find(config, n_bases , lines, line_names):
+    #id = 56 for bp; 57 for rp
+def find(config_df, id, coeff, lines, line_names):
      # return line `depth` and `width`  
      # `depth` - difference between flux value at extremum and average value of two nearby inflexion points
      # `width` - distance between two nearby inflexion points
+     tm, n, scale, offset = _get_configuration(get_config(config_df, id))
     
-     hder = HermiteDer(config, coeff)
+     hder = HermiteDer(tm, n, coeff)
     
      found_lines = []
-     rootspwl = hder.get_roots_firstder()
-     rootspwl2 = hder.get_roots_secondder()
+     rootspwl = _x_to_pwl(hder.get_roots_firstder(), scale, offset)
+     rootspwl2 = _x_to_pwl(hder.get_roots_secondder(), scale, offset)
      valroots = _get_values_atroots(rootspwl)
      valroots2 = _get_values_atroots(rootspwl2)
      valconroots = _get_values_continuum_atroots(rootspwl) 
@@ -150,14 +155,14 @@ def find(config, n_bases , lines, line_names):
           line_root = rootspwl[i_line]
           if abs(line_pwl-line_root) < 1: # allow for 1 pixel difference 
             line_flux = valroots[i_line]
-            #line_depth = valroots[i_line]-valconroots[i_line]
-            line_depth = valroots[i_line] - 0.5*(valroots2[rootspwl2>line_pwl][0]+valroots2[rootspwl2<line_pwl][-1])
+            line_depth = valroots[i_line]-valconroots[i_line]
+            #line_depth = valroots[i_line] - 0.5*(valroots2[rootspwl2>line_pwl][0]+valroots2[rootspwl2<line_pwl][-1])
             line_width = rootspwl2[rootspwl2>line_pwl][0]-rootspwl2[rootspwl2<line_pwl][-1]
             found_lines.append((name,line_pwl,i_line,line_root,line_flux,line_depth,line_width))
         except:
           pass
           
-     return found_lines 
+     return found_lines #in pwl
   
   
   

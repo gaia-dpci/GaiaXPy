@@ -1,7 +1,7 @@
 
 import numpy as np
 
-from gaiaxpy.lines.linefinder import _wl_to_pwl
+from gaiaxpy.core.dispersion_function import wl_to_pwl, pwl_to_wl
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 
 # local library of lines
@@ -15,10 +15,9 @@ _starlines = [486.268,656.461,447.3,587.7,706.7]
 
 class Lines():
   
-  def __init__(self, xp, src_type, dispersion):
+  def __init__(self, xp, src_type):
     self.xp = xp
     self.src_type = src_type
-    self.disp = dispersion
 
   def get_lines_pwl(self, zet=0., userlines=None): 
 
@@ -42,11 +41,11 @@ class Lines():
     inputlines = inputlines * (1. + zet)
     if self.xp == BANDS.bp:
          mask = (inputlines)>BP_WL.low)&(inputlines<BP_WL.high)  # mask outside wavelength range range
-         line_pwl = _wl_to_pwl(inputlines[mask], self.disp)
+         line_pwl = wl_to_pwl(self.xp, inputlines[mask])
          lines = (np.asarray(inputlinenames)[mask], line_pwl)
     elif self.xp == BANDS.rp:
          mask = (inputlines)>RP_WL.low)&(inputlines<RP_WL.high)  # mask outside wavelength range range
-         line_pwl = _wl_to_pwl(inputlines[mask], self.disp)
+         line_pwl = wl_to_pwl(self.xp, inputlines[mask])
          lines = (np.asarray(inputlinenames)[mask], line_pwl)
         
     return lines  

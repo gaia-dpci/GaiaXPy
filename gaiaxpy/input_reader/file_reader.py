@@ -18,9 +18,11 @@ function_parser_dict = {'apply_colour_equation': raise_error,
                         'convert': internal_continuous,
                         '_calibrate': internal_continuous,
                         'calibrate': internal_continuous,
+                        'extremafinder': internal_continuous,
                         'generate': internal_continuous,
                         'get_inverse_covariance_matrix': internal_continuous,
                         'get_inverse_square_root_covariance_matrix': internal_continuous,
+                        'linefinder': internal_continuous,
                         'simulate_continuous': external,
                         'simulate_sampled': external}
 

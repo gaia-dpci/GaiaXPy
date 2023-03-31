@@ -6,6 +6,6 @@ from .core.version import __version__
 from .error_correction.error_correction import apply_error_correction
 from .generator.generator import generate
 from .generator.photometric_system import PhotometricSystem, load_additional_systems, remove_additional_systems
-from .lines.linefinder import linefinder 
+from .lines.linefinder import linefinder, extremafinder
 from .plotter.plot_spectra import plot_spectra
 

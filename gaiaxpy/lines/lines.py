@@ -57,7 +57,7 @@ class Lines():
             zet (float): Redshift of source. Default = 0. (for stars).
     
         Returns:
-            list: Lisst of (redshifted) lines in pseudo-wavelengths with their names.
+            list: List of (redshifted) lines in pseudo-wavelengths with their names.
         """
 
         lines = []

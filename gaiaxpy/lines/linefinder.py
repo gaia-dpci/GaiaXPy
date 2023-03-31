@@ -13,7 +13,7 @@ from gaiaxpy.calibrator.calibrator import calibrate
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.converter.config import load_config, get_config
 from gaiaxpy.converter.converter import convert
-from gaiaxpy.core.dispersion_function import wl_to_pwl, pwl_to_wl
+from gaiaxpy.core.dispersion_function import wl_to_pwl, pwl_to_wl, pwl_range
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.lines.herm import HermiteDer
@@ -60,9 +60,9 @@ def _check(source_type, redshift):
         raise ValueError('For QSOs please provide a list of redshifts.')
     
 def _flux_interp (wl,flux):
-    return interpolate.interp1d(wl,flux)
+    return interpolate.interp1d(wl,flux,fill_value='extrapolate')
     
-def _find(tm, n, n1, scale, offset, id, coeff, lines, line_names, flux, fluxerr):
+def _find(tm, n, n1, scale, offset, id, coeff, lines, line_names, flux, fluxerr, flux0, flux0err):
     """
     Line detection: get Hermite coefficients and try to detect lines from the list
      
@@ -76,8 +76,10 @@ def _find(tm, n, n1, scale, offset, id, coeff, lines, line_names, flux, fluxerr)
         coeff (ndarray): Hermite coefficients
         lines (list of floats): List of lines to detected [in pwl]
         line_names (list of str): List of line names
-        flux (ndarray): Calibrated flux
+        flux (ndarray): Calibrated flux [W/nm/m2]
         fluxerr (ndarray): Error of calibrated flux
+        flux0 (ndarray): Flux in pwl [e/s]
+        flux0err (ndarray): Error of flux
     Returns:
         (list): found lines with their properties
     """
@@ -93,22 +95,28 @@ def _find(tm, n, n1, scale, offset, id, coeff, lines, line_names, flux, fluxerr)
             i_line = np.abs(rootspwl - line_pwl).argmin()
             line_root = rootspwl[i_line]
             if abs(line_pwl-line_root) < 1: # allow for 1 pixel difference
-                line_flux = flux(pwl_to_wl(id, line_root).item())
+            
                 line_width_pwl = rootspwl2[rootspwl2>line_root][0] - rootspwl2[rootspwl2<line_root][-1]
                 line_width = abs(pwl_to_wl(id, rootspwl2[rootspwl2>line_root][0]).item() - pwl_to_wl(id, rootspwl2[rootspwl2<line_root][-1]).item())
                 line_test = np.array([line_root-2.*line_width_pwl, line_root-line_width_pwl, line_root+line_width_pwl, line_root+2.*line_width_pwl])
-                line_wl = pwl_to_wl(id, line_root).item()
+                
                 line_continuum = np.median(flux(pwl_to_wl(id, line_test)))
+                line_continuum_pwl = np.median(flux0(line_test))
+                
+                line_wl = pwl_to_wl(id, line_root).item()
+                line_flux = flux(line_wl).item()
+                line_flux_pwl = flux0(line_root).item()
                 line_depth = line_flux-line_continuum
-                #line_depth = valroots[i_line] - 0.5*(valroots2[rootspwl2>line_pwl][0]+valroots2[rootspwl2<line_pwl][-1])
+                line_depth_pwl = line_flux_pwl-line_continuum_pwl
                 line_sig = abs(line_depth) / fluxerr(line_wl)
-                found_lines.append((name,line_pwl,i_line,line_root,line_wl,line_flux,line_depth,line_width,line_sig))
+                line_sig_pwl = abs(line_depth_pwl) / flux0err(line_root)
+                found_lines.append((name,line_pwl,i_line,line_root,line_wl,line_flux,line_depth,line_width,line_sig,line_continuum,line_sig_pwl,line_continuum_pwl,line_width_pwl))
         except:
             pass
           
     return found_lines
     
-def _find_all(tm, n, n1, scale, offset, id, coeff, flux, fluxerr):
+def _find_all(tm, n, n1, scale, offset, id, coeff, flux, fluxerr, flux0, flux0err):
     """
     Extrema detection: get Hermite coefficients and try to detect all lines/extrema
      
@@ -122,15 +130,23 @@ def _find_all(tm, n, n1, scale, offset, id, coeff, flux, fluxerr):
         coeff (ndarray): Hermite coefficients
         flux (ndarray): Calibrated flux
         fluxerr (ndarray): Error of calibrated flux
+        flux0 (ndarray): Flux in pwl [e/s]
+        flux0err (ndarray): Error of flux
     Returns:
-        (list): all found extrema with their properties
+        (list): all found extrema (within dispersion function range) with their properties
     """
      
     hder = HermiteDer(tm, n, n1, coeff)
 
     rootspwl = _x_to_pwl(hder.get_roots_firstder(), scale, offset)
     rootspwl2 = _x_to_pwl(hder.get_roots_secondder(), scale, offset)
+    
+    range = pwl_range(id)
+    mask = (rootspwl>min(range))&(rootspwl<max(range))
+    rootspwl = rootspwl[mask]
+    
     found_lines = []
+
     for i_line,line_root in enumerate(rootspwl):
         try:
             line_flux = flux(pwl_to_wl(id, line_root).item())
@@ -138,11 +154,16 @@ def _find_all(tm, n, n1, scale, offset, id, coeff, flux, fluxerr):
             line_width = abs(pwl_to_wl(id, rootspwl2[rootspwl2>line_root][0]).item() - pwl_to_wl(id, rootspwl2[rootspwl2<line_root][-1]).item())
             line_test = np.array([line_root-2.*line_width_pwl, line_root-line_width_pwl, line_root+line_width_pwl, line_root+2.*line_width_pwl])
             line_continuum = np.median(flux(pwl_to_wl(id, line_test)))
-            line_depth = line_flux-line_continuum      #line_depth = valroots[i_line] - 0.5*(valroots2[rootspwl2>line_pwl][0]+valroots2[rootspwl2<line_pwl][-1])
+            line_continuum_pwl = np.median(flux0(line_test))
+            line_depth = line_flux-line_continuum
             line_wl = pwl_to_wl(id, line_root).item()
             line_sig = abs(line_depth) / fluxerr(line_wl)
-            name = 'Line_'+id+'_'+str(int(line_wl))
-            found_lines.append((name,line_root,i_line,line_root,line_wl,line_flux,line_depth,line_width,line_sig))
+            line_flux_pwl = flux0(line_root).item()
+            line_depth_pwl = line_flux_pwl-line_continuum_pwl
+            line_sig_pwl = abs(line_depth_pwl) / flux0err(line_root)
+            name = id+'_'+str(int(line_wl))
+            found_lines.append((name,line_root,i_line,line_root,line_wl,line_flux,line_depth,line_width,line_sig,line_continuum,line_sig_pwl,line_continuum_pwl,line_width_pwl))
+
         except:
             pass
           
@@ -154,12 +175,12 @@ def _output (bp_found_lines,rp_found_lines):
     """
     found_lines = []
     for line in bp_found_lines:
-        out = (line[0],line[4],line[5],line[6],line[7],line[8])
+        out = (line[0],line[4],line[5],line[6],line[7],line[8],line[10])
         found_lines.append(out)
     for line in rp_found_lines:
-        out = (line[0],line[4],line[5],line[6],line[7],line[8])
+        out = (line[0],line[4],line[5],line[6],line[7],line[8],line[10])
         found_lines.append(out)
-    dtype = [('line_name','U12'),('wavelength_nm','f8'),('flux','f8'),('depth','f8'),('width','f8'),('significance','f8')]
+    dtype = [('line_name','U12'),('wavelength_nm','f8'),('flux','f8'),('depth','f8'),('width','f8'),('significance','f8'),('sig_pwl','f8')]
     found_lines = np.array(found_lines, dtype=dtype)
     found_lines = np.sort(found_lines, order='wavelength_nm')
     return found_lines
@@ -204,7 +225,7 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     temp_input_data['rp_n_relevant_bases'] = 3
     cal_continuum, _ = calibrate(temp_input_data, truncation=True)
     # get source_ids
-    source_ids = np.unique(con_spectra['source_id'])
+    source_ids = parsed_input_data['source_id']
     
     # prep lines
     bplines = Lines(BANDS.bp,source_type,user_lines=user_lines)
@@ -233,9 +254,9 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
             rpline_names, rplines_pwl = rplines.get_lines_pwl(zet=redshift[i])
     
         # run line finder for BP
-        bp_found_lines = _find(bptm, bpn, bpreln, bpscale, bpoffset, BANDS.bp, bpcoeff, bplines_pwl, bpline_names, _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux']), _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux_error']))
+        bp_found_lines = _find(bptm, bpn, bpreln, bpscale, bpoffset, BANDS.bp, bpcoeff, bplines_pwl, bpline_names, _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux']), _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux_error']), _flux_interp(con_sampling, con_spectra.iloc[2*i]['flux']), _flux_interp(con_sampling, con_spectra.iloc[2*i]['flux_error']))
         # run line finder for RP
-        rp_found_lines = _find(rptm, rpn, rpreln, rpscale, rpoffset, BANDS.rp, rpcoeff, rplines_pwl, rpline_names, _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux']), _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux_error']))
+        rp_found_lines = _find(rptm, rpn, rpreln, rpscale, rpoffset, BANDS.rp, rpcoeff, rplines_pwl, rpline_names, _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux']), _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux_error']), _flux_interp(con_sampling, con_spectra.iloc[2*i+1]['flux']), _flux_interp(con_sampling, con_spectra.iloc[2*i+1]['flux_error']))
 
         # plotting
         if plot_spectra:
@@ -280,7 +301,7 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
     temp_input_data['rp_n_relevant_bases'] = 3
     cal_continuum, _ = calibrate(temp_input_data, truncation=True)
     # get source_ids
-    source_ids = np.unique(con_spectra['source_id'])
+    source_ids = parsed_input_data['source_id']
     
 
 
@@ -300,9 +321,9 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
     
     
         # run line finder for BP
-        bp_found_lines = _find_all(bptm, bpn, bpreln, bpscale, bpoffset, BANDS.bp, bpcoeff, _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux']), _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux_error']))
+        bp_found_lines = _find_all(bptm, bpn, bpreln, bpscale, bpoffset, BANDS.bp, bpcoeff, _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux']), _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux_error']), _flux_interp(con_sampling, con_spectra.iloc[2*i]['flux']), _flux_interp(con_sampling, con_spectra.iloc[2*i]['flux_error']))
         # run line finder for RP
-        rp_found_lines = _find_all(rptm, rpn, rpreln, rpscale, rpoffset, BANDS.rp, rpcoeff, _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux']), _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux_error']))
+        rp_found_lines = _find_all(rptm, rpn, rpreln, rpscale, rpoffset, BANDS.rp, rpcoeff, _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux']), _flux_interp(cal_sampling, cal_spectra.iloc[i]['flux_error']), _flux_interp(con_sampling, con_spectra.iloc[2*i+1]['flux']), _flux_interp(con_sampling, con_spectra.iloc[2*i+1]['flux_error']))
 
         # plotting
         if plot_spectra:

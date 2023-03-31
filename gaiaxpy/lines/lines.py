@@ -1,4 +1,5 @@
 import numpy as np
+from os import path
 
 from gaiaxpy.core.dispersion_function import wl_to_pwl, pwl_to_wl
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
@@ -37,8 +38,13 @@ class Lines():
                 inputlines = _qsolines
                 inputlinenames = _qsoline_names
         else:
-            inputlines = user_lines[0]
-            inputlinenames = user_lines[1]
+            if isinstance(user_lines, list): #get lines from a list provided by user
+                inputlines = user_lines[0]
+                inputlinenames = user_lines[1]
+            elif path.isfile(user_lines): #get lines from a file provided by user
+                inputlines, inputlinenames = np.loadtxt(user_lines, unpack=True, dtype='f8,U12')
+            else:
+                raise ValueError('Input is not corresponding to a list of lines or an existing file.')
     
         self.inlines = np.array(inputlines)
         self.inlinenames = np.array(inputlinenames)

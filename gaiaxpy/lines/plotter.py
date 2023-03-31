@@ -11,8 +11,9 @@ def plot_spectra_with_lines(source_id, sampling, bpflux, rpflux, wavelength, flu
     ax1 = plt.subplot(221)
     ax1.plot(sampling, bpflux, c='tab:blue')
     for i,line in enumerate(bplines):
-        name,line_pwl,i_line,line_root,line_wv,line_flux,line_depth,line_width,line_sig = line
+        name,line_pwl,i_line,line_root,line_wv,line_flux,line_depth,line_width,line_sig,line_continuum,line_sig_pwl,line_continuum_pwl,line_width_pwl = line
         ax1.axvline(line_root, ls='--', c=col[i%len(col)], label = name)
+        ax1.plot([line_root-line_width_pwl*0.5,line_root+line_width_pwl*0.5],[line_continuum_pwl,line_continuum_pwl],c='black',alpha=0.3)
     ax1.set_xlabel('Pseudo-wavelength')
     ax1.set_ylabel('Flux [e-/s]')
     if 0<len(bplines)<9: ax1.legend()
@@ -22,8 +23,9 @@ def plot_spectra_with_lines(source_id, sampling, bpflux, rpflux, wavelength, flu
     ax2 = plt.subplot(222)
     ax2.plot(sampling, rpflux, c='tab:red')
     for i,line in enumerate(rplines):
-        name,line_pwl,i_line,line_root,line_wv,line_flux,line_depth,line_width,line_sig = line
+        name,line_pwl,i_line,line_root,line_wv,line_flux,line_depth,line_width,line_sig,line_continuum,line_sig_pwl,line_continuum_pwl,line_width_pwl = line
         ax2.axvline(line_root, ls='--', c=col[(i+len(bplines))%len(col)], label = name)
+        ax2.plot([line_root-line_width_pwl*0.5,line_root+line_width_pwl*0.5],[line_continuum_pwl,line_continuum_pwl],c='black',alpha=0.3)
     ax2.set_xlabel('Pseudo-wavelength')
     ax2.set_ylabel('Flux [e-/s]')
     if 0<len(rplines)<9: ax2.legend()
@@ -33,9 +35,14 @@ def plot_spectra_with_lines(source_id, sampling, bpflux, rpflux, wavelength, flu
     ax3 = plt.subplot(212)
     ax3.plot(wavelength, flux, c='black')
     #ax3.plot(wavelength, continuum, c='black', ls='--')
-    for i,line in enumerate(bplines+rplines):
-        name,line_pwl,i_line,line_root,line_wv,line_flux,line_depth,line_width,line_sig = line
+    for i,line in enumerate(bplines):
+        name,line_pwl,i_line,line_root,line_wv,line_flux,line_depth,line_width,line_sig,line_continuum,line_sig_pwl,line_continuum_pwl,line_width_pwl = line
         ax3.axvline(line_wv, ls='-.', c=col[i%len(col)], label = name)
+        ax3.plot([line_wv-line_width*0.5,line_wv+line_width*0.5],[line_continuum,line_continuum],c='black',alpha=0.3)
+    for i,line in enumerate(rplines):
+        name,line_pwl,i_line,line_root,line_wv,line_flux,line_depth,line_width,line_sig,line_continuum,line_sig_pwl,line_continuum_pwl,line_width_pwl = line
+        ax3.axvline(line_wv, ls=':', c=col[(i+len(bplines))%len(col)], label = name)
+        ax3.plot([line_wv-line_width*0.5,line_wv+line_width*0.5],[line_continuum,line_continuum],c='black',alpha=0.3)
     ax3.set_xlabel('Wavelength [nm]')
     ax3.set_ylabel('Flux [W nm^-1 m^-2]')
     if 0<len(bplines+rplines)<13: ax3.legend()

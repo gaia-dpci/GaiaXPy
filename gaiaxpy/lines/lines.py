@@ -30,7 +30,7 @@ class Lines():
         self.xp = xp
         self.src_type = src_type
     
-        if user_lines == None: #get lines from local library
+        if user_lines is None: #get lines from local library
             if self.src_type == 'star':
                 inputlines = _starlines
                 inputlinenames = _starline_names

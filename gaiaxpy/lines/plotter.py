@@ -9,15 +9,16 @@ def plot_spectra_with_lines(source_id, sampling, bpflux, rpflux, wavelength, flu
    
     # bp
     ax1 = plt.subplot(221)
-    ax1.plot(sampling, bpflux, c='tab:blue')
-    for i,line in enumerate(bplines):
-        name,line_pwl,i_line,line_root,line_wv,line_flux,line_depth,line_width,line_sig,line_continuum,line_sig_pwl,line_continuum_pwl,line_width_pwl = line
-        ax1.axvline(line_root, ls='--', c=col[i%len(col)], label = name)
-        ax1.plot([line_root-line_width_pwl*0.5,line_root+line_width_pwl*0.5],[line_continuum_pwl,line_continuum_pwl],c='black',alpha=0.3)
-    ax1.set_xlabel('Pseudo-wavelength')
-    ax1.set_ylabel('Flux [e-/s]')
-    if 0<len(bplines)<9: ax1.legend()
-    elif len(bplines)>8: ax1.legend(fontsize=6)
+    if bpflux is not None:
+        ax1.plot(sampling, bpflux, c='tab:blue')
+        for i,line in enumerate(bplines):
+            name,line_pwl,i_line,line_root,line_wv,line_flux,line_depth,line_width,line_sig,line_continuum,line_sig_pwl,line_continuum_pwl,line_width_pwl = line
+            ax1.axvline(line_root, ls='--', c=col[i%len(col)], label = name)
+            ax1.plot([line_root-line_width_pwl*0.5,line_root+line_width_pwl*0.5],[line_continuum_pwl,line_continuum_pwl],c='black',alpha=0.3)
+        ax1.set_xlabel('Pseudo-wavelength')
+        ax1.set_ylabel('Flux [e-/s]')
+        if 0<len(bplines)<9: ax1.legend()
+        elif len(bplines)>8: ax1.legend(fontsize=6)
    
     # rp
     ax2 = plt.subplot(222)

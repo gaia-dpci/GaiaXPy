@@ -168,7 +168,7 @@ def array_to_symmetric_matrix(array, array_size):
         return not len(_array) == len(np.tril_indices(_array_size - 1)[0])
 
     # Bad cases
-    if (not isinstance(array, np.ndarray) and np.isnan(array)) or isinstance(array_size, np.ma.core.MaskedConstant) \
+    if (not isinstance(array, np.ndarray) and pd.isna(array)) or isinstance(array_size, np.ma.core.MaskedConstant) \
             or array.size == 0:
         return array
     # Enforce array type, second check verifies that array is 1D.

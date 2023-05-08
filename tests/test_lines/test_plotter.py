@@ -2,6 +2,8 @@ import unittest
 import matplotlib.figure as mplf
 from os import path
 
+import numpy as np
+
 from gaiaxpy.lines.linefinder import linefinder, extremafinder
 from gaiaxpy.lines.plotter import plot_spectra_with_lines
 
@@ -30,7 +32,7 @@ class TestPlotterMethod(unittest.TestCase):
        source_id = 5762406957886626816
        sampling = np.arange(0,60)
        wavelength = np.arange(300,700)
-       bp_flux = rp_flux = np.arange(0,60)
+       bpflux = rpflux = np.arange(0,60)
        flux = np.arange(300,700) * 2e-17
        continuum = np.arange(300,700) * 1e-17
        bplines = [('H_beta', 24.42, 4, 24.58, 484.42, 2.5e-16, -7.7e-17, 19.82, 30.63, 3.18e-16, 52.90, 3761.41, 1.78)]

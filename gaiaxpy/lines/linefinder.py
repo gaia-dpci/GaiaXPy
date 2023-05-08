@@ -293,7 +293,7 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
         rpline_names, rplines_pwl = rplines.get_lines_pwl()
 
     results = pd.DataFrame(columns=['source_id', 'lines'], index=range(source_ids.size))
-    
+
     for i in np.arange(len(parsed_input_data)):
         
         item = parsed_input_data.iloc[i]
@@ -336,7 +336,9 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
             plot_spectra_with_lines(sid, con_sampling, None,  con_spectra[m_con_rp]['flux'].values[0], cal_sampling, cal_spectra[m_cal]['flux'].values[0], cal_continuum[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
     
         results.iloc[i] = [sid, _output(bp_found_lines, rp_found_lines)]
-       
+    
+    results['source_id'] = results['source_id'].astype(np.int64)
+
     return results
 
 
@@ -420,6 +422,8 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
             
             
         results.iloc[i] = [sid, _output(bp_found_lines, rp_found_lines)]
+        
+    results['source_id'] = results['source_id'].astype(np.int64)
        
     return results
     
@@ -479,5 +483,7 @@ def fastfinder(input_object, truncation=False, username=None, password=None):
         rp_found_lines = _find_fast(rptm, rpn, rpreln, rpscale, rpoffset, BANDS.rp, rpcoeff)
    
         results.iloc[i] = [sid, bp_found_lines, rp_found_lines]
+        
+    results['source_id'] = results['source_id'].astype(np.int64)
        
     return results

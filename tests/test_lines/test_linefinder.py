@@ -1,7 +1,8 @@
 import unittest
+from os.path import join
 from configparser import ConfigParser
 
-from gaiaxpy.lines import linefinder, extremafinder, fastfinder
+from gaiaxpy import linefinder, extremafinder, fastfinder
 from tests.files.paths import files_path
 
 import pandas.testing as pdt
@@ -15,16 +16,16 @@ input_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 input_file_nobp = join(continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
 
 # Results to compare
-solution_folder = 'lines_solution'
-found_lines_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_output.csv')
-found_lines_trunc_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_trunc_output.csv')
-found_extrema_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_output.csv')
-found_extrema_trunc_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_trunc_output.csv')
-found_fast_real = pd.read_csv(join(files_path, solution_folder, 'fastfinder_output.csv')
-found_fast_trunc_real = pd.read_csv(join(files_path, solution_folder, 'fastfinder_trunc_output.csv')
-found_lines_nobp_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_nobp_output.csv')
-found_extrema_nobp_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_nobp_output.csv')
-found_fast_nobp_real = pd.read_csv(join(files_path, solution_folder, 'fastfinder_nobp_output.csv')
+solution_folder = 'lines_files'
+found_lines_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_output.csv'))
+found_lines_trunc_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_trunc_output.csv'))
+found_extrema_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_output.csv'))
+found_extrema_trunc_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_trunc_output.csv'))
+found_fast_real = pd.read_csv(join(files_path, solution_folder, 'fastfinder_output.csv'))
+found_fast_trunc_real = pd.read_csv(join(files_path, solution_folder, 'fastfinder_trunc_output.csv'))
+found_lines_nobp_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_nobp_output.csv'))
+found_extrema_nobp_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_nobp_output.csv'))
+found_fast_nobp_real = pd.read_csv(join(files_path, solution_folder, 'fastfinder_nobp_output.csv'))
 
 # Results to test
 found_lines = linefinder(input_file)

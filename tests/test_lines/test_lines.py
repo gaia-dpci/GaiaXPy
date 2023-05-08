@@ -9,8 +9,8 @@ from gaiaxpy.lines.lines import Lines
 
 from tests.files.paths import files_path
 
-lines_path = path.join(files_path, 'lines_files')
-file_lines = path.join(lines_path, 'lines_example.txt')
+lines_path = join(files_path, 'lines_files')
+file_lines = join(lines_path, 'lines_example.txt')
 
 bptrue = (np.array(['H_beta', 'He I_1', 'He I_2'], dtype='<U7'), np.array([24.42300844, 28.392607, 17.449061]))
 rptrue = (np.array(['H_alpha', 'He I_3'], dtype='<U7'), np.array([15.73198734, 22.367717]))
@@ -18,7 +18,7 @@ bptruezet = (np.array(['C III]', 'Mg II'], dtype='<U8'), np.array([38.18102116, 
 rptruezet = (np.array(['H_beta'], dtype='<U8'), np.array([45.71770448]))
 bptruelist = (np.array(['H_beta'], dtype='<U7'), np.array([24.42300844]))
 rptruelist = (np.array(['H_alpha'], dtype='<U7'), np.array([15.73198734]))
-xpempty = (np.array([], dtype='<U7'), np.array([], dtype=float64)))
+xpempty = (np.array([], dtype='<U7'), np.array([], dtype=np.float64))
 
 class TestLines(unittest.TestCase):
 
@@ -35,8 +35,8 @@ class TestLines(unittest.TestCase):
         rpl = Lines(BANDS.rp, 'qso')
         npt.assert_array_equal(bpl.get_lines_pwl(zet=1.)[0], bptruezet[0])
         npt.assert_array_equal(rpl.get_lines_pwl(zet=1.)[0], rptruezet[0])
-        npt.assert_allclose(bpl.get_lines_pwl()[1], bptruezet[1])
-        npt.assert_allclose(rpl.get_lines_pwl()[1], rptruezet[1])
+        npt.assert_allclose(bpl.get_lines_pwl(zet=1.)[1], bptruezet[1])
+        npt.assert_allclose(rpl.get_lines_pwl(zet=1.)[1], rptruezet[1])
 
     def test_lines_list_star(self):
         user_list = [(656.461, 486.268), ('H_alpha', 'H_beta')]

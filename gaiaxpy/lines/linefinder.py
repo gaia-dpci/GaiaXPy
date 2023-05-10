@@ -241,7 +241,7 @@ def _output (bp_found_lines,rp_found_lines):
 def linefinder(input_object, truncation=False, source_type='star', redshift=0., user_lines=None, plot_spectra=False,
                save_plots=False, username=None, password=None):
     """
-    Line finding: get the input interally calibrated mean spectra from the continuous represenation to a
+    Line finding: get the input internally calibrated mean spectra from the continuous represenation to a
     sampled form. In between it looks for emission and absorption lines. The lines can be defined by user
     or chosen from internal library, the source redshift and type can be specified.
     
@@ -361,7 +361,7 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
 
 def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots=False, username=None, password=None):
     """
-    Line finding: get the input interally calibrated mean spectra from the continuous represenation to a
+    Line finding: get the input internally calibrated mean spectra from the continuous represenation to a
     sampled form. In between it looks for all lines (=extrema in spectra).
     
     Args:
@@ -447,7 +447,7 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
     
 def fastfinder(input_object, truncation=False, username=None, password=None):
     """
-    Line finding: get the input coefficents for interally calibrated mean spectra and look for the extrema. No evalution of spectra in both sampled and continuous forms is performed
+    Line finding: get the input coefficents for internally calibrated mean spectra and look for the extrema. No evalution of spectra in both sampled and continuous forms is performed.
     
     Args:
         input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their

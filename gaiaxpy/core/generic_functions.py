@@ -5,12 +5,10 @@ Module to hold some functions used by different subpackages.
 """
 
 import sys
-from collections.abc import Iterable
+from ast import literal_eval
 from numbers import Number
 from os.path import join
 from string import capwords
-from os.path import join
-from gaiaxpy.config.paths import config_path
 
 import numpy as np
 import pandas as pd
@@ -19,6 +17,7 @@ from numpy import ndarray
 from gaiaxpy.config.paths import filters_path, config_path
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.generator.config import get_additional_filters_path
+from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 
 
 def _get_built_in_systems() -> list:
@@ -53,11 +52,25 @@ def parse_band(band):
         raise ValueError(f"String {band} is not a valid band. Band must be either 'bp' or 'rp'.")
 
 
+def str_to_matrix(str_matrix):
+    """
+    Convert a string of the form ((1,2,3),(4,5,6),(7,8,9)) to a NumPy matrix.
+    """
+    # Replace nan to None so the string can be evaluated
+    str_matrix = str_matrix.replace('nan', 'None')
+    evaluated = literal_eval(str_matrix)
+    evaluated = np.array(evaluated)
+    evaluated = np.where(evaluated == None, np.nan, evaluated)
+    return np.array(evaluated)
+
+
 def str_to_array(str_array):
-    if isinstance(str_array, str):
+    if isinstance(str_array, str) and len(str_array) >= 2 and str_array[0] == '(' and str_array[1] == '(':
+        return str_to_matrix(str_array)
+    elif isinstance(str_array, str):
         try:
             return np.fromstring(str_array[1:-1], sep=',')
-        except:
+        except:  # np.fromstring may not raise an error but only show a warning depending on the version
             raise ValueError('Input cannot be converted to array.')
     elif isinstance(str_array, float):
         return float('NaN')
@@ -65,7 +78,7 @@ def str_to_array(str_array):
         raise ValueError('Unhandled type.')
 
 
-def _validate_pwl_sampling(sampling):
+def validate_pwl_sampling(sampling):
     # Receives a NumPy array. Validates sampling in pwl.
     min_sampling_value = -10
     max_sampling_value = 70
@@ -86,7 +99,7 @@ def _validate_pwl_sampling(sampling):
                          f'{min_sampling_value} and the maximum is {max_sampling_value}.')
 
 
-def _validate_wl_sampling(sampling):
+def validate_wl_sampling(sampling):
     min_value = 330
     max_value = 1050
     # Check sampling
@@ -102,7 +115,7 @@ def _warning(message):
     print(f'UserWarning: {message}', file=sys.stderr)
 
 
-def _validate_arguments(default_output_file, given_output_file, save_file):
+def validate_arguments(default_output_file, given_output_file, save_file):
     if save_file and not isinstance(save_file, bool):
         raise ValueError("Parameter 'save_file' must contain a boolean value.")
     # If the user input a number different to the default value, but didn't set save_file to True
@@ -111,18 +124,20 @@ def _validate_arguments(default_output_file, given_output_file, save_file):
                  'output of the function.')
 
 
-def _get_spectra_type(spectra):
+def get_spectra_type(spectra):
     """
     Get the spectra type.
 
     Args:
-        spectra (object): A spectrum or a spectra iterable.
+        spectra (object): A spectrum or a spectra list.
 
     Returns:
         str: Spectrum type (e.g. AbsoluteSampledSpectrum).
     """
-    if isinstance(spectra, Iterable):
+    if isinstance(spectra, list):
         spectrum = spectra[0]
+    elif isinstance(spectra, dict):
+        spectrum = spectra[list(spectra.keys())[0]]
     else:
         spectrum = spectra
     return spectrum.__class__
@@ -168,7 +183,7 @@ def array_to_symmetric_matrix(array, array_size):
         return not len(_array) == len(np.tril_indices(_array_size - 1)[0])
 
     # Bad cases
-    if (not isinstance(array, np.ndarray) and np.isnan(array)) or isinstance(array_size, np.ma.core.MaskedConstant) \
+    if (not isinstance(array, np.ndarray) and pd.isna(array)) or isinstance(array_size, np.ma.core.MaskedConstant) \
             or array.size == 0:
         return array
     # Enforce array type, second check verifies that array is 1D.
@@ -204,6 +219,66 @@ def _extract_systems_from_data(data_columns, photometric_system=None):
         systems = list(dict.fromkeys(column_list))
     return systems
 
+
 def _get_built_in_systems() -> list:
     f = open(join(config_path, 'available_systems.txt'), 'r')
     return f.read().splitlines()
+
+
+def correlation_from_covariance(covariance):
+    v = np.sqrt(np.diag(covariance))
+    outer_v = np.outer(v, v)
+    correlation = covariance / outer_v
+    correlation[covariance == 0] = 0
+    return correlation
+
+
+def correlation_to_covariance(correlation: np.ndarray, error: np.ndarray, stdev: float) -> np.ndarray:
+    """
+    Compute the covariance matrix from the correlation values.
+
+    If the input correlation values are a 1D array, the values are assumed to be the lower triangle of a
+    symmetric matrix (excluding the diagonal). The array will be internally converted to a full correlation matrix.
+
+    Args:
+        correlation (ndarray): A 2D numpy array of shape (n, n) representing the correlation matrix.
+            Alternatively, a 1D numpy array of length n*(n-1)/2 representing the lower triangle of a
+            symmetric correlation matrix (excluding the diagonal).
+        error (ndarray): A 1D numpy array of length n containing the flux errors.
+        stdev (float): The scaling factor for the errors.
+
+    Returns:
+        ndarray: A 2D numpy array of shape (n, n) representing the covariance matrix.
+
+    Raises:
+        ValueError: If the dimensions of input correlation are not either 1 or 2.
+    """
+    if correlation.ndim == 1:
+        size = get_matrix_size_from_lower_triangle(correlation)
+        new_matrix = np.zeros((size, size))
+        new_matrix[np.tril_indices(size, k=-1)] = correlation
+        new_matrix += new_matrix.T
+        new_matrix += np.diag(np.ones(size), k=0)
+        correlation = new_matrix
+    if correlation.ndim == 2:
+        return _correlation_to_covariance_dr3int5(correlation, error, stdev)
+    else:
+        raise ValueError('Dimensions of input correlation must be either 1 or 2.')
+
+
+def get_matrix_size_from_lower_triangle(array):
+    """
+    Compute the size of a symmetric matrix from an array containing the values of its lower triangle, excluding the
+    diagonal.
+
+    Args:
+        array (ndarray): An array of length n*(n-1)/2 representing the lower triangle of an n x n symmetric matrix,
+            excluding the diagonal.
+
+    Returns:
+        int: The size n of the symmetric matrix.
+
+    Raises:
+        ValueError: If the length of array is not a valid input for a symmetric matrix lower triangle.
+    """
+    return int((np.sqrt(1 + 8 * len(array)) + 1) / 2)

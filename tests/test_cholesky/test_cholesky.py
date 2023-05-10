@@ -1,15 +1,17 @@
+import unittest
+from os.path import join
+
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
-import unittest
+
 from gaiaxpy import get_chi2, get_inverse_covariance_matrix
 from gaiaxpy.cholesky.cholesky import _get_inverse_square_root_covariance_matrix_aux, \
     get_inverse_square_root_covariance_matrix
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
-from os.path import join
 from tests.files.paths import files_path
 from tests.utils.utils import parse_matrices
 
@@ -49,7 +51,7 @@ class TestCholesky(unittest.TestCase):
     def test_inverse_covariance_matrix_file_from_df_numpy_matrix(self):
         # Test completely parsed (arrays + matrices) dataframe
         f = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
-        df, _ = InputReader(f, get_inverse_covariance_matrix)._read()
+        df, _ = InputReader(f, get_inverse_covariance_matrix).read()
         inverse_df = get_inverse_covariance_matrix(df)
         pdt.assert_frame_equal(inverse_df, solution, rtol=_rtol, atol=_atol)
 
@@ -78,7 +80,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
 
     def test_internal_inverse_square_root_covariance_matrix_no_missing_bands(self):
         input_object = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
-        parsed_input_data, extension = InputReader(input_object, get_inverse_square_root_covariance_matrix)._read()
+        parsed_input_data, extension = InputReader(input_object, get_inverse_square_root_covariance_matrix).read()
         output_columns = ['source_id', 'bp_inverse_square_root_covariance_matrix',
                           'rp_inverse_square_root_covariance_matrix']
         bands_output = []
@@ -99,7 +101,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
 
     def test_internal_inverse_square_root_covariance_matrix_with_missing_bands(self):
         input_object = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
-        parsed_input_data, extension = InputReader(input_object, get_inverse_square_root_covariance_matrix)._read()
+        parsed_input_data, extension = InputReader(input_object, get_inverse_square_root_covariance_matrix).read()
         output_columns = ['source_id', 'bp_inverse_square_root_covariance_matrix',
                           'rp_inverse_square_root_covariance_matrix']
         bands_output = []
@@ -122,7 +124,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
 
     def test_external_inverse_square_root_covariance_matrix_no_missing_bands_both_bands_file_input(self):
         input_object = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
-        output_df = get_inverse_square_root_covariance_matrix(input_object, band=None)
+        output_df = get_inverse_square_root_covariance_matrix(input_object)
         solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
         solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
         solution_df = pd.read_csv(join(cholesky_path, 'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
@@ -131,7 +133,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
 
     def test_external_inverse_square_root_covariance_matrix_with_missing_bands_file_input(self):
         input_object = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
-        output_df = get_inverse_square_root_covariance_matrix(input_object, band=None)
+        output_df = get_inverse_square_root_covariance_matrix(input_object)
         solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
         solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
         solution_df = pd.read_csv(join(cholesky_path, 'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),
@@ -141,7 +143,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
     # DF input
     def test_external_inverse_square_root_covariance_matrix_no_missing_bands_both_bands_df_input(self):
         input_object = pd.read_csv(join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv'))
-        output_df = get_inverse_square_root_covariance_matrix(input_object, band=None)
+        output_df = get_inverse_square_root_covariance_matrix(input_object)
         solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
         solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
         solution_df = pd.read_csv(join(cholesky_path, 'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
@@ -150,7 +152,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
 
     def test_external_inverse_square_root_covariance_matrix_with_missing_bands_df_input(self):
         input_object = pd.read_csv(join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv'))
-        output_df = get_inverse_square_root_covariance_matrix(input_object, band=None)
+        output_df = get_inverse_square_root_covariance_matrix(input_object)
         solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
         solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
         solution_df = pd.read_csv(join(cholesky_path, 'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),
@@ -160,7 +162,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
     # List input
     def test_external_inverse_square_root_covariance_matrix_no_missing_bands_both_bands_list_input(self):
         input_object = [5853498713190525696, 5762406957886626816]
-        output_df = get_inverse_square_root_covariance_matrix(input_object, band=None)
+        output_df = get_inverse_square_root_covariance_matrix(input_object)
         solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
         solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
         solution_df = pd.read_csv(join(cholesky_path, 'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
@@ -169,7 +171,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
 
     def test_external_inverse_square_root_covariance_matrix_with_missing_bands_list_input(self):
         input_object = [5853498713190525696, 5405570973190252288, 5762406957886626816]
-        output_df = get_inverse_square_root_covariance_matrix(input_object, band=None)
+        output_df = get_inverse_square_root_covariance_matrix(input_object)
         solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
         solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
         solution_df = pd.read_csv(join(cholesky_path, 'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),
@@ -180,7 +182,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
     def test_external_inverse_square_root_covariance_matrix_no_missing_bands_both_bands_query_input(self):
         input_object = "SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5853498713190525696'," \
                        "'5762406957886626816')"
-        output_df = get_inverse_square_root_covariance_matrix(input_object, band=None)
+        output_df = get_inverse_square_root_covariance_matrix(input_object)
         solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
         solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
         solution_df = pd.read_csv(join(cholesky_path, 'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
@@ -192,7 +194,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
     def test_external_inverse_square_root_covariance_matrix_with_missing_bands_query_input(self):
         input_object = "SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5762406957886626816'," \
                        "'5853498713190525696', '5405570973190252288')"
-        output_df = get_inverse_square_root_covariance_matrix(input_object, band=None)
+        output_df = get_inverse_square_root_covariance_matrix(input_object)
         solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
         solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
         solution_df = pd.read_csv(join(cholesky_path, 'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),

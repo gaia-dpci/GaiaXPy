@@ -3,7 +3,7 @@ from configparser import ConfigParser
 from os import path
 
 from gaiaxpy.config.paths import config_path
-from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_xml
+from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
@@ -17,8 +17,8 @@ configparser.read(path.join(config_path, 'config.ini'))
 
 label = 'calibrator'
 
-xp_sampling_grid, xp_merge = _load_xpmerge_from_xml()
-xp_design_matrices = _load_xpsampling_from_xml()
+xp_sampling_grid, xp_merge = load_xpmerge_from_xml()
+xp_design_matrices = load_xpsampling_from_xml()
 
 parser = InternalContinuousParser()
 file_to_parse = path.join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')

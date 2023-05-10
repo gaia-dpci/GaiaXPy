@@ -58,10 +58,9 @@ class TestSingleColourEquation(unittest.TestCase):
                 # Compare magnitudes
                 npt.assert_almost_equal(output_source[f'{label}_mag_{band}'], pmn_source[band])
 
-    def test_johnsonstd_csv(self):
+    def test_johnson_std_csv(self):
         """
-        Compare the results of GaiaXPy and PMN's results for the application of the
-        colour equation in Johnson_Std.
+        Compare the results of GaiaXPy and PMN's results for the application of the colour equation in Johnson_Std.
         """
         csv_path = path.join(continuous_path, 'XP_CONTINUOUS_RAW_colour_eq_dr3int6.csv')
         phot_system = PhotometricSystem.JKC_Std

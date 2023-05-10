@@ -16,7 +16,7 @@ from fastavro.validation import validate_many
 from numpy import ndarray
 
 from .output_data import OutputData
-from .utils import _add_ecsv_header, _array_to_standard, _build_ecsv_header, _generate_fits_header, \
+from .utils import _add_ecsv_header, _array_to_standard, _build_ecsv_header, _generate_fits_header,\
     _get_sampling_dict, _load_header_dict
 
 
@@ -196,7 +196,7 @@ class SampledSpectraData(OutputData):
         def _create_fields(_votable, _spectra_df):
             len_flux = str(len(_spectra_df['flux'].iloc[0]))
             len_error = str(len(_spectra_df['flux_error'].iloc[0]))
-            len_correlation = str(len(_spectra_df['correlation'].iloc[0])) \
+            len_correlation = str(len(_spectra_df['correlation'].iloc[0]))\
                 if 'correlation' in _spectra_df.columns else ''
             fields_datatypes = {'source_id': 'long', 'xp': 'char', 'flux': 'double', 'flux_error': 'float',
                                 'correlation': 'double', 'standard_deviation': 'float'}

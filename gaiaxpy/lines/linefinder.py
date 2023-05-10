@@ -111,8 +111,10 @@ def _find(tm, n, n1, scale, offset, id, coeff, lines, line_names, flux, fluxerr,
             if abs(line_pwl-line_root) < 1: # allow for 1 pixel difference
             
                 line_width_pwl = rootspwl2[rootspwl2>line_root][0] - rootspwl2[rootspwl2<line_root][-1]
-                line_width = abs(pwl_to_wl(id, rootspwl2[rootspwl2>line_root][0]).item() - pwl_to_wl(id, rootspwl2[rootspwl2<line_root][-1]).item())
-                line_test = np.array([line_root-2.*line_width_pwl, line_root-line_width_pwl, line_root+line_width_pwl, line_root+2.*line_width_pwl])
+                line_width = abs(pwl_to_wl(id, rootspwl2[rootspwl2>line_root][0]).item() -
+                                 pwl_to_wl(id, rootspwl2[rootspwl2<line_root][-1]).item())
+                line_test = np.array([line_root-2.*line_width_pwl, line_root-line_width_pwl, line_root+line_width_pwl,
+                                      line_root+2.*line_width_pwl])
                 
                 line_continuum = np.median(flux(pwl_to_wl(id, line_test)))
                 line_continuum_pwl = np.median(flux0(line_test))
@@ -127,7 +129,8 @@ def _find(tm, n, n1, scale, offset, id, coeff, lines, line_names, flux, fluxerr,
                 line_depth_pwl = line_flux_pwl-line_continuum_pwl
                 line_sig = abs(line_depth) / fluxerr(line_wl)
                 line_sig_pwl = abs(line_depth_pwl) / flux0err(line_root)
-                found_lines.append((name,line_pwl,i_line,line_root,line_wl,line_flux,line_depth,line_width,line_sig,line_continuum,line_sig_pwl,line_continuum_pwl,line_width_pwl))
+                found_lines.append((name,line_pwl,i_line,line_root,line_wl,line_flux,line_depth,line_width,line_sig,
+                                    line_continuum,line_sig_pwl,line_continuum_pwl,line_width_pwl))
         #except:
         #    pass
           
@@ -228,13 +231,15 @@ def _output (bp_found_lines,rp_found_lines):
     for line in rp_found_lines:
         out = (line[0],line[4],line[5],line[6],line[7],line[8],line[10])
         found_lines.append(out)
-    dtype = [('line_name','U12'),('wavelength_nm','f8'),('flux','f8'),('depth','f8'),('width','f8'),('significance','f8'),('sig_pwl','f8')]
+    dtype = [('line_name', 'U12'), ('wavelength_nm', 'f8'), ('flux', 'f8'), ('depth', 'f8'), ('width', 'f8'),
+             ('significance', 'f8'), ('sig_pwl', 'f8')]
     found_lines = np.array(found_lines, dtype=dtype)
     found_lines = np.sort(found_lines, order='wavelength_nm')
     return found_lines
     
   
-def linefinder(input_object, truncation=False, source_type='star', redshift=0., user_lines=None, plot_spectra=False, save_plots=False, username=None, password=None):
+def linefinder(input_object, truncation=False, source_type='star', redshift=0., user_lines=None, plot_spectra=False,
+               save_plots=False, username=None, password=None):
     """
     Line finding: get the input interally calibrated mean spectra from the continuous represenation to a
     sampled form. In between it looks for emission and absorption lines. The lines can be defined by user
@@ -243,10 +248,11 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     Args:
         input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
             continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
-        truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by the recommended value in the input files.
+        truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
+            the recommended value in the input files.
         source_type (str): Source type: 'star' or 'qso'
         redshift (float or list): Default=0 for stars and a list of tuples (source id - redshift) for QSOs
-        lines (tuple): Tuple containing a list of line wavelengths [nm] and names
+        user_lines (tuple): Tuple containing a list of line wavelengths [nm] and names
         plot_spectra (bool): Whether to plot spectrum with lines.
         save_plots (bool): Whether to save plots with spectra.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
@@ -255,7 +261,6 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     Returns:
         (DataFrame): dataframe with arrays of found lines and their properties for each source
     """
-    
     _check(source_type, redshift)
     _check_tr(truncation)
     _check_pl(plot_spectra, save_plots)
@@ -280,13 +285,13 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     source_ids = parsed_input_data['source_id']
     # prep redshifts -> match with source_ids
     if source_type == 'qso':
-        red_array = np.array(redshift, dtype=[('source_id','i8'),('z','f8')])
+        red_array = np.array(redshift, dtype=[('source_id', 'i8'),('z', 'f8')])
         if not np.all(np.isin(source_ids, red_array['source_id'])):
             raise ValueError('Missing redshifts in the list?')
             
     # prep lines
-    bplines = Lines(BANDS.bp,source_type,user_lines=user_lines)
-    rplines = Lines(BANDS.rp,source_type,user_lines=user_lines)
+    bplines = Lines(BANDS.bp,source_type, user_lines=user_lines)
+    rplines = Lines(BANDS.rp,source_type, user_lines=user_lines)
    
     if source_type == 'star':
         bpline_names, bplines_pwl = bplines.get_lines_pwl()
@@ -312,33 +317,45 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
        
         # prep lines cont.
         if source_type == 'qso':
-            bpline_names, bplines_pwl = bplines.get_lines_pwl(zet=red_array['z'][red_array['source_id']==sid][0])
-            rpline_names, rplines_pwl = rplines.get_lines_pwl(zet=red_array['z'][red_array['source_id']==sid][0])
+            bpline_names, bplines_pwl = bplines.get_lines_pwl(zet=red_array['z'][red_array['source_id'] == sid][0])
+            rpline_names, rplines_pwl = rplines.get_lines_pwl(zet=red_array['z'][red_array['source_id'] == sid][0])
             
         # masks
-        m_cal = (cal_spectra['source_id']==sid)
-        m_con_bp = (con_spectra['source_id']==sid)&(con_spectra['xp']=='BP')
-        m_con_rp = (con_spectra['source_id']==sid)&(con_spectra['xp']=='RP')
+        m_cal = (cal_spectra['source_id'] == sid)
+        m_con_bp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'BP')
+        m_con_rp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'RP')
     
         # run line finder for BP
         if not pd.isna(item['bp_n_parameters']):
-            bp_found_lines = _find(bptm, bpn, bpreln, bpscale, bpoffset, BANDS.bp, bpcoeff, bplines_pwl, bpline_names, _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]), _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]), _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]), _flux_interp(con_sampling, con_spectra[m_con_bp]['flux_error'].values[0]))
+            bp_found_lines = _find(bptm, bpn, bpreln, bpscale, bpoffset, BANDS.bp, bpcoeff, bplines_pwl, bpline_names,
+                                   _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
+                                   _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
+                                   _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]),
+                                   _flux_interp(con_sampling, con_spectra[m_con_bp]['flux_error'].values[0]))
         else:
             bp_found_lines = []
             
         # run line finder for RP
-        rp_found_lines = _find(rptm, rpn, rpreln, rpscale, rpoffset, BANDS.rp, rpcoeff, rplines_pwl, rpline_names, _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]), _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]), _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]), _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
+        rp_found_lines = _find(rptm, rpn, rpreln, rpscale, rpoffset, BANDS.rp, rpcoeff, rplines_pwl, rpline_names,
+                               _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
+                               _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
+                               _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
+                               _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
 
         # plotting
         if plot_spectra and not pd.isna(item['bp_n_parameters']):
-            plot_spectra_with_lines(sid, con_sampling, con_spectra[m_con_bp]['flux'].values[0],  con_spectra[m_con_rp]['flux'].values[0], cal_sampling, cal_spectra[m_cal]['flux'].values[0], cal_continuum[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
+            plot_spectra_with_lines(sid, con_sampling, con_spectra[m_con_bp]['flux'].values[0],
+                                    con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
+                                    cal_spectra[m_cal]['flux'].values[0], cal_continuum[m_cal]['flux'].values[0],
+                                    bp_found_lines, rp_found_lines, save_plots)
         elif plot_spectra:
-            plot_spectra_with_lines(sid, con_sampling, None,  con_spectra[m_con_rp]['flux'].values[0], cal_sampling, cal_spectra[m_cal]['flux'].values[0], cal_continuum[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
+            plot_spectra_with_lines(sid, con_sampling, None, con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
+                                    cal_spectra[m_cal]['flux'].values[0], cal_continuum[m_cal]['flux'].values[0],
+                                    bp_found_lines, rp_found_lines, save_plots)
     
         results.iloc[i] = [sid, _output(bp_found_lines, rp_found_lines)]
     
     results['source_id'] = results['source_id'].astype(np.int64)
-
     return results
 
 

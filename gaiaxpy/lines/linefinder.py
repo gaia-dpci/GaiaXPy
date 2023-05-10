@@ -447,7 +447,7 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
     
 def fastfinder(input_object, truncation=False, username=None, password=None):
     """
-    Line finding: get the input coefficents for internally calibrated mean spectra and look for the extrema. No evalution of spectra in both sampled and continuous forms is performed.
+    Line finding: get the input coefficents for internally calibrated mean spectra and look for the extrema. No evaluation of spectra in both sampled and continuous forms is performed.
     
     Args:
         input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their

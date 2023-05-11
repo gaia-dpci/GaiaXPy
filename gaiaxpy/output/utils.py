@@ -80,7 +80,6 @@ def _build_ecsv_header(df, positions=None):
     columns = df.columns
     header_dict = _load_header_dict()
     header = _initialise_header()
-    print(df.attrs)
     data_type = df.attrs['data_type']
     units_dict = data_type.get_units()
     for column in columns:

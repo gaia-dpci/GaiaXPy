@@ -1,95 +1,95 @@
 import numpy as np
-from numpy import linalg as LA
+from numpy.linalg import eigvals
 
 _sqrt2 = np.sqrt(2.)
 
 
-class HermiteDer():
+class HermiteDerivative:
     """
     Calculate zero-points of 1st and 2nd derivative of linear combination of Hermite functions.
     """
 
-    def __init__(self, tm, n, n1, coeff):
+    def __init__(self, bases_transform_matrix, n_bases, n_rel_bases, coeff):
         """
-        Initialise.
+        Initialise Hermite Derivative object.
         
         Args:
-            tm (ndarray): 2D array containing bases transformation matrix.
-            n (int): Number of bases.
-            n1 (int): Number of relevant bases.
+            bases_transform_matrix (ndarray): 2D array containing bases transformation matrix.
+            n_bases (int): Number of bases.
+            n_rel_bases (int): Number of relevant bases.
             coeff (ndarray): 1D array containing the coefficients multiplying the basis functions in the
                 continuous representation.
         """
 
-        self.n = n
-        coeff[n1:] = 0.
+        self.n = n_bases
+        coeff[n_rel_bases:] = 0.
         self.coeff = coeff
-        self.bt = tm  # bases_transformation
-        self.coeffbt = self.coeff.dot(self.bt)
+        self.bases_transform = bases_transform_matrix
+        self.coeff_bt = self.coeff.dot(self.bases_transform)
 
-    def get_roots_firstder(self):
+    def get_roots_first_der(self):
         """
         Calculate zero-points of 1st derivative.
-        
+
         Returns:
             ndarray: 1D array of zero-points.
         """
 
-        N = self.n
-        coeff1 = np.r_[self.coeffbt, [0]]
+        _N = self.n
+        coeff1 = np.r_[self.coeff_bt, [0]]
 
-        D = np.zeros((N + 1, N + 1))
-        R = np.arange(0, N)
-        D[R + 1, R] = np.sqrt(R + 1) / _sqrt2
-        D[R, R + 1] = -np.sqrt(R + 1) / _sqrt2
+        _D = np.zeros((_N + 1, _N + 1))
+        # Fill in the upper triangular part of _D
+        for r in range(_N):
+            _D[r + 1, r] = np.sqrt(r + 1) / _sqrt2
+            _D[r, r + 1] = -np.sqrt(r + 1) / _sqrt2
 
         # 1st derivative coefficients:
-        coeffder = D.dot(coeff1)
+        coeff_der = _D.dot(coeff1)
 
-        # b - matrix to calculate zeropoints
-        b = np.zeros((N, N))
-        R1 = np.arange(0, N - 1)
-        b[R1 + 1, R1] = np.sqrt(R1 + 1) / _sqrt2
-        b[R1, R1 + 1] = np.sqrt(R1 + 1) / _sqrt2
-        b[N - 1, R] -= np.sqrt(N / 2.) * coeffder[:-1] / coeffder[-1]
+        # b - matrix to calculate zero-points
+        b = np.zeros((_N, _N))
+        # Fill in the upper triangular part of b
+        for r in range(_N - 1):
+            b[r + 1, r] = np.sqrt(r + 1) / _sqrt2
+            b[r, r + 1] = np.sqrt(r + 1) / _sqrt2
+        # Fill in the last row of b
+        b[_N - 1, :] -= np.sqrt(_N / 2.) * coeff_der[:-1] / coeff_der[-1]
 
-        eigval = LA.eigvals(b)
+        _eigval = eigvals(b)
 
-        # 1st derivative zeropoints = extrema in spectrum
-        roots = np.sort(eigval[np.isreal(eigval)].real)
+        # 1st derivative zero-points = extrema in spectrum
+        return np.sort(_eigval[np.isreal(_eigval)].real)
 
-        return roots  # roots have to be rescaled to pwl
-
-    def get_roots_secondder(self):
+    def get_roots_second_der(self):
         """
         Calculate zero-points of 2nd derivative.
-        
+
         Returns:
             ndarray: 1D array of zero-points.
         """
 
         # 2nd derivative : 1st method direct from spectrum coefficients
-        N = self.n
-        coeff2 = np.r_[self.coeffbt, [0, 0]]
+        _N = self.n
+        coeff2 = np.r_[self.coeff_bt, [0, 0]]
 
-        R = np.arange(0, N)
-
-        D2 = np.diag(-0.5 - np.arange(N + 2), k=0)
-
-        D2[R, R + 2] = 0.5 * np.sqrt((R + 2) * (R + 1))
-        D2[R + 2, R] = 0.5 * np.sqrt((R + 2) * (R + 1))
+        _D2 = np.diag(-0.5 - np.arange(_N + 2), k=0)
+        for r in range(_N):
+            _D2[r, r + 2] = 0.5 * np.sqrt((r + 2) * (r + 1))
+            _D2[r + 2, r] = 0.5 * np.sqrt((r + 2) * (r + 1))
 
         # 2nd derivative coefficients:
-        coeffder2 = D2.dot(coeff2)
+        coeff_der2 = _D2.dot(coeff2)
 
-        # b2 - matrix to calculate zeropoints
-        b2 = np.zeros((N + 1, N + 1))
-        b2[R + 1, R] = np.sqrt(R + 1) / _sqrt2
-        b2[R, R + 1] = np.sqrt(R + 1) / _sqrt2
+        # b2 - matrix to calculate zero-points
+        b2 = np.zeros((_N + 1, _N + 1))
+        for r in range(_N):
+            b2[r + 1, r] = np.sqrt(r + 1) / _sqrt2
+            b2[r, r + 1] = np.sqrt(r + 1) / _sqrt2
 
-        b2[N, np.arange(0, N + 1)] -= np.sqrt((N + 1) / 2.) * coeffder2[:-1] / coeffder2[-1]
+        b2[_N, np.arange(0, _N + 1)] -= np.sqrt((_N + 1) / 2.) * coeff_der2[:-1] / coeff_der2[-1]
 
-        eigval2 = LA.eigvals(b2)
+        eigval2 = eigvals(b2)
 
         roots2 = np.sort(eigval2[np.isreal(eigval2)].real)
 

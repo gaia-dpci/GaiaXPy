@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 
-from gaiaxpy.lines.herm import HermiteDer
+from gaiaxpy.lines.herm import HermiteDerivative
 
 n = 4
 tm = np.ones((n, n))
@@ -17,17 +17,17 @@ class TestHermites(unittest.TestCase):
     def test_get_roots(self):
         n1 = n
         coeff = np.arange(1, n + 1)
-        hd = HermiteDer(tm, n, n1, coeff)
-        roots1 = hd.get_roots_firstder()
+        hd = HermiteDerivative(tm, n, n1, coeff)
+        roots1 = hd.get_roots_first_der()
         npt.assert_allclose(roots1, roots1real)
-        roots2 = hd.get_roots_secondder()
+        roots2 = hd.get_roots_second_der()
         npt.assert_allclose(roots2, roots2real)
 
     def test_get_roots_trunc(self):
         n1 = 3
         coeff = np.arange(1, n + 1)
-        hd = HermiteDer(tm, n, n1, coeff)
-        roots1 = hd.get_roots_firstder()
+        hd = HermiteDerivative(tm, n, n1, coeff)
+        roots1 = hd.get_roots_first_der()
         npt.assert_allclose(roots1, roots1real)
-        roots2 = hd.get_roots_secondder()
+        roots2 = hd.get_roots_second_der()
         npt.assert_allclose(roots2, roots2real)

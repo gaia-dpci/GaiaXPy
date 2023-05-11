@@ -58,7 +58,7 @@ def _x_to_pwl(x, scale, offset):
     return (x - offset) / scale
 
 
-def _check_source_type(source_type, redshift):
+def _check_source_redshift_type(source_type, redshift):
     if not isinstance(source_type, str):
         raise ValueError('The variable source_type must be a string.')
     source_type = source_type.lower()
@@ -95,15 +95,15 @@ def _get_line_pwl_width_test(roots_pwl2, line_root, xp):
     return line_width_pwl, line_width, line_test
 
 
-def _extract_elements_from_item(item, truncation, bpn, rpn):
+def _extract_elements_from_item(item, truncation, bp_n, rp_n):
     sid = item['source_id']
-    # coeff from parsed_input_data
-    bpcoeff, rpcoeff = item['bp_coefficients'], item['rp_coefficients']
+    # Coefficients from parsed_input_data
+    bp_coeff, rp_coeff = item['bp_coefficients'], item['rp_coefficients']
 
-    bpreln = item['bp_n_relevant_bases'] if truncation else bpn
-    rpreln = item['rp_n_relevant_bases'] if truncation else rpn
+    bp_rel_n = item['bp_n_relevant_bases'] if truncation else bp_n
+    rp_rel_n = item['rp_n_relevant_bases'] if truncation else rp_n
 
-    return sid, bpcoeff, rpcoeff, bpreln, rpreln
+    return sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n
 
 
 def _find(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff, lines, line_names, calibrated_flux,
@@ -136,7 +136,7 @@ def _find(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff
     for line_pwl, name in zip(lines, line_names):
         i_line = np.abs(roots_pwl - line_pwl).argmin()
         line_root = roots_pwl[i_line]
-        if abs(line_pwl - line_root) < 1:  # allow for 1 pixel difference
+        if abs(line_pwl - line_root) < 1:  # Allow for 1 pixel difference
             line_width_pwl, line_width, line_test = _get_line_pwl_width_test(roots_pwl2, line_root, xp)
             line_continuum = np.median(calibrated_flux(pwl_to_wl(xp, line_test)))
             line_continuum_pwl = np.median(flux(line_test))
@@ -231,9 +231,9 @@ def _format_output(bp_found_lines, rp_found_lines):
     _bp_found_lines = [(line[0], line[4], line[5], line[6], line[7], line[8], line[10]) for line in bp_found_lines]
     _rp_found_lines = [(line[0], line[4], line[5], line[6], line[7], line[8], line[10]) for line in rp_found_lines]
     found_lines = _bp_found_lines + _rp_found_lines
-    dtype = [('line_name', 'U12'), ('wavelength_nm', 'f8'), ('flux', 'f8'), ('depth', 'f8'), ('width', 'f8'),
+    _dtype = [('line_name', 'U12'), ('wavelength_nm', 'f8'), ('flux', 'f8'), ('depth', 'f8'), ('width', 'f8'),
              ('significance', 'f8'), ('sig_pwl', 'f8')]
-    found_lines = np.sort(np.array(found_lines, dtype=dtype), order='wavelength_nm')
+    found_lines = np.sort(np.array(found_lines, dtype=_dtype), order='wavelength_nm')
     return found_lines
 
 
@@ -249,46 +249,46 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
             continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
         truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
             the recommended value in the input files.
-        source_type (str): Source type: 'star' or 'qso'
+        source_type (str): Source type: 'star' or 'qso'.
         redshift (float or list): Default=0 for stars and a list of tuples (source id - redshift) for QSOs
-        user_lines (tuple): Tuple containing a list of line wavelengths [nm] and names
-        plot_spectra (bool): Whether to plot spectrum with lines.
-        save_plots (bool): Whether to save plots with spectra.
+        user_lines (list): List containing tuples of wavelengths [nm] and names (e.g. [(65.64, 48.62),
+            ('Line1', 'Line2')]).
+        plot_spectra (bool): Whether to plot the spectra with lines.
+        save_plots (bool): Whether to save the plots with spectra.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
         
     Returns:
         (DataFrame): dataframe with arrays of found lines and their properties for each source
     """
-    source_type = _check_source_type(source_type, redshift)
+    source_type = _check_source_redshift_type(source_type, redshift)
     _check_truncation(truncation)
     _check_plot_arguments(plot_spectra, save_plots)
 
     config_df = load_config(config_file)
-    bptm, bpn, bpscale, bpoffset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
-    rptm, rpn, rpscale, rpoffset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
+    bp_tm, bpn, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
+    rp_tm, rpn, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
 
-    # input
+    # Parse input
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
 
-    # get converted spectra
+    # Get converted spectra
     con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation)
-    # get calibrated spectra
+    # Get calibrated spectra
     cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation)
-    # get calibrated continuum (limit number of bases) -> TO DO: rethink this approach
+    # Get calibrated continuum (limit number of bases) -> TO DO: rethink this approach
     temp_input_data = parsed_input_data.copy(deep=True)
-    temp_input_data['bp_n_relevant_bases'] = 3
-    temp_input_data['rp_n_relevant_bases'] = 3
+    temp_input_data['bp_n_relevant_bases'], temp_input_data['rp_n_relevant_bases'] = 3, 3
     cal_continuum, _ = calibrate(temp_input_data, truncation=True)
-    # get source_ids
+    # Get source_ids
     source_ids = parsed_input_data['source_id']
-    # prep redshifts -> match with source_ids
+    # Prep redshifts -> match with source_ids
     if source_type == 'qso':
         red_array = np.array(redshift, dtype=[('source_id', 'i8'), ('z', 'f8')])
         if not np.all(np.isin(source_ids, red_array['source_id'])):
             raise ValueError('Missing redshifts in the list?')
 
-    # prep lines
+    # Prep lines
     bp_lines = Lines(BANDS.bp, source_type, user_lines=user_lines)
     rp_lines = Lines(BANDS.rp, source_type, user_lines=user_lines)
 
@@ -299,58 +299,44 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     results = pd.DataFrame(columns=['source_id', 'lines'], index=range(source_ids.size))
 
     for i in np.arange(len(parsed_input_data)):
-
         item = parsed_input_data.iloc[i]
-        sid = item['source_id']
+        sid, bp_coeff, rp_coeff, bp_reln, rp_reln = _extract_elements_from_item(item, truncation, bpn, rpn)
 
-        # coeff from parsed_input_data
-        bpcoeff = item['bp_coefficients']
-        rpcoeff = item['rp_coefficients']
-
-        if truncation:
-            bpreln = item['bp_n_relevant_bases']
-            rpreln = item['rp_n_relevant_bases']
-        else:
-            bpreln = bpn
-            rpreln = rpn
-
-        # prep lines cont.
+        # Prep lines cont.
         if source_type == 'qso':
             bp_line_names, bp_lines_pwl = bp_lines.get_lines_pwl(zet=red_array['z'][red_array['source_id'] == sid][0])
             rp_line_names, rp_lines_pwl = rp_lines.get_lines_pwl(zet=red_array['z'][red_array['source_id'] == sid][0])
 
-        # masks
+        # Masks
         m_cal = (cal_spectra['source_id'] == sid)
         m_con_bp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'BP')
         m_con_rp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'RP')
 
-        # run line finder for BP
+        # Run line finder for BP
         if not pd.isna(item['bp_n_parameters']):
-            bp_found_lines = _find(bptm, bpn, bpreln, bpscale, bpoffset, BANDS.bp, bpcoeff, bp_lines_pwl, bp_line_names,
-                                   _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
+            bp_found_lines = _find(bp_tm, bpn, bp_reln, bp_scale, bp_offset, BANDS.bp, bp_coeff, bp_lines_pwl,
+                                   bp_line_names, _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
                                    _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
                                    _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]),
                                    _flux_interp(con_sampling, con_spectra[m_con_bp]['flux_error'].values[0]))
         else:
             bp_found_lines = []
 
-        # run line finder for RP
-        rp_found_lines = _find(rptm, rpn, rpreln, rpscale, rpoffset, BANDS.rp, rpcoeff, rp_lines_pwl, rp_line_names,
+        # Run line finder for RP
+        rp_found_lines = _find(rp_tm, rpn, rp_reln, rp_scale, rp_offset, BANDS.rp, rp_coeff, rp_lines_pwl, rp_line_names,
                                _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
                                _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
                                _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
                                _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
 
-        # plotting
+        # Plotting
         if plot_spectra and not pd.isna(item['bp_n_parameters']):
             plot_spectra_with_lines(sid, con_sampling, con_spectra[m_con_bp]['flux'].values[0],
                                     con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
-                                    cal_spectra[m_cal]['flux'].values[0], cal_continuum[m_cal]['flux'].values[0],
-                                    bp_found_lines, rp_found_lines, save_plots)
+                                    cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
         elif plot_spectra:
             plot_spectra_with_lines(sid, con_sampling, None, con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
-                                    cal_spectra[m_cal]['flux'].values[0], cal_continuum[m_cal]['flux'].values[0],
-                                    bp_found_lines, rp_found_lines, save_plots)
+                                    cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
 
         results.iloc[i] = [sid, _format_output(bp_found_lines, rp_found_lines)]
 
@@ -381,62 +367,59 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
     _check_plot_arguments(plot_spectra, save_plots)
 
     config_df = load_config(config_file)
-    bptm, bpn, bpscale, bpoffset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
-    rptm, rpn, rpscale, rpoffset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
+    bp_tm, bpn, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
+    rp_tm, rpn, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
 
-    # input
+    # Parse input
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
 
-    # get converted spectra
+    # Get converted spectra
     con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation)
-    # get calibrated spectra
+    # Get calibrated spectra
     cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation)
-    # get calibrated continuum (limit number of bases)
+    # Get calibrated continuum (limit number of bases)
     temp_input_data = parsed_input_data.copy(deep=True)
     temp_input_data['bp_n_relevant_bases'] = 3
     temp_input_data['rp_n_relevant_bases'] = 3
     cal_continuum, _ = calibrate(temp_input_data, truncation=True)
-    # get source_ids
+    # Get source_ids
     source_ids = parsed_input_data['source_id']
 
     results = pd.DataFrame(columns=['source_id', 'extrema'], index=range(source_ids.size))
 
     for i in np.arange(len(parsed_input_data)):
-
         item = parsed_input_data.iloc[i]
-        sid, bp_coeff, rp_coeff, bp_reln, rp_reln = _extract_elements_from_item(item, truncation, bpn, rpn)
-        # masks
+        sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(item, truncation, bpn, rpn)
+        # Masks
         m_cal = (cal_spectra['source_id'] == sid)
         m_con_bp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'BP')
         m_con_rp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'RP')
 
-        # run line finder for BP
+        # Run line finder for BP
         if pd.isna(item['bp_n_parameters']):
             bp_found_lines = []
         else:
-            bp_found_lines = _find_all(bptm, bpn, bp_reln, bpscale, bpoffset, BANDS.bp, bp_coeff,
+            bp_found_lines = _find_all(bp_tm, bpn, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff,
                                        _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
                                        _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
                                        _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]),
                                        _flux_interp(con_sampling, con_spectra[m_con_bp]['flux_error'].values[0]))
 
-        # run line finder for RP
-        rp_found_lines = _find_all(rptm, rpn, rp_reln, rpscale, rpoffset, BANDS.rp, rp_coeff,
+        # Run line finder for RP
+        rp_found_lines = _find_all(rp_tm, rpn, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff,
                                    _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
                                    _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
                                    _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
                                    _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
 
-        # plotting
+        # Plotting
         if plot_spectra and not pd.isna(item['bp_n_parameters']):
             plot_spectra_with_lines(sid, con_sampling, con_spectra[m_con_bp]['flux'].values[0],
                                     con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
-                                    cal_spectra[m_cal]['flux'].values[0], cal_continuum[m_cal]['flux'].values[0],
-                                    bp_found_lines, rp_found_lines, save_plots)
+                                    cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
         elif plot_spectra:
             plot_spectra_with_lines(sid, con_sampling, None, con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
-                                    cal_spectra[m_cal]['flux'].values[0], cal_continuum[m_cal]['flux'].values[0],
-                                    bp_found_lines, rp_found_lines, save_plots)
+                                    cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
 
         results.iloc[i] = [sid, _format_output(bp_found_lines, rp_found_lines)]
 

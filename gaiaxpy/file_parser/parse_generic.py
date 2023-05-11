@@ -148,8 +148,7 @@ class GenericParser(object):
             DataFrame: A pandas DataFrame representing the XML file.
         """
         try:
-            votable = parse_single_table(
-                xml_file).to_table(use_names_over_ids=True)
+            votable = parse_single_table(xml_file).to_table(use_names_over_ids=True)
         except ValueError:
             raise DataMismatchError()
         if array_columns:

@@ -65,7 +65,6 @@ class InternalContinuousParser(GenericParser):
 
         Args:
             xml_file (str): Path to an XML file.
-            array_columns (list): List of columns in the file that contain arrays as strings.
 
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
@@ -80,9 +79,8 @@ class InternalContinuousParser(GenericParser):
         if matrix_columns is not None:
             for size_column, values_column in matrix_columns:
                 try:
-                    df[values_column] = df.apply(lambda row:
-                                                 array_to_symmetric_matrix(row[values_column], row[size_column]),
-                                                 axis=1)
+                    df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column],
+                                                                                       row[size_column]), axis=1)
                 # Value can be NaN when a band is not present
                 except IndexError:
                     continue

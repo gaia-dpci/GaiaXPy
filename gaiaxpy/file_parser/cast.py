@@ -26,7 +26,12 @@ __type_map = {'source_id': 'int64', 'solution_id': 'int64', 'rp_n_parameters': '
 
 
 def __replace_masked_constant(value):
-    return float('NaN') if isinstance(value, np.ma.core.MaskedConstant) else value
+    value = value.item()
+    if isinstance(value, np.ma.core.MaskedConstant):
+        if value == 0.0:
+            return float('NaN')
+    else:
+        return value
 
 
 def __replace_masked_array(value):
@@ -39,6 +44,11 @@ def __replace_masked_array(value):
         return value
 
 
+def _replace_masked_value(value):
+    if isinstance(value, np.ma.core.MaskedConstant):
+        return np.nan if value.item() == 0.0 else value
+    return value
+
 def _cast(df):
     """
     Cast types to the defined ones to standardise the different input formats.
@@ -46,6 +56,9 @@ def _cast(df):
     Args:
         df (DataFrame): a DataFrame with parsed data from input files.
     """
+    for column in ['bp_n_parameters', 'bp_basis_function_id']:
+        if column in df.columns:
+            df[column] = df[column].apply(lambda row: _replace_masked_value(row))
     for column, type_value in __type_map.items():
         try:
             if type_value == 'O':

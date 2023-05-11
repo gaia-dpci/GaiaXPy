@@ -266,8 +266,8 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     _check_plot_arguments(plot_spectra, save_plots)
 
     config_df = load_config(config_file)
-    bp_tm, bpn, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
-    rp_tm, rpn, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
+    bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
+    rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
 
     # Parse input
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
@@ -299,8 +299,8 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     results = pd.DataFrame(columns=['source_id', 'lines'], index=range(source_ids.size))
 
     for i in np.arange(len(parsed_input_data)):
-        item = parsed_input_data.iloc[i]
-        sid, bp_coeff, rp_coeff, bp_reln, rp_reln = _extract_elements_from_item(item, truncation, bpn, rpn)
+        _item = parsed_input_data.iloc[i]
+        sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(_item, truncation, bp_n, rp_n)
 
         # Prep lines cont.
         if source_type == 'qso':
@@ -313,8 +313,8 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
         m_con_rp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'RP')
 
         # Run line finder for BP
-        if not pd.isna(item['bp_n_parameters']):
-            bp_found_lines = _find(bp_tm, bpn, bp_reln, bp_scale, bp_offset, BANDS.bp, bp_coeff, bp_lines_pwl,
+        if not pd.isna(_item['bp_n_parameters']):
+            bp_found_lines = _find(bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff, bp_lines_pwl,
                                    bp_line_names, _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
                                    _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
                                    _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]),
@@ -323,14 +323,14 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
             bp_found_lines = []
 
         # Run line finder for RP
-        rp_found_lines = _find(rp_tm, rpn, rp_reln, rp_scale, rp_offset, BANDS.rp, rp_coeff, rp_lines_pwl, rp_line_names,
-                               _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
+        rp_found_lines = _find(rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff, rp_lines_pwl,
+                               rp_line_names, _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
                                _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
                                _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
                                _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
 
         # Plotting
-        if plot_spectra and not pd.isna(item['bp_n_parameters']):
+        if plot_spectra and not pd.isna(_item['bp_n_parameters']):
             plot_spectra_with_lines(sid, con_sampling, con_spectra[m_con_bp]['flux'].values[0],
                                     con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
                                     cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
@@ -367,8 +367,8 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
     _check_plot_arguments(plot_spectra, save_plots)
 
     config_df = load_config(config_file)
-    bp_tm, bpn, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
-    rp_tm, rpn, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
+    bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
+    rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
 
     # Parse input
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
@@ -389,7 +389,7 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
 
     for i in np.arange(len(parsed_input_data)):
         item = parsed_input_data.iloc[i]
-        sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(item, truncation, bpn, rpn)
+        sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(item, truncation, bp_n, rp_n)
         # Masks
         m_cal = (cal_spectra['source_id'] == sid)
         m_con_bp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'BP')
@@ -399,14 +399,14 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
         if pd.isna(item['bp_n_parameters']):
             bp_found_lines = []
         else:
-            bp_found_lines = _find_all(bp_tm, bpn, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff,
+            bp_found_lines = _find_all(bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff,
                                        _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
                                        _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
                                        _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]),
                                        _flux_interp(con_sampling, con_spectra[m_con_bp]['flux_error'].values[0]))
 
         # Run line finder for RP
-        rp_found_lines = _find_all(rp_tm, rpn, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff,
+        rp_found_lines = _find_all(rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff,
                                    _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
                                    _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
                                    _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
@@ -447,8 +447,8 @@ def fastfinder(input_object, truncation=False, username=None, password=None):
     _check_truncation(truncation)
 
     config_df = load_config(config_file)
-    bp_tm, bpn, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
-    rp_tm, rpn, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
+    bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
+    rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
 
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
     source_ids = parsed_input_data['source_id']
@@ -457,14 +457,14 @@ def fastfinder(input_object, truncation=False, username=None, password=None):
 
     for i in np.arange(len(parsed_input_data)):
         item = parsed_input_data.iloc[i]
-        sid, bp_coeff, rp_coeff, bp_reln, rp_reln = _extract_elements_from_item(item, truncation, bpn, rpn)
+        sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(item, truncation, bp_n, rp_n)
 
         # Run line finder for BP
-        bp_found_lines = [] if pd.isna(item['bp_n_parameters']) else _find_fast(bp_tm, bpn, bp_reln, bp_scale,
+        bp_found_lines = [] if pd.isna(item['bp_n_parameters']) else _find_fast(bp_tm, bp_n, bp_rel_n, bp_scale,
                                                                                 bp_offset, BANDS.bp, bp_coeff)
 
         # Run line finder for RP (there are no sources with missing RP, but this could help spot errors)
-        rp_found_lines = [] if pd.isna(item['rp_n_parameters']) else _find_fast(rp_tm, rpn, rp_reln, rp_scale,
+        rp_found_lines = [] if pd.isna(item['rp_n_parameters']) else _find_fast(rp_tm, rp_n, rp_rel_n, rp_scale,
                                                                                 rp_offset, BANDS.rp, rp_coeff)
 
         results.iloc[i] = [sid, bp_found_lines, rp_found_lines]

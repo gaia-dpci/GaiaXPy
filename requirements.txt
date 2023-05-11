@@ -1,16 +1,11 @@
-aenum==3.1.11
+aenum
 astropy
 astroquery
-beautifulsoup4==4.11.2
-certifi==2022.12.7
 fastavro
 h5py
 matplotlib
 numpy
 packaging
 pandas>=1.0.0
-PyQt5
-pytz==2022.7.1
 scipy
 tqdm>=4.64.0
-urllib3==1.26.14

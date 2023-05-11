@@ -24,23 +24,22 @@ _rtol, _atol = 1e-7, 1e-7
 
 
 def custom_comparison(df_computed, df_solution, column):
+    if len(df_computed) != len(df_solution):
+        raise ValueError('Lengths of DataFrames are different.')
     df_computed_lines = df_computed[column].values
     df_solution_lines = df_solution[column].values
-    if len(df_computed_lines) == len(df_solution_lines):
-        for computed_lines, solution_lines in zip(df_computed_lines, df_solution_lines):
-            if len(computed_lines) == len(solution_lines):
-                for computed_line, solution_line in zip(computed_lines, solution_lines):
-                    # Convert line to dictionary
-                    d1 = {key: computed_line[key] for key, _ in dtypes}
-                    d2 = {key: solution_line[key] for key, _ in dtypes}
-                    line_name1 = d1.pop('line_name')
-                    line_name2 = d2.pop('line_name')
-                    assert line_name1 == line_name2
-                    assert d1 == pytest.approx(d2, rel=_rtol, abs=_atol, nan_ok=True)
-            else:
-                raise ValueError('DataFrames are different.')
-    else:
-        raise ValueError('DataFrames are different.')
+    for computed_lines, solution_lines in zip(df_computed_lines, df_solution_lines):
+        if len(computed_lines) == len(solution_lines):
+            for computed_line, solution_line in zip(computed_lines, solution_lines):
+                # Convert line to dictionary
+                d1 = {key: computed_line[key] for key, _ in dtypes}
+                d2 = {key: solution_line[key] for key, _ in dtypes}
+                line_name1 = d1.pop('line_name')
+                line_name2 = d2.pop('line_name')
+                assert line_name1 == line_name2
+                assert d1 == pytest.approx(d2, rel=_rtol, abs=_atol, nan_ok=True)
+        else:
+            raise ValueError('Lengths of internal lines are different.')
 
 
 # Define the converter function

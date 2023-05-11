@@ -6,7 +6,6 @@ import numpy.testing as npt
 
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.lines.lines import Lines
-
 from tests.files.paths import files_path
 
 lines_path = join(files_path, 'lines_files')
@@ -19,6 +18,7 @@ rptruezet = (np.array(['H_beta'], dtype='<U8'), np.array([45.71770448]))
 bptruelist = (np.array(['H_beta'], dtype='<U7'), np.array([24.42300844]))
 rptruelist = (np.array(['H_alpha'], dtype='<U7'), np.array([15.73198734]))
 xpempty = (np.array([], dtype='<U7'), np.array([], dtype=np.float64))
+
 
 class TestLines(unittest.TestCase):
 
@@ -63,4 +63,3 @@ class TestLines(unittest.TestCase):
         npt.assert_array_equal(rpl.get_lines_pwl()[0], xpempty[0])
         npt.assert_array_equal(bpl.get_lines_pwl()[1], xpempty[1])
         npt.assert_array_equal(rpl.get_lines_pwl()[1], xpempty[1])
-

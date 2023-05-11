@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/v1.3" xmlns:spec="http://www.ivoa.net/xml/SpectrumModel/v1.01">
+<RESOURCE type="results" utype="spec:Spectrum">
+<TIMESYS ID="time_frame" refposition="BARYCENTER" timeorigin="2455197.5" timescale="TCB"/><TABLE>
+<FIELD datatype="long" name="source_id" ucd="meta.id;meta.main">
+<DESCRIPTION>Unique source identifier (unique within a particular Data Release)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="long" name="solution_id" ucd="meta.version">
+<DESCRIPTION>Solution Identifier</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="bp_basis_function_id" ucd="meta.id">
+<DESCRIPTION>Identifier defining the set of basis functions for the BP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="bp_degrees_of_freedom" ucd="stat.fit.dof">
+<DESCRIPTION>Degrees of freedom for the BP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="bp_n_parameters" ucd="stat.fit.param">
+<DESCRIPTION>Number of parameters for the BP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="bp_n_measurements" ucd="meta.number">
+<DESCRIPTION>Number of measurements used for the BP spectrum generation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="bp_n_rejected_measurements" ucd="meta.number">
+<DESCRIPTION>Number of rejected measurements in the BP spectrum generation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="bp_standard_deviation" ucd="stat.stdev">
+<DESCRIPTION>Standard deviation for the BP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="bp_chi_squared" ucd="stat.fit.chi2">
+<DESCRIPTION>Chi squared for the BP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="*" datatype="double" name="bp_coefficients" ucd="stat.fit.param">
+<DESCRIPTION>Basis function coefficients for the BP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="*" datatype="float" name="bp_coefficient_errors" ucd="stat.error">
+<DESCRIPTION>Basis function coefficient errors for the BP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="*" datatype="float" name="bp_coefficient_correlations" ucd="stat.correlation">
+<DESCRIPTION>Correlation matrix for BP coefficients</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="bp_n_relevant_bases" ucd="meta.number">
+<DESCRIPTION>Number of bases that are relevant for the representation of this mean BP spectrum</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="bp_relative_shrinking" ucd="stat.fit.param">
+<DESCRIPTION>Measure of the relative shrinking of the coefficient vector when truncation is applied for the mean BP spectrum</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="rp_basis_function_id" ucd="meta.number">
+<DESCRIPTION>Identifier defining the set of basis functions for the BP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="rp_degrees_of_freedom" ucd="stat.fit.dof">
+<DESCRIPTION>Degrees of freedom for the RP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="rp_n_parameters" ucd="stat.fit.param">
+<DESCRIPTION>Number of parameters for the RP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="rp_n_measurements" ucd="meta.number">
+<DESCRIPTION>Number of measurements used for the RP spectrum generation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="rp_n_rejected_measurements" ucd="meta.number">
+<DESCRIPTION>Number of rejected measurements in the RP spectrum generation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rp_standard_deviation" ucd="stat.stdev">
+<DESCRIPTION>Standard deviation for the RP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rp_chi_squared" ucd="stat.fit.chi2">
+<DESCRIPTION>Chi squared for the RP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="*" datatype="double" name="rp_coefficients" ucd="stat.fit.param">
+<DESCRIPTION>Basis function coefficients for the RP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="*" datatype="float" name="rp_coefficient_errors" ucd="stat.error">
+<DESCRIPTION>Basis function coefficient errors for the RP spectrum representation</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="*" datatype="float" name="rp_coefficient_correlations" ucd="stat.correlation">
+<DESCRIPTION>Correlation matrix for RP coefficients</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="rp_n_relevant_bases" ucd="meta.number">
+<DESCRIPTION>Number of bases that are relevant for the representation of this mean RP spectrum</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="rp_relative_shrinking" ucd="meta.number">
+<DESCRIPTION>Measure of the relative shrinking of the coefficient vector when truncation is applied for the mean RP spectrum</DESCRIPTION>
+</FIELD>
+<DATA>
+<BINARY2>
+<STREAM encoding='base64'>
+P/wAAEsEcikBKucAPxTAAAAAAAEAAAAAAAAAAAAAf8AAAH/AAAAAAAAAAAAAAAAA
+AAAAAH/AAAAAOQOcADcD0wAGP4RXikR28AMAAAA3QEMXEE143jNANxyqH+ZftsAU
+l7T0YEMvv/MzF+10OwNAACCG3rBuPj/GjjJIUowjv+zpIlqhAxg/5IKQFjXvR7/k
+BhgNwMeav9omqYeXxJ2/7lnkDr8X3z/sRTmFAAmrv+NWs1amC6c/4ETbpLA7RD+m
+FvjxwtN3v6D8/J1shPK/1SONb86bbL+n2Je8ZbcEP/Z/jcsQ+Js/4jUlQgqykL/Y
+Vdf6y8hYv+KU5FyzauE/4Rn9zK3Osb/dpj5UZOcEP8pDwIa6PA2/skZibZGDtz/X
+zjR8jv7SP9mFFvSaMQo/rIibUbRCJD/zHUn/CzPpv9j+CuNy1h4/yFK9wIz+Sr/x
+SHOSG5WIv9QtQu8clI0/t5p2BFAXaz+2DytXNvLkv7lNl5a/c3q/2lHCV3BE9z/b
+CpYB1D3rv86XfetSxmc/vdZ7o6HpTb/ZWxb5afZov9TCtho+gsI/vhwJu6jgs7/h
+548VHP8VP+R8AfS65WM/6rX4fQ4KTT+Y5w2Ivl0UP7VlM3j6k42/4wFdOL6+jz/S
+AnHUfe2Tv9azsyQyyu6/383CKxoeTr+fdqCL9ETuv5VCXlKS/XIAAAA3Ps5Rcj7G
+FmA+ydKzPtaCOz7cGiw+xjrePs3iEj7RyrE+051gPtOI4D7UY5k+zU43PszDyT7a
+GYA+0taQPtG4rz8AYGU/DWrCPzHwZT7eCnY/BYDYPuN7fT7pi78+557YPtTD4j7M
+jjk+yRIgPsj8mz7xHvc+5aV1Ps295T7YMVY+wcUVPr9yCT7AibQ+uQMaPsCMiz6o
+5Ts+vNUmPrSuAT7KPkI+sDoUPpuktz7DmCI+nyijPourLz6ntnc+R8qpPjTomz5l
+hiA+UP/ZPl5gRD5VBgk9nB6pPUGKNAAABc0+QPayPUU41r32Ory81dHNvAKX/bxd
+KSy8uqqUvTQoETzs0qy9xP3EO6ScTTzPrlo9v1lJPjYHWD0aW3+9h9ECvYCKpL2p
+WEM8fWo1vYO//L4E00E9VMR4PaCOq71TaJq9MjuBvdZI0r3W7AY8Nz+AO3jV7z02
+GM292mPHPYIJmbwrss29UbfNPasbprxN+RO8dTa2vPxLFDxfbqs8/CpwveUGuT0e
+IMu9L+P/vgjiTLtIby27plDGvMlelD2CSzo69UWhvZqOn7287OM7SrI9PdIij7tc
+1qw8n5f7OmBIRrwyIbu8HO/OOrqNRTz7Ntg9ViA8uuOZ6T39hdS9tdgovh1wUL2X
+kJm6iS1lPBERi7vMs9W8ukjmPMdKfr1LeHQ8i32ovYbqHzxMngQ9gOJ3vXYwwb3J
+Mii7zacBvGQ+oDsKmhA9DZm4Ow3vhz3FoEm8j7AavOEazj367AO9sqcHO6X3iT4V
+Swi9WraLu98bO7x13DY8g/PDOqHjXD0CFF+8th6hPXO9xTrFZEg85VnevRlgTTzM
+zVu8+6kCvkCABT0xLhG7n0juvCsnbby16926tc7NPC8qWbxWk708ohFVvH1Gwbwl
+4bw84wfPPQ/oFTxgv4g8kHeovW2c3b23QVq7XX4buudtDrvuW2S83bM3PU0TsDuW
+mS8802Qku46L2j09Tn88mo8PPYHWHz0jwFA9g/x3PYOD7L3cr2A+AZ+0OoRqo7vv
+0Lo7AvmJPKX/3LzXs5A7xFXlPHKh2TxWE9S8lJ47PEk1Bz2PYlA9P3bWPgnhiD4e
+3ja9xHTHPbrDAz3SKVo7p3VPvAAapTvwyGC8ET41O68KfbwmEOu8DcsMO/ZU7ju7
+CJY8HxxFO/f+UT0niq8+MtykPd96Tr6YsyY9WYhmPk304T60BjM7TfZ4OjOR3DxR
+TSQ8AuE+PM9uDDzF2Ie8ryfLvLfevz2Hp348+GXwvP9Uw70uawe9eb+7vQ8cTz0i
+cRy9uolAu8DmAL0kis48pXj3Ow6cYLtYnnw6eEXTvCdnYjrwSXW7rdn8vHuOabyO
+6g08s1oXvHUoL7mKXqO9Jjw8PMuz9b2kejk97PtVvenqhL5jRTq+rEbQvwNyNjz/
+u7q6E/v/OzqAqLxMD+08XeQUvLHSerwNBBA8QyH+PHMpO71ZM1a77CloPRrz3zyX
+OvC7gZMvuw43oj1cLOq9PcV6vWiOgL4MxOq+MWiDvaoZwj3/EHq7CAnPvAapdTxG
+/ge7zhdzO76P07xPq228opQiPGIiyD1QBwA8uXvzvbdH/70gZIY9AvuPu17Pzr0H
+aNA9HX2IPUDLWj5s44I+hrbruyt3vb6R+YG+U26/OhG+EDshPF68c2x1PJkVZju/
+7xQ8XFSYPBu/Mbx4+SO9ADOoO1CWnD18vjQ9DIEVPHejYj1SI5w8050NvcLoIr0N
+xWq9/aW7vfcqgj0pGS4+iAJ8vG2Ai74vNII7G0bdu7nP2zq9TqG7DVXovHekMLyT
+jGe7lMnzPIppJLrwJDe62jH6vDeZcrzOhRK8oHxRu+46ajwqWSU8wr+SvSfJCrxT
+gWM8uXiUOhBALL2qH9I9uSmavfypBL3CnqS7GelZu6sBN7ysRpc8GHptu2cDdbwL
+2SE85SquvFlZUrxYFig7XFNIPS7LHjuZWVi8qqouvQKVFjyNa3E7F1rfvAA1J72D
+meC9j7k1vFIzij2qvpE8MsZMvEkCQrxJNQO+AVjlO4ww8bvGQaw8ETvRurTlSLv/
+Pp07tLo+ueDLGzyJ2OC76df1PCSPcztky8y82/bkvSlhwLx61Z48kzxKO+CaeDyN
+5FI8hzHGPP15mD0JB3W9rqzwPSzXK70GSt49JdxOPWgICb3FWGg7CPpKPA4ttbxk
+29a3V0S/PB+cIzyGdJg71s1vvFrfP7yIgma7pvIOO4BQyzwEsCK9AF/ovLWkij2B
+eLK9cawnvdT7fL4BPzO+I/jMO+j3DD4zpBQ64N+zvJ++LLyq47e9P5gUPX5GZ75A
+Zpw7KcMyu4vvDbsajGe79oEoO+Rd3jwSYW+8DDgHvGleeDyUPx28+TD/PMbQQD0f
+wF4+OtIWPdRuIL4Jh0G8wYVWPJUxjj2U+eq89jUAvc4mFj5UzcA9r9DGveRVmT1n
+enW7GZ54vULAXL3lQDo9r8r8O7vzODwbdwa7pdCQO6ocGjwhOPy6hK0XOxRMgbwQ
+4D84tEf1PK8Iu70/Zma8/l94vhtWI72KWm096lscvKv8yr1lMS29qCPqO9FzfD3U
+d0i+EraSvbhTlD4elj2+MVWBPRk/f72XlnE7iroRPVsC/r5Vv+069fIHOprJfzs4
+UH86iAdSOzVQyDrIbDy8OI1zvHZr3Tqfiaq8ccaRPCZRKDzqZvc92PlkPYOOob2r
+ZHm8BpscPDIGej0sYqm9DJgvvYQiID3+c7w9mbZ+vYFQZTzvRNM8O7CXvYZcvzsE
+TO29hSGzPowZBL5BayI6llV1OlM1vDvTHl877s/zO+LzSDxH8Wc7g8PgO0jv/Luw
+mlo8isATvRDXBbzS5iu9/uAsvTX8aj2yQZE63OEXvUcle72Ovy69chzkPZeyU72T
+YBO9a9zQPeqgKr37GUk9jPMovYdG4D4A7SW9z1VVvmMPKj4g6vO8oWZgvAZkuLqu
+Vec7p839uoVaLDsElJi7LsRaucpOrDt2hMi7nhJxu5XzuDwtZzE8bZ8KPLkz0jw7
+J068YhO0OodBKjyDnvK7dzpzvI7Ht7yrpiQ9FWrNPCghibzBc5k89dHcvAArpTzi
+3ds8yQiovRZACDwpP7++PFeyu+XRh7v1KFO6H6h1u47THzvagh270dIAO4T0nbuC
+/ZO75eCsO+LTZzr6duA6wiSEvJ3NZ7xNNIK9KQ9yvInq2TzQPru8Nex/vLS+yb0o
+Toy8DWeIPQf7lrzG/Q69DPG6PZ4xsL0veVI8C74ePJ0G+TxoPcy8cKwLviRhyTzL
+hXG+F8tCvHoWfz3R9qE6NKfqOpePQDkgV+67XDu+uh6MZTu9LCO6wGGwO5g0Ejwx
+ELa7yWinuz8KFjvTr5c9HByAPMyNyLzZ5Bg6mLy0O9/NuT1RZ2A9RXo6vEgpj7rf
+9QM7tSrkvJQe6jzQExm7NYA7uJIxF7x7N0C6m7fbPcQKg71qv4I87P2QvkUdm70q
+vbQ9i0yXuwW2ALvNNH+6yYW8u1ELtbtTpcY7CnbLuyU6VDseqQE6WJL+O99y77vQ
+woi7nIZSOor+vjwBUN+9P+wpPPVPYz2H5zQ90sThPg39+Lyu2d++DPCovKtnXD1e
+xzu9B/fQO7n9/7uomaO8cMKBO6KKFD1uSMC8LV+lPZ7DFD0wJN89Lx43vdjaXbyL
+cq27My/OOz5jzjtYzEc6t1alu4glurqkEdq8IiXdO2Twmzg6cMs78S0+vAwJ6jtZ
+sSE85kmmPDotIr0kzDA9AWW5PTZK0j3C25k93o3pvKShyL2+RL688RMePT7EVrzv
+Hx26ga33vQTcajyVFVy9CuUfPCrOG7rQhDY8iEMFu/uExL3ORqG9yIbsPd4+zD4O
+Bu260d1GulgV5rscLl23cgt9u2CFp7uOQhC7Q4GMPAcfRjqylH27hm6CupKYADtm
+E6w9BVEFPOMQUL2iFXc9Aa5vPZ5qAT4Y8C0+SEw6vKWyM74Ubiq9hXDFPU9A9D0C
+CKa8n0z0OgpFqjyInke9HEbpPT6esb20X809UdeHvPgLIT24m4w8LIp7Pcy47D3s
+G4W9f2V7O4VgdDs6Hte8AEyyO6rJhTs73CM8BGeDO1Jw5Lxg5dC8O1bHO81GtTqE
+yw44d6pQvKHBobmjdqk8sGOfu/vJQrzqSpi9Iq+wvYvqSjyLvuI9T2CNuzPN8Twk
+IcG87VI1PIVNAbzCRuu7w63yOeX+7LyAO5k8tq7/vMSUvrq2eBO9oVNavTiMdz0Q
+fHi987IuPa5FYL4Xcfm65BTJO4YabLs8eeU7Y/x/OwwOdzuP1bE7TzJeuzp58LmY
+C9k8AFWxu61/MrtZXCG8lGVLuv561LwTmTM8poemPRj4TD1PgQA9irWyvEkTm72k
+9xS8J57UPP1egby5Qvy8VsV7O19DxryMg409CpmBPXEgmDz62Cc9SGeVvJepNbxg
+rb49d6UWPgnV5DpDRFk9f421PitrXT2SfZM6PwEnOf6WVDpg2AS6GnUhuwSfI7rn
+/Hq7XZUSuo7VMzosRgq78WpTu6Mckrw5vw68xv0pvPdPCT19f8q9A968vaDzwb4G
+GQW+S0n5Ocqt8j4w8dU9h5ldvdUsOz1aDH+5w/J8PMMTi7ywSG89Yg7kO+aD1jv8
+FgS7nPAJPE19ybyKNH+8nzPJvTNcUb4GepC9nSFnvWJHlzxP1Nk8wEv5ujoOxDtV
+0fs66044Ox50qTrWwq06BwUFuqQksrpBVHO6hm3OOzkTZbsOU/o7JU61OYeSCjwB
+7l27rywAu5dHDbuPVLq7SrPUvFN7nbweIOE87ZFGPItWeLudeWm8L4zAO0bNzLvD
+WX68qt7hufy5pj0vPT+8hkjcO7YRDb13G2680PyAvOpxkzudFIM63KNkvS/x8T2V
+v6o9QQ71vds8ObyvLB66iW+DO0+b4DuaIIk7eu8QOpOVobt/ZV06FQvfOzn4h7uF
+m9o6i6bnPCF3rDvSyhA7E2iiO//kFzuHxJy7/pQeu+o9qruXHQu8qs/kvEg7SD0d
+kiY8Zi50vAYnPzwGJVO8I2f6O88Lt7xzQks8Cer2Ol+ucjuXzoO8zrorvRsKnrnf
+Kgm7N4Z2vCNAqDxVe7i9ic2YvOqSQj2kIHO9vNXvPYHxcr4CjE+6tBtdunjcoDoq
+Bfq62vgLurHpfDss4C+8BVt/O4XJ1zv0+6M7HTQhu95uSTwDKDQ9EZJ4PLNXdb1N
+U0E83m5+PV83ID3TgaU+CGkJvGtzPr3qZxG9FvIGPX1Dg70gOM27gLXzu/g0a7w0
+CMK8N3QGPFyCgz0cnXG72/ndvPwjzr0HDPS8lPUNPVXCD70FYT29Mb0VPfCvWr2K
+iAO85PZ5vV5p7j0707S+B0g1uzoBHTs0rYs6SSKTu0ndt7qYMLI5zWOLu1uOmzp1
+iBw7X8HtOynKEDlO2f48JoIsPRWhczyfgKy9GQt9PBMrSjzin8o9SbjIPYsRFLyj
+1qW8k9D/vGNTqznMoFM8EqhmvGjCWLyCz/68IiFvvL73zz1TkSW9OdSdPI3yhr0l
+xLa8yGwYvLmpwr0T3Dg6kTrqvPxJAj0dwwq8n+I9OwMfur0p2kW8gp8BPjNGjD02
+JDI7T2+zu5S9rruhwMc65WAtugk1fzqr4p87PA4puz9N1rujY0u8DCTkPFCyYjpP
+Hso7sWfgPBHgi7vE9ze3zjoLO9grpLf1bUa8+dbLvGKDPzyd4fg8o5fFvJrSmrvD
+HT08BSlWO/TQDbyLpNo8k770PLZ6UrtziY28J+b7vPFIDDvTWwc7vIcuvBobXr2Y
+KBe7O51xvbuTFj2JmmA81n9MPc157rsy+HS8OJukvKoBrz6NPSK64cRoOWJqYLkb
+xf67NoE9O1FQebsiiao7on5fOxsh+buyNNg8BTg4O9Jr2TyTSYY9SpeNPRPuur2X
+tPw9E+IlPZTmQD4NAUw+XMlauxR5/L4wyKW9iw5zPeoA/72ciDk8GHFzvTNbyT0g
+r0e9uz84vVdYtrvW6B283/KIO5NwUbyxDxK8/qAXvVcqzj3LcBg9gWh8vbSB7z3D
+y9Q9sOy1vH9//z16kWQ60wY2PihEob5K3vE+g7qyu545RDstMUa71lmyup+zzrrX
+jm47EfLfO/cOFbryXyg5dt7Nur36jzz4LZk8Wg8aPOH90z0S+rS7VDlHvLEDtLtJ
+cTe8zadZvbQU8L1JY9U99GjDPKAi/r2mAS49rmy9vRyMTTzXqwA8sCdRu0k2eT2J
+CXy9ha50PU9mA71bUnc9O85bu4PAMzsJQNw8XPv/vFZP6r25/gs87wk5vYYrnj0n
+J4k8wKG8vWffS74wgPk9G8x3PYb6yT4fzda6RZD7O969yjt03jQ76pYWuXgUKDla
+HG87RpaeOonrMTvIHYS7Tp93PIjplDwFy7M74YKcPKDXkbw+NM47tSzuPJBOtj0c
+CeA9VRhJumRzyb1y+xu9JIV6PQ+fFL0yrH08wevqvS5O7TyMzp29Fnc7vVc56D0g
+72e9ioR+vJaRkb1pM829UBVMvWlGR70vv0u9dCGxPX/R8rqa/C49SYdKvOPaNjz+
+DhQ8rAIavaYThj1pBJK9nbxYPjYz4r4ZXvW72urCOyTpBrvKLX+7LF2sunf2rruO
+w3g7PEhnOuethrsj25W7r7YNvBgCIbyeU4C8x5/fvSpkhz05ROu8o8rcvUh/8L2q
+1Te9+0ZSvCkrST2ydws9VaiQvY1bpDzq0QU7kbb6PKy9Xby5y4c9m6bgPMsdhj0o
+Ji080H40PTteiDmcns89iYTRPSEbBjyUO9c9pw8ovbpanby0WgA8eUCZPYv/ur2F
+eLU9CdiHPPfaTD1CK/y9NNTmvgX0472mAc++7lL+u7uY2zkCJVW8G2ilu24itLrX
+T2G7i+rlOfJ29Duolpm7jgsePEUF0Lxpz7Y7EoH5vDYK5rrp5YK81GK3PIX3HDzU
+AbI9hSAMPg7j2D0WX76+IrERvXqhPz4FuLG97riEPRvQ17zsFfg8LsZ7vVWuCL4G
+IZU94F70vceICz0jsXS9gCvHPTBOEbzVN2K8N0ccvF+Dfz0QD9w7CxBJvMIDXrzf
+gkS9y2cGO46n3b2lr0K9uC2hPYzj1z4xQxE+zsVZPfKHvr12oDO5x3iDOrcSoLsI
+y/M7DJqZungU1DoaEN04iNEnu95KwDrSW728UFZuO5qw2LxDIQ+84d1MvJ2B5j1h
+/qm9Mc8nvYQ4ML3qKNu+Ue5vvJz23j5L97g9p1LDvjE4aj4hYT68siWvPVCzG7yj
+6Xg9eiQ7PhQPjb4TonA+EnImvT/Crj1jgZU8BPiwPeMUsT2aoNU9qZE+vDcNlb2z
+ww09pt9hvJeWhTy/5DY9TOvRPZ6L2T16aac8iBLqPZD4L75fxO2+j0YgPricZL6z
+jXm6XYTNuij28jqMQUW7Stu+u20DArv13Ne6Lqjfum1SxDsp/jy7Be2ou4dQILvp
+Dma8ArT+vMgJ3T08dBq87uAjvYUPhr3Yn0W+DIllO/NIIT3YFwI9JvFDvRvHmLxe
+bdg8MWKUO913Ebuq1FY88zT3vYzwqj2iQuu9g42PPUCxQb1Rtdy8tHL/vd2C8r37
+YI+9mV7+vcEnoD2CNsm8y0jQPfdrZ7zPkTQ9OrQMvZ0FRj2gTeq+B6v/vrE8HL6F
+Euc9nqYivgaqGb6x0sS9V9VQO0iUxLtnWby62CNwupmQdDqkA2u6CwFvO6eXqLuL
+ByK7wQe4u6k0fjwNuqa63YsGu8SlWTsoKp47inUnvFh4EbwTFYq8azdhvIzSubw4
+eYQ9WjsSOwNIhLyE6rs9QzOQukLTEjweIt67IUeBvQsFtj2vpg2+JF8gPS6sir4L
+r6E8pDkFvZoFWznyktc9tKU4PNYtbT2DPHE8p8wxPcIgIrzS+Sa8mooOvKO5c7wp
+MQk93TjBut4A772Xf4e9ga+uvqzbfT7MwrG9nw2ZPqGLuL5i2Hs7yQpeu2Jr47sw
+7Qo6jKmDu54DNzpJv4K7C8aQvJaRnzoTCd68xiZtPa6tjz2S3vU+dzHtPePX0b3r
+ahe8S0UAPMo6uTzoGZm9Fon5vXUYuD5EQH49ob7KvdSGfz07QaC8SsYfu1Ru9L1l
+Y+E9KLAVPNv3lTuJeS07R54sPaeI+7zi4Xc9oPDjvZB1Pr2jcJU9CA+7vb6XzDxh
+z9i8P1CruvpKpr4eKcE9lL6ovBhf9T4OXug+BrawOvZWLT2u2dq8sH2zPUFgabzO
+NgK8qFbWPT2NnrwJCvYALz9/8uo=
+</STREAM>
+</BINARY2>
+</DATA>
+</TABLE>
+</RESOURCE>
+</VOTABLE>

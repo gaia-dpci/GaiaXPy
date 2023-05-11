@@ -12,7 +12,8 @@ from astropy.table import Table
 from fastavro import parse_schema, writer
 from fastavro.validation import validate_many
 
-from .output_data import OutputData, _add_header, _build_photometry_header
+from .output_data import OutputData
+from .utils import _add_ecsv_header, _build_photometry_header
 
 
 class PhotometryData(OutputData):
@@ -26,7 +27,7 @@ class PhotometryData(OutputData):
 
         Args:
             output_path (str): Path where to save the file.
-            output_file (str): Name chosen for the output file.
+            output_file (str): Name of the output file.
         """
 
         def build_field(keys):
@@ -54,7 +55,7 @@ class PhotometryData(OutputData):
 
         Args:
             output_path (str): Path where to save the file.
-            output_file (str): Name chosen for the output file.
+            output_file (str): Name of the output file.
         """
         photometry_df = self.data
         Path(output_path).mkdir(parents=True, exist_ok=True)
@@ -67,13 +68,13 @@ class PhotometryData(OutputData):
 
         Args:
             output_path (str): Path where to save the file.
-            output_file (str): Name chosen for the output file.
+            output_file (str): Name of the output file.
         """
         photometry_df = self.data
         header_lines = _build_photometry_header(photometry_df.columns)
         Path(output_path).mkdir(parents=True, exist_ok=True)
         photometry_df.to_csv(join(output_path, f'{output_file}.ecsv'), index=False)
-        _add_header(header_lines, output_path, output_file)
+        _add_ecsv_header(header_lines, output_path, output_file)
 
     def _save_fits(self, output_path, output_file):
         """
@@ -81,11 +82,11 @@ class PhotometryData(OutputData):
 
         Args:
             output_path (str): Path where to save the file.
-            output_file (str): Name chosen for the output file.
+            output_file (str): Name of the output file.
         """
         photometry_df = self.data
         table = Table.from_pandas(photometry_df)
-        hdu_list = []
+        hdu_list = list()
         hdr = fits.Header()
         primary_hdu = fits.PrimaryHDU(header=hdr)
         hdu_list.append(primary_hdu)
@@ -103,7 +104,7 @@ class PhotometryData(OutputData):
 
         Args:
             output_path (str): Path where to save the file.
-            output_file (str): Name chosen for the output file.
+            output_file (str): Name of the output file.
         """
         photometry_df = self.data
         table = Table.from_pandas(photometry_df)

@@ -1,4 +1,5 @@
-from os import path
+from os.path import isabs, isfile
+from pathlib import Path
 
 import pandas as pd
 
@@ -18,13 +19,13 @@ class InputReader(object):
         self.user = user
         self.password = password
 
-    def _string_reader(self):
+    def __string_reader(self):
         content = self.content
         function = self.function
         user = self.user
         password = self.password
         # Check whether content is path
-        if path.isfile(content) or path.isabs(content):
+        if isfile(content) or isabs(content):
             selector = FileReader(function)
             parser = selector._select()  # Select type of parser required
             parsed_input_data, extension = parser.parse(content)
@@ -35,7 +36,7 @@ class InputReader(object):
             raise ValueError('Input string does not correspond to an existing file and it is not an ADQL query.')
         return parsed_input_data, extension
 
-    def _read(self):
+    def read(self):
         content = self.content
         function = self.function
         user = self.user
@@ -50,7 +51,10 @@ class InputReader(object):
             parsed_data, extension = ListReader(content, function, user, password)._read()
         # String can be either query or file path
         elif isinstance(content, str):
-            parsed_data, extension = self._string_reader()
+            parsed_data, extension = self.__string_reader()
+        elif isinstance(content, Path):
+            self.content = str(content)
+            parsed_data, extension = self.__string_reader()
         else:
             raise ValueError('The input provided does not match any of the expected input types.')
         # TODO: Try "if not extension", previously failed.

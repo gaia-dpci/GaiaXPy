@@ -30,7 +30,7 @@ class MultiXpPlotter(Plotter):
             ax[axis].plot(x, y, lw=2, alpha=0.95, label=spectrum.source_id)
         for axis in ax:
             axis.set_ylim(0, 1.05 * max_flux)
-            axis.set_xlabel(spectra_class._get_position_label())
+            axis.set_xlabel(spectra_class.get_position_label())
             axis.set_ylabel(spectra_class._get_flux_label())
             if show_legend:
                 handles, labels = plt.gca().get_legend_handles_labels()

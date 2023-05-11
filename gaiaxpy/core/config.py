@@ -69,7 +69,7 @@ def get_file(label, key, system, bp_model, rp_model, config_file=None):
     return join(file_path, file_name)
 
 
-def _load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r', config_file=None):
+def load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r', config_file=None):
     """
     Load the XpMerge table from the filter XML file.
 
@@ -90,7 +90,7 @@ def _load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r', config_
     return sampling_grid, dict(zip(BANDS, [bp_merge, rp_merge]))
 
 
-def _load_xpsampling_from_xml(system=None, bp_model=None, rp_model='v142r', config_file=None):
+def load_xpsampling_from_xml(system=None, bp_model=None, rp_model='v142r', config_file=None):
     """
     Load the XpSampling table from the XML filter file.
 
@@ -105,10 +105,10 @@ def _load_xpsampling_from_xml(system=None, bp_model=None, rp_model='v142r', conf
     bp_model = bp_model if bp_model else 'v375wi'
     xml_file = get_file('filter', 'filter', system, bp_model, rp_model, config_file=config_file)
     x_root = get_file_root(xml_file)
-    _, nbands = get_array_text(x_root, 'bands')
+    _, n_bands = get_array_text(x_root, 'bands')
 
-    bp_sampling = get_xp_sampling_matrix(x_root, 'bp', nbands)
-    rp_sampling = get_xp_sampling_matrix(x_root, 'rp', nbands)
+    bp_sampling = get_xp_sampling_matrix(x_root, 'bp', n_bands)
+    rp_sampling = get_xp_sampling_matrix(x_root, 'rp', n_bands)
 
     xp_sampling = dict(zip(BANDS, [bp_sampling, rp_sampling]))
     return xp_sampling

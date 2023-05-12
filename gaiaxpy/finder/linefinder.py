@@ -279,7 +279,7 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     # Get calibrated continuum (limit number of bases) -> TO DO: rethink this approach
     temp_input_data = parsed_input_data.copy(deep=True)
     temp_input_data['bp_n_relevant_bases'], temp_input_data['rp_n_relevant_bases'] = 3, 3
-    cal_continuum, _ = calibrate(temp_input_data, truncation=True)
+    cal_continuum, _ = calibrate(temp_input_data, truncation=True, save_file=False)
     # Get source_ids
     source_ids = parsed_input_data['source_id']
     # Prep redshifts -> match with source_ids
@@ -381,7 +381,7 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
     temp_input_data = parsed_input_data.copy(deep=True)
     temp_input_data['bp_n_relevant_bases'] = 3
     temp_input_data['rp_n_relevant_bases'] = 3
-    cal_continuum, _ = calibrate(temp_input_data, truncation=True)
+    cal_continuum, _ = calibrate(temp_input_data, truncation=True, save_file=False)
     # Get source_ids
     source_ids = parsed_input_data['source_id']
 

@@ -19,9 +19,9 @@ from gaiaxpy.converter.converter import convert
 from gaiaxpy.core.dispersion_function import pwl_to_wl, pwl_range
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
-from gaiaxpy.lines.herm import HermiteDerivative
-from gaiaxpy.lines.lines import Lines
-from gaiaxpy.lines.plotter import plot_spectra_with_lines
+from gaiaxpy.finder.herm import HermiteDerivative
+from gaiaxpy.finder.lines import Lines
+from gaiaxpy.finder.plotter import plot_spectra_with_lines
 
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
@@ -273,9 +273,9 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
 
     # Get converted spectra
-    con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation)
+    con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation, save_file=False)
     # Get calibrated spectra
-    cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation)
+    cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation, save_file=False)
     # Get calibrated continuum (limit number of bases) -> TO DO: rethink this approach
     temp_input_data = parsed_input_data.copy(deep=True)
     temp_input_data['bp_n_relevant_bases'], temp_input_data['rp_n_relevant_bases'] = 3, 3
@@ -374,9 +374,9 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
 
     # Get converted spectra
-    con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation)
+    con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation, save_file=False)
     # Get calibrated spectra
-    cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation)
+    cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation, save_file=False)
     # Get calibrated continuum (limit number of bases)
     temp_input_data = parsed_input_data.copy(deep=True)
     temp_input_data['bp_n_relevant_bases'] = 3

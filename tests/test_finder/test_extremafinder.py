@@ -80,3 +80,13 @@ class TestExtremaFinder(unittest.TestCase):
     def test_query_input_isolated_missing_bp(self):
         isolated_output = extremafinder("SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5405570973190252288')")
         custom_void_array_comparison(isolated_output, isolated_solution, column='extrema', dtypes=dtypes)
+
+    def test_list_input_with_missing_bp(self):
+        sources = ['5853498713190525696', missing_bp_source_id, 5762406957886626816]
+        with_missing_output = extremafinder(sources)
+        custom_void_array_comparison(with_missing_output, found_extrema_nobp_real, 'extrema', dtypes)
+
+    def test_list_input_isolated_missing_bp(self):
+        sources = [missing_bp_source_id]
+        missing_output = extremafinder(sources)
+        custom_void_array_comparison(missing_output, isolated_solution, 'extrema', dtypes)

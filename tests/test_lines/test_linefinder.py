@@ -8,8 +8,7 @@ import pytest
 
 from gaiaxpy import linefinder, extremafinder, fastfinder
 from gaiaxpy.core.generic_functions import str_to_array
-# from gaiaxpy.core.generic_functions import str_to_array
-from tests.files.paths import files_path
+from tests.files.paths import *
 
 # Input file with xp continuous spectra
 continuous_path = join(files_path, 'xp_continuous')
@@ -23,7 +22,7 @@ dtypes = [('line_name', 'U12'), ('wavelength_nm', 'f8'), ('flux', 'f8'), ('depth
 _rtol, _atol = 1e-7, 1e-7
 
 
-def custom_comparison(df_computed, df_solution, column):
+def custom_comparison(df_computed, df_solution, column: str):
     if len(df_computed) != len(df_solution):
         raise ValueError('Lengths of DataFrames are different.')
     df_computed_lines = df_computed[column].values
@@ -132,3 +131,22 @@ class TestFastFinder(unittest.TestCase):
         pdt.assert_frame_equal(found_fast, found_fast_real, rtol=_rtol, atol=_atol)
         pdt.assert_frame_equal(found_fast_trunc, found_fast_trunc_real, rtol=_rtol, atol=_atol)
         pdt.assert_frame_equal(found_fast_nobp, found_fast_nobp_real, rtol=_rtol, atol=_atol)
+
+
+class TestLineFinderInput(unittest.TestCase):
+
+    # With missing BP source
+    def test_file_input_with_missing_bp_source(self):
+        with_missing_input_files = [with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file,
+                                    with_missing_bp_xml_file, with_missing_bp_xml_plain_file]
+        for _input_file in with_missing_input_files:
+            output = linefinder(_input_file)
+            custom_comparison(output, found_lines_nobp_real, 'lines')
+
+    # Missing BP source in isolation
+    def test_file_input_isolated_missing_bp_source(self):
+        missing_input_files = [missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,
+                               missing_bp_xml_plain_file]
+        for _input_file in missing_input_files:
+            output = linefinder(missing_input_files)
+            custom_comparison(output, found_lines_nobp_real, 'lines')

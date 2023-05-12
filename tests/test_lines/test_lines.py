@@ -5,10 +5,10 @@ import numpy as np
 import numpy.testing as npt
 
 from gaiaxpy.core.satellite import BANDS
-from gaiaxpy.lines.lines import Lines
+from gaiaxpy.finder.lines import Lines
 from tests.files.paths import files_path
 
-lines_path = join(files_path, 'lines_files')
+lines_path = join(files_path, 'finder_files')
 file_lines = join(lines_path, 'lines_example.txt')
 
 bptrue = (np.array(['H_beta', 'He I_1', 'He I_2'], dtype='<U7'), np.array([24.42300844, 28.392607, 17.449061]))

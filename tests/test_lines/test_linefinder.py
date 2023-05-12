@@ -19,7 +19,7 @@ dtypes = [('line_name', 'U12'), ('wavelength_nm', 'f8'), ('flux', 'f8'), ('depth
           ('significance', 'f8'), ('sig_pwl', 'f8')]
 
 # Results to compare
-solution_folder = 'lines_files'
+solution_folder = 'finder_files'
 found_lines_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_output.csv'),
                                converters=get_converters('lines', dtypes))
 

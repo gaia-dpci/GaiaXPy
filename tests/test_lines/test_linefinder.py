@@ -145,8 +145,11 @@ class TestLineFinderInput(unittest.TestCase):
 
     # Missing BP source in isolation
     def test_file_input_isolated_missing_bp_source(self):
+        missing_bp_source_id = 5405570973190252288
+        isolated_solution = found_lines_nobp_real[found_lines_nobp_real['source_id'] ==
+                                                  missing_bp_source_id].reset_index(drop=True)
         missing_input_files = [missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,
                                missing_bp_xml_plain_file]
         for _input_file in missing_input_files:
-            output = linefinder(missing_input_files)
-            custom_comparison(output, found_lines_nobp_real, 'lines')
+            output = linefinder(_input_file)
+            custom_comparison(output, isolated_solution, 'lines')

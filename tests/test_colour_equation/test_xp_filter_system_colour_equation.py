@@ -45,7 +45,7 @@ class TestSingleColourEquation(unittest.TestCase):
         pmn_photometry = pd.read_csv(
             path.join(files_path, 'colour_equation', 'Landolt_Johnson_Ucorr_v375wiv142r_SAMPLE.csv'))
         # Source for which data could be extracted from Geapre
-        sources_to_keep = [26, 21, 24]
+        sources_to_keep = [4408087461749558912, 4408087908426160384, 4408088011505376128]
         pmn_photometry = pmn_photometry.loc[pmn_photometry['source_id'].isin(sources_to_keep)]
         for source_id in sources_to_keep:
             output_source = output_photometry[output_photometry['source_id'] == source_id].iloc[0]
@@ -91,7 +91,7 @@ class TestSingleColourEquation(unittest.TestCase):
         # Read PMN's photometry
         pmn_photometry_path = path.join(files_path, 'colour_equation', 'Landolt_Johnson_Ucorr_v375wiv142r_SAMPLE.csv')
         pmn_corrected_photometry = pd.read_csv(pmn_photometry_path)
-        sources_to_keep = [26, 21, 24]
+        sources_to_keep = [4408087461749558912, 4408087908426160384, 4408088011505376128]
         pmn_corrected_photometry = pmn_corrected_photometry.loc[
             pmn_corrected_photometry['source_id'].isin(sources_to_keep)]
         # Compare U band mags

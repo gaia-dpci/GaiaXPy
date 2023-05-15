@@ -17,11 +17,13 @@ from gaiaxpy.config.paths import config_path
 from gaiaxpy.converter.config import load_config, get_config
 from gaiaxpy.converter.converter import convert
 from gaiaxpy.core.dispersion_function import pwl_to_wl, pwl_range
+from gaiaxpy.core.generic_functions import cast_output
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.linefinder.herm import HermiteDerivative
 from gaiaxpy.linefinder.lines import Lines
 from gaiaxpy.linefinder.plotter import plot_spectra_with_lines
+from gaiaxpy.output.line_data import LineData
 
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
@@ -43,13 +45,14 @@ def _get_configuration(config):
     Returns:
         (tuple): bases_transformation, n_bases, scale, offset
     """
-    if int(config['transformedSetDimension']) == int(config['dimension']):
+    transformed_set_dimension = int(config['transformedSetDimension'].iloc[0])
+    dimension = int(config['dimension'].iloc[0])
+    if transformed_set_dimension == dimension:
         scale = (config['normalizedRange'].iloc(0)[0][1] - config['normalizedRange'].iloc(0)[0][0]) /\
                 (config['range'].iloc(0)[0][1] - config['range'].iloc(0)[0][0])
         offset = config['normalizedRange'].iloc(0)[0][0] - config['range'].iloc(0)[0][0] * scale
-        bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(int(config['dimension']),
-                                                                                 int(config['transformedSetDimension']))
-        return bases_transformation, int(config['dimension']), scale, offset
+        bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(dimension, transformed_set_dimension)
+        return bases_transformation, dimension, scale, offset
     else:
         raise Exception('Transformation matrix is not square.')
 
@@ -282,6 +285,7 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     cal_continuum, _ = calibrate(temp_input_data, truncation=True, save_file=False)
     # Get source_ids
     source_ids = parsed_input_data['source_id']
+
     # Prep redshifts -> match with source_ids
     if source_type == 'qso':
         red_array = np.array(redshift, dtype=[('source_id', 'i8'), ('z', 'f8')])
@@ -296,7 +300,7 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
         bp_line_names, bp_lines_pwl = bp_lines.get_lines_pwl()
         rp_line_names, rp_lines_pwl = rp_lines.get_lines_pwl()
 
-    results = pd.DataFrame(columns=['source_id', 'lines'], index=range(source_ids.size))
+    output_df = pd.DataFrame(columns=['source_id', 'lines'], index=range(source_ids.size))
 
     for i in np.arange(len(parsed_input_data)):
         _item = parsed_input_data.iloc[i]
@@ -338,10 +342,13 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
             plot_spectra_with_lines(sid, con_sampling, None, con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
                                     cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
 
-        results.iloc[i] = [sid, _format_output(bp_found_lines, rp_found_lines)]
+        output_df.iloc[i] = [sid, _format_output(bp_found_lines, rp_found_lines)]
 
-    results['source_id'] = results['source_id'].astype(np.int64)
-    return results
+    output_data = LineData(output_df)
+    output_data.data = cast_output(output_data)
+    output_data.save(save_file=True, output_path='.', output_file='test', output_format='csv', extension=extension)
+
+    return output_df
 
 
 def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots=False, username=None, password=None):

@@ -10,10 +10,8 @@ import numpy as np
 from astropy.io import fits
 from astropy.io.votable import from_table, writeto
 from astropy.table import Table
-from fastavro import parse_schema, writer
-from fastavro.validation import validate_many
 
-from .output_data import OutputData, _add_header, _build_photometry_header
+from .output_data import OutputData, _add_header, _build_line_header
 
 
 class LineData(OutputData):
@@ -55,7 +53,7 @@ class LineData(OutputData):
             output_file (str): Name chosen for the output file.
         """
         line_df = self.data
-        header_lines = _build_photometry_header(line_df.columns)
+        header_lines = _build_line_header(line_df.columns)
         Path(output_path).mkdir(parents=True, exist_ok=True)
         line_df.to_csv(join(output_path, f'{output_file}.ecsv'), index=False)
         _add_header(header_lines, output_path, output_file)

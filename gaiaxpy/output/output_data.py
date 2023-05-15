@@ -55,6 +55,29 @@ def _initialise_header():
     return ["# %ECSV 1.0", "# ---", "# delimiter: ','", "# datatype:"]
 
 
+def _build_line_header(columns):
+    header_dict = _load_header_dict()
+    header = _initialise_header()
+    for column in columns:
+        print(column)
+        header.append('# -')
+        header.append(f'#   name: {column}')
+        if column != 'source_id':
+            if '_flux_error_' in column:
+                parameter = '_flux_error_'
+            elif '_flux_' in column:
+                parameter = '_flux_'
+            elif '_mag_' in column:
+                parameter = '_mag_'
+            system, band = column.split(parameter)
+            parameter = f'phot{parameter}'[:-1]
+            header.append(f'#   datatype: {header_dict[parameter]["datatype"]}')
+            header.append(f'#   description: {header_dict[parameter]["description"]} {band} band')
+        else:
+            header.append(f'#   datatype: {header_dict[column]["datatype"]}')
+            header.append(f'#   description: {header_dict[column]["description"]}')
+    return '\n'.join(header) + '\n'
+
 def _build_photometry_header(columns):
     header_dict = _load_header_dict()
     header = _initialise_header()

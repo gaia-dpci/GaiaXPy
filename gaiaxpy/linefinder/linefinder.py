@@ -240,7 +240,7 @@ def _format_output(bp_found_lines, rp_found_lines):
     return found_lines
 
 
-def linefinder(input_object, truncation=False, source_type='star', redshift=0., user_lines=None, plot_spectra=False,
+def linefinder(input_object, truncation=False, source_type='star', redshift=None, user_lines=None, plot_spectra=False,
                save_plots=False, username=None, password=None):
     """
     Line finding: get the input internally calibrated mean spectra from the continuous representation to a
@@ -253,7 +253,7 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
         truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
             the recommended value in the input files.
         source_type (str): Source type: 'star' or 'qso'.
-        redshift (float or list): Default=0 for stars and a list of tuples (source id - redshift) for QSOs
+        redshift (list): List containing tuples of pairs (source id - redshift) for QSOs
         user_lines (list): List containing tuples of wavelengths [nm] and names (e.g. [(65.64, 48.62),
             ('Line1', 'Line2')]).
         plot_spectra (bool): Whether to plot the spectra with lines.

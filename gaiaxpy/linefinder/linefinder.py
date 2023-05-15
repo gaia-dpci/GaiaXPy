@@ -19,9 +19,9 @@ from gaiaxpy.converter.converter import convert
 from gaiaxpy.core.dispersion_function import pwl_to_wl, pwl_range
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
-from gaiaxpy.finder.herm import HermiteDerivative
-from gaiaxpy.finder.lines import Lines
-from gaiaxpy.finder.plotter import plot_spectra_with_lines
+from gaiaxpy.linefinder.herm import HermiteDerivative
+from gaiaxpy.linefinder.lines import Lines
+from gaiaxpy.linefinder.plotter import plot_spectra_with_lines
 
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 

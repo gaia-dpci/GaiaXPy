@@ -5,7 +5,7 @@ import numpy as np
 import numpy.testing as npt
 
 from gaiaxpy.core.satellite import BANDS
-from gaiaxpy.finder.lines import Lines
+from gaiaxpy.linefinder.lines import Lines
 from tests.files.paths import files_path
 
 lines_path = join(files_path, 'finder_files')

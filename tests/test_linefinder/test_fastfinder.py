@@ -9,9 +9,6 @@ from tests.utils.utils import get_converters
 
 _rtol, _atol = 1e-7, 1e-7
 
-dtypes = [('line_name', 'U12'), ('wavelength_nm', 'f8'), ('flux', 'f8'), ('depth', 'f8'), ('width', 'f8'),
-          ('significance', 'f8'), ('sig_pwl', 'f8')]
-
 solution_folder = 'linefinder_files'
 found_fast_real = pd.read_csv(join(files_path, solution_folder, 'fastfinder_output.csv'),
                               converters=get_converters(['extrema_bp', 'extrema_rp']))

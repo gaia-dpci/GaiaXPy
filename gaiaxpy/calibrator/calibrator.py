@@ -88,7 +88,7 @@ def _calibrate(input_object, sampling=None, truncation=False, output_path='.', o
     output_data.data = cast_output(output_data)
     # Save output
     output_data.save(save_file, output_path, output_file, output_format, extension)
-    return spectra_df, positions
+    return output_data.data, positions
 
 
 def _create_merge(xp, sampling):

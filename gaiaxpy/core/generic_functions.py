@@ -32,11 +32,11 @@ def _is_built_in_system(system):
 
 
 def cast_output(output):
-    cast_dict = {'source_id': 'int64', 'solution_id': 'int64'}
+    cast_dict = {'source_id': 'int64', 'solution_id': 'int64', 'line_name': 'str', 'line_flux': 'float64'}
     df = output if isinstance(output, pd.DataFrame) else output.data
-    for key, value in cast_dict.items():
+    for column in df.columns:
         try:
-            df[key] = df[key].astype(value)
+            df[column] = df[column].astype(cast_dict[column])
         except KeyError:
             continue
     return df

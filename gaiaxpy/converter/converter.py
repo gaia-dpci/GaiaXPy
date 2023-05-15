@@ -75,7 +75,7 @@ def convert(input_object, sampling=np.linspace(0, 60, 600), truncation=False, ou
     output_data = SampledSpectraData(spectra_df, positions)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
-    return spectra_df, positions
+    return output_data.data, positions
 
 
 def _create_continuous_spectrum(row, band):

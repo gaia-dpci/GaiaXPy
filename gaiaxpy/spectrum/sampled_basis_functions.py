@@ -143,8 +143,8 @@ def populate_design_matrix(sampling_grid, config):
                                         np.sqrt(np.pi)) * np.exp(-x ** 2 / 2.0) * eval_hermite(n, x)
 
     dimension = int(config['dimension'].iloc[0])
-    bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(dimension,
-                                                                             int(config['transformedSetDimension']))
+    transformed_set_dimension = int(config['transformedSetDimension'].iloc[0])
+    bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(dimension, transformed_set_dimension)
     design_matrix = np.array([psi(n_h, pos) for pos in rescaled_pwl for n_h in np.arange(dimension)]).reshape(n_samples,
                                                                                                               dimension)
     return bases_transformation.dot(design_matrix.T)

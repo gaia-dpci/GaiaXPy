@@ -16,10 +16,10 @@ class TestPlotter(unittest.TestCase):
     # for visual inspection
 
     def test_lines_plotter(self):
-        lines = linefinder(mean_spectrum_csv, plot_spectra=True)
+        lines = linefinder(mean_spectrum_csv, plot_spectra=True, save_file=False)
 
     def test_extrema_plotter(self):
-        extrema = extremafinder(mean_spectrum_csv, plot_spectra=True)
+        extrema = extremafinder(mean_spectrum_csv, plot_spectra=True, save_file=False)
 
 
 class TestPlotterMethod(unittest.TestCase):

@@ -142,11 +142,11 @@ def populate_design_matrix(sampling_grid, config):
     def psi(n, x): return 1.0 / np.sqrt(math.pow(2, n) * gamma(n + 1) *
                                         np.sqrt(np.pi)) * np.exp(-x ** 2 / 2.0) * eval_hermite(n, x)
 
-    bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(
-        int(config['dimension']), int(config['transformedSetDimension']))
-    design_matrix = np.array([psi(n_h, pos) for pos in rescaled_pwl for n_h in np.arange(
-        int(config['dimension']))]).reshape(n_samples, int(config['dimension']))
-
+    dimension = int(config['dimension'].iloc[0])
+    bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(dimension,
+                                                                             int(config['transformedSetDimension']))
+    design_matrix = np.array([psi(n_h, pos) for pos in rescaled_pwl for n_h in np.arange(dimension)]).reshape(n_samples,
+                                                                                                              dimension)
     return bases_transformation.dot(design_matrix.T)
 
 

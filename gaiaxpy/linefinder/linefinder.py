@@ -7,6 +7,8 @@ Module for the line finding.
 import warnings
 from configparser import ConfigParser
 from os import path
+from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -227,21 +229,25 @@ def _find_fast(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, 
     return roots_pwl[mask]
 
 
-def _format_output(bp_found_lines, rp_found_lines):
+def _format_output(source_id, bp_found_lines, rp_found_lines):
     """
     Format output.
     """
-    _bp_found_lines = [(line[0], line[4], line[5], line[6], line[7], line[8], line[10]) for line in bp_found_lines]
-    _rp_found_lines = [(line[0], line[4], line[5], line[6], line[7], line[8], line[10]) for line in rp_found_lines]
+    _bp_found_lines = [(source_id, line[0], line[4], line[5], line[6], line[7], line[8], line[10]) for line in
+                       bp_found_lines]
+    _rp_found_lines = [(source_id, line[0], line[4], line[5], line[6], line[7], line[8], line[10]) for line in
+                       rp_found_lines]
     found_lines = _bp_found_lines + _rp_found_lines
-    _dtype = [('line_name', 'U12'), ('wavelength_nm', 'f8'), ('flux', 'f8'), ('depth', 'f8'), ('width', 'f8'),
-             ('significance', 'f8'), ('sig_pwl', 'f8')]
+    _dtype = [('source_id', 'i8'), ('line_name', 'U12'), ('wavelength_nm', 'f8'), ('flux', 'f8'), ('depth', 'f8'),
+              ('width', 'f8'), ('significance', 'f8'), ('sig_pwl', 'f8')]
     found_lines = np.sort(np.array(found_lines, dtype=_dtype), order='wavelength_nm')
     return found_lines
 
 
-def linefinder(input_object, truncation=False, source_type='star', redshift=0., user_lines=None, plot_spectra=False,
-               save_plots=False, username=None, password=None):
+def linefinder(input_object: Union[list, Path, str], truncation: bool = False, source_type: str ='star',
+               redshift: Union[float, list] = 0., user_lines: list = None, output_path: Union[Path, str] = '.',
+               output_file: str = 'output_spectra', output_format: str = None, save_file: bool = True, username=None,
+               password=None):
     """
     Line finding: get the input internally calibrated mean spectra from the continuous representation to a
     sampled form. In between it looks for emission and absorption lines. The lines can be defined by user
@@ -264,6 +270,9 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     Returns:
         (DataFrame): dataframe with arrays of found lines and their properties for each source
     """
+    plot_spectra=False
+    save_plots=False
+
     source_type = _check_source_redshift_type(source_type, redshift)
     _check_truncation(truncation)
     _check_plot_arguments(plot_spectra, save_plots)
@@ -300,7 +309,7 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
         bp_line_names, bp_lines_pwl = bp_lines.get_lines_pwl()
         rp_line_names, rp_lines_pwl = rp_lines.get_lines_pwl()
 
-    output_df = pd.DataFrame(columns=['source_id', 'lines'], index=range(source_ids.size))
+    output_lines = []
 
     for i in np.arange(len(parsed_input_data)):
         _item = parsed_input_data.iloc[i]
@@ -342,16 +351,20 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
             plot_spectra_with_lines(sid, con_sampling, None, con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
                                     cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
 
-        output_df.iloc[i] = [sid, _format_output(bp_found_lines, rp_found_lines)]
+        output_lines.extend(_format_output(sid, bp_found_lines, rp_found_lines))
 
+    output_df = pd.DataFrame([list(line) for line in output_lines], columns=['source_id', 'line_name', 'wavelength_nm',
+                                                                             'line_flux', 'depth', 'width',
+                                                                             'significance', 'sig_pwl'])
     output_data = LineData(output_df)
     output_data.data = cast_output(output_data)
-    output_data.save(save_file=True, output_path='.', output_file='test', output_format='csv', extension=extension)
-
+    output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_df
 
 
-def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots=False, username=None, password=None):
+def extremafinder(input_object: Union[list, Path, str], truncation: bool = False, output_path: Union[Path, str] = '.',
+                  output_file: str = 'output_spectra', output_format: str = None, save_file: bool = True, username=None,
+                  password=None):
     """
     Line finding: get the input internally calibrated mean spectra from the continuous represenation to a
     sampled form. In between it looks for all lines (=extrema in spectra).
@@ -369,6 +382,8 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
     Returns:
         (DataFrame): dataframe with arrays of found extrema and their properties for each source
     """
+    plot_spectra = False
+    save_plots = False
 
     _check_truncation(truncation)
     _check_plot_arguments(plot_spectra, save_plots)
@@ -392,7 +407,7 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
     # Get source_ids
     source_ids = parsed_input_data['source_id']
 
-    results = pd.DataFrame(columns=['source_id', 'extrema'], index=range(source_ids.size))
+    output_lines = []
 
     for i in np.arange(len(parsed_input_data)):
         item = parsed_input_data.iloc[i]
@@ -428,11 +443,15 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
             plot_spectra_with_lines(sid, con_sampling, None, con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
                                     cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
 
-        results.iloc[i] = [sid, _format_output(bp_found_lines, rp_found_lines)]
+        output_lines.extend(_format_output(sid, bp_found_lines, rp_found_lines))
 
-    results['source_id'] = results['source_id'].astype(np.int64)
-
-    return results
+    output_df = pd.DataFrame([list(line) for line in output_lines], columns=['source_id', 'line_name', 'wavelength_nm',
+                                                                             'line_flux', 'depth', 'width',
+                                                                             'significance', 'sig_pwl'])
+    output_data = LineData(output_df)
+    output_data.data = cast_output(output_data)
+    output_data.save(save_file, output_path, output_file, output_format, extension)
+    return output_df
 
 
 def fastfinder(input_object, truncation=False, username=None, password=None):

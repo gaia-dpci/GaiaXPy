@@ -245,7 +245,7 @@ def _format_output(source_id, bp_found_lines, rp_found_lines):
 
 
 def linefinder(input_object: Union[list, Path, str], truncation: bool = False, source_type: str ='star',
-               redshift: Union[float, list] = 0., user_lines: list = None, output_path: Union[Path, str] = '.',
+               redshift: Union[float, list] = None, user_lines: list = None, output_path: Union[Path, str] = '.',
                output_file: str = 'output_spectra', output_format: str = None, save_file: bool = True, username=None,
                password=None):
     """
@@ -259,7 +259,7 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
         truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
             the recommended value in the input files.
         source_type (str): Source type: 'star' or 'qso'.
-        redshift (float or list): Default=0 for stars and a list of tuples (source id - redshift) for QSOs
+        redshift (list): List containing tuples of pairs (source id - redshift) for QSOs
         user_lines (list): List containing tuples of wavelengths [nm] and names (e.g. [(65.64, 48.62),
             ('Line1', 'Line2')]).
         plot_spectra (bool): Whether to plot the spectra with lines.

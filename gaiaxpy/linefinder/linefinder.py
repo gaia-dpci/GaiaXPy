@@ -246,8 +246,8 @@ def _format_output(source_id, bp_found_lines, rp_found_lines):
 
 def linefinder(input_object: Union[list, Path, str], truncation: bool = False, source_type: str = 'star',
                redshift: Union[float, list] = None, user_lines: list = None, output_path: Union[Path, str] = '.',
-               output_file: str = 'output_lines', output_format: str = None, save_file: bool = True, username=None,
-               password=None):
+               output_file: str = 'output_lines', output_format: str = None, save_file: bool = True,
+               plot_spectra: bool = False, save_plots: bool = False, username: str = None, password: str = None):
     """
     Line finding: get the input internally calibrated mean spectra from the continuous representation to a
     sampled form. In between it looks for emission and absorption lines. The lines can be defined by user
@@ -267,6 +267,8 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
         output_format (str): Desired output format. If no format is given, the output file format will be the same as
             the input file (e.g. 'csv').
         save_file (bool): Whether to save the output in a file. If false, output_format and output_file will be ignored.
+        plot_spectra (bool): Whether to plot spectrum with lines.
+        save_plots (bool): Whether to save plots with spectra.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
         
@@ -341,7 +343,6 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
                                _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
                                _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
 
-        '''
         # Plotting
         if plot_spectra and not pd.isna(_item['bp_n_parameters']):
             plot_spectra_with_lines(sid, con_sampling, con_spectra[m_con_bp]['flux'].values[0],
@@ -350,7 +351,6 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
         elif plot_spectra:
             plot_spectra_with_lines(sid, con_sampling, None, con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
                                     cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
-        '''
 
         output_lines.extend(_format_output(sid, bp_found_lines, rp_found_lines))
 
@@ -358,15 +358,16 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
                                                     'width', 'significance', 'sig_pwl'])
     output_data = LineData(output_df)
     output_data.data = cast_output(output_data)
+    output_data.data.attrs['data_type'] = Lines('xp', 'xp')
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_data.data
 
 
 def extremafinder(input_object: Union[list, Path, str], truncation: bool = False, output_path: Union[Path, str] = '.',
-                  output_file: str = 'output_lines', output_format: str = None, save_file: bool = True, username=None,
-                  password=None):
+                  output_file: str = 'output_lines', output_format: str = None, save_file: bool = True,
+                  plot_spectra: bool = False, save_plots: bool = False, username=None, password=None) -> pd.DataFrame:
     """
-    Line finding: get the input internally calibrated mean spectra from the continuous represenation to a
+    Line finding: get the input internally calibrated mean spectra from the continuous representation to a
     sampled form. In between it looks for all lines (=extrema in spectra).
     
     Args:
@@ -379,6 +380,8 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
         output_format (str): Desired output format. If no format is given, the output file format will be the same as
             the input file (e.g. 'csv').
         save_file (bool): Whether to save the output in a file. If false, output_format and output_file will be ignored.
+        plot_spectra (bool): Whether to plot spectrum with lines.
+        save_plots (bool): Whether to save plots with spectra.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
         
@@ -386,6 +389,7 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
         (DataFrame): dataframe with arrays of found extrema and their properties for each source
     """
     _check_truncation(truncation)
+    _check_plot_arguments(plot_spectra, save_plots)
 
     config_df = load_config(config_file)
     bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
@@ -400,8 +404,7 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
     cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation, save_file=False)
     # Get calibrated continuum (limit number of bases)
     temp_input_data = parsed_input_data.copy(deep=True)
-    temp_input_data['bp_n_relevant_bases'] = 3
-    temp_input_data['rp_n_relevant_bases'] = 3
+    temp_input_data['bp_n_relevant_bases'], temp_input_data['rp_n_relevant_bases'] = 3, 3
     cal_continuum, _ = calibrate(temp_input_data, truncation=True, save_file=False)
 
     output_lines = []
@@ -430,7 +433,6 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
                                    _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
                                    _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
 
-        '''
         # Plotting
         if plot_spectra and not pd.isna(item['bp_n_parameters']):
             plot_spectra_with_lines(sid, con_sampling, con_spectra[m_con_bp]['flux'].values[0],
@@ -439,7 +441,6 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
         elif plot_spectra:
             plot_spectra_with_lines(sid, con_sampling, None, con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
                                     cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
-        '''
 
         output_lines.extend(_format_output(sid, bp_found_lines, rp_found_lines))
 
@@ -447,13 +448,14 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
                                                     'width', 'significance', 'sig_pwl'])
     output_data = LineData(output_df)
     output_data.data = cast_output(output_data)
+    output_data.data.attrs['data_type'] = Lines('xp', 'qso')
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_data.data
 
 
 def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, output_path: Union[Path, str] = '.',
                output_file: str = 'output_lines', output_format: str = None, save_file: bool = True, username=None,
-               password=None):
+               password=None) -> pd.DataFrame:
     """
     Line finding: get the input coefficients for internally calibrated mean spectra and look for the extrema.
     No evaluation of spectra in both sampled and continuous forms is performed.
@@ -495,9 +497,12 @@ def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, o
         rp_found_lines = [] if pd.isna(item['rp_n_parameters']) else _find_fast(rp_tm, rp_n, rp_rel_n, rp_scale,
                                                                                 rp_offset, BANDS.rp, rp_coeff)
 
-        output_rows.append([sid, np.array(bp_found_lines), np.array(rp_found_lines)])
+        output_bp_rows = [[sid, BANDS.bp.upper(), value] for value in bp_found_lines]
+        output_rp_rows = [[sid, BANDS.rp.upper(), value] for value in rp_found_lines]
+        output_i_rows = output_bp_rows + output_rp_rows
+        output_rows.extend(output_i_rows)
 
-    output_df = pd.DataFrame(output_rows, columns=['source_id', 'extrema_bp', 'extrema_rp'])
+    output_df = pd.DataFrame(output_rows, columns=['source_id', 'xp', 'extrema'])
     output_data = LineData(output_df)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)

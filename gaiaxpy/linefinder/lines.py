@@ -77,3 +77,7 @@ class Lines:
             lines = (np.asarray(self.in_line_names)[mask], line_pwl)
 
         return lines
+
+
+    def get_units(cls):
+        return {'wavelength_nm': 'nm', 'line_flux': 'W nm^-1 m^-2', 'depth': 'W nm^-1 m^-2', 'width': 'nm'}

@@ -76,8 +76,8 @@ class TestLineFinderInput(unittest.TestCase):
         pdt.assert_frame_equal(isolated_output, isolated_missing_bp_solution)
 
     def test_query_input_with_missing_bp(self):
-        query = "SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5853498713190525696', '5405570973190252288', " \
-                "'5762406957886626816')"
+        source_ids = ('5853498713190525696', '5405570973190252288', '5762406957886626816')
+        query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN {source_ids}"
         with_missing_output = linefinder(query, save_file=False)
         pdt.assert_frame_equal(with_missing_output, found_lines_no_bp_real.sort_values('source_id', ignore_index=True))
 

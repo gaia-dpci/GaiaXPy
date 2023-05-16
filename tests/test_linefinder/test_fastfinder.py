@@ -64,10 +64,14 @@ class TestFastFinder(unittest.TestCase):
         pdt.assert_frame_equal(isolated_output, isolated_missing_bp_solution)
 
     def test_query_input_with_missing_bp(self):
-        query = "SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5853498713190525696', '5405570973190252288', " \
-                "'5762406957886626816')"
+        source_ids = ('5853498713190525696', '5405570973190252288', '5762406957886626816')
+        query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN {source_ids}"
         with_missing_output = fastfinder(query, save_file=False)
-        pdt.assert_frame_equal(with_missing_output, found_fast_no_bp_real.sort_values('source_id', ignore_index=True))
+        for source_id in source_ids:
+            pdt.assert_frame_equal(with_missing_output[with_missing_output['source_id'] ==
+                                                       source_id].reset_index(drop=True),
+                                   found_fast_no_bp_real[found_fast_no_bp_real['source_id'] ==
+                                                          source_id].reset_index(drop=True))
 
     def test_query_input_isolated_missing_bp(self):
         isolated_output = fastfinder("SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5405570973190252288')",

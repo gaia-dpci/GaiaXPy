@@ -48,6 +48,5 @@
  'width': {'datatype': 'float64', 'description': 'Width pf identified line (distance between the closest inflection points)'},
  'significance': {'datatype': 'float64', 'description': 'Ratio between line depth and error of flux at line (in externally calibrated spectrum)'},
  'sig_pwl': {'datatype': 'float64', 'description': 'Ratio between line depth and error of flux at line (in internally calibrated spectrum)'},
- 'extrema_bp': {'datatype': 'string', 'subtype': 'float64[null]', 'description': 'List of extrema in the BP spectrum'},
- 'extrema_rp': {'datatype': 'string', 'subtype': 'float64[null]', 'description': 'List of extrema in the RP spectrum'}
+ 'extrema': {'datatype': 'float64', 'description': 'Extrema value in the XP spectrum'}
 }

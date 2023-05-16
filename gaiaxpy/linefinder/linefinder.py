@@ -19,9 +19,9 @@ from gaiaxpy.converter.converter import convert
 from gaiaxpy.core.dispersion_function import pwl_to_wl, pwl_range
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
-from gaiaxpy.finder.herm import HermiteDerivative
-from gaiaxpy.finder.lines import Lines
-from gaiaxpy.finder.plotter import plot_spectra_with_lines
+from gaiaxpy.linefinder.herm import HermiteDerivative
+from gaiaxpy.linefinder.lines import Lines
+from gaiaxpy.linefinder.plotter import plot_spectra_with_lines
 
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
@@ -43,13 +43,14 @@ def _get_configuration(config):
     Returns:
         (tuple): bases_transformation, n_bases, scale, offset
     """
-    if int(config['transformedSetDimension']) == int(config['dimension']):
+    transformed_set_dimension = int(config['transformedSetDimension'].iloc[0])
+    dimension = int(config['dimension'].iloc[0])
+    if transformed_set_dimension == dimension:
         scale = (config['normalizedRange'].iloc(0)[0][1] - config['normalizedRange'].iloc(0)[0][0]) /\
                 (config['range'].iloc(0)[0][1] - config['range'].iloc(0)[0][0])
         offset = config['normalizedRange'].iloc(0)[0][0] - config['range'].iloc(0)[0][0] * scale
-        bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(int(config['dimension']),
-                                                                                 int(config['transformedSetDimension']))
-        return bases_transformation, int(config['dimension']), scale, offset
+        bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(dimension, transformed_set_dimension)
+        return bases_transformation, dimension, scale, offset
     else:
         raise Exception('Transformation matrix is not square.')
 
@@ -270,7 +271,7 @@ def linefinder(input_object, truncation=False, source_type='star', redshift=0., 
     rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
 
     # Parse input
-    parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
+    parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
 
     # Get converted spectra
     con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation, save_file=False)
@@ -371,7 +372,7 @@ def extremafinder(input_object, truncation=False, plot_spectra=False, save_plots
     rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
 
     # Parse input
-    parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
+    parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
 
     # Get converted spectra
     con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation, save_file=False)
@@ -450,7 +451,7 @@ def fastfinder(input_object, truncation=False, username=None, password=None):
     bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
     rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
 
-    parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
+    parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
     source_ids = parsed_input_data['source_id']
 
     results = pd.DataFrame(columns=['source_id', 'extrema_bp', 'extrema_rp'], index=range(source_ids.size))

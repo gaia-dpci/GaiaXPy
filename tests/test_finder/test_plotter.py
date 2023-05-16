@@ -4,8 +4,8 @@ from os import path
 import matplotlib.figure as mplf
 import numpy as np
 
-from gaiaxpy.finder.linefinder import linefinder, extremafinder
-from gaiaxpy.finder.plotter import plot_spectra_with_lines
+from gaiaxpy.linefinder.linefinder import linefinder, extremafinder
+from gaiaxpy.linefinder.plotter import plot_spectra_with_lines
 from tests.files.paths import files_path
 
 continuous_path = path.join(files_path, 'xp_continuous')

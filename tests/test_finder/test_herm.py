@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 
-from gaiaxpy.finder.herm import HermiteDerivative
+from gaiaxpy.linefinder.herm import HermiteDerivative
 
 n = 4
 tm = np.ones((n, n))

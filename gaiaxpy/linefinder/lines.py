@@ -4,7 +4,7 @@ import numpy as np
 
 from gaiaxpy.core.dispersion_function import wl_to_pwl
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
-from gaiaxpy.finder.utils import _validate_source_type
+from gaiaxpy.linefinder.utils import _validate_source_type
 
 # local library of lines
 _qso_line_names = ['Ly_alpha', 'C IV', 'C III]', 'Mg II', 'H_beta', 'H_alpha']

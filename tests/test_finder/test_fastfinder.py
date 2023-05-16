@@ -4,7 +4,7 @@ from os.path import join
 import pandas as pd
 import pandas.testing as pdt
 
-from gaiaxpy.finder.linefinder import fastfinder
+from gaiaxpy.linefinder.linefinder import fastfinder
 from tests.files.paths import *
 from tests.utils.utils import get_converters
 

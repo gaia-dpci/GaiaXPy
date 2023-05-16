@@ -4,7 +4,7 @@ import pandas as pd
 
 import pandas.testing as pdt
 
-from gaiaxpy.finder.linefinder import extremafinder
+from gaiaxpy.linefinder.linefinder import extremafinder
 from tests.files.paths import *
 from tests.utils.utils import custom_void_array_comparison, get_converters
 

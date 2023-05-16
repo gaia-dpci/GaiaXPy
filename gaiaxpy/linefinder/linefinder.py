@@ -37,6 +37,7 @@ basis_function_id = {BANDS.bp: 56, BANDS.rp: 57}
 
 tolerance = 1.  # [pix] tolerance to detect a line
 
+
 def _get_configuration(config):
     """
     Get info from config file.
@@ -51,7 +52,7 @@ def _get_configuration(config):
     transformed_set_dimension = int(config['transformedSetDimension'].iloc[0])
     dimension = int(config['dimension'].iloc[0])
     if transformed_set_dimension == dimension:
-        scale = (config['normalizedRange'].iloc(0)[0][1] - config['normalizedRange'].iloc(0)[0][0]) /\
+        scale = (config['normalizedRange'].iloc(0)[0][1] - config['normalizedRange'].iloc(0)[0][0]) / \
                 (config['range'].iloc(0)[0][1] - config['range'].iloc(0)[0][0])
         offset = config['normalizedRange'].iloc(0)[0][0] - config['range'].iloc(0)[0][0] * scale
         bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(dimension, transformed_set_dimension)
@@ -243,7 +244,7 @@ def _format_output(source_id, bp_found_lines, rp_found_lines):
     return sorted(found_lines, key=lambda x: x[2])
 
 
-def linefinder(input_object: Union[list, Path, str], truncation: bool = False, source_type: str ='star',
+def linefinder(input_object: Union[list, Path, str], truncation: bool = False, source_type: str = 'star',
                redshift: Union[float, list] = None, user_lines: list = None, output_path: Union[Path, str] = '.',
                output_file: str = 'output_lines', output_format: str = None, save_file: bool = True, username=None,
                password=None):
@@ -261,20 +262,19 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
         redshift (list): List containing tuples of pairs (source id - redshift) for QSOs
         user_lines (list): List containing tuples of wavelengths [nm] and names (e.g. [(65.64, 48.62),
             ('Line1', 'Line2')]).
-        plot_spectra (bool): Whether to plot the spectra with lines.
-        save_plots (bool): Whether to save the plots with spectra.
+        output_path (Path/str): Path where to save the output data.
+        output_file (str): Name of the output file without extension (e.g. 'my_file').
+        output_format (str): Desired output format. If no format is given, the output file format will be the same as
+            the input file (e.g. 'csv').
+        save_file (bool): Whether to save the output in a file. If false, output_format and output_file will be ignored.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
         
     Returns:
         (DataFrame): dataframe with arrays of found lines and their properties for each source
     """
-    plot_spectra=False
-    save_plots=False
-
     source_type = _check_source_redshift_type(source_type, redshift)
     _check_truncation(truncation)
-    _check_plot_arguments(plot_spectra, save_plots)
 
     config_df = load_config(config_file)
     bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
@@ -341,6 +341,7 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
                                _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
                                _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
 
+        '''
         # Plotting
         if plot_spectra and not pd.isna(_item['bp_n_parameters']):
             plot_spectra_with_lines(sid, con_sampling, con_spectra[m_con_bp]['flux'].values[0],
@@ -349,6 +350,7 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
         elif plot_spectra:
             plot_spectra_with_lines(sid, con_sampling, None, con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
                                     cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
+        '''
 
         output_lines.extend(_format_output(sid, bp_found_lines, rp_found_lines))
 
@@ -372,19 +374,18 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
             continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
         truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
             the recommended value in the input files.
-        plot_spectra (bool): Whether to plot spectrum with lines.
-        save_plots (bool): Whether to save plots with spectra.
+        output_path (Path/str): Path where to save the output data.
+        output_file (str): Name of the output file without extension (e.g. 'my_file').
+        output_format (str): Desired output format. If no format is given, the output file format will be the same as
+            the input file (e.g. 'csv').
+        save_file (bool): Whether to save the output in a file. If false, output_format and output_file will be ignored.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
         
     Returns:
         (DataFrame): dataframe with arrays of found extrema and their properties for each source
     """
-    plot_spectra = False
-    save_plots = False
-
     _check_truncation(truncation)
-    _check_plot_arguments(plot_spectra, save_plots)
 
     config_df = load_config(config_file)
     bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
@@ -429,6 +430,7 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
                                    _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
                                    _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
 
+        '''
         # Plotting
         if plot_spectra and not pd.isna(item['bp_n_parameters']):
             plot_spectra_with_lines(sid, con_sampling, con_spectra[m_con_bp]['flux'].values[0],
@@ -437,6 +439,7 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
         elif plot_spectra:
             plot_spectra_with_lines(sid, con_sampling, None, con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
                                     cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
+        '''
 
         output_lines.extend(_format_output(sid, bp_found_lines, rp_found_lines))
 
@@ -460,6 +463,11 @@ def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, o
             continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
         truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
             the recommended value in the input files.
+        output_path (Path/str): Path where to save the output data.
+        output_file (str): Name of the output file without extension (e.g. 'my_file').
+        output_format (str): Desired output format. If no format is given, the output file format will be the same as
+            the input file (e.g. 'csv').
+        save_file (bool): Whether to save the output in a file. If false, output_format and output_file will be ignored.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
         
@@ -493,4 +501,4 @@ def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, o
     output_data = LineData(output_df)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
-    return output_df
+    return output_data.data

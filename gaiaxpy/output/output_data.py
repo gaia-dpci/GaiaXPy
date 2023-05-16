@@ -3,27 +3,11 @@ output_data.py
 ====================================
 Module to represent generic output data.
 """
-
 from ast import literal_eval
-from os.path import abspath, dirname, join
+from os.path import dirname, abspath, join
 
 from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
-
-
-def _standardise_output_format(_format):
-    """
-    Standardise the output format provided by the user which can contain or not an initial dot, and can contain a
-        mixture of uppercase and lowercase letters.
-
-    Args:
-        _format (str): Output format for the file as provided by the user.
-
-    Returns:
-        str: The format in lowercase letters and with no initial dot (eg.: 'csv').
-    """
-    # Remove initial dot if present
-    _format = _format[1:] if _format[0] == '.' else _format
-    return _format.lower()
+from .utils import _standardise_output_format
 
 
 def _load_header_dict():
@@ -95,6 +79,7 @@ def _add_header(header, output_path, output_file):
         f.write(header + s)
 
 
+
 class OutputData(object):
 
     def __init__(self, data, positions):
@@ -108,7 +93,7 @@ class OutputData(object):
         Args:
             save_file (bool): Whether to save the file or not.
             output_path (str): Path where to save the file.
-            output_file (str): Name chosen for the output file.
+            output_file (str): Name of the output file.
             output_format (str): Format of the output file.
             extension (str): Format of the original input file.
         """

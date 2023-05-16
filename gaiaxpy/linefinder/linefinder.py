@@ -281,7 +281,7 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
     rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
 
     # Parse input
-    parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
+    parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
 
     # Get converted spectra
     con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation, save_file=False)
@@ -391,7 +391,7 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
     rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
 
     # Parse input
-    parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
+    parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
 
     # Get converted spectra
     con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation, save_file=False)
@@ -448,7 +448,9 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
     return output_data.data
 
 
-def fastfinder(input_object, truncation=False, username=None, password=None):
+def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, output_path: Union[Path, str] = '.',
+               output_file: str = 'output_lines', output_format: str = None, save_file: bool = True, username=None,
+               password=None):
     """
     Line finding: get the input coefficients for internally calibrated mean spectra and look for the extrema.
     No evaluation of spectra in both sampled and continuous forms is performed.
@@ -470,11 +472,9 @@ def fastfinder(input_object, truncation=False, username=None, password=None):
     bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
     rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
 
-    parsed_input_data, extension = InputReader(input_object, linefinder, username, password)._read()
-    source_ids = parsed_input_data['source_id']
+    parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
 
-    results = pd.DataFrame(columns=['source_id', 'extrema_bp', 'extrema_rp'], index=range(source_ids.size))
-
+    output_rows = []
     for i in np.arange(len(parsed_input_data)):
         item = parsed_input_data.iloc[i]
         sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(item, truncation, bp_n, rp_n)
@@ -487,8 +487,10 @@ def fastfinder(input_object, truncation=False, username=None, password=None):
         rp_found_lines = [] if pd.isna(item['rp_n_parameters']) else _find_fast(rp_tm, rp_n, rp_rel_n, rp_scale,
                                                                                 rp_offset, BANDS.rp, rp_coeff)
 
-        results.iloc[i] = [sid, bp_found_lines, rp_found_lines]
+        output_rows.append([sid, np.array(bp_found_lines), np.array(rp_found_lines)])
 
-    results['source_id'] = results['source_id'].astype(np.int64)
-
-    return results
+    output_df = pd.DataFrame(output_rows, columns=['source_id', 'extrema_bp', 'extrema_rp'])
+    output_data = LineData(output_df)
+    output_data.data = cast_output(output_data)
+    output_data.save(save_file, output_path, output_file, output_format, extension)
+    return output_df

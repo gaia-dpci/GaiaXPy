@@ -124,11 +124,11 @@ class GenericParser(object):
             DataFrame: A pandas DataFrame representing the FITS file.
         """
         try:
-            data = Table.read(fits_file, format='fits')
+            table = Table.read(fits_file, format='fits')
         except OSError:
             raise DataMismatchError()
-        columns = data.columns.keys()
-        fits_as_gen = ([data[column][index] for column in columns] for index, _ in enumerate(data))
+        columns = table.columns.keys()
+        fits_as_gen = ([table[column][index] for column in columns] for index, _ in enumerate(table))
         df = pd.DataFrame(fits_as_gen, columns=columns)
         if matrix_columns is not None:
             for size_column, values_column in matrix_columns:

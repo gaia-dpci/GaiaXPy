@@ -6,10 +6,8 @@ Module to represent a set of basis functions evaluated on a grid.
 
 import functools
 import math
-
 import numpy as np
 from scipy.special import eval_hermite, gamma
-
 from gaiaxpy.core import nature, satellite
 
 sqrt_4_pi = np.pi ** (-0.25)
@@ -43,27 +41,27 @@ class SampledBasisFunctions(object):
             weights (ndarray): 1D array containing the weights to be applied at each element in the sampling grid. These
                 are simply used to define where in the sampling grid some contribution is expected. Where the weight is
                 0, the bases will not be evaluated.
-            external_instrument_model (obj): External calibration instrument model. This object contains information on
+            external_instrument_model (obj): external calibration instrument model. This object contains information on
                 the dispersion, response and inverse bases.
 
         Returns:
             object: An instance of this class.
         """
         n_samples = len(sampling)
-        scale = (external_instrument_model.bases['normRangeMax'][0] - external_instrument_model.bases['normRangeMin'][
-            0]) / (external_instrument_model.bases['pwlRangeMax'][0] - external_instrument_model.bases['pwlRangeMin'][
-            0])
-        offset = external_instrument_model.bases['normRangeMin'][0] - external_instrument_model.bases['pwlRangeMin'][0] \
-                 * scale
+        scale = (external_instrument_model.bases['normRangeMax'][0] -
+                 external_instrument_model.bases['normRangeMin'][0]) / \
+                (external_instrument_model.bases['pwlRangeMax'][0] -
+                 external_instrument_model.bases['pwlRangeMin'][0])
+        offset = external_instrument_model.bases['normRangeMin'][0] - \
+                 external_instrument_model.bases['pwlRangeMin'][0] * scale
 
-        sampling_pwl = external_instrument_model._wl_to_pwl(sampling)
+        sampling_pwl = external_instrument_model.wl_to_pwl(sampling)
         rescaled_pwl = (sampling_pwl * scale) + offset
 
         bases_transformation = external_instrument_model.bases['transformationMatrix'][0]
-        evaluated_hermite_bases = np.array([
-            _evaluate_hermite_function(n_h, pos, weight) for pos, weight in zip(rescaled_pwl, weights) for n_h in
-            np.arange(
-                int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
+        evaluated_hermite_bases = np.array([_evaluate_hermite_function(n_h, pos, weight) for pos, weight in zip(
+                rescaled_pwl, weights) for n_h in np.arange(int(
+                    external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
             n_samples, int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))
         _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'][0].dot(evaluated_hermite_bases.T)
 
@@ -72,14 +70,15 @@ class SampledBasisFunctions(object):
         hc = 1.e9 * nature.C * nature.PLANCK
 
         def compute_norm(wl):
-            r = external_instrument_model._get_response(wl)
-            return hc / (satellite.TELESCOPE_PUPIL_AREA * r * wl) if r > 0 else 0.0
+            r = external_instrument_model.get_response(wl)
+            if r > 0:
+                return hc / (satellite.TELESCOPE_PUPIL_AREA * r * wl)
+            else:
+                return 0.0
 
         norm = np.array([compute_norm(wl) for wl in sampling])
-
-        design_matrix = np.zeros(_design_matrix.shape)
-        for i in np.arange(external_instrument_model.bases['nBases'][0]):
-            design_matrix[i] = transformed_design_matrix[i] * norm
+        design_matrix = np.array([transformed_design_matrix[i] * norm for i in
+                                  np.arange(external_instrument_model.bases['nBases'][0])])
 
         return cls(sampling, design_matrix=design_matrix)
 
@@ -113,10 +112,10 @@ class SampledBasisFunctions(object):
         """
         return cls(sampling, design_matrix=design_matrix)
 
-    def _get_design_matrix(self):
+    def get_design_matrix(self):
         return self.design_matrix
 
-    def _get_sampling_grid(self):
+    def get_sampling_grid(self):
         return self.sampling_grid
 
 
@@ -125,10 +124,8 @@ def populate_design_matrix(sampling_grid, config):
     Create a design matrix given the internal calibration bases and a user-defined sampling.
 
     Args:
-        sampling_grid (ndarray): 1D array of positions where the bases need to
-                be evaluated.
-        config (DataFrame): The configuration of the set of bases
-                loaded into a DataFrame.
+        sampling_grid (ndarray): 1D array of positions where the bases need to be evaluated.
+        config (DataFrame): The configuration of the set of bases loaded into a DataFrame.
 
     Returns:
         ndarray: The resulting design matrix.

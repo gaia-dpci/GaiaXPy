@@ -20,7 +20,7 @@ from .config import _CFG_FILE_PATH
 
 class InternalPhotometricSystem(object):
 
-    def __init__(self, name, config_file=None, bp_model='v375wi', rp_model='v142r'):
+    def __init__(self, name: str, config_file: str = None, bp_model: str = 'v375wi', rp_model: str ='v142r'):
         self.label = _get_system_label(name)
         self.version = None
         self.__set_version(config_file)
@@ -148,7 +148,7 @@ class InternalPhotometricSystem(object):
         self.zero_points = parse_array(x_root, 'zeropoints')
         self.bands, _ = get_array_text(x_root, 'bands')
 
-    def _load_xpsampling_from_xml(self):
+    def load_xpsampling_from_xml(self):
         """
         Load the XpSampling table from the XML filter file.
 
@@ -164,7 +164,7 @@ class InternalPhotometricSystem(object):
         xp_sampling = dict(zip(BANDS, [bp_sampling, rp_sampling]))
         return xp_sampling
 
-    def _load_xpmerge_from_xml(self):
+    def load_xpmerge_from_xml(self):
         """
         Load the XpMerge table from the filter XML file.
 

@@ -35,6 +35,7 @@ config_file = path.join(config_path, config_parser.get('converter', 'optimised_b
 
 basis_function_id = {BANDS.bp: 56, BANDS.rp: 57}
 
+tolerance = 1.  # [pix] tolerance to detect a line
 
 def _get_configuration(config):
     """
@@ -141,7 +142,7 @@ def _find(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff
     for line_pwl, name in zip(lines, line_names):
         i_line = np.abs(roots_pwl - line_pwl).argmin()
         line_root = roots_pwl[i_line]
-        if abs(line_pwl - line_root) < 1:  # Allow for 1 pixel difference
+        if abs(line_pwl - line_root) < 1:  # Allow for difference in pwl
             line_width_pwl, line_width, line_test = _get_line_pwl_width_test(roots_pwl2, line_root, xp)
             line_continuum = np.median(calibrated_flux(pwl_to_wl(xp, line_test)))
             line_continuum_pwl = np.median(flux(line_test))

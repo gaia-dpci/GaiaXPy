@@ -2,10 +2,11 @@ import unittest
 from os.path import join
 
 import numpy as np
+import numpy.testing as npt
 
 from gaiaxpy import generate, PhotometricSystem
-from gaiaxpy.core.generic_functions import _get_system_label, _extract_systems_from_data, _validate_pwl_sampling, \
-    array_to_symmetric_matrix
+from gaiaxpy.core.generic_functions import _get_system_label, _extract_systems_from_data, validate_pwl_sampling, \
+    array_to_symmetric_matrix, correlation_to_covariance, get_matrix_size_from_lower_triangle
 from tests.files.paths import files_path
 
 array = np.array([1, 2, 3, 4, 5, 6])
@@ -51,43 +52,50 @@ class TestGenericFunctions(unittest.TestCase):
     def test_validate_pwl_sampling_upper_limit(self):
         sampling = np.linspace(0, 71, 300)
         with self.assertRaises(ValueError):
-            _validate_pwl_sampling(sampling)
+            validate_pwl_sampling(sampling)
 
     def test_validate_pwl_sampling_lower_limit(self):
         sampling = np.linspace(-11, 70, 300)
         with self.assertRaises(ValueError):
-            _validate_pwl_sampling(sampling)
+            validate_pwl_sampling(sampling)
 
     def test_validate_pwl_sampling_len_zero(self):
         sampling = np.linspace(0, 0, 0)
         with self.assertRaises(ValueError):
-            _validate_pwl_sampling(sampling)
+            validate_pwl_sampling(sampling)
 
     def test_validate_pwl_sampling_none(self):
         sampling = None
         with self.assertRaises(ValueError):
-            _validate_pwl_sampling(sampling)
+            validate_pwl_sampling(sampling)
 
     def test_validate_pwl_sampling(self):
         sampling = np.array([0.3, 0.2, 0.5])
         with self.assertRaises(ValueError):
-            _validate_pwl_sampling(sampling)
+            validate_pwl_sampling(sampling)
+
+    def test_correlation_to_covariance(self):
+        _array = np.random.random(21)
+        error = np.random.random(7)
+        cov = correlation_to_covariance(_array, error, 1.0)
+        npt.assert_allclose(cov, cov.T, rtol=1e-8)  # Check that the matrix is symmetric
+
+    def test_get_matrix_size(self):
+        self.assertEqual(get_matrix_size_from_lower_triangle(np.ones(6)), 4)
+        self.assertEqual(get_matrix_size_from_lower_triangle(np.ones(10)), 5)
+        self.assertEqual(get_matrix_size_from_lower_triangle(np.ones(15)), 6)
+        self.assertEqual(get_matrix_size_from_lower_triangle(np.ones(21)), 7)
 
 
 class TestArrayToSymmetricMatrix(unittest.TestCase):
 
     def test_array_to_symmetric_matrix_type(self):
-        self.assertIsInstance(
-            array_to_symmetric_matrix(
-                array, size), np.ndarray)
+        self.assertIsInstance(array_to_symmetric_matrix(array, size), np.ndarray)
 
     def test_array_to_symmetric_matrix_values(self):
-        array = np.array([4, 5, 6])
-        expected_symmetric = np.array(
-            [[1., 4., 5.], [4., 1., 6.], [5., 6., 1.]])
-        self.assertTrue(
-            (array_to_symmetric_matrix(
-                array, size) == expected_symmetric).all())
+        _array = np.array([4, 5, 6])
+        expected_symmetric = np.array([[1., 4., 5.], [4., 1., 6.], [5., 6., 1.]])
+        self.assertTrue((array_to_symmetric_matrix(_array, size) == expected_symmetric).all())
 
     def test_array_to_symmetric_matrix_mismatching(self):
         with self.assertRaises(ValueError):

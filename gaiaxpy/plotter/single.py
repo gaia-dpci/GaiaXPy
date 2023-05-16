@@ -19,7 +19,7 @@ class SinglePlotter(Plotter):
         ax.plot(x, y, lw=2, alpha=0.95, label=source_id)
         ax.fill_between(x, y - e, y + e, alpha=0.2)
         ax.set_title('{}'.format(source_id))
-        ax.set_xlabel(spectra_class._get_position_label())
+        ax.set_xlabel(spectra_class.get_position_label())
         ax.set_ylabel(spectra_class._get_flux_label())
         plt.tight_layout()
 

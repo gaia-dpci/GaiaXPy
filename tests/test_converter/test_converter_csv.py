@@ -82,12 +82,9 @@ class TestCreateSpectrum(unittest.TestCase):
 
     def test_create_spectrum(self):
         truncation = True
-        for index, row in islice(
-                parsed_input.iterrows(), 1):  # Just the first row
-            spectrum_bp = _create_spectrum(
-                row, truncation, design_matrices, BANDS.bp)
-            spectrum_rp = _create_spectrum(
-                row, truncation, design_matrices, BANDS.rp)
+        for index, row in islice(parsed_input.iterrows(), 1):  # Just the first row
+            spectrum_bp = _create_spectrum(row, truncation, design_matrices, BANDS.bp)
+            spectrum_rp = _create_spectrum(row, truncation, design_matrices, BANDS.rp)
         self.assertIsInstance(spectrum_bp, XpSampledSpectrum)
         self.assertIsInstance(spectrum_rp, XpSampledSpectrum)
         self.assertEqual(spectrum_bp.get_source_id(), spectrum_rp.get_source_id())
@@ -156,5 +153,5 @@ class TestConverterMissingBand(unittest.TestCase):
         self.assertEqual(converted_spectra['source_id'], solution_values['source_id'])
         self.assertEqual(converted_spectra['xp'], solution_values['xp'])
         npt.assert_array_almost_equal(converted_spectra['flux'], np.array(literal_eval(solution_values['flux'])))
-        npt.assert_array_almost_equal(converted_spectra['flux_error'],
-                                      np.array(literal_eval(solution_values['flux_error'])))
+        npt.assert_array_almost_equal(converted_spectra['flux_error'], np.array(literal_eval(
+            solution_values['flux_error'])))

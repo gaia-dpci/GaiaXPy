@@ -4,7 +4,7 @@ from gaiaxpy.core.server import data_release, gaia_server
 from .archive_reader import ArchiveReader
 from .dataframe_reader import DataFrameReader
 
-not_supported_functions = ['apply_colour_equation']
+not_supported_functions = ['apply_colour_equation', 'simulate_continuous', 'simulate_sampled']
 
 
 class QueryReader(ArchiveReader):
@@ -17,7 +17,7 @@ class QueryReader(ArchiveReader):
         query = self.content
         function_name = self.function.__name__
         if function_name in not_supported_functions:
-            raise ValueError(f'Function {function_name} does not support receiving a query as input.')
+            raise ValueError(f'Function {function_name} does not accept ADQL queries.')
         # Connect to geapre
         gaia = GaiaClass(gaia_tap_server=gaia_server, gaia_data_server=gaia_server)
         self._login(gaia)

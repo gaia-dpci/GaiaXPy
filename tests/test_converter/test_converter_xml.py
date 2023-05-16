@@ -81,12 +81,9 @@ class TestCreateSpectrum(unittest.TestCase):
 
     def test_create_spectrum(self):
         truncation = True
-        for index, row in islice(
-                parsed_input.iterrows(), 1):  # Just the first row
-            spectrum_bp = _create_spectrum(
-                row, truncation, design_matrices, BANDS.bp)
-            spectrum_rp = _create_spectrum(
-                row, truncation, design_matrices, BANDS.rp)
+        for index, row in islice(parsed_input.iterrows(), 1):  # Just the first row
+            spectrum_bp = _create_spectrum(row, truncation, design_matrices, BANDS.bp)
+            spectrum_rp = _create_spectrum(row, truncation, design_matrices, BANDS.rp)
         self.assertIsInstance(spectrum_bp, XpSampledSpectrum)
         self.assertIsInstance(spectrum_rp, XpSampledSpectrum)
         self.assertEqual(spectrum_bp.get_source_id(), spectrum_rp.get_source_id())
@@ -146,7 +143,7 @@ class TestConverterSamplingRange(unittest.TestCase):
 class TestConverterMissingBand(unittest.TestCase):
 
     def test_missing_band(self):
-        missing_band_fits = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_votable_dr3int6.xml')
+        missing_band_fits = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.xml')
         converted_spectra, sampling = convert(missing_band_fits, save_file=False)
         npt.assert_array_equal(sampling, np.linspace(0, 60, 600))
         converted_spectra = converted_spectra.iloc[0]

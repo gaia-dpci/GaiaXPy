@@ -8,7 +8,7 @@ import numpy as np
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
 from gaiaxpy.core.satellite import BANDS
-from .utils import _list_to_array, _get_covariance_matrix
+from .utils import _list_to_array, get_covariance_matrix
 from .xp_spectrum import XpSpectrum
 
 
@@ -50,8 +50,12 @@ class XpContinuousSpectrum(XpSpectrum):
         """
         corr = array_to_symmetric_matrix(df[f'{band}_coefficient_correlations'], df[f'{band}_n_parameters'])
         df[f'{band}_coefficient_correlations'] = corr
-        cov = _get_covariance_matrix(df, band)
+        cov = get_covariance_matrix(df, band)
         return cls(df['source_id'], band, df[f'{band}_coefficients'], cov, df[f'{band}_standard_deviation'])
+
+    @classmethod
+    def get_units(cls):
+        return dict()
 
     def get_coefficients(self):
         """
@@ -80,7 +84,7 @@ class XpContinuousSpectrum(XpSpectrum):
         """
         return self.standard_deviation
 
-    def _spectrum_to_dict(self):
+    def spectrum_to_dict(self):
         """
         Represent spectrum as dictionary.
 
@@ -90,16 +94,16 @@ class XpContinuousSpectrum(XpSpectrum):
                 is NOT included as it is expected to be the same for a batch of spectra. The array fo positions can be
                 retrieved calling the sampling_to_dict method.
         """
-        D = np.sqrt(np.diag(self.covariance))
-        D_inv = np.diag(1.0 / D)
-        correlation_matrix = np.matmul(np.matmul(D_inv, self.covariance), D_inv)
+        diagonal = np.sqrt(np.diag(self.covariance))
+        diagonal_inv = np.diag(1.0 / diagonal)
+        correlation_matrix = np.matmul(np.matmul(diagonal_inv, self.covariance), diagonal_inv)
         return {
             'source_id': self.source_id,
             'xp': self.xp.upper(),
             'standard_deviation': self.standard_deviation,
             'coefficients': _list_to_array(self.coefficients),
             'coefficient_correlations': _list_to_array(_extract_lower_triangle(correlation_matrix)),
-            'coefficient_errors': _list_to_array(D),
+            'coefficient_errors': _list_to_array(diagonal),
             'n_parameters': len(self.coefficients),
             'basis_function_id': self.basis_function_id[self.xp]
         }
@@ -111,4 +115,4 @@ def _extract_lower_triangle(matrix):
     """
     # Get the indices
     indices = np.tril_indices(matrix.shape[0], k=-1)
-    return [matrix[i][j] for i, j in zip(indices[0], indices[1])]
+    return np.array([matrix[i][j] for i, j in zip(indices[0], indices[1])])

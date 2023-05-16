@@ -24,18 +24,18 @@ class TestGetMethods(unittest.TestCase):
         # Calibrator requires use of internal calibrate function
         query_input = "SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5762406957886626816'," \
                       "'5853498713190525696')"
-        parsed_data_file, _ = InputReader(file_path, calibrate)._read()
-        parsed_data_query, _ = InputReader(query_input, calibrate)._read()
+        parsed_data_file, _ = InputReader(file_path, calibrate).read()
+        parsed_data_query, _ = InputReader(query_input, calibrate).read()
         # Windows version returns different dtypes
         parsed_data_query = parsed_data_query.astype({'source_id': 'int64', 'solution_id': 'int64'})
         pdt.assert_frame_equal(parsed_data_file.sort_values('source_id', ignore_index=True), parsed_data_query,
                                rtol=_rtol, atol=_atol, check_dtype=False)
 
     def test_dfs(self):
-        parsed_df_str, _ = InputReader(dataframe_str, convert)._read()
-        parsed_df_np, _ = InputReader(dataframe_np, convert)._read()
+        parsed_df_str, _ = InputReader(dataframe_str, convert).read()
+        parsed_df_np, _ = InputReader(dataframe_np, convert).read()
         pdt.assert_frame_equal(parsed_df_str, parsed_df_np, rtol=_rtol, atol=_atol)
 
     def test_empty_list(self):
         with self.assertRaises(ValueError):
-            input_reader, _ = InputReader([], convert)._read()
+            input_reader, _ = InputReader([], convert).read()

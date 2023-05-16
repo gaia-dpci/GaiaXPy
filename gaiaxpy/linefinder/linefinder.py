@@ -23,7 +23,7 @@ from gaiaxpy.core.generic_functions import cast_output
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.linefinder.herm import HermiteDerivative
-from gaiaxpy.linefinder.lines import Lines
+from gaiaxpy.linefinder.lines import Extrema, Lines
 from gaiaxpy.linefinder.plotter import plot_spectra_with_lines
 from gaiaxpy.output.line_data import LineData
 
@@ -386,7 +386,7 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
         
     Returns:
-        (DataFrame): dataframe with arrays of found extrema and their properties for each source
+        (DataFrame): dataframe with values of found extrema.
     """
     _check_truncation(truncation)
     _check_plot_arguments(plot_spectra, save_plots)
@@ -505,5 +505,6 @@ def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, o
     output_df = pd.DataFrame(output_rows, columns=['source_id', 'xp', 'extrema'])
     output_data = LineData(output_df)
     output_data.data = cast_output(output_data)
+    output_data.data.attrs['data_type'] = Extrema()
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_data.data

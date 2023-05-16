@@ -49,6 +49,7 @@ def _build_line_header(columns):
         header.append(f'#   description: {header_dict[column]["description"]}')
     return '\n'.join(header) + '\n'
 
+
 def _build_photometry_header(columns):
     header_dict = _load_header_dict()
     header = _initialise_header()
@@ -77,7 +78,6 @@ def _add_header(header, output_path, output_file):
         s = f.read()
         f.seek(0)
         f.write(header + s)
-
 
 
 class OutputData(object):

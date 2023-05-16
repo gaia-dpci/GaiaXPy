@@ -78,6 +78,17 @@ class Lines:
 
         return lines
 
-
     def get_units(cls):
         return {'wavelength_nm': 'nm', 'line_flux': 'W nm^-1 m^-2', 'depth': 'W nm^-1 m^-2', 'width': 'nm'}
+
+
+class Extrema:
+    """
+    Mock object for output units.
+    """
+
+    def __init__(self):
+        pass
+
+    def get_units(cls):
+        return {}

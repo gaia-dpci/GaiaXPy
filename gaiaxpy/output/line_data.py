@@ -68,12 +68,9 @@ class LineData(OutputData):
             output_file (str): Name chosen for the output file.
         """
         data = self.data
-        try:
-            extrema_bp_format = f"{len(data['extrema_bp'].iloc[0])}D"
-            extrema_rp_format = f"{len(data['extrema_rp'].iloc[0])}D"
-            column_formats = {'source_id': 'K', 'extrema_bp': extrema_bp_format,
-                              'extrema_rp': extrema_rp_format}
-        except KeyError:
+        if 'extrema' in data.columns:
+            column_formats = {'source_id': 'K', 'xp': '2A', 'extrema': 'D'}
+        else:
             column_formats = {'source_id': 'K', 'line_name': '7A', 'wavelength_nm': 'D',  'line_flux': 'D',
                               'depth': 'D', 'width': 'D', 'significance': 'D', 'sig_pwl': 'D'}
         # create a list of HDUs
@@ -86,8 +83,10 @@ class LineData(OutputData):
         # Remove index from output dict
         output_by_column_dict.pop('index', None)
         spectra_keys = output_by_column_dict.keys()
-        columns = [fits.Column(name=key, array=np.array(output_by_column_dict[key]), format=column_formats[key])
-                   for key in spectra_keys]  # TODO: Add units
+        data_type = data.attrs['data_type']
+        units_dict = data_type.get_units()
+        columns = [fits.Column(name=key, array=np.array(output_by_column_dict[key]), format=column_formats[key],
+                               unit=units_dict.get(key, '')) for key in spectra_keys]
         header = _generate_fits_header(data, column_formats)
         hdu = fits.BinTableHDU.from_columns(columns, header=header)
         hdu_list.append(hdu)

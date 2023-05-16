@@ -92,9 +92,8 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
     output_data = SampledSpectraData(spectra_df, positions)
     output_data.data = cast_output(output_data)
     # Save output
-    Path(output_path).mkdir(parents=True, exist_ok=True)
     output_data.save(save_file, output_path, output_file, output_format, extension)
-    return spectra_df, positions
+    return output_data.data, positions
 
 
 def __create_merge(xp: str, sampling: np.ndarray) -> np.ndarray:

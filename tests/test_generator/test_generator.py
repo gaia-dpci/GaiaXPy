@@ -47,7 +47,7 @@ class TestGenerator(unittest.TestCase):
         solution_df = pd.read_csv(join(solution_path, 'generator_missing_band_solution.csv'),
                                   float_precision='round_trip')
         error_columns = [column for column in solution_df.columns if 'error' in column]
-        other_columns = [column for column in solution_df.columns if not 'error' in column]
+        other_columns = [column for column in solution_df.columns if 'error' not in column]
         pdt.assert_frame_equal(generated_photometry[error_columns], solution_df[error_columns], rtol=_ertol,
                                atol=_eatol)
         pdt.assert_frame_equal(generated_photometry[other_columns], solution_df[other_columns], rtol=_rtol, atol=_atol)

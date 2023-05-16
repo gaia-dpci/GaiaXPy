@@ -1,5 +1,5 @@
 """
-photometry_dataframe.py
+photometry_data.py
 ====================================
 Module to represent a photometry dataframe.
 """

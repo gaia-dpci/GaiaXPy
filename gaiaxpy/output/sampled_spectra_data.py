@@ -1,5 +1,5 @@
 """
-sampled_spectra_dataframe.py
+sampled_spectra_data.py
 ====================================
 Module to represent a dataframe of sampled spectra.
 """

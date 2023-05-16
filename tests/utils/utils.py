@@ -2,6 +2,7 @@ import json
 from numbers import Number
 import numpy as np
 import pandas as pd
+import pytest
 from gaiaxpy.core.generic_functions import str_to_array, array_to_symmetric_matrix
 
 
@@ -34,6 +35,8 @@ def array_to_symmetric_matrix_row_major(size, array):
     else:
         raise TypeError('Wrong argument types. Must be integer and np.ndarray.')
 
+_rtol, _atol = 1e-7, 1e-7
+
 
 def parse_matrices(string):
     return None if len(string) == 0 else np.array(json.loads(string))
@@ -64,6 +67,25 @@ def pos_file_to_array(pos_file):
     return df['pos'].iloc[0]
 
 
+# Define the converter function
+def str_to_array_rec(input_str, dtypes):
+    lst = eval(input_str)
+    lst = [tuple(element) for element in lst]
+    output = [np.array(line, dtype=dtypes) for line in lst]
+    return np.array(output)
+
+
+def get_converters(columns, dtypes=None):
+    if isinstance(columns, str):
+        return {columns: lambda x: str_to_array_rec(x, dtypes)}
+    elif isinstance(columns, list):
+        if len(columns) == 1:
+            return {columns[0]: lambda x: str_to_array_rec(x, dtypes)}
+        elif len(columns) > 1:  # Extrema BP and RP case
+            return {column: lambda x: str_to_array(x) for column in columns}
+    raise ValueError("Input doesn't correspond to any of the expected types.")
+
+    
 def df_columns_to_array(df, columns):
     for index, row in df.iterrows():
         for column in columns:

@@ -2,7 +2,6 @@ aenum
 astropy
 astroquery
 fastavro
-h5py
 matplotlib
 numpy
 packaging

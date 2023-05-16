@@ -242,4 +242,4 @@ def apply_colour_equation(input_synthetic_photometry: pd.DataFrame,
     output_data = PhotometryData(output_df)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
-    return output_df
+    return output_data.data

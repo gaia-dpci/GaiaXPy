@@ -40,5 +40,13 @@
                           'meta': 'meta.id'},
  'rp_basis_function_id': {'datatype': 'int', 'description':
                           'Identifier defining the set of basis functions for the RP spectrum representation',
-                          'meta': 'meta.id'}
+                          'meta': 'meta.id'},
+ 'line_name': {'datatype': 'string', 'description': 'Name of identified line'},
+ 'wavelength_nm': {'datatype': 'float64', 'description': 'Wavelength of identified line'},
+ 'line_flux': {'datatype': 'float64', 'description': 'Flux of identified line'},
+ 'depth': {'datatype': 'float64', 'description': 'Depth of identified line (difference between line flux and continuum)'},
+ 'width': {'datatype': 'float64', 'description': 'Width pf identified line (distance between the closest inflection points)'},
+ 'significance': {'datatype': 'float64', 'description': 'Ratio between line depth and error of flux at line (in externally calibrated spectrum)'},
+ 'sig_pwl': {'datatype': 'float64', 'description': 'Ratio between line depth and error of flux at line (in internally calibrated spectrum)'},
+ 'extrema': {'datatype': 'float64', 'description': 'Extrema value in the XP spectrum'}
 }

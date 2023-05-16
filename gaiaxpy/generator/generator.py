@@ -89,4 +89,4 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
     output_data = PhotometryData(photometry_df)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
-    return photometry_df
+    return output_data.data

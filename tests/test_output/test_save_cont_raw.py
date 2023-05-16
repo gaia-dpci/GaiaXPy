@@ -4,7 +4,7 @@ from os.path import join
 import numpy as np
 import pandas.testing as pdt
 
-from gaiaxpy import calibrate, convert, generate, PhotometricSystem
+from gaiaxpy import calibrate, convert, generate, PhotometricSystem, fastfinder, extremafinder, linefinder
 from gaiaxpy.file_parser.parse_generic import GenericParser
 from tests.files.paths import files_path, solution_path, output_path
 
@@ -13,9 +13,11 @@ _rtol, _atol = 1e-10, 1e-10
 mean_spectrum = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 
 
-def compare_frames(file1, file2, extension, function_name):
+def compare_frames(output_file, solution_file, extension, function_name):
     parser = GenericParser()
-    array_columns = ['flux', 'flux_error'] if function_name in ['calibrate', 'convert'] else None
+    function, array_columns = None, None
+    if function_name in ['calibrate', 'convert']:
+        array_columns = ['flux', 'flux_error']
     if extension in ['csv', 'ecsv']:
         function = parser._parse_csv
     elif extension == 'fits':
@@ -23,12 +25,12 @@ def compare_frames(file1, file2, extension, function_name):
     elif extension == 'xml':
         function = parser._parse_xml
     if array_columns:
-        df1 = function(file1, array_columns=array_columns)
-        df2 = function(file2, array_columns=array_columns)
+        output_df = function(output_file, array_columns=array_columns)
+        solution_df = function(solution_file, array_columns=array_columns)
     else:
-        df1 = function(file1)
-        df2 = function(file2)
-    pdt.assert_frame_equal(df1, df2, rtol=_rtol, atol=_atol)
+        output_df = function(output_file)
+        solution_df = function(solution_file)
+    pdt.assert_frame_equal(output_df, solution_df, rtol=_rtol, atol=_atol)
 
 
 def run_output_test(function, filename, output_format, sampling=None, phot_systems=None):
@@ -46,7 +48,7 @@ def run_output_test(function, filename, output_format, sampling=None, phot_syste
     current_file = f'{filename}.{output_format}'
     compare_frames(join(output_path, current_file), join(solution_path, current_file), extension=output_format,
                    function_name=function.__name__)
-    if output_format in ['csv', '.csv'] and phot_systems is None:
+    if output_format in ['csv', '.csv'] and phot_systems is None and 'finder' not in function.__name__:
         # A sampling file will be generated too (calibrate and convert), it needs to be tested
         current_sampling_file = f'{filename}_sampling.{output_format}'
         compare_frames(join(output_path, current_sampling_file), join(solution_path, current_sampling_file),
@@ -106,3 +108,48 @@ class TestSaveContRawGenerator(unittest.TestCase):
 
     def test_save_output_xml_pristine(self):
         run_output_test(generate, 'photometry_pristine', 'xml', phot_systems=[PhotometricSystem.Pristine])
+
+
+class TestSaveContRawFastFinder(unittest.TestCase):
+
+    def test_save_output_csv(self):
+        run_output_test(fastfinder, 'fastfinder', 'csv')
+
+    def test_save_output_ecsv(self):
+        run_output_test(fastfinder, 'fastfinder', 'ecsv')
+
+    def test_save_output_fits(self):
+        run_output_test(fastfinder, 'fastfinder', 'fits')
+
+    def test_save_output_xml(self):
+        run_output_test(fastfinder, 'fastfinder', 'xml')
+
+
+class TestSaveContRawExtremaFinder(unittest.TestCase):
+
+    def test_save_output_csv(self):
+        run_output_test(extremafinder, 'extremafinder', 'csv')
+
+    def test_save_output_ecsv(self):
+        run_output_test(extremafinder, 'extremafinder', 'ecsv')
+
+    def test_save_output_fits(self):
+        run_output_test(extremafinder, 'extremafinder', 'fits')
+
+    def test_save_output_xml(self):
+        run_output_test(extremafinder, 'extremafinder', 'xml')
+
+
+class TestSaveContRawLineFinder(unittest.TestCase):
+
+    def test_save_output_csv(self):
+        run_output_test(linefinder, 'linefinder', 'csv')
+
+    def test_save_output_ecsv(self):
+        run_output_test(linefinder, 'linefinder', 'ecsv')
+
+    def test_save_output_fits(self):
+        run_output_test(linefinder, 'linefinder', 'fits')
+
+    def test_save_output_xml(self):
+        run_output_test(linefinder, 'linefinder', 'xml')

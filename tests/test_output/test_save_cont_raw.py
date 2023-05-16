@@ -13,9 +13,11 @@ _rtol, _atol = 1e-10, 1e-10
 mean_spectrum = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 
 
-def compare_frames(file1, file2, extension, function_name):
+def compare_frames(output_file, solution_file, extension, function_name):
     parser = GenericParser()
-    array_columns = ['flux', 'flux_error'] if function_name in ['calibrate', 'convert'] else None
+    function, array_columns = None, None
+    if function_name in ['calibrate', 'convert']:
+        array_columns = ['flux', 'flux_error']
     if extension in ['csv', 'ecsv']:
         function = parser._parse_csv
     elif extension == 'fits':
@@ -23,12 +25,12 @@ def compare_frames(file1, file2, extension, function_name):
     elif extension == 'xml':
         function = parser._parse_xml
     if array_columns:
-        df1 = function(file1, array_columns=array_columns)
-        df2 = function(file2, array_columns=array_columns)
+        output_df = function(output_file, array_columns=array_columns)
+        solution_df = function(solution_file, array_columns=array_columns)
     else:
-        df1 = function(file1)
-        df2 = function(file2)
-    pdt.assert_frame_equal(df1, df2, rtol=_rtol, atol=_atol)
+        output_df = function(output_file)
+        solution_df = function(solution_file)
+    pdt.assert_frame_equal(output_df, solution_df, rtol=_rtol, atol=_atol)
 
 
 def run_output_test(function, filename, output_format, sampling=None, phot_systems=None):

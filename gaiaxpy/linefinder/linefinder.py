@@ -448,7 +448,7 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
                                                     'width', 'significance', 'sig_pwl'])
     output_data = LineData(output_df)
     output_data.data = cast_output(output_data)
-    output_data.data.attrs['data_type'] = Lines('xp')
+    output_data.data.attrs['data_type'] = Lines('xp', 'star')
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_data.data
 

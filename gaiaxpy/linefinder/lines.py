@@ -19,7 +19,7 @@ class Lines:
     Create a set of lines.
     """
 
-    def __init__(self, xp, src_type=None, user_lines=None):
+    def __init__(self, xp, src_type, user_lines=None):
         """
         Initialise line lists.
         
@@ -30,7 +30,7 @@ class Lines:
         """
 
         self.xp = xp
-        self.src_type = _validate_source_type(src_type) if src_type else src_type
+        self.src_type = _validate_source_type(src_type)
 
         if user_lines is None:  # Get lines from local library
             if self.src_type == 'star':

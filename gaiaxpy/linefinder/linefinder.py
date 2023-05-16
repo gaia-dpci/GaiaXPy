@@ -358,7 +358,7 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
                                                     'width', 'significance', 'sig_pwl'])
     output_data = LineData(output_df)
     output_data.data = cast_output(output_data)
-    output_data.data.attrs['data_type'] = Lines('xp', 'xp')
+    output_data.data.attrs['data_type'] = Lines('xp', source_type)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_data.data
 

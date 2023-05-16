@@ -12,6 +12,7 @@ from astropy.io.votable import from_table, writeto
 from astropy.table import Table
 
 from .output_data import OutputData, _add_header, _build_line_header
+from .utils import _generate_fits_header
 
 
 class LineData(OutputData):
@@ -66,16 +67,33 @@ class LineData(OutputData):
             output_path (str): Path where to save the file.
             output_file (str): Name chosen for the output file.
         """
-        line_df = self.data
-        table = Table.from_pandas(line_df)
-        hdu_list = []
+        data = self.data
+        try:
+            extrema_bp_format = f"{len(data['extrema_bp'].iloc[0])}D"
+            extrema_rp_format = f"{len(data['extrema_rp'].iloc[0])}D"
+            column_formats = {'source_id': 'K', 'extrema_bp': extrema_bp_format,
+                              'extrema_rp': extrema_rp_format}
+        except KeyError:
+            column_formats = {'source_id': 'K', 'line_name': '7A', 'wavelength_nm': 'D',  'line_flux': 'D',
+                              'depth': 'D', 'width': 'D', 'significance': 'D', 'sig_pwl': 'D'}
+        # create a list of HDUs
+        hdu_list = list()
         hdr = fits.Header()
         primary_hdu = fits.PrimaryHDU(header=hdr)
         hdu_list.append(primary_hdu)
-        hdu = fits.table_to_hdu(table)
+        # Create a dictionary to hold all the data
+        output_by_column_dict = data.reset_index().to_dict(orient='list')
+        # Remove index from output dict
+        output_by_column_dict.pop('index', None)
+        spectra_keys = output_by_column_dict.keys()
+        columns = [fits.Column(name=key, array=np.array(output_by_column_dict[key]), format=column_formats[key])
+                   for key in spectra_keys]  # TODO: Add units
+        header = _generate_fits_header(data, column_formats)
+        hdu = fits.BinTableHDU.from_columns(columns, header=header)
         hdu_list.append(hdu)
         # Put all HDUs together
         hdul = fits.HDUList(hdu_list)
+        # Write the file and replace it if it already exists
         Path(output_path).mkdir(parents=True, exist_ok=True)
         output_path = join(output_path, f'{output_file}.fits')
         hdul.writeto(output_path, overwrite=True)

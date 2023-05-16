@@ -7,18 +7,16 @@ Module to hold methods useful for different kinds of spectra.
 import numpy as np
 
 
-def _get_covariance_matrix(row, band):
+def get_covariance_matrix(row, band):
     try:
         return _correlation_to_covariance_dr3int5(row[f'{band}_coefficient_correlations'],
                                                   row[f'{band}_coefficient_errors'],
                                                   row[f'{band}_standard_deviation'])
-    except BaseException as err:
+    except (KeyError, ValueError):
         try:
-            # It is AVRO
-            return row[f'{band}_coefficient_covariances']
-        except BaseException:
-            # Row may not be present
-            return None
+            return row[f'{band}_coefficient_covariances']  # It is AVRO
+        except KeyError:
+            return None  # Row may not be present
 
 
 def _correlation_to_covariance_dr3int5(correlation_matrix, formal_errors, standard_deviation):
@@ -26,7 +24,7 @@ def _correlation_to_covariance_dr3int5(correlation_matrix, formal_errors, standa
     Compute the covariance matrix from the correlation matrix and the parameter formal errors.
 
     Args:
-        correlation_matrix (ndarray): Correlation matrix.
+        correlation_matrix (ndarray): Correlation matrix, 2D array.
         formal_errors (ndarray): Formal errors of the parameters.
         standard_deviation (float): Standard deviation of the LSQ solution.
 
@@ -78,4 +76,11 @@ def _list_to_array(lst):
     """
     List to NumPy array.
     """
-    return np.array(lst)
+    if isinstance(lst, np.ndarray):
+        return lst
+    elif isinstance(lst, list):
+        if not lst:
+            raise ValueError('List cannot be empty.')
+        else:
+            return np.array(lst)
+    raise ValueError('Wrong input type.')

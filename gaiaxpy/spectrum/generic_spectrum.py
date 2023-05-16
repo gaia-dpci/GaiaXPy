@@ -15,8 +15,7 @@ class Spectrum(object):
         Initialise a spectrum.
 
         Args:
-            source_id (str): Source identifier. Can be a Gaia source ID (long) or any
-                other source identifier.
+            source_id (str): Source identifier. Can be a Gaia source ID (long) or any other source identifier.
         """
         self.source_id = source_id
 

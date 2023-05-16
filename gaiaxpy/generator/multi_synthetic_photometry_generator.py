@@ -16,13 +16,13 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
         self.bp_model = bp_model
         self.rp_model = rp_model
 
-    def _generate(self, parsed_input_data, extension, output_file, output_format, save_file):
+    def generate(self, parsed_input_data, extension, output_file, output_format, save_file):
         # Recover attributes
         systems = self.photometric_system
         internal_systems = [system.value for system in systems]
         # Generate XP variables
-        xp_sampling_list = [system._load_xpsampling_from_xml() for system in internal_systems]
-        xp_sampling_grid_xp_merge_tuples_list = [system._load_xpmerge_from_xml() for system in internal_systems]
+        xp_sampling_list = [system.load_xpsampling_from_xml() for system in internal_systems]
+        xp_sampling_grid_xp_merge_tuples_list = [system.load_xpmerge_from_xml() for system in internal_systems]
         xp_sampling_grid_list = [element[0] for element in xp_sampling_grid_xp_merge_tuples_list]
         xp_merge_list = [element[1] for element in xp_sampling_grid_xp_merge_tuples_list]
         # Get basis functions list

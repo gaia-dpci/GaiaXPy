@@ -7,7 +7,7 @@ from pandas import testing as pdt
 
 from gaiaxpy import calibrate
 from gaiaxpy.calibrator.calibrator import _create_spectrum
-from gaiaxpy.core.config import _load_xpmerge_from_xml, _load_xpsampling_from_xml
+from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
@@ -21,8 +21,8 @@ parser = InternalContinuousParser()
 # Load variables
 label = 'calibrator'
 bp_model = 'v211w'  # Alternative bp model
-xp_sampling_grid, xp_merge = _load_xpmerge_from_xml(bp_model=bp_model)
-xp_design_matrices = _load_xpsampling_from_xml(bp_model=bp_model)
+xp_sampling_grid, xp_merge = load_xpmerge_from_xml(bp_model=bp_model)
+xp_design_matrices = load_xpsampling_from_xml(bp_model=bp_model)
 
 # Path to solution files
 calibrator_sol_path = join(files_path, 'calibrator_solution')
@@ -58,10 +58,8 @@ class TestCalibratorTruncation(unittest.TestCase):
         # Read mean Spectrum
         parsed_spectrum_file, extension = parser.parse(mean_spectrum_csv)
         # Create sampled basis functions
-        sampled_basis_func = {}
-        for band in BANDS:
-            sampled_basis_func[band] = SampledBasisFunctions.from_design_matrix(xp_sampling_grid,
-                                                                                xp_design_matrices[band])
+        sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[band])
+                              for band in BANDS}
         first_row = parsed_spectrum_file.iloc[0]
         spectrum = _create_spectrum(first_row, truncation=True, design_matrix=sampled_basis_func, merge=xp_merge)
         self.assertIsInstance(spectrum, AbsoluteSampledSpectrum)

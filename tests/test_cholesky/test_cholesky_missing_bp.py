@@ -1,13 +1,15 @@
+import unittest
+from os.path import join
+
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
-import unittest
+
 from gaiaxpy import get_chi2, get_inverse_covariance_matrix
 from gaiaxpy.cholesky.cholesky import get_inverse_square_root_covariance_matrix
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
-from os.path import join
 from tests.files.paths import files_path
 from tests.utils.utils import parse_matrices
 

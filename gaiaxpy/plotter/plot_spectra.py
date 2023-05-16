@@ -23,7 +23,7 @@ def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_pat
             True, errors will not be plotted.
         show_plot (bool): Show plots if True.
         output_path (str): Path to the directory where the figures will be saved. E.g.: '/home/user/folder'
-        output_file (str): Name of the file to be saved.
+        output_file (str): Name of the output file without extension (e.g. 'my_plot').
         format (str): File format for the saved figure. Default value: png.
         legend (bool): Print legend. Valid only if multi is True.
     """

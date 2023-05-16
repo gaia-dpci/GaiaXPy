@@ -106,7 +106,8 @@ def load_additional_systems(_systems_path=None):
     """
     updated_enum = __load_additional_systems(_systems_path, _CFG_FILE_PATH)
     updated_enum.get_available_systems = get_available_systems
-    print("Systems loaded. Use PhotometricSystem.get_available_systems() to get the names of the current available systems.")
+    print('Systems loaded. Use PhotometricSystem.get_available_systems() to get the names of the current available'
+          ' systems.')
     return updated_enum
 
 

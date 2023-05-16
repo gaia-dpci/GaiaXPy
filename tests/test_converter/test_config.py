@@ -11,13 +11,7 @@ configparser = ConfigParser()
 configparser.read(path.join(config_path, 'config.ini'))
 config_file = path.join(config_path, configparser.get('converter', 'optimised_bases'))
 
-columns = [
-    'uniqueId',
-    'dimension',
-    'range',
-    'normalizedRange',
-    'transformedSetDimension',
-    'transformationMatrix']
+columns = ['uniqueId', 'dimension', 'range', 'normalizedRange', 'transformedSetDimension', 'transformationMatrix']
 
 parsed_config = config.parse_configuration_file(config_file, columns)
 loaded_config = config.load_config(config_file)  # id 7 not in the config file
@@ -47,9 +41,7 @@ class TestLoadConfig(unittest.TestCase):
         self.assertEqual(loaded_config.shape, parsed_config.shape)
 
     def test_load_config_columns(self):
-        self.assertEqual(
-            loaded_config.columns.all(),
-            parsed_config.columns.all())
+        self.assertEqual(loaded_config.columns.all(), parsed_config.columns.all())
 
 
 class TestGetConfig(unittest.TestCase):

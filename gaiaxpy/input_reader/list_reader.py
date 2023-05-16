@@ -4,7 +4,7 @@ from gaiaxpy.core.server import data_release, gaia_server
 from .archive_reader import ArchiveReader
 from .dataframe_reader import DataFrameReader
 
-not_supported_functions = ['apply_colour_equation', 'apply_error_correction']
+not_supported_functions = ['apply_colour_equation', 'apply_error_correction', 'simulate_continuous', 'simulate_sampled']
 
 
 def extremes_are_enclosing(first_row, column):

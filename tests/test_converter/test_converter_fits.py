@@ -49,7 +49,7 @@ sampling = np.linspace(0, 60, 481)
 unique_bases_ids = get_unique_basis_ids(parsed_input)
 design_matrices = get_design_matrices(unique_bases_ids, sampling, config_df)
 
-converted_df, positions = convert(input_file, sampling=sampling, save_file=False)
+converted_df, _ = convert(input_file, sampling=sampling, save_file=False)
 
 # Files to compare the sampled spectrum with value by value without/with truncation applied
 input_file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
@@ -84,12 +84,9 @@ class TestCreateSpectrum(unittest.TestCase):
 
     def test_create_spectrum(self):
         truncation = True
-        for index, row in islice(
-                parsed_input.iterrows(), 1):  # Just the first row
-            spectrum_bp = _create_spectrum(
-                row, truncation, design_matrices, BANDS.bp)
-            spectrum_rp = _create_spectrum(
-                row, truncation, design_matrices, BANDS.rp)
+        for index, row in islice(parsed_input.iterrows(), 1):  # Just the first row
+            spectrum_bp = _create_spectrum(row, truncation, design_matrices, BANDS.bp)
+            spectrum_rp = _create_spectrum(row, truncation, design_matrices, BANDS.rp)
         self.assertIsInstance(spectrum_bp, XpSampledSpectrum)
         self.assertIsInstance(spectrum_rp, XpSampledSpectrum)
         self.assertEqual(spectrum_bp.get_source_id(), spectrum_rp.get_source_id())
@@ -126,8 +123,8 @@ class TestTruncation(unittest.TestCase):
 class TestConverterSamplingRange(unittest.TestCase):
 
     def test_sampling_equal(self):
-        _, positions = convert(input_file, sampling=sampling, truncation=True, save_file=False)
-        npt.assert_array_equal(sampling, positions)
+        _, _positions = convert(input_file, sampling=sampling, truncation=True, save_file=False)
+        npt.assert_array_equal(sampling, _positions)
 
     def test_sampling_low(self):
         with self.assertRaises(ValueError):

@@ -1,10 +1,39 @@
 import json
-
+from numbers import Number
 import numpy as np
 import pandas as pd
 import pytest
+from gaiaxpy.core.generic_functions import str_to_array, array_to_symmetric_matrix
 
-from gaiaxpy.core.generic_functions import str_to_array
+
+def array_to_symmetric_matrix_row_major(size, array):
+    """
+    Convert the input 1D array into a 2D matrix. Contrary to what is normally done for BP/RP spectra covariance and
+    correlation matrices, this method works on the assumption that the upper triangular matrix has been written in row
+    major order.
+    A full 2D matrix is returned symmetric with respect to the diagonal.
+
+    Args:
+        size (int): number of rows/columns in the output matrix.
+        array (ndarray): 1D array.
+
+    Returns:
+        ndarray: a full 2D matrix.
+
+    Raises:
+        TypeError: If array is not of type np.ndarray.
+    """
+    # Enforce array type, second check verifies that array is 1D.
+    if isinstance(array, np.ndarray) and isinstance(array[0], Number) and isinstance(size, (int, np.int64)):
+        matrix = np.zeros((size, size))
+        matrix[np.triu_indices(size)] = array
+        transpose = matrix.transpose()
+        transpose[np.triu_indices(size)] = matrix[np.triu_indices(size)]
+        return transpose
+    elif isinstance(array[0], np.ndarray):
+        return array  # Input array is already a matrix, we assume that it contains the required values.
+    else:
+        raise TypeError('Wrong argument types. Must be integer and np.ndarray.')
 
 _rtol, _atol = 1e-7, 1e-7
 
@@ -77,3 +106,18 @@ def get_converters(columns, dtypes=None):
         elif len(columns) > 1:  # Extrema BP and RP case
             return {column: lambda x: str_to_array(x) for column in columns}
     raise ValueError("Input doesn't correspond to any of the expected types.")
+
+    
+def df_columns_to_array(df, columns):
+    for index, row in df.iterrows():
+        for column in columns:
+            df[column][index] = str_to_array(row[column])
+    return df
+
+
+def reconstruct_covariance(array):
+    def get_matrix_size(d):
+        num_elements = len(d)
+        return int((-1 + np.sqrt(1 + 8 * num_elements)) / 2)
+    size = get_matrix_size(array)
+    return array_to_symmetric_matrix(array, size)

@@ -31,6 +31,7 @@ The GaiaXPy library will grow in time. For Gaia DR3 the following functionalitie
 - **Calibration** of internally-calibrated continuously-represented mean spectra to the absolute system. An absolute spectrum sampled on a user-defined or default wavelength grid is created for each set of BP and RP input spectra, that will be combined into one single absolute spectrum covering the entire wavelength range covered by BP and RP. If either band is missing, the output spectrum will only cover the range covered by the available data.
 - **Conversion** of mean spectra from a continuous representation to a sampled spectrum, optionally on a user-defined grid of positions. The output spectrum will be in the internal system (if an absolute spectrum is required, please use the Calibration functionality).
 - **Generation** of synthetic photometry in bands that are covered by the BP/RP wavelength range. Several sets of filters are included in the package.
+- **Detection** of lines and extrema in mean spectra.
 
 A further functionality is being developed and will be released soon:
 

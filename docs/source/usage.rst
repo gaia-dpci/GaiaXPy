@@ -1,7 +1,7 @@
 Usage
 =====
 
-The package currently includes four different functionalities: a **calibrator**, a **converter**, a **synthetic photometry generator** and a **plotter**. A further functionality, a **simulator**, is under development and will be released soon.
+The package currently includes five different functionalities: a **calibrator**, a **converter**, a **synthetic photometry generator**, a **line finder** and a **plotter**. A further functionality, a **simulator**, is under development and will be released soon.
 
 .. role:: python(code)
    :language: python
@@ -123,7 +123,7 @@ If the function accepts a sampling, it has to correspond to a NumPy array and be
 Note on TOPCAT
 --------------
 
-`TOPCAT <http://www.star.bris.ac.uk/~mbt/topcat/>`_ can read the FITS and XML output files of the calibrator and converter. It is possible to plot their contents using TOPCAT.
+`TOPCAT <http://www.star.bris.ac.uk/~mbt/topcat/>`_ can read the FITS and XML output files of the calibrator, converter, generator and line finder. It is possible to plot their contents using TOPCAT.
 
 The functionality that allows to generate these plots is the `XYArray Layer Control <http://www.star.bristol.ac.uk/~mbt/topcat/sun253/GangLayerControl_xyarray.html>`_.
 
@@ -141,9 +141,9 @@ The function :python:`calibrate` returns a DataFrame of calibrated spectra and a
    from gaiaxpy import calibrate
 
    mean_spectrum_file = 'path/to/mean_spectrum_with_correlation.csv'
-   calibrated_df, sampling = calibrate(mean_spectrum_file, sampling=numpy.linspace(0, 60, 600), save_file=False)
+   calibrated_df, sampling = calibrate(mean_spectrum_file, sampling=np.arange(336, 1021, 2), save_file=False)
 
-The default sampling is :python:`numpy.linspace(0, 60, 600)`; however, in order to improve the resolution at the blue end, the log-scale sampling :python:`numpy.geomspace(330, 1049.9999999999, 361)` is proposed as an alternative.
+The default sampling is :python:`np.arange(336, 1021, 2)`; however, in order to improve the resolution at the blue end, the log-scale sampling :python:`numpy.geomspace(330, 1049.9999999999, 361)` is proposed as an alternative.
 
 All the available options can be found in :ref:`calibrate <calibrate>`.
 
@@ -232,6 +232,29 @@ These files will contain additional photometric systems from which synthetic pho
 A tutorial on how to use this functionality will be available in the main GaiaXPy webpage.
 
 The relevant links will be available here.
+
+-------
+Line Finder
+-------
+
+The line finder provides three different functions: :python:`extremafinder`, :python:`fastfinder`, and :python:`linefinder`.
+
+- **Extrema finder**: This tool looks for all extrema in the internally calibrated mean spectra, and converts internally calibrated mean spectra from the continuous representation to an externally calibrated sampled form. The converted spectrum is used to provide basic properties of detected extrema. All found extrema and their properties are returned as a pandas DataFrame. For each detected line following properties are provided: line_name, wavelength [nm], flux [W/nm/m^2], depth [W/nm/m^2], width [nm], significance [for externally calibrated spectrum], significance [for internally calibrated spectrum].
+
+- **Fast finder**: This tool provides the list of extrema in the internally calibrated mean spectra. No evaluation of spectra in both sampled and continuous forms is performed. The fastfinder returns all found extrema as a pandas DataFrame. The DataFrame contains a list of pseudowavelengths for extrema in BP and RP for each source, respectively.
+
+- **Line finder**: This tool gets the input internally calibrated mean spectra from the continuous representation to a sampled form, and it looks for emission and absorption lines. The lines can be defined by user or chosen from internal library, the source redshift and type can be specified. All found lines and their properties are returned as a pandas DataFrame. For each detected line following properties are provided: line name, wavelength [nm], flux [W/nm/m^2], depth [W/nm/m^2], width [nm], significance [externally calibrated], significance [internally calibrated].
+
+The line finder functions come with an integrated plotting functionality which can be invoked via the parameters :python:`plot_spectra` and :python:`save_plots`. If :python:`plot_spectra` is set to :python:`True`, the function will show a plot with the found lines for each :python:`source_id` in the data, and if :python:`save_plots` is set to :python:`True`, the plots will be saved.
+
+.. code-block:: python
+
+    from gaiaxpy import extremafinder, fastfinder, linefinder
+
+    mean_spectrum_file = 'path/to/xp_continuous.csv'
+    extrema = extremafinder(mean_spectrum_file, save_file=False)
+    extrema_pwl = fastfinder(mean_spectrum_file, save_file=False)
+    lines = linefinder(mean_spectrum_file, save_file=False)
 
 -------
 Plotter

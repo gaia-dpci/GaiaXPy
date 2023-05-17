@@ -20,3 +20,4 @@ Line finder
    :members:
    :undoc-members:
    :show-inheritance:
+

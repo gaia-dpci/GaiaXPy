@@ -39,8 +39,9 @@ class LineData(OutputData):
             output_file (str): Name chosen for the output file.
         """
         line_df = self.data
-        array_columns = [column for column in line_df.columns if isinstance(line_df[column].iloc[0], np.ndarray)]
-        line_df[array_columns] = line_df[array_columns].apply(lambda col: col.apply(tuple)).astype('str')
+        if len(line_df) > 0:
+            array_columns = [column for column in line_df.columns if isinstance(line_df[column].iloc[0], np.ndarray)]
+            line_df[array_columns] = line_df[array_columns].apply(lambda col: col.apply(tuple)).astype('str')
         Path(output_path).mkdir(parents=True, exist_ok=True)
         output_path = join(output_path, f'{output_file}.csv')
         line_df.to_csv(output_path, index=False)

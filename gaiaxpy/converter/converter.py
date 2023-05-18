@@ -63,6 +63,29 @@ def convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lins
     Raises:
         ValueError: If the sampling is out of the expected boundaries.
     """
+    return _convert(input_object=input_object, sampling=sampling, truncation=truncation, with_correlation=with_correlation,
+                    output_path=output_path, output_file=output_file, output_format=output_format, save_file=save_file,
+                    username=username, password=password)
+
+
+def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.linspace(0, 60, 600),
+            truncation: bool = False, with_correlation: bool = False, output_path: Union[Path, str] = '.',
+            output_file: str = 'output_spectra', output_format: str = None, save_file: bool = True,
+            username: str = None, password: str = None, disable_tqdm: bool = False) -> (pd.DataFrame, np.ndarray):
+    """
+    Internal method of the calibration utility. Refer to "convert".
+
+    Args:
+        disable_tqdm (bool): Whether to disable the progress tracker. Required to suppress the progress bar
+        of functions run internally in the linefinder module.
+
+    Returns:
+        DataFrame: A list of all sampled absolute spectra.
+        ndarray: The sampling used to calibrate the spectra.
+
+    Raises:
+        ValueError: If the sampling is out of the expected boundaries.
+    """
     # Check sampling
     validate_pwl_sampling(sampling)
     validate_arguments(convert.__defaults__[4], output_file, save_file)
@@ -76,13 +99,12 @@ def convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lins
     # Get design matrices
     design_matrices = get_design_matrices(unique_bases_ids, sampling, config_df)
     spectra_df, positions = _create_spectra(parsed_input_data, truncation, design_matrices,
-                                            with_correlation=with_correlation)
+                                            with_correlation=with_correlation, disable_tqdm=disable_tqdm)
     # Save output
     output_data = SampledSpectraData(spectra_df, positions)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_data.data, positions
-
 
 def _create_spectrum(row: pd.Series, truncation: bool, design_matrices: dict, band: str,
                      with_correlation: bool = False) -> XpSampledSpectrum:
@@ -115,7 +137,7 @@ def _create_spectrum(row: pd.Series, truncation: bool, design_matrices: dict, ba
 
 
 def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_matrices: dict,
-                    with_correlation: bool = False) -> tuple:
+                    with_correlation: bool = False, disable_tqdm: bool = False) -> tuple:
     """
     Creates a spectra dataframe from parsed input data and given parameters.
 
@@ -125,6 +147,7 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
             the recommended value in the input files.
         design_matrices (dict): The design matrices for the input list of bases.
         with_correlation (bool): Whether to include the covariance matrix in the spectra. Default is False.
+        disable_tqdm (bool): Whether to disable the progress tracker.
 
     Returns:
         (tuple): tuple containing:

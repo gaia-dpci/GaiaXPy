@@ -65,6 +65,19 @@ def _get_configuration(config):
         raise Exception('Transformation matrix is not square.')
 
 
+def _get_configuration_variables(config_file, basis_function_id):
+    config_df = load_config(config_file)
+    bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
+    rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
+    return bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset
+
+
+def _get_masks(cal_spectra, con_spectra, sid):
+    m_cal = (cal_spectra['source_id'] == sid)
+    m_con_bp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'BP')
+    m_con_rp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'RP')
+    return m_cal, m_con_bp, m_con_rp
+
 def _x_to_pwl(x, scale, offset):
     return (x - offset) / scale
 
@@ -282,10 +295,8 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
     source_type = _check_source_redshift_type(source_type, redshift)
     _check_truncation(truncation)
 
-    config_df = load_config(config_file)
-    bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
-    rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
-
+    bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
+                                                                                                      basis_function_id)
     # Parse input
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
 
@@ -294,9 +305,6 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
     # Get calibrated spectra
     cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation, save_file=False)
     # Get calibrated continuum (limit number of bases) -> TO DO: rethink this approach
-    temp_input_data = parsed_input_data.copy(deep=True)
-    temp_input_data['bp_n_relevant_bases'], temp_input_data['rp_n_relevant_bases'] = 3, 3
-    cal_continuum, _ = calibrate(temp_input_data, truncation=True, save_file=False)
     # Get source_ids
     source_ids = parsed_input_data['source_id']
 
@@ -324,9 +332,7 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
             rp_line_names, rp_lines_pwl = rp_lines.get_lines_pwl(zet=red_array['z'][red_array['source_id'] == sid][0])
 
         # Masks
-        m_cal = (cal_spectra['source_id'] == sid)
-        m_con_bp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'BP')
-        m_con_rp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'RP')
+        m_cal, m_con_bp, m_con_rp = _get_masks(cal_spectra, con_spectra, sid)
 
         # Run line finder for BP
         bp_found_lines = [] if pd.isna(row['bp_n_parameters']) else _find(
@@ -391,29 +397,20 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
     _check_truncation(truncation)
     _check_plot_arguments(plot_spectra, save_plots)
 
-    config_df = load_config(config_file)
-    bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
-    rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
-
+    bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
+                                                                                                      basis_function_id)
     # Parse input
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
-
     # Get converted spectra
     con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation, save_file=False)
     # Get calibrated spectra
     cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation, save_file=False)
-    # Get calibrated continuum (limit number of bases)
-    temp_input_data = parsed_input_data.copy(deep=True)
-    temp_input_data['bp_n_relevant_bases'], temp_input_data['rp_n_relevant_bases'] = 3, 3
-    cal_continuum, _ = calibrate(temp_input_data, truncation=True, save_file=False)
 
     output_lines = []
     for index, row in parsed_input_data.iterrows():
         sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(row, truncation, bp_n, rp_n)
         # Masks
-        m_cal = (cal_spectra['source_id'] == sid)
-        m_con_bp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'BP')
-        m_con_rp = (con_spectra['source_id'] == sid) & (con_spectra['xp'] == 'RP')
+        m_cal, m_con_bp, m_con_rp = _get_masks(cal_spectra, con_spectra, sid)
 
         # Run line finder for BP
         bp_found_lines = [] if pd.isna(row['bp_n_parameters']) else _find_all(
@@ -474,11 +471,8 @@ def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, o
         (DataFrame): dataframe with arrays of found extrema for each source
     """
     _check_truncation(truncation)
-
-    config_df = load_config(config_file)
-    bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
-    rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
-
+    bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
+                                                                                                      basis_function_id)
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
 
     output_rows = []
@@ -504,3 +498,99 @@ def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, o
     output_data.data.attrs['data_type'] = Extrema()
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_data.data
+
+def linextremafinder(input_object: Union[list, Path, str], truncation: bool = False, source_type: str = 'star',
+                     redshift: Union[float, list] = None, user_lines: list = None, output_path: Union[Path, str] = '.',
+                     output_file: str = 'output_lines', output_format: str = None, save_file: bool = True,
+                     username: str = None, password: str = None):
+
+    source_type = _check_source_redshift_type(source_type, redshift)
+    _check_truncation(truncation)
+
+    bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
+                                                                                                      basis_function_id)
+    # Parse input
+    parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
+    # Get converted spectra
+    con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation, save_file=False)
+    # Get calibrated spectra
+    cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation, save_file=False)
+    # Get source_ids
+    source_ids = parsed_input_data['source_id']
+
+    # Prep redshifts -> match with source_ids
+    if source_type == 'qso':
+        red_array = np.array(redshift, dtype=[('source_id', 'i8'), ('z', 'f8')])
+        if not np.all(np.isin(source_ids, red_array['source_id'])):
+            raise ValueError('Missing redshifts in the list?')
+
+    # Prep lines
+    bp_lines_line = Lines(BANDS.bp, source_type, user_lines=user_lines)
+    rp_lines_line = Lines(BANDS.rp, source_type, user_lines=user_lines)
+
+    if source_type == 'star':
+        bp_line_names, bp_lines_pwl = bp_lines_line.get_lines_pwl()
+        rp_line_names, rp_lines_pwl = rp_lines_line.get_lines_pwl()
+
+    output_lines_line, output_lines_extrema = [], []
+    for i, row in parsed_input_data.iterrows():
+        sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(row, truncation, bp_n, rp_n)
+
+        # Prep lines cont.
+        if source_type == 'qso':
+            bp_line_names, bp_lines_pwl = bp_lines_line.get_lines_pwl(zet=red_array['z'][red_array['source_id'] ==
+                                                                                         sid][0])
+            rp_line_names, rp_lines_pwl = rp_lines_line.get_lines_pwl(zet=red_array['z'][red_array['source_id'] ==
+                                                                                         sid][0])
+        # Masks
+        m_cal, m_con_bp, m_con_rp = _get_masks(cal_spectra, con_spectra, sid)
+
+        interp_flux = _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0])
+        interp_flux_error = _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0])
+
+        # Run line finder for BP line
+        bp_found_lines = [] if pd.isna(row['bp_n_parameters']) else _find(
+            bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff, bp_lines_pwl, bp_line_names,
+            interp_flux, interp_flux_error,
+            _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]),
+            _flux_interp(con_sampling, con_spectra[m_con_bp]['flux_error'].values[0]))
+
+        # Run line finder for RP line
+        rp_found_lines = [] if pd.isna(row['rp_n_parameters']) else _find(
+            rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff, rp_lines_pwl, rp_line_names,
+            interp_flux, interp_flux_error,
+            _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
+            _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
+
+        output_lines_line.extend(_format_output(sid, bp_found_lines, rp_found_lines))
+
+        # Run line finder for BP extrema
+        bp_found_lines_extrema = [] if pd.isna(row['bp_n_parameters']) else _find_all(
+            bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff, interp_flux, interp_flux_error,
+            _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]),
+            _flux_interp(con_sampling, con_spectra[m_con_bp]['flux_error'].values[0]))
+
+        # Run line finder for RP extrema
+        rp_found_lines_extrema = [] if pd.isna(row['rp_n_parameters']) else _find_all(
+            rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff, interp_flux, interp_flux_error,
+            _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
+            _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
+
+        output_lines_extrema.extend(_format_output(sid, bp_found_lines_extrema, rp_found_lines_extrema))
+
+    output_df_line = pd.DataFrame(output_lines_line, columns=['source_id', 'line_name', 'wavelength_nm', 'line_flux',
+                                                              'depth', 'width', 'significance', 'sig_pwl'])
+
+    output_df_extrema = pd.DataFrame(output_lines_extrema, columns=['source_id', 'line_name', 'wavelength_nm',
+                                                                    'line_flux', 'depth', 'width', 'significance',
+                                                                    'sig_pwl'])
+
+    output_data_line = LineData(output_df_line)
+    output_data_line.data = cast_output(output_data_line)
+    output_data_line.data.attrs['data_type'] = Lines('xp', source_type)
+    output_data_line.save(save_file, output_path, f'{output_file}_line', output_format, extension)
+
+    output_data_extrema = LineData(output_df_extrema)
+    output_data_extrema.data = cast_output(output_data_extrema)
+    output_data_extrema.data.attrs['data_type'] = Lines('xp', 'star')
+    output_data_extrema.save(save_file, output_path, f'{output_file}_extrema', output_format, extension)

@@ -133,10 +133,9 @@ class SampledSpectrum(Spectrum):
         Returns:
             ndarray: 1D array containing the errors in flux for all samples.
         """
-        n_samples = design_matrix.shape[1]
-        error = np.array([math.sqrt(design_matrix[:, i].dot(covariance).dot(design_matrix[:, i])) * standard_deviation
-                          for i in range(n_samples)])
-        return error
+        if len(covariance) == 0:
+            return covariance
+        return np.sqrt(np.sum(design_matrix.T.dot(covariance) * design_matrix.T, axis=1)) * standard_deviation
 
     @staticmethod
     def _sample_covariance(covariance, design_matrix):

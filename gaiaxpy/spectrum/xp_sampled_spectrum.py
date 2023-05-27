@@ -72,9 +72,13 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
                 will be applied, i.e. all bases will be used.
             with_correlation (bool): Whether correlation information should be generated.
         """
-        coefficients = continuous_spectrum.get_coefficients()
+        if continuous_spectrum and sampled_basis_functions:
+            coefficients = continuous_spectrum.get_coefficients()
+            design_matrix = sampled_basis_functions.get_design_matrix()
+        else:
+            return None
         covariance = continuous_spectrum.get_covariance()
-        design_matrix = sampled_basis_functions.get_design_matrix()
+
         if isinstance(truncation, Number) and truncation > 0:
             coefficients = coefficients[:truncation]
             covariance = covariance[:truncation, :truncation]
@@ -84,9 +88,7 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
         pos = sampled_basis_functions.get_sampling_grid()
         flux = SampledSpectrum._sample_flux(coefficients, design_matrix)
         flux_error = SampledSpectrum._sample_error(covariance, design_matrix, stdev)
-        cov = None
-        if with_correlation:
-            cov = SampledSpectrum._sample_covariance(covariance, design_matrix)
+        cov = SampledSpectrum._sample_covariance(covariance, design_matrix) if with_correlation else None
         return cls(continuous_spectrum.get_source_id(), continuous_spectrum.get_xp(), pos, flux, flux_error, cov, stdev)
 
     def spectrum_to_dict(self):

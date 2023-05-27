@@ -63,9 +63,8 @@ class SampledBasisFunctions(object):
                 rescaled_pwl, weights) for n_h in np.arange(int(
                     external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
             n_samples, int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))
-        _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'][0].dot(evaluated_hermite_bases.T)
-
-        transformed_design_matrix = bases_transformation.dot(_design_matrix)
+        _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'][0] @ evaluated_hermite_bases.T
+        transformed_design_matrix = bases_transformation @ _design_matrix
 
         hc = 1.e9 * nature.C * nature.PLANCK
 
@@ -144,7 +143,7 @@ def populate_design_matrix(sampling_grid, config):
     bases_transformation = config['transformationMatrix'].iloc(0)[0].reshape(dimension, transformed_set_dimension)
     design_matrix = np.array([psi(n_h, pos) for pos in rescaled_pwl for n_h in np.arange(dimension)]).reshape(n_samples,
                                                                                                               dimension)
-    return bases_transformation.dot(design_matrix.T)
+    return bases_transformation @ design_matrix.T
 
 
 def _evaluate_hermite_function(n, x, w):

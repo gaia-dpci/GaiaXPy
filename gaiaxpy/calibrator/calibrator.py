@@ -27,7 +27,7 @@ from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from .external_instrument_model import ExternalInstrumentModel
 
 # Activate tqdm for pandas
-tqdm.pandas(desc='Processing data', unit=pbar_units['calibrator'], leave=False, colour=pbar_colour)
+tqdm.pandas(desc='Calibrating data', unit=pbar_units['calibrator'], leave=False, colour=pbar_colour)
 
 
 def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None, truncation: bool = False,

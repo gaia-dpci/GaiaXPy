@@ -34,30 +34,19 @@ class HermiteDerivative:
         Returns:
             ndarray: 1D array of zero-points.
         """
-
         _N = self.n
-        coeff1 = np.r_[self.coeff_bt, [0]]
-
-        _D = np.zeros((_N + 1, _N + 1))
-        # Fill in the upper triangular part of _D
-        for r in range(_N):
-            _D[r + 1, r] = np.sqrt(r + 1) / _sqrt2
-            _D[r, r + 1] = -np.sqrt(r + 1) / _sqrt2
-
+        _D = np.diag(np.sqrt(np.arange(1, _N + 1)), k=-1)
+        _D = _D + _D.T * -1
         # 1st derivative coefficients:
-        coeff_der = _D.dot(coeff1)
-
+        coeff_der = _D.dot(np.r_[self.coeff_bt, [0]])
         # b - matrix to calculate zero-points
+        r = np.arange(_N - 1)
         b = np.zeros((_N, _N))
-        # Fill in the upper triangular part of b
-        for r in range(_N - 1):
-            b[r + 1, r] = np.sqrt(r + 1) / _sqrt2
-            b[r, r + 1] = np.sqrt(r + 1) / _sqrt2
+        b[r + 1, r] = np.sqrt(r + 1) / _sqrt2
+        b = b + b.T
         # Fill in the last row of b
         b[_N - 1, :] -= np.sqrt(_N / 2.) * coeff_der[:-1] / coeff_der[-1]
-
         _eigval = eigvals(b)
-
         # 1st derivative zero-points = extrema in spectrum
         return np.sort(_eigval[np.isreal(_eigval)].real)
 
@@ -71,26 +60,17 @@ class HermiteDerivative:
 
         # 2nd derivative : 1st method direct from spectrum coefficients
         _N = self.n
-        coeff2 = np.r_[self.coeff_bt, [0, 0]]
-
-        _D2 = np.diag(-0.5 - np.arange(_N + 2), k=0)
-        for r in range(_N):
-            _D2[r, r + 2] = 0.5 * np.sqrt((r + 2) * (r + 1))
-            _D2[r + 2, r] = 0.5 * np.sqrt((r + 2) * (r + 1))
-
+        r = np.arange(_N)
+        _D2 = np.zeros((_N + 2, _N + 2))
+        _D2[r, r + 2] = 0.5 * np.sqrt((r + 2) * (r + 1))
+        _D2 = _D2 + _D2.T
+        _D2 = _D2 + np.diag(-0.5 - np.arange(_N + 2), k=0)
         # 2nd derivative coefficients:
-        coeff_der2 = _D2.dot(coeff2)
-
+        coeff_der2 = _D2.dot(np.r_[self.coeff_bt, [0, 0]])
         # b2 - matrix to calculate zero-points
         b2 = np.zeros((_N + 1, _N + 1))
-        for r in range(_N):
-            b2[r + 1, r] = np.sqrt(r + 1) / _sqrt2
-            b2[r, r + 1] = np.sqrt(r + 1) / _sqrt2
-
+        b2[r + 1, r] = np.sqrt(r + 1) / _sqrt2
+        b2 = b2 + b2.T
         b2[_N, np.arange(0, _N + 1)] -= np.sqrt((_N + 1) / 2.) * coeff_der2[:-1] / coeff_der2[-1]
-
         eigval2 = eigvals(b2)
-
-        roots2 = np.sort(eigval2[np.isreal(eigval2)].real)
-
-        return roots2
+        return np.sort(eigval2[np.isreal(eigval2)].real)

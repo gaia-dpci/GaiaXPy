@@ -27,7 +27,7 @@ from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from .config import get_config, load_config
 
 # Activate tqdm for pandas
-tqdm.pandas(desc='Processing data', unit=pbar_units['converter'], leave=False, colour=pbar_colour)
+tqdm.pandas(desc='Converting data', unit=pbar_units['converter'], leave=False, colour=pbar_colour)
 
 
 def convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.linspace(0, 60, 600),
@@ -125,15 +125,11 @@ def _create_spectrum(row: pd.Series, truncation: bool, design_matrices: dict, ba
         XpSampledSpectrum: The sampled spectrum.
     """
     covariance_matrix = get_covariance_matrix(row, band)
-    continuous_spectrum = None
-    if covariance_matrix is not None:
-        continuous_spectrum = XpContinuousSpectrum(row['source_id'], band, row[f'{band}_coefficients'],
-                                                   covariance_matrix, row[f'{band}_standard_deviation'])
     recommended_truncation = row[f'{band}_n_relevant_bases'] if truncation else -1
-    spectrum = XpSampledSpectrum.from_continuous(continuous_spectrum,
-                                                 design_matrices.get(row.loc[f'{band}_basis_function_id']),
-                                                 truncation=recommended_truncation, with_correlation=with_correlation)
-    return spectrum
+    continuous_spectrum = None if covariance_matrix is None else XpContinuousSpectrum(
+        row['source_id'], band, row[f'{band}_coefficients'], covariance_matrix, row[f'{band}_standard_deviation'])
+    return XpSampledSpectrum.from_continuous(continuous_spectrum, design_matrices.get(
+        row.loc[f'{band}_basis_function_id']), truncation=recommended_truncation, with_correlation=with_correlation)
 
 
 def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_matrices: dict,
@@ -171,23 +167,18 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
         """
         spectra_list = []
         for band in BANDS:
-            try:
-                spectrum_xp = _create_spectrum(row, _truncation, _design_matrices, band,
-                                               with_correlation=_with_correlation)
-            except (AttributeError, BaseException):
-                continue  # Band not available
-            spectra_list.append(spectrum_xp)
+            spectrum_xp = _create_spectrum(row, _truncation, _design_matrices, band, with_correlation=_with_correlation)
+            if spectrum_xp:
+                spectra_list.append(spectrum_xp)
         return spectra_list
 
     spectra_series = parsed_input_data.progress_apply(lambda row: create_xp_spectra(row, truncation, design_matrices,
                                                                                     with_correlation), axis=1)
-
-    spectra_df = spectra_series.to_frame()
-    spectra_df = spectra_df.explode(0)  # Explode spectra column
-    positions = spectra_df[0].iloc[0].get_positions()
-    spectra_type = get_spectra_type(spectra_df[0].iloc[0])
-    spectra_df[0] = spectra_df[0].progress_apply(lambda s: s.spectrum_to_dict())
-    spectra_df = spectra_df[0].apply(pd.Series).reset_index(drop=True)
+    spectra_series = spectra_series.explode(0)  # Explode spectra column
+    positions = spectra_series.iloc[0].get_positions()
+    spectra_type = get_spectra_type(spectra_series.iloc[0])
+    spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict())
+    spectra_df = pd.DataFrame(spectra_series.tolist())
     spectra_df.attrs['data_type'] = spectra_type
     return spectra_df, positions
 

@@ -114,7 +114,7 @@ class SampledSpectrum(Spectrum):
         Returns:
             ndarray: 1D array containing the flux values for all samples.
         """
-        return coefficients.dot(design_matrix)
+        return coefficients @ design_matrix
 
     @staticmethod
     def _sample_error(covariance, design_matrix, standard_deviation):
@@ -135,7 +135,7 @@ class SampledSpectrum(Spectrum):
         """
         if len(covariance) == 0:
             return covariance
-        return np.sqrt(np.sum(design_matrix.T.dot(covariance) * design_matrix.T, axis=1)) * standard_deviation
+        return np.sqrt(np.sum(np.multiply(design_matrix.T @ covariance, design_matrix.T), axis=1)) * standard_deviation
 
     @staticmethod
     def _sample_covariance(covariance, design_matrix):
@@ -152,5 +152,4 @@ class SampledSpectrum(Spectrum):
         Returns:
             ndarray: 2D array containing the covariance matrix of the sampled spectrum.
         """
-        cov = (design_matrix.transpose()).dot(covariance).dot(design_matrix)
-        return cov
+        return design_matrix.T @ covariance @ design_matrix

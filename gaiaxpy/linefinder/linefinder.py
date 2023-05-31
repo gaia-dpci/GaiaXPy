@@ -75,10 +75,10 @@ def _extract_relevant_indices(columns):
     rp_np_index = columns.get_loc('rp_n_parameters')
     return source_index, bp_coeff_index, rp_coeff_index, bp_nr_index, rp_nr_index, bp_np_index, rp_np_index
 
-def _get_configuration_variables(config_file, basis_function_id):
-    config_df = load_config(config_file)
-    bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.bp]))
-    rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, basis_function_id[BANDS.rp]))
+def _get_configuration_variables(_config_file, _basis_function_id):
+    config_df = load_config(_config_file)
+    bp_tm, bp_n, bp_scale, bp_offset = _get_configuration(get_config(config_df, _basis_function_id[BANDS.bp]))
+    rp_tm, rp_n, rp_scale, rp_offset = _get_configuration(get_config(config_df, _basis_function_id[BANDS.rp]))
     return bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset
 
 
@@ -126,8 +126,21 @@ def _get_line_pwl_width_test(roots_pwl2, line_root, xp):
                      pwl_to_wl(xp, roots_pwl2[roots_pwl2 < line_root][-1]).item())
     line_test = np.array([line_root - 2. * line_width_pwl, line_root - line_width_pwl,
                           line_root + line_width_pwl, line_root + 2. * line_width_pwl])
-
     return line_width_pwl, line_width, line_test
+
+
+def _get_line_pwl_width_test_arrays(roots_pwl2, line_roots, xp):
+    line_width_pwls = np.empty_like(line_roots)
+    line_widths = np.empty_like(line_roots)
+    for i, line_root in enumerate(line_roots):
+        mask_greater = roots_pwl2 > line_roots[:, np.newaxis]
+        mask_less = roots_pwl2 < line_roots[:, np.newaxis]
+        line_width_pwls[i] = roots_pwl2[mask_greater[i]][0] - roots_pwl2[mask_less[i]][-1]
+        line_widths[i] = np.abs(pwl_to_wl(xp, roots_pwl2[mask_greater[i]][0]) - pwl_to_wl(xp,
+                                                                                          roots_pwl2[mask_less[i]][-1]))
+    line_tests = np.column_stack((line_roots - 2. * line_width_pwls, line_roots - line_width_pwls,
+                                  line_roots + line_width_pwls, line_roots + 2. * line_width_pwls))
+    return line_width_pwls, line_widths, line_tests
 
 
 def _extract_elements_from_item(item, truncation, bp_n, rp_n, source_index, bp_coeff_index, rp_coeff_index, bp_nr_index,
@@ -163,24 +176,38 @@ def _find(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff
     roots_pwl = _x_to_pwl(h_der.get_roots_first_der(), scale, offset)
     roots_pwl2 = _x_to_pwl(h_der.get_roots_second_der(), scale, offset)
 
-    found_lines = []
-    for line_pwl, name in zip(lines, line_names):
-        i_line = np.abs(roots_pwl - line_pwl).argmin()
-        line_root = roots_pwl[i_line]
-        if abs(line_pwl - line_root) < tolerance:  # Allow for difference in pwl
-            line_width_pwl, line_width, line_test = _get_line_pwl_width_test(roots_pwl2, line_root, xp)
-            line_continuum = np.median(calibrated_flux(pwl_to_wl(xp, line_test)))
-            line_continuum_pwl = np.median(flux(line_test))
-            line_wl = pwl_to_wl(xp, line_root).item()
-            line_flux = calibrated_flux(line_wl).item()
-            line_depth = line_flux - line_continuum
-            line_depth_pwl = flux(line_root).item() - line_continuum_pwl
-            line_sig = abs(line_depth) / calibrated_flux_err(line_wl)
-            line_sig_pwl = abs(line_depth_pwl) / flux_err(line_root)
-            found_lines.append((name, line_pwl, i_line, line_root, line_wl, line_flux, line_depth, line_width, line_sig,
-                                line_continuum, line_sig_pwl, line_continuum_pwl, line_width_pwl))
+    lines = np.array(lines)
+    i_lines = np.argmin(np.abs(roots_pwl[:, None] - lines), axis=0)
+    line_roots = roots_pwl[i_lines]
+    mask = np.abs(lines - line_roots) < tolerance
 
-    return found_lines
+    line_names = line_names[mask]
+    lines = lines[mask]
+    line_roots = line_roots[mask]
+    i_lines = i_lines[mask]
+
+    if len(lines) != len(line_names) or len(line_names) != len(line_roots):
+        raise ValueError("The length of the inputs don't match. Check the values for lines.")
+
+    if lines.size == 0:
+        return []
+
+    line_width_pwl_values, line_widths, line_tests = _get_line_pwl_width_test_arrays(roots_pwl2, line_roots, xp)
+    line_continuum_values = np.median(calibrated_flux(pwl_to_wl(xp, line_tests)), axis=1)
+    line_continuum_pwl_values = np.median(flux(line_tests), axis=1)
+    line_wl_values = pwl_to_wl(xp, line_roots).flatten()
+    line_flux_values = calibrated_flux(line_wl_values).flatten()
+    line_depth_values = line_flux_values - line_continuum_values
+    line_depth_pwl_values = flux(line_roots) - line_continuum_pwl_values
+    line_sig_values = np.abs(line_depth_values) / calibrated_flux_err(line_wl_values)
+    line_sig_pwl_values = abs(line_depth_pwl_values) / flux_err(line_roots)
+    return [(name, line_pwl, i_line, line_root, line_wl, line_flux, line_depth, line_width, line_sig, line_continuum,
+             line_sig_pwl, line_continuum_pwl, line_width_pwl) for name, line_pwl, line_root, i_line, line_width_pwl,
+             line_width, line_test, line_continuum, line_continuum_pwl, line_wl, line_flux, line_depth, line_depth_pwl,
+             line_sig, line_sig_pwl in zip(line_names, lines, line_roots, i_lines, line_width_pwl_values, line_widths,
+                                           line_tests, line_continuum_values, line_continuum_pwl_values, line_wl_values,
+                                           line_flux_values, line_depth_values, line_depth_pwl_values, line_sig_values,
+                                           line_sig_pwl_values)]
 
 
 def _find_all(transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff, calibrated_flux, calibrated_flux_err,
@@ -203,7 +230,6 @@ def _find_all(transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff, 
     Returns:
         (list): All found extrema (within dispersion function range) with their properties.
     """
-
     h_der = HermiteDerivative(transform_matrix, n_bases, n_rel_bases, coeff)
     roots_pwl = _x_to_pwl(h_der.get_roots_first_der(), scale, offset)
     roots_pwl2 = _x_to_pwl(h_der.get_roots_second_der(), scale, offset)

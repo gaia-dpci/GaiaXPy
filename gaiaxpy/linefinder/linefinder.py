@@ -238,22 +238,26 @@ def _find_all(transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff, 
     mask = (roots_pwl > min(_range)) & (roots_pwl < max(_range))
     roots_pwl = roots_pwl[mask]
 
-    found_lines = []
-    for i_line, line_root in enumerate(roots_pwl):
-        line_flux = calibrated_flux(pwl_to_wl(xp, line_root).item())
-        line_width_pwl, line_width, line_test = _get_line_pwl_width_test(roots_pwl2, line_root, xp)
-        line_continuum = np.median(calibrated_flux(pwl_to_wl(xp, line_test)))
-        line_continuum_pwl = np.median(flux(line_test))
-        line_depth = line_flux - line_continuum
-        line_wl = pwl_to_wl(xp, line_root).item()
-        line_sig = abs(line_depth) / calibrated_flux_err(line_wl)
-        line_flux_pwl = flux(line_root).item()
-        line_depth_pwl = line_flux_pwl - line_continuum_pwl
-        line_sig_pwl = abs(line_depth_pwl) / flux_err(line_root)
-        name = xp + '_' + str(int(line_wl))
-        found_lines.append((name, line_root, i_line, line_root, line_wl, line_flux, line_depth, line_width, line_sig,
-                            line_continuum, line_sig_pwl, line_continuum_pwl, line_width_pwl))
-    return found_lines
+    line_width_pwl_values, line_widths, line_tests = _get_line_pwl_width_test_arrays(roots_pwl2, roots_pwl, xp)
+    line_flux_values = calibrated_flux(pwl_to_wl(xp, roots_pwl)).flatten()
+    line_continuum_values = np.median(calibrated_flux(pwl_to_wl(xp, line_tests)), axis=1)
+    line_continuum_pwl_values = np.median(flux(line_tests), axis=1)
+    line_depth_values = line_flux_values - line_continuum_values
+    line_wl_values = pwl_to_wl(xp, roots_pwl).flatten()
+    line_sig_values = np.abs(line_depth_values) / calibrated_flux_err(line_wl_values)
+    line_flux_pwl_values = flux(roots_pwl).flatten()
+    line_depth_pwl_values = line_flux_pwl_values - line_continuum_pwl_values
+    line_sig_pwl_values = np.abs(line_depth_pwl_values) / flux_err(roots_pwl)
+    line_names = [xp + '_' + str(int(line_wl)) for line_wl in line_wl_values]
+
+    return [(name, line_root, i_line, line_root, line_wl, line_flux, line_depth, line_width, line_sig, line_continuum,
+             line_sig_pwl, line_continuum_pwl, line_width_pwl) \
+            for i_line, (line_root, line_width_pwl, line_width, line_test, line_flux, line_continuum, line_continuum_pwl,
+                         line_depth, line_wl, line_sig, line_flux_pwl, line_depth_pwl, line_sig_pwl, name) \
+            in enumerate(zip(roots_pwl, line_width_pwl_values, line_widths, line_tests, line_flux_values,
+                             line_continuum_values, line_continuum_pwl_values, line_depth_values, line_wl_values,
+                             line_sig_values, line_flux_pwl_values, line_depth_pwl_values, line_sig_pwl_values,
+                             line_names))]
 
 
 def _find_fast(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff):

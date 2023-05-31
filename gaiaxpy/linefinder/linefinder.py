@@ -559,27 +559,23 @@ def linextremafinder(input_object: Union[list, Path, str], truncation: bool = Fa
                      output_file: str = 'output_lines', output_format: str = None, save_file: bool = True,
                      username: str = None, password: str = None):
     def _find_reduced(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff, lines, line_names,
-              calibrated_flux,
-              calibrated_flux_err, flux, flux_err):
+                      calibrated_flux, calibrated_flux_err, flux, flux_err):
         h_der = HermiteDerivative(bases_transform_matrix, n_bases, n_rel_bases, coeff)
         roots_pwl = _x_to_pwl(h_der.get_roots_first_der(), scale, offset)
         roots_pwl2 = _x_to_pwl(h_der.get_roots_second_der(), scale, offset)
-
         lines = np.array(lines)
         i_lines = np.argmin(np.abs(roots_pwl[:, None] - lines), axis=0)
         line_roots = roots_pwl[i_lines]
         mask = np.abs(lines - line_roots) < tolerance
-
+        # Apply mask
         line_names = line_names[mask]
         lines = lines[mask]
         line_roots = line_roots[mask]
 
         if len(lines) != len(line_names) or len(line_names) != len(line_roots):
             raise ValueError("The length of the inputs don't match. Check the values for lines.")
-
         if lines.size == 0:
             return []
-
         line_width_pwl_values, line_widths, line_tests = _get_line_pwl_width_test_arrays(roots_pwl2, line_roots, xp)
         line_continuum_values = np.median(calibrated_flux(pwl_to_wl(xp, line_tests)), axis=1)
         line_continuum_pwl_values = np.median(flux(line_tests), axis=1)
@@ -638,14 +634,9 @@ def linextremafinder(input_object: Union[list, Path, str], truncation: bool = Fa
     # Set indices as we'll need to search for values in the frames many times
     cal_spectra = cal_spectra.set_index('source_id')
     con_spectra = con_spectra.set_index('source_id')
-    # Get source_ids
-    source_ids = parsed_input_data['source_id']
 
-    # Prep redshifts -> match with source_ids
     if source_type == 'qso':
-        red_array = np.array(redshift, dtype=[('source_id', 'i8'), ('z', 'f8')])
-        if not np.all(np.isin(source_ids, red_array['source_id'])):
-            raise ValueError('Missing redshifts in the list?')
+        raise ValueError('Linextremafinder not implemented for qso.')
 
     # Prep lines
     bp_lines_line = Lines(BANDS.bp, source_type, user_lines=user_lines)
@@ -658,57 +649,55 @@ def linextremafinder(input_object: Union[list, Path, str], truncation: bool = Fa
     output_lines_line, output_lines_extrema = [], []
     source_index, bp_coeff_index, rp_coeff_index, bp_nr_index, rp_nr_index, bp_np_index, rp_np_index = \
         _extract_relevant_indices(parsed_input_data.columns)
+
+
+
     for row in tqdm(parsed_input_data.itertuples(index=False)):
-        sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(row, truncation, bp_n, rp_n,
-                                                                                  source_index, bp_coeff_index,
-                                                                                  rp_coeff_index, bp_nr_index,
-                                                                                  rp_nr_index)
-        # Prep lines cont.
-        if source_type == 'qso':
-            bp_line_names, bp_lines_pwl = bp_lines_line.get_lines_pwl(zet=red_array['z'][red_array['source_id'] ==
-                                                                                         sid][0])
-            rp_line_names, rp_lines_pwl = rp_lines_line.get_lines_pwl(zet=red_array['z'][red_array['source_id'] ==
-                                                                                         sid][0])
+        sid = row[source_index]
+        bp_coeff = row[bp_coeff_index]
+        rp_coeff = row[rp_coeff_index]
+        bp_rel_n = row[bp_nr_index] if truncation else bp_n
+        rp_rel_n = row[rp_nr_index] if truncation else rp_n
+        no_bp_params = pd.isna(row[bp_np_index])
+
         # Masks
         m_cal, m_con_bp, m_con_rp = _get_masks(cal_spectra, con_spectra, sid)
+        # Interps
+        cal_spectra_m_cal = cal_spectra[m_cal]
+        con_spectra_m_con_bp = con_spectra[m_con_bp]
+        con_spectra_m_con_rp = con_spectra[m_con_rp]
+        interp_flux_cal = _flux_interp(cal_sampling, cal_spectra_m_cal['flux'].values[0])
+        interp_flux_error_cal = _flux_interp(cal_sampling, cal_spectra_m_cal['flux_error'].values[0])
+        interp_flux_con_bp = _flux_interp(con_sampling, con_spectra_m_con_bp['flux'].values[0])
+        interp_flux_error_con_bp = _flux_interp(con_sampling, con_spectra_m_con_bp['flux_error'].values[0])
+        interp_flux_con_rp = _flux_interp(con_sampling, con_spectra_m_con_rp['flux'].values[0])
+        interp_flux_error_con_rp = _flux_interp(con_sampling, con_spectra_m_con_rp['flux_error'].values[0])
 
-        interp_flux = _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0])
-        interp_flux_error = _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0])
-
-        # Run line finder for BP line
-        bp_found_lines = [] if pd.isna(row[bp_np_index]) else _find_reduced(
-            bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff, bp_lines_pwl, bp_line_names,
-            interp_flux, interp_flux_error,
-            _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]),
-            _flux_interp(con_sampling, con_spectra[m_con_bp]['flux_error'].values[0]))
+        if no_bp_params:
+            bp_found_lines = []
+            bp_found_lines_extrema = []
+        else:
+            bp_found_lines = _find_reduced(bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff, bp_lines_pwl,
+                                           bp_line_names, interp_flux_cal, interp_flux_error_cal, interp_flux_con_bp,
+                                           interp_flux_error_con_bp)
+            bp_found_lines_extrema = _find_all_reduced(bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff,
+                                                       interp_flux_cal, interp_flux_error_cal, interp_flux_con_bp,
+                                                       interp_flux_error_con_bp)
 
         # Run line finder for RP line
-        rp_found_lines = [] if pd.isna(row[rp_np_index]) else _find_reduced(
-            rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff, rp_lines_pwl, rp_line_names,
-            interp_flux, interp_flux_error,
-            _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
-            _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
+        rp_found_lines = _find_reduced(rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff, rp_lines_pwl,
+                                       rp_line_names, interp_flux_cal, interp_flux_error_cal, interp_flux_con_rp,
+                                       interp_flux_error_con_rp)
+        # Run line finder for RP extrema
+        rp_found_lines_extrema = _find_all_reduced(rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff,
+                                                   interp_flux_cal, interp_flux_error_cal, interp_flux_con_rp,
+                                                   interp_flux_error_con_rp)
 
         output_lines_line.extend(_format_output_reduced(sid, bp_found_lines, rp_found_lines))
-
-        # Run line finder for BP extrema
-        bp_found_lines_extrema = [] if pd.isna(row[bp_np_index]) else _find_all_reduced(
-            bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff, interp_flux, interp_flux_error,
-            _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]),
-            _flux_interp(con_sampling, con_spectra[m_con_bp]['flux_error'].values[0]))
-
-        # Run line finder for RP extrema
-        rp_found_lines_extrema = [] if pd.isna(row[rp_np_index]) else _find_all_reduced(
-            rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff, interp_flux, interp_flux_error,
-            _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
-            _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
-
         output_lines_extrema.extend(_format_output_reduced(sid, bp_found_lines_extrema, rp_found_lines_extrema))
 
-    output_columns = ['source_id', 'line_name', 'wavelength_nm', 'line_flux', 'depth', 'width', 'significance',
-                      'sig_pwl']
+    output_columns = ['source_id', 'line_name', 'wavelength_nm', 'line_flux', 'depth', 'width', 'significance', 'sig_pwl']
     output_df_line = pd.DataFrame(output_lines_line, columns=output_columns)
-
     output_df_extrema = pd.DataFrame(output_lines_extrema, columns=output_columns)
 
     output_data_line = LineData(output_df_line)

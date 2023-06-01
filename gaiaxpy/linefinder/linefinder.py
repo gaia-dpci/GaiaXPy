@@ -120,17 +120,17 @@ def _get_line_pwl_width_test(roots_pwl2, line_root, xp):
 
 
 def _get_line_pwl_width_test_arrays(roots_pwl2, line_roots, xp):
-    line_width_pwls = np.empty_like(line_roots)
+    line_width_pwl_values = np.empty_like(line_roots)
     line_widths = np.empty_like(line_roots)
     for i, line_root in enumerate(line_roots):
         mask_greater = roots_pwl2 > line_roots[:, np.newaxis]
         mask_less = roots_pwl2 < line_roots[:, np.newaxis]
-        line_width_pwls[i] = roots_pwl2[mask_greater[i]][0] - roots_pwl2[mask_less[i]][-1]
+        line_width_pwl_values[i] = roots_pwl2[mask_greater[i]][0] - roots_pwl2[mask_less[i]][-1]
         line_widths[i] = np.abs(pwl_to_wl(xp, roots_pwl2[mask_greater[i]][0]) -
                                 pwl_to_wl(xp, roots_pwl2[mask_less[i]][-1]))
-    line_tests = np.column_stack((line_roots - 2. * line_width_pwls, line_roots - line_width_pwls,
-                                  line_roots + line_width_pwls, line_roots + 2. * line_width_pwls))
-    return line_width_pwls, line_widths, line_tests
+    line_tests = np.column_stack((line_roots - 2. * line_width_pwl_values, line_roots - line_width_pwl_values,
+                                  line_roots + line_width_pwl_values, line_roots + 2. * line_width_pwl_values))
+    return line_width_pwl_values, line_widths, line_tests
 
 
 def _extract_elements_from_item(item, truncation, bp_n, rp_n):
@@ -273,9 +273,9 @@ def _find_fast(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, 
 
 def _format_output(source_id, bp_found_lines, rp_found_lines):
     """
-    Format output.
+    Format output. Finder functions generate more rows than they're required for the output. These rows are generated
+    so that the output can be plotted. Ideally, when plot_spectra is set to False, the extra rows shouldn't be computed.
     """
-    # source_id,line_name,wavelength_nm,line_flux,depth,width,significance,sig_pwl
     _bp_found_lines = [(source_id, line[0], line[4], line[5], line[6], line[7], line[8], line[10]) for line in
                        bp_found_lines]
     _rp_found_lines = [(source_id, line[0], line[4], line[5], line[6], line[7], line[8], line[10]) for line in
@@ -362,28 +362,29 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
         is_na_bp_np = pd.isna(row['bp_n_parameters'])
         is_na_rp_np = pd.isna(row['rp_n_parameters'])
 
+        _cal_spectra_m_cal_flux = cal_spectra[m_cal]['flux'].values[0]
+        _interp_m_cal_flux = _flux_interp(cal_sampling, _cal_spectra_m_cal_flux)
+        _interp_m_cal_flux_error = _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0])
+        _con_spectra_m_con_rp_flux = con_spectra[m_con_rp]['flux'].values[0]
+
         # Run line finder for BP
         bp_found_lines = [] if is_na_bp_np else _find(
             bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff, bp_lines_pwl, bp_line_names,
-            _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
-            _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
+            _interp_m_cal_flux, _interp_m_cal_flux_error,
             _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]),
             _flux_interp(con_sampling, con_spectra[m_con_bp]['flux_error'].values[0]))
 
         # Run line finder for RP
         rp_found_lines = [] if is_na_rp_np else _find(
             rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff, rp_lines_pwl, rp_line_names,
-            _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
-            _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
-            _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
+            _interp_m_cal_flux, _interp_m_cal_flux_error, _flux_interp(con_sampling, _con_spectra_m_con_rp_flux),
             _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
 
         # Plotting
         if plot_spectra:
             con_spectra_m_con_bp_flux_values = None if is_na_bp_np else con_spectra[m_con_bp]['flux'].values[0]
-            plot_spectra_with_lines(sid, con_sampling, con_spectra_m_con_bp_flux_values,
-                                    con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
-                                    cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
+            plot_spectra_with_lines(sid, con_sampling, con_spectra_m_con_bp_flux_values, _con_spectra_m_con_rp_flux,
+                                    cal_sampling, _cal_spectra_m_cal_flux, bp_found_lines, rp_found_lines, save_plots)
 
         output_lines.extend(_format_output(sid, bp_found_lines, rp_found_lines))
 
@@ -446,27 +447,28 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
         is_na_bp_np = pd.isna(row['bp_n_parameters'])
         is_na_rp_np = pd.isna(row['rp_n_parameters'])
 
+        _interp_m_cal_flux = _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0])
+        _interp_m_cal_flux_error = _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0])
+        _con_spectra_m_con_rp_flux = con_spectra[m_con_rp]['flux'].values[0]
+
         # Run line finder for BP
-        bp_found_lines = [] if is_na_bp_np else _find_all(
-            bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff,
-            _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
-            _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
-            _flux_interp(con_sampling, con_spectra[m_con_bp]['flux'].values[0]),
-            _flux_interp(con_sampling, con_spectra[m_con_bp]['flux_error'].values[0]))
-
-        # Run line finder for RP
-        rp_found_lines = [] if is_na_rp_np else _find_all(
-            rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff,
-            _flux_interp(cal_sampling, cal_spectra[m_cal]['flux'].values[0]),
-            _flux_interp(cal_sampling, cal_spectra[m_cal]['flux_error'].values[0]),
-            _flux_interp(con_sampling, con_spectra[m_con_rp]['flux'].values[0]),
-            _flux_interp(con_sampling, con_spectra[m_con_rp]['flux_error'].values[0]))
-
+        bp_found_lines = [] if is_na_bp_np else _find_all(bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff,
+                                                          _interp_m_cal_flux, _interp_m_cal_flux_error,
+                                                          _flux_interp(con_sampling,
+                                                                       con_spectra[m_con_bp]['flux'].values[0]),
+                                                          _flux_interp(con_sampling,
+                                                                       con_spectra[m_con_bp]['flux_error'].values[0]))
+        # Run line finder for RP (is_na_rp_np is expected to be False always)
+        rp_found_lines = [] if is_na_rp_np else _find_all(rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff,
+                                                          _interp_m_cal_flux, _interp_m_cal_flux_error,
+                                                          _flux_interp(con_sampling, _con_spectra_m_con_rp_flux),
+                                                          _flux_interp(con_sampling,
+                                                                       con_spectra[m_con_rp]['flux_error'].values[0]))
         # Plotting
         if plot_spectra:
             con_spectra_m_con_bp_flux_values = None if is_na_bp_np else con_spectra[m_con_bp]['flux'].values[0]
             plot_spectra_with_lines(sid, con_sampling, con_spectra_m_con_bp_flux_values,
-                                    con_spectra[m_con_rp]['flux'].values[0], cal_sampling,
+                                    _con_spectra_m_con_rp_flux, cal_sampling,
                                     cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
 
         output_lines.extend(_format_output(sid, bp_found_lines, rp_found_lines))
@@ -507,25 +509,24 @@ def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, o
     bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
                                                                                                       basis_function_id)
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
+    parsed_input_data_dict = parsed_input_data.to_dict('records')
+
+    def process_rows():
+        for row in tqdm(parsed_input_data_dict):
+            sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(row, truncation, bp_n, rp_n)
+            # Run line finder for BP
+            bp_found_lines = [] if pd.isna(row['bp_n_parameters']) else _find_fast(bp_tm, bp_n, bp_rel_n, bp_scale,
+                                                                                   bp_offset, BANDS.bp, bp_coeff)
+            # Run line finder for RP (there are no sources with missing RP, but this could help spot errors)
+            rp_found_lines = [] if pd.isna(row['rp_n_parameters']) else _find_fast(rp_tm, rp_n, rp_rel_n, rp_scale,
+                                                                                   rp_offset, BANDS.rp, rp_coeff)
+            output_bp_rows = ([sid, BANDS.bp.upper(), value] for value in bp_found_lines)
+            output_rp_rows = ([sid, BANDS.rp.upper(), value] for value in rp_found_lines)
+            yield from output_bp_rows
+            yield from output_rp_rows
 
     output_rows = []
-    parsed_input_data_dict = parsed_input_data.to_dict('records')
-    for row in tqdm(parsed_input_data_dict):
-        sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(row, truncation, bp_n, rp_n)
-
-        is_na_bp_np = pd.isna(row['bp_n_parameters'])
-        is_na_rp_np = pd.isna(row['rp_n_parameters'])
-
-        # Run line finder for BP
-        bp_found_lines = [] if is_na_bp_np else _find_fast(bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff)
-        # Run line finder for RP (there are no sources with missing RP, but this could help spot errors)
-        rp_found_lines = [] if is_na_rp_np else _find_fast(rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff)
-
-        output_bp_rows = [[sid, BANDS.bp.upper(), value] for value in bp_found_lines]
-        output_rp_rows = [[sid, BANDS.rp.upper(), value] for value in rp_found_lines]
-        output_i_rows = output_bp_rows + output_rp_rows
-        output_rows.extend(output_i_rows)
-
+    output_rows.extend(process_rows())
     output_df = pd.DataFrame(output_rows, columns=['source_id', 'xp', 'extrema'])
     output_data = LineData(output_df)
     output_data.data = cast_output(output_data)

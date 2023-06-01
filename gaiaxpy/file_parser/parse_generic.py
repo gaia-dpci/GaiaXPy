@@ -82,6 +82,7 @@ class GenericParser(object):
             DataFrame: Pandas DataFrame representing the file.
             str: File extension ('.csv', '.fits', or '.xml').
         """
+        print("Reading file...", end='\r')
         extension = _get_file_extension(file_path)
         parser = self.get_parser(extension)
         parsed_data = _cast(parser(file_path))
@@ -123,10 +124,7 @@ class GenericParser(object):
         Returns:
             DataFrame: A pandas DataFrame representing the FITS file.
         """
-        try:
-            table = Table.read(fits_file, format='fits')
-        except OSError:
-            raise DataMismatchError()
+        table = Table.read(fits_file, format='fits')
         columns = table.columns.keys()
         fits_as_gen = ([table[column][index] for column in columns] for index, _ in enumerate(table))
         df = pd.DataFrame(fits_as_gen, columns=columns)
@@ -147,10 +145,7 @@ class GenericParser(object):
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
         """
-        try:
-            votable = parse_single_table(xml_file).to_table(use_names_over_ids=True)
-        except ValueError:
-            raise DataMismatchError()
+        votable = parse_single_table(xml_file).to_table(use_names_over_ids=True)
         if array_columns:
             columns = list(votable.columns)
             votable_as_list = ([votable[column][index].filled() if column in array_columns else votable[column][index]

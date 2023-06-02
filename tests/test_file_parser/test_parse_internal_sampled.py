@@ -28,22 +28,3 @@ class TestInternalSampledParserCSV(unittest.TestCase):
     def test_flux_and_error(self):
         self.assertIsInstance(parsed_csv_file['flux'][0], ndarray)
         self.assertIsInstance(parsed_csv_file['error'][0], ndarray)
-
-    '''
-    No sample test files available yet
-
-    def test_parse_fits(self):
-        self.assertIsInstance(parser.parse(fits_file), pd.DataFrame)
-
-    def test_parse_xml(self):
-        self.assertIsInstance(parser.parse(xml_file), pd.DataFrame)
-    '''
-
-
-class TestIncorrectFormat(unittest.TestCase):
-
-    def test_parse_incorrect_format(self):
-        with self.assertRaises(DataMismatchError):
-            parser._parse_fits(csv_file)
-        with self.assertRaises(DataMismatchError):
-            parser._parse_xml(csv_file)

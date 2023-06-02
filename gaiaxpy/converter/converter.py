@@ -26,8 +26,7 @@ from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from .config import get_config, load_config
 
-# Activate tqdm for pandas
-tqdm.pandas(desc='Converting data', unit=pbar_units['converter'], leave=False, colour=pbar_colour)
+__FUNCTION_KEY = 'converter'
 
 
 def convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.linspace(0, 60, 600),
@@ -90,16 +89,19 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     validate_pwl_sampling(sampling)
     validate_arguments(convert.__defaults__[4], output_file, save_file)
     parsed_input_data, extension = InputReader(input_object, convert, username, password).read()
+    for band in BANDS:
+        parsed_input_data[f'{band}_covariance_matrix'] = parsed_input_data.apply(get_covariance_matrix, axis=1,
+                                                                                 args=(band,))
     config_parser = ConfigParser()
     config_parser.read(path.join(config_path, 'config.ini'))
-    config_file = path.join(config_path, config_parser.get('converter', 'optimised_bases'))
+    config_file = path.join(config_path, config_parser.get(__FUNCTION_KEY, 'optimised_bases'))
     config_df = load_config(config_file)
     # Union of unique ids as sets
     unique_bases_ids = get_unique_basis_ids(parsed_input_data)
     # Get design matrices
     design_matrices = get_design_matrices(unique_bases_ids, sampling, config_df)
     spectra_df, positions = _create_spectra(parsed_input_data, truncation, design_matrices,
-                                            with_correlation=with_correlation, disable_tqdm=disable_tqdm)
+                                            with_correlation=with_correlation)
     # Save output
     output_data = SampledSpectraData(spectra_df, positions)
     output_data.data = cast_output(output_data)
@@ -124,16 +126,16 @@ def _create_spectrum(row: pd.Series, truncation: bool, design_matrices: dict, ba
     Returns:
         XpSampledSpectrum: The sampled spectrum.
     """
-    covariance_matrix = get_covariance_matrix(row, band)
+    covariance_matrix = row[f'{band}_covariance_matrix']
     recommended_truncation = row[f'{band}_n_relevant_bases'] if truncation else -1
-    continuous_spectrum = None if covariance_matrix is None else XpContinuousSpectrum(
-        row['source_id'], band, row[f'{band}_coefficients'], covariance_matrix, row[f'{band}_standard_deviation'])
-    return XpSampledSpectrum.from_continuous(continuous_spectrum, design_matrices.get(
-        row.loc[f'{band}_basis_function_id']), truncation=recommended_truncation, with_correlation=with_correlation)
+    continuous_spectrum = XpContinuousSpectrum(row['source_id'], band, row[f'{band}_coefficients'],
+                                               covariance_matrix, row[f'{band}_standard_deviation'])
+    return XpSampledSpectrum.from_continuous(continuous_spectrum, design_matrices.get(row[f'{band}_basis_function_id']),
+                                             truncation=recommended_truncation, with_correlation=with_correlation)
 
 
 def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_matrices: dict,
-                    with_correlation: bool = False, disable_tqdm: bool = False) -> tuple:
+                    with_correlation: bool = False) -> tuple:
     """
     Creates a spectra dataframe from parsed input data and given parameters.
 
@@ -143,7 +145,6 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
             the recommended value in the input files.
         design_matrices (dict): The design matrices for the input list of bases.
         with_correlation (bool): Whether to include the covariance matrix in the spectra. Default is False.
-        disable_tqdm (bool): Whether to disable the progress tracker.
 
     Returns:
         (tuple): tuple containing:
@@ -172,9 +173,10 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
                 spectra_list.append(spectrum_xp)
         return spectra_list
 
-    spectra_series = parsed_input_data.progress_apply(lambda row: create_xp_spectra(row, truncation, design_matrices,
-                                                                                    with_correlation), axis=1)
-    spectra_series = spectra_series.explode(0)  # Explode spectra column
+    parsed_input_data_dict = parsed_input_data.to_dict('records')
+    spectra_series = pd.Series([create_xp_spectra(row, truncation, design_matrices, with_correlation)
+                                for row in tqdm(parsed_input_data_dict)])
+    spectra_series = spectra_series.explode()
     positions = spectra_series.iloc[0].get_positions()
     spectra_type = get_spectra_type(spectra_series.iloc[0])
     spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict())

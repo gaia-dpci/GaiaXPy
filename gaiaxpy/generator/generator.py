@@ -57,7 +57,6 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
 
     # colour_equation should be always true as it is part of the definition of standardised systems.
     colour_equation = True
-    # TODO: merge this statement with _validate_arguments. "if not photometric_system" didn't seem to work, check again.
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')
     validate_arguments(generate.__defaults__[1], output_file, save_file)

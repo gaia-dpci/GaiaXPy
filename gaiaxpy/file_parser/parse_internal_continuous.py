@@ -13,7 +13,6 @@ from fastavro import __version__ as fa_version
 from packaging import version
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
-from gaiaxpy.file_parser.parse_generic import DataMismatchError
 from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
@@ -69,10 +68,7 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
         """
-        try:
-            votable = parse_single_table(xml_file)
-        except ValueError:
-            raise DataMismatchError()
+        votable = parse_single_table(xml_file)
         columns = [re.search('<FIELD ID="(.+?)"', str(field)).group(1) for field in votable.fields]
         values_to_df = ((value for column, value in zip(columns, entry)) for index, entry in enumerate(votable.array))
         df = pd.DataFrame(values_to_df, columns=columns)
@@ -112,9 +108,9 @@ class InternalContinuousParser(GenericParser):
 
     @staticmethod
     def __get_records_later_than_1_4_7(avro_file):
-        def __yield_records(avro_file):
+        def __yield_records(_avro_file):
             from fastavro import block_reader
-            with open(avro_file, 'rb') as fo:
+            with open(_avro_file, 'rb') as fo:
                 for block in block_reader(fo):
                     for rec in block:
                         yield rec
@@ -145,8 +141,7 @@ class InternalContinuousParser(GenericParser):
                              ('rp_n_parameters', 'rp_coefficient_covariances')]
         for size_column, values_column in to_matrix_columns:
             try:
-                df[values_column] = df.apply(lambda row:
-                                             array_to_symmetric_matrix(row[values_column], row[size_column]),
+                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
                                              axis=1)
             except TypeError:
                 continue  # Value can be NaN when a band is not present

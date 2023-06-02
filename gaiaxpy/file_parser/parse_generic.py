@@ -20,17 +20,6 @@ def _raise_key_error(column):
     raise KeyError(f'The columns in the input data do not match the expected ones. Missing column {column}.')
 
 
-class DataMismatchError(RuntimeError):
-    """
-    Error raised when the data in a file is invalid or the file extension does not match the file contents.
-    """
-
-    def __init__(self):
-        message = 'The file contains invalid data, the data does not match the file extension or the file does not' \
-                  ' exist.'
-        Exception.__init__(self, message)
-
-
 class InvalidExtensionError(ValueError):
     """
     Error raised when the extension of the input file is not valid. It inherits from ValueError.
@@ -102,13 +91,10 @@ class GenericParser(object):
             DataFrame: A pandas DataFrame representing the CSV file.
         """
         converters = {}
-        if array_columns is not None:
+        if array_columns:
             converters = dict([(column, lambda x: str_to_array(x)) for column in array_columns])
-        try:
-            df = pd.read_csv(csv_file, comment='#', float_precision='round_trip', converters=converters)
-        except UnicodeDecodeError:
-            raise DataMismatchError()
-        if matrix_columns is not None:
+        df = pd.read_csv(csv_file, comment='#', float_precision='high', converters=converters)
+        if matrix_columns:
             for size_column, values_column in matrix_columns:
                 df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(str_to_array(row[values_column]),
                                                                                    row[size_column]), axis=1)
@@ -128,10 +114,10 @@ class GenericParser(object):
         columns = table.columns.keys()
         fits_as_gen = ([table[column][index] for column in columns] for index, _ in enumerate(table))
         df = pd.DataFrame(fits_as_gen, columns=columns)
-        if matrix_columns is not None:
+        if matrix_columns:
             for size_column, values_column in matrix_columns:
-                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column],
-                                                                                   row[size_column]), axis=1)
+                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
+                                             axis=1)
         return df
 
     def _parse_xml(self, xml_file, array_columns=None):

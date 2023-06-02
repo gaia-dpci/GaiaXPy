@@ -5,10 +5,12 @@ Module to hold methods useful for different kinds of spectra.
 """
 
 import numpy as np
+import pandas as pd
 
 
 def get_covariance_matrix(row, band):
-    if f'{band}_coefficient_covariances' in row.index:
+    columns = row.keys() if isinstance(row, dict) else row.index
+    if f'{band}_coefficient_covariances' in columns:
         return row[f'{band}_coefficient_covariances']  # It is AVRO
     else:
         return _correlation_to_covariance_dr3int5(row[f'{band}_coefficient_correlations'],
@@ -27,7 +29,7 @@ def _correlation_to_covariance_dr3int5(correlation_matrix, formal_errors, standa
     Returns:
         ndarray: The covariance matrix as a numpy array.
     """
-    if not isinstance(correlation_matrix, np.ndarray):
+    if pd.isna(standard_deviation):
         return None
     diagonal_errors = np.diag(formal_errors) / standard_deviation
     return diagonal_errors @ correlation_matrix @ diagonal_errors

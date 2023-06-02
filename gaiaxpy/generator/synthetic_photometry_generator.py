@@ -26,8 +26,9 @@ class SyntheticPhotometryGenerator(object):
         return {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_sampling[band]) for band in BANDS}
 
     def _create_photometry_list(self, parsed_input_data, photometric_system, sampled_basis_func, xp_merge):
-        return (_generate_synthetic_photometry(row, sampled_basis_func, xp_merge, photometric_system) for index, row in
-                parsed_input_data.iterrows())
+        parsed_input_data_dict = parsed_input_data.to_dict('records')
+        return (_generate_synthetic_photometry(row, sampled_basis_func, xp_merge, photometric_system) for row in
+                parsed_input_data_dict)
 
 
 def _generate_synthetic_photometry(row, design_matrix, merge, photometric_system):

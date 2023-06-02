@@ -40,19 +40,19 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
         """
         truncation = dict() if truncation is None else truncation
         # Bands available
-        bands = [band for band in xp_spectra.keys() if len(xp_spectra[band].get_coefficients()) != 0]
-        if not bands:
+        available_bands = [band for band in xp_spectra.keys() if xp_spectra[band].covariance is not None]
+        if not available_bands:
             raise ValueError('At least one band must be present.')
-        pos = sampled_bases[bands[0]].get_sampling_grid()
+        pos = sampled_bases[available_bands[0]].get_sampling_grid()
         SampledSpectrum.__init__(self, source_id, pos)
-        split_spectrum = self.__generate_spectra(xp_spectra, sampled_bases, bands, truncation,
+        split_spectrum = self.__generate_spectra(xp_spectra, sampled_bases, available_bands, truncation,
                                                  with_correlation=with_correlation)
         self.pos = pos
-        self.__merge_output(split_spectrum, bands, merge, with_correlation=with_correlation)
+        self.__merge_output(split_spectrum, merge, with_correlation=with_correlation)
 
-    def __generate_spectra(self, xp_spectra, sampled_bases, bands, truncation, with_correlation):
-        split_spectrum = {band: {} for band in BANDS}
-        for band in bands:
+    def __generate_spectra(self, xp_spectra, sampled_bases, available_bands, truncation, with_correlation):
+        split_spectrum = {band: dict() for band in available_bands}
+        for band in available_bands:
             band_truncation = truncation.get(band)
             split_spectrum[band]['xp_spectra'] = xp_spectra[band]
             stdev = split_spectrum[band]['xp_spectra'].get_standard_deviation()
@@ -70,9 +70,10 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
                 split_spectrum[band]['stdev'] = stdev
         return split_spectrum
 
-    def __merge_output(self, split_spectrum, bands, merge, with_correlation):
+    def __merge_output(self, split_spectrum, merge, with_correlation):
+        n_bands = len(split_spectrum.keys())
         # If both bands are present
-        if len(bands) == 2:
+        if n_bands == 2:
             self.flux = np.add(np.multiply(split_spectrum[BANDS.bp]['flux'], merge[BANDS.bp]),
                                np.multiply(split_spectrum[BANDS.rp]['flux'], merge[BANDS.rp]))
             self.error = np.sqrt(np.add(np.multiply(split_spectrum[BANDS.bp]['error'] ** 2, merge[BANDS.bp] ** 2),
@@ -81,12 +82,12 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
                 self.covariance = np.add(np.multiply(split_spectrum[BANDS.bp]['cov'], merge[BANDS.bp]),
                                          np.multiply(split_spectrum[BANDS.rp]['cov'], merge[BANDS.rp]))
         # If only one is
-        elif len(bands) == 1:
-            existing_band = bands[0]
-            self.flux = split_spectrum[existing_band]['flux']
-            self.error = split_spectrum[existing_band]['error']
+        elif n_bands == 1:
+            existing_band, spectrum = list(split_spectrum.items())[0]
+            self.flux = spectrum['flux']
+            self.error = spectrum['error']
             if with_correlation:
-                self.covariance = split_spectrum[existing_band]['cov']
+                self.covariance = spectrum['cov']
             # Patch values if there's a band missing
             masked_pos = self.pos.copy()
             masked_pos = masked_pos.astype(float)
@@ -94,6 +95,8 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
                 masked_pos[masked_pos <= RP_WL.low] = np.nan
             elif existing_band == BANDS.bp:
                 masked_pos[masked_pos >= BP_WL.high] = np.nan
+            else:
+                raise ValueError(f'Band {existing_band} is not a valid band.')
             # Get the indices of all the values in pos that are less than the lowest RP range value
             self.flux[np.argwhere(np.isnan(masked_pos))] = np.nan
             self.error[np.argwhere(np.isnan(masked_pos))] = np.nan

@@ -40,7 +40,7 @@ basis_function_id = {BANDS.bp: 56, BANDS.rp: 57}
 tolerance = 1.  # [pix] tolerance to detect a line
 
 # Activate tqdm for pandas
-tqdm.pandas(desc='Finding lines', unit=pbar_units['linefinder'], leave=False, colour=pbar_colour)
+# tqdm.pandas(desc='Finding lines', unit=pbar_units['linefinder'], leave=False, colour=pbar_colour)
 
 def _get_configuration(config):
     """

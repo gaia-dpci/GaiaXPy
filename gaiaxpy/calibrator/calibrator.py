@@ -16,7 +16,7 @@ from tqdm import tqdm
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_wl_sampling
-from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
@@ -26,9 +26,8 @@ from gaiaxpy.spectrum.utils import get_covariance_matrix
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from .external_instrument_model import ExternalInstrumentModel
 
-# Activate tqdm for pandas
-tqdm.pandas(desc='Calibrating data', unit=pbar_units['calibrator'], leave=False, colour=pbar_colour)
 
+__FUNCTION_KEY = 'calibrator'
 
 def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None, truncation: bool = False,
               output_path: Union[Path, str] = '.', output_file: str = 'output_spectra', output_format: str = None,
@@ -86,7 +85,10 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
     validate_wl_sampling(sampling)
     validate_arguments(_calibrate.__defaults__[3], output_file, save_file)
     parsed_input_data, extension = InputReader(input_object, _calibrate, username, password).read()
-    xp_design_matrices, xp_merge = __generate_xp_matrices_and_merge('calibrator', sampling, bp_model, rp_model)
+    xp_design_matrices, xp_merge = __generate_xp_matrices_and_merge(__FUNCTION_KEY, sampling, bp_model, rp_model)
+    for band in BANDS:
+        parsed_input_data[f'{band}_covariance_matrix'] = parsed_input_data.apply(get_covariance_matrix, axis=1,
+                                                                                 args=(band,))
     spectra_df, positions = __create_spectra(parsed_input_data, truncation, xp_design_matrices, xp_merge,
                                              with_correlation=with_correlation)
     output_data = SampledSpectraData(spectra_df, positions)
@@ -192,9 +194,11 @@ def __create_spectra(parsed_spectrum_file: pd.DataFrame, truncation: bool, desig
                  attributes 'data_type' indicating the type of spectra and 'positions' indicating the sample positions.
              positions (ndarray): 1D array of the sample positions.
      """
-    spectra_series = parsed_spectrum_file.progress_apply(lambda row:
-                                                         _create_spectrum(row, truncation, design_matrices, merge,
-                                                                          with_correlation=with_correlation), axis=1)
+    parsed_spectrum_file_dict = parsed_spectrum_file.to_dict('records')
+    spectra_series = pd.Series([_create_spectrum(row, truncation, design_matrices, merge,
+                                                 with_correlation=with_correlation)
+                                for row in tqdm(parsed_spectrum_file_dict, desc=pbar_message[__FUNCTION_KEY],
+                                                unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour)])
     positions = spectra_series.iloc[0].get_positions()
     spectra_type = get_spectra_type(spectra_series.iloc[0])
     spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict())
@@ -220,15 +224,9 @@ def _create_spectrum(row, truncation, design_matrix, merge, with_correlation=Fal
         AbsoluteSampledSpectrum: The absolute sampled spectrum.
     """
     source_id = row['source_id']
-    continuous_dict = dict()
-    recommended_truncation = dict()
-    # Split both bands
-    for band in BANDS:
-        covariance_matrix = get_covariance_matrix(row, band)
-        if covariance_matrix is not None:
-            continuous_dict[band] = XpContinuousSpectrum(source_id, band, row[f'{band}_coefficients'],
-                                                         covariance_matrix, row[f'{band}_standard_deviation'])
-        if truncation:
-            recommended_truncation[band] = row[f'{band}_n_relevant_bases']
+    continuous_dict = {band: XpContinuousSpectrum(source_id, band, row[f'{band}_coefficients'],
+                                                  row[f'{band}_covariance_matrix'], row[f'{band}_standard_deviation'])
+                       for band in BANDS}
+    recommended_truncation = {band: row[f'{band}_n_relevant_bases'] for band in BANDS} if truncation else dict()
     return AbsoluteSampledSpectrum(source_id, continuous_dict, design_matrix, merge, truncation=recommended_truncation,
-                                   with_correlation=with_correlation)  # An empty continuous dict will raise an error
+                                   with_correlation=with_correlation)

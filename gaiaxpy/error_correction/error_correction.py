@@ -40,10 +40,13 @@ def _read_system_table(system):
     return correction_table
 
 
-def _get_correction_array(mag_G_values, system):
-    # Read table here. We only want to read it once.
+def _get_correction_array(_mag_G_values, system):
+    def __get_correction_array(__mag_G_values, __correction_table):
+        for mag in __mag_G_values:
+            yield _get_correction_factors(mag, __correction_table)
     correction_table = _read_system_table(system)
-    correction_array = [_get_correction_factors(mag, correction_table) for mag in mag_G_values]
+    correction_array = __get_correction_array(_mag_G_values, correction_table)
+    correction_array = [sublist for sublist in zip(*correction_array)]
     return np.array(correction_array)
 
 
@@ -67,7 +70,7 @@ def _get_correction_factors(mag, correction_table):
     bin_centre = range_row['bin_centre']
     try:
         next_range_row = correction_table[correction_table['min_Gmag_bin'] == range_row['max_Gmag_bin']].iloc[0]
-    except:
+    except:  # TODO: Manage exception properly.
         return factors
     # Now for the rest
     if mag <= bin_centre:
@@ -75,9 +78,8 @@ def _get_correction_factors(mag, correction_table):
     # or interpolate
     elif bin_centre < mag < range_row['max_Gmag_bin']:
         next_factors = next_range_row[factor_columns]
-        correction_factors = [interp1d(np.array([bin_centre, range_row['max_Gmag_bin']]),
-                                       np.array([factor, next_factors[index]]))(mag) for index, factor in
-                              enumerate(factors)]
+        correction_factors = [interp1d(np.array([bin_centre, range_row['max_Gmag_bin']]), np.array([
+            factor, next_factors[index]]))(mag) for index, factor in enumerate(factors)]
         return np.array(correction_factors)
     else:
         raise ValueError('Check the variables being used. The program should never fall in this case.')
@@ -86,10 +88,9 @@ def _get_correction_factors(mag, correction_table):
 def _correct_system(system_df, correction_array):
     # Extract error columns
     error_df = system_df[[column for column in system_df.columns if '_error' in column]]
-    rearranged_correction = [sublist for sublist in zip(*correction_array)]
     # Factors for each column
     for index, column in enumerate(error_df.columns):
-        error_df[column] = error_df[column] * rearranged_correction[index]
+        error_df[column] = error_df[column] * correction_array[index]
     return error_df
 
 

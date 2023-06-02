@@ -3,8 +3,7 @@ from os import path
 
 import numpy as np
 
-from gaiaxpy.file_parser.parse_generic import _get_file_extension, DataMismatchError, \
-    GenericParser, InvalidExtensionError
+from gaiaxpy.file_parser.parse_generic import _get_file_extension, GenericParser, InvalidExtensionError
 from tests.files.paths import files_path
 
 parser = GenericParser()

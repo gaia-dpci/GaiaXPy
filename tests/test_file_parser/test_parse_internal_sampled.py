@@ -4,7 +4,6 @@ from os import path
 import pandas as pd
 from numpy import ndarray, dtype
 
-from gaiaxpy.file_parser.parse_generic import DataMismatchError
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from tests.files.paths import files_path
 

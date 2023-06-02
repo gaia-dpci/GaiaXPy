@@ -17,6 +17,7 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.utils import get_covariance_matrix
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from tests.files.paths import files_path
 from tests.utils.utils import get_spectrum_with_source_id_and_xp
@@ -42,6 +43,8 @@ converter_solution_df = pd.read_csv(path.join(converter_solution_path, 'converte
 parser = InternalContinuousParser()
 # Parsed files
 parsed_input, _ = parser.parse(input_file)
+for band in BANDS:
+    parsed_input[f'{band}_covariance_matrix'] = parsed_input.apply(get_covariance_matrix, axis=1, args=(band,))
 
 sampling = np.linspace(0, 60, 481)
 unique_bases_ids = get_unique_basis_ids(parsed_input)
@@ -123,16 +126,16 @@ class TestConverterSamplingRange(unittest.TestCase):
 
     def test_sampling_low(self):
         with self.assertRaises(ValueError):
-            convert(input, sampling=np.linspace(-15, 60, 600), save_file=False)
+            convert(input_file, sampling=np.linspace(-15, 60, 600), save_file=False)
 
     def test_sampling_high(self):
         with self.assertRaises(ValueError):
-            convert(input, sampling=np.linspace(-10, 71, 600), save_file=False)
+            convert(input_file, sampling=np.linspace(-10, 71, 600), save_file=False)
 
     def test_sampling_both_wrong(self):
         with self.assertRaises(ValueError):
-            convert(input, sampling=np.linspace(-11, 71, 600), save_file=False)
+            convert(input_file, sampling=np.linspace(-11, 71, 600), save_file=False)
 
     def test_sampling_none(self):
         with self.assertRaises(ValueError):
-            convert(input, sampling=None, save_file=False)
+            convert(input_file, sampling=None, save_file=False)

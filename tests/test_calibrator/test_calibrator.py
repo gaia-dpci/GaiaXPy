@@ -13,6 +13,7 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from gaiaxpy.spectrum.utils import get_covariance_matrix
 from tests.files.paths import files_path
 from tests.utils.utils import df_columns_to_array, pos_file_to_array
 
@@ -67,6 +68,9 @@ _atol = 1e-10
 def generate_single_spectrum(mean_spectrum_path):
     # Read mean Spectrum
     parsed_spectrum_file, extension = parser.parse(mean_spectrum_path)
+    for band in BANDS:
+        parsed_spectrum_file[f'{band}_covariance_matrix'] = parsed_spectrum_file.apply(get_covariance_matrix,
+                                                                                       axis=1, args=(band,))
     # Create sampled basis functions
     sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid,
                                                                          xp_design_matrices[band]) for band in

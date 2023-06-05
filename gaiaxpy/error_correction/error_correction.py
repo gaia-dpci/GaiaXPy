@@ -33,7 +33,7 @@ def _read_system_table(system):
     # Read system table
     try:
         correction_factors_path = path.join(correction_tables_path, f'DIDREQ-465-{system}-correction-factors.csv')
-        correction_table = pd.read_csv(correction_factors_path, float_precision='round_trip')
+        correction_table = pd.read_csv(correction_factors_path, float_precision='high')
         correction_table['bin_centre'] = (correction_table['min_Gmag_bin'] + correction_table['max_Gmag_bin']) / 2
     except FileNotFoundError:
         raise FileNotFoundError(f'No correction table found for system {system}.')

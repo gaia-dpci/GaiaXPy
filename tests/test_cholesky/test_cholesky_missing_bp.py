@@ -11,7 +11,7 @@ from gaiaxpy.cholesky.cholesky import get_inverse_square_root_covariance_matrix
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
 from tests.files.paths import files_path
-from tests.utils.utils import parse_matrices
+from tests.utils.utils import parse_matrices, missing_bp_source_id
 
 input_path = join(files_path, 'xp_continuous')
 input_file = join(input_path, 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
@@ -24,8 +24,6 @@ solution_file = join(solution_path, 'get_inv_cov_with_missing_bp.csv')
 solution_array_columns = [f'{band}_inverse_covariance' for band in BANDS]
 solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
 solution_df = pd.read_csv(solution_file, converters=solution_converters)
-
-missing_bp_source_id = 5405570973190252288
 
 
 class TestCholeskyMissingBP(unittest.TestCase):

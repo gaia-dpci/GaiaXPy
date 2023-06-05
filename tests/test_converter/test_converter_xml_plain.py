@@ -38,7 +38,7 @@ continuous_path = join(files_path, 'xp_continuous')
 input_file = join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 converter_solution_path = join(files_path, 'converter_solution')
 converter_solution_df = pd.read_csv(join(converter_solution_path, 'converter_solution_0_60_481.csv'),
-                                    float_precision='round_trip', converters=converters)
+                                    float_precision='high', converters=converters)
 missing_band_solution = join(converter_solution_path, 'missing_band_default_sampling_solution.csv')
 
 # Parsers
@@ -151,7 +151,7 @@ class TestConverterMissingBand(unittest.TestCase):
         npt.assert_array_equal(sampling, np.linspace(0, 60, 600))
         converted_spectra = converted_spectra.iloc[0]
         # Read solution
-        solution_values = pd.read_csv(missing_band_solution, float_precision='round_trip').iloc[0]
+        solution_values = pd.read_csv(missing_band_solution, float_precision='high').iloc[0]
         self.assertEqual(converted_spectra['source_id'], solution_values['source_id'])
         self.assertEqual(converted_spectra['xp'], solution_values['xp'])
         npt.assert_array_almost_equal(converted_spectra['flux'], np.array(literal_eval(solution_values['flux'])))

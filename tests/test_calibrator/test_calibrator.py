@@ -39,10 +39,8 @@ mean_spectrum_xml_plain = join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 # Load solution files, default model
 solution_default_sampling = pos_file_to_array(join(calibrator_sol_path, 'calibrator_solution_default_sampling.csv'))
 solution_custom_sampling = pos_file_to_array(join(calibrator_sol_path, 'calibrator_solution_custom_sampling.csv'))
-solution_default_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_default.csv'),
-                                  float_precision='round_trip')
-solution_custom_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_custom.csv'),
-                                 float_precision='round_trip')
+solution_default_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_default.csv'), float_precision='high')
+solution_custom_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_custom.csv'), float_precision='high')
 
 # Load solution files, v211w model
 solution_v211w_default_sampling = pos_file_to_array(join(calibrator_sol_path,
@@ -50,9 +48,9 @@ solution_v211w_default_sampling = pos_file_to_array(join(calibrator_sol_path,
 solution_v211w_custom_sampling = pos_file_to_array(join(calibrator_sol_path,
                                                         'calibrator_solution_v211w_custom_sampling.csv'))
 solution_v211w_default_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_v211w_default.csv'),
-                                        float_precision='round_trip')
+                                        float_precision='high')
 solution_v211w_custom_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_v211w_custom.csv'),
-                                       float_precision='round_trip')
+                                       float_precision='high')
 
 # Parse arrays in solution_df
 columns_to_parse = ['flux', 'flux_error']

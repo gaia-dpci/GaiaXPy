@@ -8,6 +8,7 @@ from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import *
+from tests.utils.utils import missing_bp_source_id
 
 _rtol, _atol = 1e-7, 1e-7
 
@@ -15,10 +16,9 @@ _rtol, _atol = 1e-7, 1e-7
 no_correction_solution_path = join(files_path, 'generator_solution', 'generator_solution_with_missing_BP.csv')
 correction_solution_path = join(files_path, 'generator_solution',
                                 'generator_solution_with_missing_BP_error_correction.csv')
-with_missing_solution_df_no_corr = pd.read_csv(no_correction_solution_path, float_precision='round_trip')
-with_missing_solution_df_with_corr = pd.read_csv(correction_solution_path, float_precision='round_trip')
+with_missing_solution_df_no_corr = pd.read_csv(no_correction_solution_path, float_precision='high')
+with_missing_solution_df_with_corr = pd.read_csv(correction_solution_path, float_precision='high')
 
-missing_bp_source_id = 5405570973190252288
 missing_solution_df_no_corr = with_missing_solution_df_no_corr[with_missing_solution_df_no_corr['source_id']
                                                                == missing_bp_source_id].reset_index(drop=True)
 missing_solution_df_with_corr = with_missing_solution_df_with_corr[with_missing_solution_df_no_corr['source_id']

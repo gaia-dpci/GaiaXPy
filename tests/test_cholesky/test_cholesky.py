@@ -13,14 +13,13 @@ from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import files_path
-from tests.utils.utils import parse_matrices
+from tests.utils.utils import parse_matrices, missing_bp_source_id
 
 cholesky_path = join(files_path, 'cholesky_solution')
 # Load solution (only BP solution is available from the notebook)
 matrix_columns = ['bp_inverse_covariance', 'rp_inverse_covariance']
 converters = dict([(column, lambda x: parse_matrices(x)) for column in matrix_columns])
-solution = pd.read_csv(join(cholesky_path, 'test_cholesky_solution.csv'), float_precision='round_trip',
-                       converters=converters)
+solution = pd.read_csv(join(cholesky_path, 'test_cholesky_solution.csv'), float_precision='high', converters=converters)
 
 _rtol = 1e-05
 _atol = 1e-05
@@ -170,7 +169,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
         pdt.assert_frame_equal(output_df, solution_df)
 
     def test_external_inverse_square_root_covariance_matrix_with_missing_bands_list_input(self):
-        input_object = [5853498713190525696, 5405570973190252288, 5762406957886626816]
+        input_object = [5853498713190525696, missing_bp_source_id, 5762406957886626816]
         output_df = get_inverse_square_root_covariance_matrix(input_object)
         solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
         solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
@@ -193,7 +192,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
 
     def test_external_inverse_square_root_covariance_matrix_with_missing_bands_query_input(self):
         input_object = "SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5762406957886626816'," \
-                       "'5853498713190525696', '5405570973190252288')"
+                       f" '5853498713190525696', {str(missing_bp_source_id)})"
         output_df = get_inverse_square_root_covariance_matrix(input_object)
         solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
         solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])

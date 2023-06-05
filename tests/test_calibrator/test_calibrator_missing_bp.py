@@ -8,7 +8,7 @@ from gaiaxpy import calibrate
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import *
-from tests.utils.utils import pos_file_to_array
+from tests.utils.utils import pos_file_to_array, missing_bp_source_id
 
 # Load solution
 solution_path = join(files_path, 'calibrator_solution')
@@ -17,7 +17,6 @@ with_missing_solution_df = pd.read_csv(join(solution_path, 'with_missing_calibra
                                        converters=solution_converters)
 solution_sampling = pos_file_to_array(join(solution_path, 'with_missing_calibrator_solution_sampling.csv'))
 
-missing_bp_source_id = 5405570973190252288
 missing_solution_df = with_missing_solution_df[with_missing_solution_df['source_id'] ==
                                                missing_bp_source_id].reset_index(drop=True)
 

@@ -43,7 +43,7 @@ class TestErrorCorrection(unittest.TestCase):
         # Load solution
         error_columns = [column for column in corrected_multiphotometry.columns if 'error' in column]
         other_columns = [column for column in corrected_multiphotometry.columns if not 'error' in column]
-        corrected_multiphotometry_solution = pd.read_csv(corrected_errors_solution_path, float_precision='round_trip')
+        corrected_multiphotometry_solution = pd.read_csv(corrected_errors_solution_path, float_precision='high')
         pdt.assert_frame_equal(corrected_multiphotometry[error_columns],
                                corrected_multiphotometry_solution[error_columns], rtol=_ertol, atol=_eatol)
         pdt.assert_frame_equal(corrected_multiphotometry[other_columns],
@@ -59,7 +59,7 @@ class TestErrorCorrection(unittest.TestCase):
         corrected_multiphotometry = apply_error_correction(multi_synthetic_photometry, save_file=False)
         halpha_photometry = multi_synthetic_photometry[halpha_columns]  # The results for this system should not change
         # Load solution
-        corrected_multiphotometry_solution = pd.read_csv(corrected_errors_solution_path, float_precision='round_trip')
+        corrected_multiphotometry_solution = pd.read_csv(corrected_errors_solution_path, float_precision='high')
         hst_columns = [column for column in corrected_multiphotometry_solution.columns if
                        column.startswith('HstHugsStd_')]
         corrected_multiphotometry_solution_first_two = corrected_multiphotometry_solution.drop(columns=hst_columns)

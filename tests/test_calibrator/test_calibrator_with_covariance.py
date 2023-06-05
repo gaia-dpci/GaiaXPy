@@ -15,8 +15,7 @@ f = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
 # Load sampling
 sampling_solution = join(files_path, 'calibrator_solution', 'calibrate_with_covariance_solution_sampling.csv')
 converters = {'pos': (lambda x: str_to_array(x))}
-sampling_solution_array = pd.read_csv(sampling_solution, float_precision='round_trip',
-                                      converters=converters).iloc[0]['pos']
+sampling_solution_array = pd.read_csv(sampling_solution, float_precision='high', converters=converters).iloc[0]['pos']
 
 _atol, _rtol = 1e-10, 1e-10
 
@@ -29,7 +28,7 @@ class TestCalibratorWithCovariance(unittest.TestCase):
         # Load spectra
         _converters = {key: (lambda x: str_to_array(x)) for key in ['flux', 'flux_error', 'covariance']}
         solution = join(files_path, 'calibrator_solution', 'calibrate_with_covariance_solution.csv')
-        solution_df = pd.read_csv(solution, float_precision='round_trip', converters=_converters)
+        solution_df = pd.read_csv(solution, float_precision='high', converters=_converters)
         # solution_df = solution_df.drop(index=1)
         stdev_pairs = [(1.1224667, 1.3151282), 1.0339215, (1.0479343, 1.0767492)]
 

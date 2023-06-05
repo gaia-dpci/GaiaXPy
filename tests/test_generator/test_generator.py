@@ -44,8 +44,7 @@ class TestGenerator(unittest.TestCase):
         missing_band_csv = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.csv')
         generated_photometry = generate(missing_band_csv, photometric_system=systems, save_file=False)
         # Load solution
-        solution_df = pd.read_csv(join(solution_path, 'generator_missing_band_solution.csv'),
-                                  float_precision='round_trip')
+        solution_df = pd.read_csv(join(solution_path, 'generator_missing_band_solution.csv'), float_precision='high')
         error_columns = [column for column in solution_df.columns if 'error' in column]
         other_columns = [column for column in solution_df.columns if 'error' not in column]
         pdt.assert_frame_equal(generated_photometry[error_columns], solution_df[error_columns], rtol=_ertol,

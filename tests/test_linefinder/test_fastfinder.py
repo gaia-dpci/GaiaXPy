@@ -5,7 +5,7 @@ import pandas.testing as pdt
 
 from gaiaxpy.linefinder.linefinder import fastfinder
 from tests.files.paths import *
-from tests.utils.utils import get_converters
+from tests.utils.utils import get_converters, missing_bp_source_id
 
 _rtol, _atol = 1e-7, 1e-7
 
@@ -25,7 +25,6 @@ found_fast = fastfinder(input_file, save_file=False)
 found_fast_trunc = fastfinder(input_file, truncation=True, save_file=False)
 found_fast_no_bp = fastfinder(with_missing_bp_csv_file, save_file=False)
 
-missing_bp_source_id = 5405570973190252288
 isolated_missing_bp_solution = found_fast_no_bp_real[found_fast_no_bp_real['source_id'] ==
                                                      missing_bp_source_id].reset_index(drop=True)
 
@@ -64,7 +63,7 @@ class TestFastFinder(unittest.TestCase):
         pdt.assert_frame_equal(isolated_output, isolated_missing_bp_solution)
 
     def test_query_input_with_missing_bp(self):
-        source_ids = ('5853498713190525696', '5405570973190252288', '5762406957886626816')
+        source_ids = ('5853498713190525696', str(missing_bp_source_id), '5762406957886626816')
         query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN {source_ids}"
         with_missing_output = fastfinder(query, save_file=False)
         for source_id in source_ids:
@@ -74,8 +73,8 @@ class TestFastFinder(unittest.TestCase):
                                                           source_id].reset_index(drop=True))
 
     def test_query_input_isolated_missing_bp(self):
-        isolated_output = fastfinder("SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5405570973190252288')",
-                                     save_file=False)
+        isolated_output = fastfinder(f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN"
+                                     f" ({str(missing_bp_source_id)})", save_file=False)
         pdt.assert_frame_equal(isolated_output, isolated_missing_bp_solution)
 
     def test_list_input_with_missing_bp(self):

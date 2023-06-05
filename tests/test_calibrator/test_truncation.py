@@ -48,7 +48,7 @@ converters = dict([(column, lambda x: str_to_array(x)) for column in columns_to_
 # Load solution files, default model
 solution_default_sampling = pos_file_to_array(join(calibrator_sol_path, 'calibrator_solution_default_sampling.csv'))
 truncation_default_solution_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_truncation_default.csv'),
-                                             float_precision='round_trip', converters=converters)
+                                             float_precision='high', converters=converters)
 
 _rtol, _atol = 1e-22, 1e-22
 

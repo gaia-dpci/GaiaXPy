@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 from gaiaxpy.core.generic_functions import str_to_array, array_to_symmetric_matrix
 
+missing_bp_source_id = 5405570973190252288
 
 def array_to_symmetric_matrix_row_major(size, array):
     """
@@ -63,7 +64,7 @@ def get_spectrum_with_source_id_and_xp(source_id, xp, spectra):
 
 
 def pos_file_to_array(pos_file):
-    df = pd.read_csv(pos_file, float_precision='round_trip', converters={'pos': (lambda x: str_to_array(x))})
+    df = pd.read_csv(pos_file, float_precision='high', converters={'pos': (lambda x: str_to_array(x))})
     return df['pos'].iloc[0]
 
 

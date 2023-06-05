@@ -13,13 +13,12 @@ f = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
 # Load spectra
 converters = {key: (lambda x: str_to_array(x)) for key in ['flux', 'flux_error', 'covariance']}
 solution = join(files_path, 'converter_solution', 'converter_with_covariance_missing_bp_solution.csv')
-solution_df = pd.read_csv(solution, float_precision='round_trip', converters=converters)
+solution_df = pd.read_csv(solution, float_precision='high', converters=converters)
 
 # Load sampling
 sampling_solution = join(files_path, 'converter_solution', 'converter_with_covariance_missing_bp_solution_sampling.csv')
 converters = {'pos': (lambda x: str_to_array(x))}
-sampling_solution_array = pd.read_csv(sampling_solution, float_precision='round_trip',
-                                      converters=converters).iloc[0]['pos']
+sampling_solution_array = pd.read_csv(sampling_solution, float_precision='high', converters=converters).iloc[0]['pos']
 
 _atol, _rtol = 1e-10, 1e-10
 

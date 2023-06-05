@@ -22,7 +22,7 @@ def get_system_by_name(lst, name):
 phot_systems_specs = pd.read_csv(path.join(files_path, 'PhotometricSystemSpecs.csv'),
                                  converters={'bands': lambda x: x[1:-1].split(','),
                                              'zero_points': lambda y: np.array(y[1:-1].split(',')).astype(float)},
-                                 float_precision='round_trip')
+                                 float_precision='high')
 available_systems = list(phot_systems_specs['name'])
 
 

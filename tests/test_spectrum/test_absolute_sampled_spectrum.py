@@ -22,7 +22,7 @@ xp_design_matrices = load_xpsampling_from_xml()
 
 parser = InternalContinuousParser()
 file_to_parse = path.join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
-parsed_correlation, _ = parser.parse(file_to_parse)
+parsed_correlation, _ = parser._parse(file_to_parse)
 
 # Create sampled basis functions
 sampled_basis_func = {}
@@ -33,7 +33,8 @@ for band in BANDS:
 class TestAbsoluteSampledSpectrum(unittest.TestCase):
 
     def test_init_no_truncation(self):
-        for index, row in parsed_correlation.iterrows():
+        parsed_correlation_dict = parsed_correlation.to_dict('records')
+        for row in parsed_correlation_dict:
             source_id = row['source_id']
             cont_dict = {}
             # Split both bands
@@ -48,7 +49,7 @@ class TestAbsoluteSampledSpectrum(unittest.TestCase):
             self.assertIsInstance(spectrum, AbsoluteSampledSpectrum)
 
     def test_init_truncation(self):
-        for index, row in parsed_correlation.iterrows():
+        for row in parsed_correlation.to_dict('records'):
             source_id = row['source_id']
             cont_dict = {}
             # Split both bands

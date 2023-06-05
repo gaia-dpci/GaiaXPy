@@ -15,9 +15,9 @@ class MultiAbsolutePlotter(Plotter):
         spectra_class = self.spectra_class
         spectra_df = self.spectra
         fig, ax = plt.subplots(figsize=(16, 9))
-        for index, spectrum in spectra_df.iterrows():
+        for spectrum in spectra_df.to_dict('records'):
             x, y, e = self._get_inputs(spectrum)
-            ax.plot(x, y, lw=2, alpha=0.95, label=spectrum.source_id)
+            ax.plot(x, y, lw=2, alpha=0.95, label=spectrum['source_id'])
         ax.set_xlabel(spectra_class.get_position_label())
         ax.set_ylabel(spectra_class._get_flux_label())
         fig.tight_layout()

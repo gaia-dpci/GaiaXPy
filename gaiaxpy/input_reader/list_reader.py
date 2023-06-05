@@ -35,6 +35,7 @@ class ListReader(ArchiveReader):
         gaia = GaiaClass(gaia_tap_server=gaia_server, gaia_data_server=gaia_server)
         self._login(gaia)
         # ADQL query
+        print('Launching query...', end='\r')
         result = gaia.load_data(ids=sources, format='csv', data_release=_data_release, data_structure='raw',
                                 retrieval_type='XP_CONTINUOUS', avoid_datatype_check=True)
         try:

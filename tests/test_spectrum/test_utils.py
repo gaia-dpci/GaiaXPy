@@ -16,8 +16,8 @@ covariance_avro_file = path.join(continuous_path, 'MeanSpectrumSolutionWithCov.a
 # Parsers
 parser = InternalContinuousParser()
 # Parsed files
-parsed_correlation, _ = parser.parse(correlation_csv_file)
-parsed_covariance, _ = parser.parse(covariance_avro_file)
+parsed_correlation, _ = parser._parse(correlation_csv_file)
+parsed_covariance, _ = parser._parse(covariance_avro_file)
 
 # Tolerances
 abs_tol = 1.e-3

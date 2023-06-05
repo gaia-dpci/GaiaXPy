@@ -23,11 +23,11 @@ class MultiXpPlotter(Plotter):
         ax[1].set_title(BANDS.rp.upper())
         ax[1].yaxis.set_label_position('right')
         ax[1].yaxis.tick_right()
-        for _, spectrum in spectra_df.iterrows():
+        for spectrum in spectra_df.to_dict('records'):
             x, y, e = self._get_inputs(spectrum)
             max_flux = max(y) if max(y) > max_flux else max_flux
-            axis = BANDS.index(spectrum.xp.lower())
-            ax[axis].plot(x, y, lw=2, alpha=0.95, label=spectrum.source_id)
+            axis = BANDS.index(spectrum['xp'].lower())
+            ax[axis].plot(x, y, lw=2, alpha=0.95, label=spectrum['source_id'])
         for axis in ax:
             axis.set_ylim(0, 1.05 * max_flux)
             axis.set_xlabel(spectra_class.get_position_label())

@@ -9,7 +9,7 @@ import pandas.testing as pdt
 from gaiaxpy import get_chi2, get_inverse_covariance_matrix
 from gaiaxpy.cholesky.cholesky import _get_inverse_square_root_covariance_matrix_aux, \
     get_inverse_square_root_covariance_matrix
-from gaiaxpy.core.generic_functions import str_to_array
+from gaiaxpy.core.generic_functions import str_to_array, array_to_symmetric_matrix
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import files_path
@@ -41,9 +41,12 @@ class TestCholesky(unittest.TestCase):
     def test_inverse_covariance_matrix_file_from_df_numpy_array(self):
         f = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
         df = pd.read_csv(f)
-        # Correlations and error should be numpy array
-        df['bp_coefficient_correlations'] = df['bp_coefficient_correlations'].map(str_to_array)
-        df['bp_coefficient_errors'] = df['bp_coefficient_errors'].map(str_to_array)
+        # Correlations and error should be NumPy array
+        for column in ['bp_coefficient_correlations', 'bp_coefficient_errors', 'rp_coefficient_correlations',
+                       'rp_coefficient_errors']:
+            df[column] = df[column].map(str_to_array)
+        for column in ['bp_coefficient_correlations', 'rp_coefficient_correlations']:
+            df[column] = df[column].apply(lambda row: array_to_symmetric_matrix(row, 55))
         inverse_df = get_inverse_covariance_matrix(df)
         pdt.assert_frame_equal(inverse_df, solution, rtol=_rtol, atol=_atol)
 

@@ -12,7 +12,7 @@ from tests.files.paths import files_path
 file_path = path.join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 dataframe_str = pd.read_csv(file_path, float_precision='high')
 parser = InternalContinuousParser()
-dataframe_np, _ = parser.parse(file_path)
+dataframe_np, _ = parser._parse(file_path)
 
 _rtol, _atol = 1e-24, 1e-24
 

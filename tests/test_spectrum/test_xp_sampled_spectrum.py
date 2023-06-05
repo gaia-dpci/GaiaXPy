@@ -25,7 +25,7 @@ config_file = path.join(config_path, configparser.get('converter', 'optimised_ba
 csv_file_with_correlation = path.join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 
 parser = InternalContinuousParser()
-correlation_parsed_file, _ = parser.parse(csv_file_with_correlation)
+correlation_parsed_file, _ = parser._parse(csv_file_with_correlation)
 
 parsed_config = load_config(config_file)
 

@@ -43,7 +43,7 @@ converter_solution_df = pd.read_csv(join(files_path, solution_folder, 'converter
 # Parsers
 parser = InternalContinuousParser()
 # Parsed files
-parsed_input, _ = parser.parse(input_file)
+parsed_input, _ = parser._parse(input_file)
 for band in BANDS:
     parsed_input[f'{band}_covariance_matrix'] = parsed_input.apply(get_covariance_matrix, axis=1, args=(band,))
 
@@ -60,8 +60,8 @@ ref_sampled_truncated_csv = join(converter_solution_path, 'SampledMeanSpectrum_t
 missing_band_solution = join(converter_solution_path, 'missing_band_default_sampling_solution.csv')
 
 sampled_parser = InternalSampledParser()
-ref_sampled, _ = sampled_parser.parse(ref_sampled_csv)
-ref_sampled_truncated, _ = sampled_parser.parse(ref_sampled_truncated_csv)
+ref_sampled, _ = sampled_parser._parse(ref_sampled_csv)
+ref_sampled_truncated, _ = sampled_parser._parse(ref_sampled_truncated_csv)
 
 TOL = 4
 _rtol, _atol = 1e-11, 1e-11
@@ -74,18 +74,20 @@ class TestGetMethods(unittest.TestCase):
         self.assertEqual(unique_bases_ids, {56, 57})
 
     def test_get_design_matrices(self):
+        keys = [56, 57]
         self.assertIsInstance(design_matrices, dict)
         self.assertEqual(len(design_matrices), 2)
-        self.assertEqual(list(design_matrices.keys()), [56, 57])
-        self.assertIsInstance(design_matrices[56], SampledBasisFunctions)
-        self.assertIsInstance(design_matrices[57], SampledBasisFunctions)
+        self.assertEqual(list(design_matrices.keys()), keys)
+        for key in keys:
+            self.assertIsInstance(design_matrices[key], SampledBasisFunctions)
 
 
 class TestCreateSpectrum(unittest.TestCase):
 
     def test_create_spectrum(self):
         truncation = True
-        for index, row in islice(parsed_input.iterrows(), 1):  # Just the first row
+        parsed_input_dict = parsed_input.to_dict('records')
+        for row in islice(parsed_input_dict, 1):  # Just the first row
             spectrum_bp = _create_spectrum(row, truncation, design_matrices, BANDS.bp)
             spectrum_rp = _create_spectrum(row, truncation, design_matrices, BANDS.rp)
         self.assertIsInstance(spectrum_bp, XpSampledSpectrum)
@@ -103,22 +105,20 @@ class TestConverter(unittest.TestCase):
         pdt.assert_frame_equal(converted_df, converter_solution_df, rtol=_rtol, atol=_atol)
 
     def test_conversion(self):
-        for index, spectrum in converted_df.iterrows():
-            band = spectrum['xp']
-            ref = get_spectrum_with_source_id_and_xp(spectrum.source_id, band, ref_sampled)
-            npt.assert_almost_equal(ref['flux'], spectrum.flux, decimal=TOL)
-            npt.assert_almost_equal(ref['error'], spectrum.flux_error, decimal=TOL)
+        for spectrum in converted_df.to_dict('records'):
+            ref = get_spectrum_with_source_id_and_xp(spectrum['source_id'], spectrum['xp'], ref_sampled)
+            npt.assert_almost_equal(ref['flux'], spectrum['flux'], decimal=TOL)
+            npt.assert_almost_equal(ref['error'], spectrum['flux_error'], decimal=TOL)
 
 
 class TestTruncation(unittest.TestCase):
 
     def test_truncation(self):
         converted_truncated_df, _ = convert(input_file, sampling=sampling, truncation=True, save_file=False)
-        for index, spectrum in converted_truncated_df.iterrows():
-            band = spectrum.xp
-            ref = get_spectrum_with_source_id_and_xp(spectrum.source_id, band, ref_sampled_truncated)
-            npt.assert_almost_equal(ref['flux'], spectrum.flux, decimal=TOL)
-            npt.assert_almost_equal(ref['error'], spectrum.flux_error, decimal=TOL)
+        for spectrum in converted_truncated_df.to_dict('records'):
+            ref = get_spectrum_with_source_id_and_xp(spectrum['source_id'], spectrum['xp'], ref_sampled_truncated)
+            npt.assert_almost_equal(ref['flux'], spectrum['flux'], decimal=TOL)
+            npt.assert_almost_equal(ref['error'], spectrum['flux_error'], decimal=TOL)
 
 
 class TestConverterSamplingRange(unittest.TestCase):

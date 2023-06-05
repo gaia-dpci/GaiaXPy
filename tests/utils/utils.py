@@ -88,7 +88,7 @@ def get_converters(columns, dtypes=None):
 
     
 def df_columns_to_array(df, columns):
-    for index, row in df.iterrows():
+    for index, row in enumerate(df.to_dict('records')):
         for column in columns:
             df[column][index] = str_to_array(row[column])
     return df

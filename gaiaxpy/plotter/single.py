@@ -13,7 +13,7 @@ class SinglePlotter(Plotter):
 
     def _plot_single(self, spectrum):
         spectra_class = self.spectra_class
-        source_id = spectrum.source_id
+        source_id = spectrum['source_id']
         fig, ax = plt.subplots(figsize=(16, 9))
         x, y, e = self._get_inputs(spectrum)
         ax.plot(x, y, lw=2, alpha=0.95, label=source_id)
@@ -29,7 +29,7 @@ class SinglePlotter(Plotter):
             raise ValueError(
                 f'Spectra list is too long. This functionality can only show up to {self.max_spectra_on_single} '
                 f'single plots. Try saving the plots without showing them using the option output_path.')
-        for index, spectrum in self.spectra.iterrows():
+        for index, spectrum in enumerate(self.spectra.to_dict('records')):
             self._plot_single(spectrum)
             if self.output_path:
                 if n_spectra > 1:

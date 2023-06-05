@@ -28,7 +28,7 @@ class InputReader(object):
         if isfile(content) or isabs(content):
             selector = FileReader(function)
             parser = selector._select()  # Select type of parser required
-            parsed_input_data, extension = parser.parse(content)
+            parsed_input_data, extension = parser._parse(content)
         # Query should start with select
         elif content.lower().startswith('select'):
             parsed_input_data, extension = QueryReader(content, function, user, password)._read()
@@ -57,8 +57,6 @@ class InputReader(object):
             parsed_data, extension = self.__string_reader()
         else:
             raise ValueError('The input provided does not match any of the expected input types.')
-        # TODO: Try "if not extension", previously failed.
-        if extension is None:
-            extension = default_extension
+        extension = default_extension if extension is None else extension
         parsed_data['source_id'] = parsed_data['source_id'].astype('int64')
         return parsed_data, extension

@@ -19,11 +19,11 @@ plain_xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
 
 parser = InternalContinuousParser()
-parsed_avro_file, _ = parser.parse(avro_file)
-parsed_csv_file, _ = parser.parse(csv_file)
-parsed_fits_file, _ = parser.parse(fits_file)
-parsed_plain_xml_file, _ = parser.parse(plain_xml_file)
-parsed_xml_file, _ = parser.parse(xml_file)
+parsed_avro_file, _ = parser._parse(avro_file)
+parsed_csv_file, _ = parser._parse(csv_file)
+parsed_fits_file, _ = parser._parse(fits_file)
+parsed_plain_xml_file, _ = parser._parse(plain_xml_file)
+parsed_xml_file, _ = parser._parse(xml_file)
 
 type_map = {'source_id': dtype('int64'),
             'solution_id': dtype('int64'),

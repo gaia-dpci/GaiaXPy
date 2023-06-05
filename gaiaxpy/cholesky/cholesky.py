@@ -106,26 +106,15 @@ def _get_inverse_square_root_covariance_matrix_aux(xp_errors: np.ndarray, xp_cor
             correlation matrix fails.
     """
     try:
-        L = cholesky(xp_correlation_matrix, lower=True)
-        # Invert lower triangular matrix.
-        L_inv = solve_triangular(L, identity(len(L)), lower=True)
-        # Matrix of inverse errors.
-        E_inv = diag(1.0 / xp_errors)
-        return dot(L_inv, E_inv)
+        _L = cholesky(xp_correlation_matrix, lower=True)
+        # Invert lower triangular matrix
+        _L_inv = solve_triangular(_L, identity(len(_L)), lower=True)
+        # Matrix of inverse errors
+        _E_inv = diag(1.0 / xp_errors)
+        return dot(_L_inv, _E_inv)
     except ValueError:
         return None
 
-
-# The following method is not recommended. The get_inverse_square_root_covariance_matrix which inverts the correlation
-# matrix instead is to be preferred because the correlations only range between -1 and +1 whereas the values in the
-# covariance matrix can vary from -inf to +inf.
-# def __get_inv_cholesky_decomp(xp_cov):
-#    try:
-#        L = cholesky(xp_cov, lower=True)
-#        # Invert lower triangular matrix.
-#        return solve_triangular(L, identity(len(L)), lower=True)
-#    except ValueError:
-#        return None
 
 def get_inverse_covariance_matrix(input_object: Union[list, Path, str], band: str = None):
     """
@@ -143,8 +132,7 @@ def get_inverse_covariance_matrix(input_object: Union[list, Path, str], band: st
             The function will return a ndarray (of shape (55, 55)) if there is only one source ID in the input data
             and a single band is selected.
     """
-    if band is not None:
-        band = parse_band(band)
+    band = band if band is None else parse_band(band)
     parsed_input_data, extension = InputReader(input_object, get_inverse_covariance_matrix).read()
     bands_output = []
     if band is None:

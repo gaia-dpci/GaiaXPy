@@ -11,7 +11,7 @@ from tests.files.paths import files_path
 csv_file = path.join(files_path, 'converter_solution', 'SampledMeanSpectrum.csv')
 
 parser = InternalSampledParser()
-parsed_csv_file, _ = parser.parse(csv_file)
+parsed_csv_file, _ = parser._parse(csv_file)
 
 
 class TestInternalSampledParserCSV(unittest.TestCase):

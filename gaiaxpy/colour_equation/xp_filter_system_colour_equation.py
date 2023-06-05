@@ -90,10 +90,9 @@ def __create_rows(single_system_df, system, colour_band_0, colour_band_1, system
     """
     Create output rows for a systems.
     """
-    new_system_rows = [__generate_output_row(row, system, colour_band_0, colour_band_1, systems_details) for index, row
-                       in tqdm(single_system_df.iterrows(), desc='Applying colour equation',
-                               total=len(single_system_df), unit=pbar_units['colour_eq'], colour=pbar_colour,
-                               leave=False)]
+    new_system_rows = [__generate_output_row(row, system, colour_band_0, colour_band_1, systems_details) for row in
+                       tqdm(single_system_df.to_dict('records'), desc='Applying colour equation',
+                            total=len(single_system_df), unit=pbar_units['colour_eq'], colour=pbar_colour, leave=False)]
     return pd.DataFrame(new_system_rows)
 
 

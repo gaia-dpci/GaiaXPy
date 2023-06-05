@@ -3,7 +3,10 @@ plot_spectra.py
 ====================================
 Module to plot spectra.
 """
+from pathlib import Path
+from typing import Optional, Union
 
+import pandas as pd
 from numpy import ndarray
 
 from .multi_absolute import MultiAbsolutePlotter
@@ -11,8 +14,9 @@ from .multi_xp import MultiXpPlotter
 from .single import SinglePlotter
 
 
-def plot_spectra(spectra, sampling=None, multi=False, show_plot=True, output_path=None, output_file=None,
-                 format='jpg', legend=True):
+def plot_spectra(spectra: pd.DataFrame, sampling: Optional[ndarray] = None, multi: bool = False, show_plot: bool = True,
+                 output_path: Optional[Union[Path, str]] = None, output_file: Optional[str] = None, format: str = 'jpg',
+                 legend: bool = True):
     """
     Plot one or more spectra.
 

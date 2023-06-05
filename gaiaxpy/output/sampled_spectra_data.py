@@ -237,7 +237,7 @@ class SampledSpectraData(OutputData):
         spectra_table.fields.extend(fields)
         # Create the record arrays, with the given number of rows
         spectra_table.create_arrays(len(spectra_df))
-        for index, row in spectra_df.iterrows():
+        for index, row in enumerate(spectra_df.to_dict('records')):
             spectra_table.array[index] = tuple([row[column] for column in spectra_df.columns])
         # Write to a file
         Path(output_path).mkdir(parents=True, exist_ok=True)

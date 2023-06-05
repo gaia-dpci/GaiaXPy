@@ -57,7 +57,7 @@ class TestCalibratorTruncation(unittest.TestCase):
 
     def test_create_spectrum(self):
         # Read mean Spectrum
-        parsed_spectrum_file, extension = parser.parse(mean_spectrum_csv)
+        parsed_spectrum_file, extension = parser._parse(mean_spectrum_csv)
         for band in BANDS:
             parsed_spectrum_file[f'{band}_covariance_matrix'] = parsed_spectrum_file.apply(get_covariance_matrix,
                                                                                            axis=1, args=(band,))

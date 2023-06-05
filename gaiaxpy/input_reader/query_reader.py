@@ -22,6 +22,7 @@ class QueryReader(ArchiveReader):
         gaia = GaiaClass(gaia_tap_server=gaia_server, gaia_data_server=gaia_server)
         self._login(gaia)
         # ADQL query
+        print('Launching query...', end='\r')
         job = gaia.launch_job_async(query, dump_to_file=False)
         ids = job.get_results()
         result = gaia.load_data(ids=ids['source_id'], format='csv', data_release=_data_release,
@@ -29,7 +30,6 @@ class QueryReader(ArchiveReader):
         try:
             continuous_key = [key for key in result.keys() if 'continuous' in key.lower()][0]
             data = result[continuous_key][0].to_pandas()
-        # TODO: More granular error management required.
         except KeyError:
             raise ValueError('No continuous raw data found for the requested query.')
         return DataFrameReader(data)._read_df()

@@ -60,7 +60,7 @@ class GenericParser(object):
         else:
             raise InvalidExtensionError()
 
-    def parse(self, file_path):
+    def _parse(self, file_path):
         """
         Parse the input file according to its extension.
 

@@ -1,3 +1,5 @@
+import numpy as np
+
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
 from .dataframe_numpy_array_reader import DataFrameNumPyArrayReader
 from .dataframe_string_array_reader import DataFrameStringArrayReader
@@ -7,7 +9,7 @@ matrix_columns = [('bp_n_parameters', 'bp_coefficient_correlations'),
 
 
 def extremes_are_enclosing(row, column):
-    return (row[column][0] == '[' and row[column][-1] == ']') or (row[column][0] == '(' and row[column][-1] == ')')
+    return (row[column][0] == '(' and row[column][-1] == ')') or (row[column][0] == '[' and row[column][-1] == ']')
 
 
 def needs_matrix_conversion(array_columns):
@@ -20,30 +22,23 @@ class DataFrameReader(object):
     def __init__(self, content):
         self.content = content.copy()
 
-    def __get_str_columns(self):
-        str_columns = []
+    def __get_parseable_columns(self):
+        str_columns, np_columns = [], []
         content = self.content
         rows = content.iloc[0:2]
-        for column in content.columns:
-            for index, row in rows.iterrows():
+        rows_dict = rows.to_dict('records')
+        for row in rows_dict:
+            for column in content.columns:
                 if isinstance(row[column], str) and extremes_are_enclosing(row, column):
                     str_columns.append(column)
-        return list(set(str_columns))
-
-    def __get_np_columns(self):
-        # TODO: Check this function
-        np_columns = []
-        content = self.content
-        rows = content.iloc[0:2]
-        for column in content.columns:
-            for index, row in rows.iterrows():
-                np_columns.append(column)
-        return list(set(np_columns))
+                if isinstance(row[column], np.ndarray):
+                    np_columns.append(column)
+        return list(set(str_columns)), list(set(np_columns))
 
     def _read_df(self):
+        print('Reading DataFrame...', end='\r')
         content = self.content
-        str_array_columns = self.__get_str_columns()
-        np_array_columns = self.__get_np_columns()
+        str_array_columns, np_array_columns = self.__get_parseable_columns()
         if str_array_columns:
             data = DataFrameStringArrayReader(content, str_array_columns)._parse()  # Call string reader
             array_columns = str_array_columns
@@ -57,4 +52,4 @@ class DataFrameReader(object):
             for size_column, values_column in matrix_columns:
                 data[values_column] = data.apply(lambda row: array_to_symmetric_matrix(row[values_column],
                                                                                        row[size_column]), axis=1)
-        return data, None  # No extension returned for dataframes
+        return data, None  # No extension returned for DataFrames

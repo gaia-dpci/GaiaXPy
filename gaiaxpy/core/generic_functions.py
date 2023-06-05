@@ -22,8 +22,7 @@ from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 
 def _get_built_in_systems() -> list:
     f = open(join(config_path, 'available_systems.txt'), 'r')
-    built_in_systems = f.read().splitlines()
-    return built_in_systems
+    return f.read().splitlines()
 
 
 def _is_built_in_system(system):
@@ -218,12 +217,6 @@ def _extract_systems_from_data(data_columns, photometric_system=None):
         column_list = [column.split('_')[0] for column in columns]
         systems = list(dict.fromkeys(column_list))
     return systems
-
-
-def _get_built_in_systems() -> list:
-    f = open(join(config_path, 'available_systems.txt'), 'r')
-    return f.read().splitlines()
-
 
 def correlation_from_covariance(covariance):
     v = np.sqrt(np.diag(covariance))

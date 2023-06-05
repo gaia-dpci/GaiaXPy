@@ -16,7 +16,7 @@ from tqdm import tqdm
 
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_pwl_sampling
-from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
@@ -175,7 +175,8 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
 
     parsed_input_data_dict = parsed_input_data.to_dict('records')
     spectra_series = pd.Series([create_xp_spectra(row, truncation, design_matrices, with_correlation)
-                                for row in tqdm(parsed_input_data_dict)])
+                                for row in tqdm(parsed_input_data_dict, desc=pbar_message[__FUNCTION_KEY],
+                                                unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour)])
     spectra_series = spectra_series.explode()
     positions = spectra_series.iloc[0].get_positions()
     spectra_type = get_spectra_type(spectra_series.iloc[0])

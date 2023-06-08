@@ -86,17 +86,18 @@ def __fill_systems_details(systems_to_correct):
     return systems_details
 
 
-def __create_rows(single_system_df, system, colour_band_0, colour_band_1, systems_details):
+def __create_rows(single_system_df, system, colour_band_0, colour_band_1, systems_details, disable_info):
     """
     Create output rows for a systems.
     """
     new_system_rows = [__generate_output_row(row, system, colour_band_0, colour_band_1, systems_details) for row in
                        tqdm(single_system_df.to_dict('records'), desc='Applying colour equation',
-                            total=len(single_system_df), unit=pbar_units['colour_eq'], colour=pbar_colour, leave=False)]
+                            total=len(single_system_df), unit=pbar_units['colour_eq'], colour=pbar_colour, leave=False,
+                            disable=disable_info)]
     return pd.DataFrame(new_system_rows)
 
 
-def _generate_output_df(input_synthetic_photometry, systems_details):
+def _generate_output_df(input_synthetic_photometry, systems_details, disable_info=False):
     synth_phot_df = input_synthetic_photometry.copy()
     column_names = synth_phot_df.columns
     # Extract columns corresponding to one system
@@ -107,7 +108,8 @@ def _generate_output_df(input_synthetic_photometry, systems_details):
                                       column.endswith((f'_{filter_to_correct}', f'_{colour_band_0}',
                                                        f'_{colour_band_1}'))]
         single_system_df = synth_phot_df[system_columns_with_colour]
-        corrected_system_df = __create_rows(single_system_df, label, colour_band_0, colour_band_1, systems_details)
+        corrected_system_df = __create_rows(single_system_df, label, colour_band_0, colour_band_1, systems_details,
+                                            disable_info=disable_info)
         columns_to_correct = corrected_system_df.columns
         synth_phot_df[columns_to_correct] = corrected_system_df[columns_to_correct]
     return synth_phot_df
@@ -144,7 +146,7 @@ def _get_colour_bands(colour_index):
     Split the bands of a colour index.
 
     Args:
-        str: Colour index containing two bands separated by a hyphen (e.g. U-V).
+        colour_index (str): Colour index containing two bands separated by a hyphen (e.g. U-V).
 
     Returns:
         tuple: Tuple of two elements containing the bands for the colour index as strings.
@@ -232,12 +234,22 @@ def apply_colour_equation(input_synthetic_photometry: pd.DataFrame,
     Returns:
         DataFrame: The input photometry with colour equations applied if it corresponds.
     """
-    function = apply_colour_equation  # Being able to extract the name of the current function would be ideal.
+    return _apply_colour_equation(input_synthetic_photometry=input_synthetic_photometry,
+                                  photometric_system=photometric_system, output_path=output_path,
+                                  output_file=output_file, output_format=output_format, save_file=save_file)
+
+
+def _apply_colour_equation(input_synthetic_photometry: pd.DataFrame,
+                           photometric_system: Union[list, PhotometricSystem] = None, output_path: str = '.',
+                           output_file: str = 'corrected_photometry', output_format: Optional[str] = None,
+                           save_file: bool = True, disable_info=True):
+    function = apply_colour_equation
     validate_arguments(function.__defaults__[2], output_file, save_file)
-    input_synthetic_photometry, extension = InputReader(input_synthetic_photometry, function).read()
+    input_synthetic_photometry, extension = InputReader(input_synthetic_photometry, function,
+                                                        disable_info=disable_info).read()
     systems_to_correct = __get_systems_to_correct(photometric_system)
     systems_details = __fill_systems_details(systems_to_correct)
-    output_df = _generate_output_df(input_synthetic_photometry, systems_details)
+    output_df = _generate_output_df(input_synthetic_photometry, systems_details, disable_info=True)
     output_data = PhotometryData(output_df)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)

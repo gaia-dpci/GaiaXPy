@@ -41,7 +41,7 @@ class ExternalParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the FITS file.
         """
-        return super()._parse_fits(fits_file, array_columns=_array_columns)
+        return super()._parse_fits(fits_file, _array_columns=_array_columns)
 
     def _parse_xml(self, xml_file, _array_columns=array_columns):
         """
@@ -55,4 +55,4 @@ class ExternalParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the XML file.
         """
-        return super()._parse_xml(xml_file, array_columns=_array_columns)
+        return super()._parse_xml(xml_file, _array_columns=_array_columns)

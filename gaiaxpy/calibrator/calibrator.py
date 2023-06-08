@@ -67,7 +67,8 @@ def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None,
 def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None, truncation: bool = False,
                output_path: Union[Path, str] = '.', output_file: str = 'output_spectra', output_format: str = None,
                save_file: bool = True, with_correlation: bool = False, username: str = None, password: str = None,
-               bp_model: str = 'v375wi', rp_model: str = 'v142r') -> (pd.DataFrame, np.ndarray):
+               bp_model: str = 'v375wi', rp_model: str = 'v142r', disable_info: bool = False) ->\
+        (pd.DataFrame, np.ndarray):
     """
     Internal method of the calibration utility. Refer to "calibrate".
 
@@ -84,10 +85,11 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
     """
     validate_wl_sampling(sampling)
     validate_arguments(_calibrate.__defaults__[3], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, _calibrate, username, password).read()
+    parsed_input_data, extension = InputReader(input_object, _calibrate, username, password,
+                                               disable_info=disable_info).read()
     xp_design_matrices, xp_merge = __generate_xp_matrices_and_merge(__FUNCTION_KEY, sampling, bp_model, rp_model)
     spectra_df, positions = __create_spectra(parsed_input_data, truncation, xp_design_matrices, xp_merge,
-                                             with_correlation=with_correlation)
+                                             with_correlation=with_correlation, disable_info=disable_info)
     output_data = SampledSpectraData(spectra_df, positions)
     output_data.data = cast_output(output_data)
     # Save output
@@ -170,7 +172,7 @@ def __generate_xp_matrices_and_merge(label: str, sampling: np.ndarray, bp_model:
 
 
 def __create_spectra(parsed_spectrum_file: pd.DataFrame, truncation: bool, design_matrices: dict, merge: dict,
-                     with_correlation: bool = False):
+                     with_correlation: bool = False, disable_info: bool = False):
     """
      Create a DataFrame of absolute sampled spectra for each source in the parsed mean spectra file.
 
@@ -195,7 +197,8 @@ def __create_spectra(parsed_spectrum_file: pd.DataFrame, truncation: bool, desig
     spectra_series = pd.Series([_create_spectrum(row, truncation, design_matrices, merge,
                                                  with_correlation=with_correlation)
                                 for row in tqdm(parsed_spectrum_file_dict, desc=pbar_message[__FUNCTION_KEY],
-                                                unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour)])
+                                                unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour,
+                                                disable=disable_info)])
     positions = spectra_series.iloc[0].get_positions()
     spectra_type = get_spectra_type(spectra_series.iloc[0])
     spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict())

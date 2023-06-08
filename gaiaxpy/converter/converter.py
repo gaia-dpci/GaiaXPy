@@ -69,7 +69,7 @@ def convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lins
 def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.linspace(0, 60, 600),
             truncation: bool = False, with_correlation: bool = False, output_path: Union[Path, str] = '.',
             output_file: str = 'output_spectra', output_format: str = None, save_file: bool = True,
-            username: str = None, password: str = None, disable_tqdm: bool = False) -> (pd.DataFrame, np.ndarray):
+            username: str = None, password: str = None, disable_info: bool = False) -> (pd.DataFrame, np.ndarray):
     """
     Internal method of the calibration utility. Refer to "convert".
 
@@ -87,7 +87,8 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     # Check sampling
     validate_pwl_sampling(sampling)
     validate_arguments(convert.__defaults__[4], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, convert, username, password).read()
+    parsed_input_data, extension = InputReader(input_object, convert, username, password,
+                                               disable_info=disable_info).read()
     config_parser = ConfigParser()
     config_parser.read(path.join(config_path, 'config.ini'))
     config_file = path.join(config_path, config_parser.get(__FUNCTION_KEY, 'optimised_bases'))
@@ -97,7 +98,7 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     # Get design matrices
     design_matrices = get_design_matrices(unique_bases_ids, sampling, config_df)
     spectra_df, positions = _create_spectra(parsed_input_data, truncation, design_matrices,
-                                            with_correlation=with_correlation)
+                                            with_correlation=with_correlation, disable_info=disable_info)
     # Save output
     output_data = SampledSpectraData(spectra_df, positions)
     output_data.data = cast_output(output_data)
@@ -131,7 +132,7 @@ def _create_spectrum(row: pd.Series, truncation: bool, design_matrices: dict, ba
 
 
 def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_matrices: dict,
-                    with_correlation: bool = False) -> tuple:
+                    with_correlation: bool = False, disable_info=False) -> tuple:
     """
     Creates a spectra dataframe from parsed input data and given parameters.
 
@@ -172,7 +173,8 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
     parsed_input_data_dict = parsed_input_data.to_dict('records')
     spectra_series = pd.Series([create_xp_spectra(row, truncation, design_matrices, with_correlation)
                                 for row in tqdm(parsed_input_data_dict, desc=pbar_message[__FUNCTION_KEY],
-                                                unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour)])
+                                                unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour,
+                                                disable=disable_info)])
     spectra_series = spectra_series.explode()
     positions = spectra_series.iloc[0].get_positions()
     spectra_type = get_spectra_type(spectra_series.iloc[0])

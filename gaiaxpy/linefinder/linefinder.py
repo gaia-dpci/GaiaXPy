@@ -15,13 +15,13 @@ import numpy as np
 import pandas as pd
 from scipy import interpolate
 
-from gaiaxpy.calibrator.calibrator import calibrate
+from gaiaxpy.calibrator.calibrator import _calibrate
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.converter.config import load_config, get_config
-from gaiaxpy.converter.converter import convert
+from gaiaxpy.converter.converter import _convert
 from gaiaxpy.core.dispersion_function import pwl_to_wl, pwl_range
 from gaiaxpy.core.generic_functions import cast_output
-from gaiaxpy.core.generic_variables import pbar_units, pbar_colour
+from gaiaxpy.core.generic_variables import pbar_units, pbar_colour, pbar_message
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.linefinder.herm import HermiteDerivative
@@ -313,6 +313,7 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
     Returns:
         (DataFrame): dataframe with arrays of found lines and their properties for each source
     """
+    __FUNCTION_KEY = 'linefinder'
     source_type = _check_source_redshift_type(source_type, redshift)
     _check_truncation(truncation)
 
@@ -320,10 +321,12 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
                                                                                                       basis_function_id)
     # Parse input
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
+    # Internal info will be disabled, but the user will need some info
+    print('Preparing required internal data...' + ' '* 10, end='\r')
     # Get converted spectra
-    con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation, save_file=False)
+    con_spectra, con_sampling = _convert(parsed_input_data, truncation=truncation, save_file=False, disable_info=True)
     # Get calibrated spectra
-    cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation, save_file=False)
+    cal_spectra, cal_sampling = _calibrate(parsed_input_data, truncation=truncation, save_file=False, disable_info=True)
     # Set indices as we'll need to search for values in the frames many times
     cal_spectra = cal_spectra.set_index('source_id')
     con_spectra = con_spectra.set_index('source_id')
@@ -346,7 +349,8 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
 
     output_lines = []
     parsed_input_data_dict = parsed_input_data.to_dict('records')
-    for row in tqdm(parsed_input_data_dict):
+    for row in tqdm(parsed_input_data_dict, desc=pbar_message[__FUNCTION_KEY],
+                    unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour):
         sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(row, truncation, bp_n, rp_n)
 
         # Prep lines cont.
@@ -420,6 +424,7 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
     Returns:
         (DataFrame): dataframe with values of found extrema.
     """
+    __FUNCTION_KEY = 'extremafinder'
     _check_truncation(truncation)
     _check_plot_arguments(plot_spectra, save_plots)
 
@@ -427,17 +432,20 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
                                                                                                       basis_function_id)
     # Parse input
     parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
+    # Internal info will be disabled, but the user will need some info
+    print('Preparing required internal data...' + ' '* 10, end='\r')
     # Get converted spectra
-    con_spectra, con_sampling = convert(parsed_input_data, truncation=truncation, save_file=False)
+    con_spectra, con_sampling = _convert(parsed_input_data, truncation=truncation, save_file=False, disable_info=True)
     # Get calibrated spectra
-    cal_spectra, cal_sampling = calibrate(parsed_input_data, truncation=truncation, save_file=False)
+    cal_spectra, cal_sampling = _calibrate(parsed_input_data, truncation=truncation, save_file=False, disable_info=True)
     # Set indices as we'll need to search for values in the frames many times
     cal_spectra = cal_spectra.set_index('source_id')
     con_spectra = con_spectra.set_index('source_id')
 
     output_lines = []
     parsed_input_data_dict = parsed_input_data.to_dict('records')
-    for row in tqdm(parsed_input_data_dict):
+    for row in tqdm(parsed_input_data_dict, desc=pbar_message[__FUNCTION_KEY], unit=pbar_units[__FUNCTION_KEY],
+                    leave=False, colour=pbar_colour):
         sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(row, truncation, bp_n, rp_n)
         # Masks
         m_cal, m_con_bp, m_con_rp = _get_masks(cal_spectra, con_spectra, sid)
@@ -503,6 +511,7 @@ def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, o
     Returns:
         (DataFrame): dataframe with arrays of found extrema for each source
     """
+    __FUNCTION_KEY = 'fastfinder'
     _check_truncation(truncation)
     bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
                                                                                                       basis_function_id)
@@ -510,7 +519,8 @@ def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, o
     parsed_input_data_dict = parsed_input_data.to_dict('records')
 
     def process_rows():
-        for row in tqdm(parsed_input_data_dict):
+        for row in tqdm(parsed_input_data_dict, desc=pbar_message[__FUNCTION_KEY], unit=pbar_units[__FUNCTION_KEY],
+                        leave=False, colour=pbar_colour):
             sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(row, truncation, bp_n, rp_n)
             # Run line finder for BP
             bp_found_lines = [] if pd.isna(row['bp_n_parameters']) else _find_fast(bp_tm, bp_n, bp_rel_n, bp_scale,

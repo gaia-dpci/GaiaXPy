@@ -4,11 +4,8 @@ parse_internal_continuous.py
 Module to parse input files containing internally calibrated continuous spectra.
 """
 
-import re
-
 import numpy as np
 import pandas as pd
-from astropy.io.votable import parse_single_table
 from fastavro import __version__ as fa_version
 from packaging import version
 
@@ -16,6 +13,8 @@ from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
 from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
+from ..core.satellite import BANDS
+from ..spectrum.utils import get_covariance_matrix
 
 # Columns that contain arrays (as strings)
 array_columns = ['bp_coefficients', 'bp_coefficient_errors', 'rp_coefficients', 'rp_coefficient_errors']
@@ -40,9 +39,9 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
         """
-        return super()._parse_csv(csv_file, array_columns=array_columns, matrix_columns=matrix_columns)
+        return super()._parse_csv(csv_file, _array_columns=array_columns, _matrix_columns=matrix_columns)
 
-    def _parse_fits(self, fits_file):
+    def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None):
         """
         Parse the input FITS file and store the result in a pandas DataFrame if it contains internally calibrated
             continuous spectra.
@@ -53,12 +52,17 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the FITS file.
         """
-        return super()._parse_fits(
-            fits_file,
-            array_columns=array_columns,
-            matrix_columns=matrix_columns)
+        if _matrix_columns is None:
+            _matrix_columns = matrix_columns
+        if _array_columns is None:
+            _array_columns = array_columns
+        df = super()._parse_fits(fits_file, _array_columns=array_columns, _matrix_columns=matrix_columns)
+        if _matrix_columns:
+            for band in BANDS:
+                df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
+        return df
 
-    def _parse_xml(self, xml_file):
+    def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None):
         """
         Parse the input XML file and store the result in a pandas DataFrame.
 
@@ -68,19 +72,15 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
         """
-        votable = parse_single_table(xml_file)
-        columns = [re.search('<FIELD ID="(.+?)"', str(field)).group(1) for field in votable.fields]
-        values_to_df = ((value for column, value in zip(columns, entry)) for index, entry in enumerate(votable.array))
-        df = pd.DataFrame(values_to_df, columns=columns)
-        if matrix_columns is not None:
-            for size_column, values_column in matrix_columns:
-                try:
-                    df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column],
-                                                                                       row[size_column]), axis=1)
-                # Value can be NaN when a band is not present
-                except IndexError:
-                    continue
-        return _cast(df)
+        if _matrix_columns is None:
+            _matrix_columns = matrix_columns
+        if _array_columns is None:
+            _array_columns = _array_columns
+        df = super()._parse_xml(xml_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns)
+        if _matrix_columns:
+            for band in BANDS:
+                df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
+        return df
 
     @staticmethod
     def __process_avro_record(record):
@@ -145,4 +145,6 @@ class InternalContinuousParser(GenericParser):
                                              axis=1)
             except TypeError:
                 continue  # Value can be NaN when a band is not present
+        for band in BANDS:
+            df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
         return _cast(df)

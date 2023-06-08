@@ -6,12 +6,15 @@ Module to parse input files containing spectra.
 
 from os.path import splitext
 
+import numpy as np
 import pandas as pd
 from astropy.io.votable import parse_single_table
 from astropy.table import Table
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
 from .cast import _cast
+from ..core.satellite import BANDS
+from ..spectrum.utils import get_covariance_matrix
 
 valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']
 
@@ -71,36 +74,41 @@ class GenericParser(object):
             DataFrame: Pandas DataFrame representing the file.
             str: File extension ('.csv', '.fits', or '.xml').
         """
-        print("Reading file...", end='\r')
+        print('Reading input file...', end='\r')
         extension = _get_file_extension(file_path)
         parser = self.get_parser(extension)
         parsed_data = _cast(parser(file_path))
         return parsed_data, extension
 
-    def _parse_csv(self, csv_file, array_columns=None, matrix_columns=None):
+    def _parse_avro(self, avro_file, _array_columns=None, _matrix_columns=None):
+        raise NotImplementedError('Method not implemented for base class.')
+
+    def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None):
         """
         Parse the input CSV file and store the result in a pandas DataFrame.
 
         Args:
             csv_file (str): Path to a CSV file.
-            array_columns (list): List of columns in the file that contain arrays as strings.
-            matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
+            _array_columns (list): List of columns in the file that contain arrays as strings.
+            _matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
                 square matrix which values are those contained in the second element of the tuple.
 
         Returns:
             DataFrame: A pandas DataFrame representing the CSV file.
         """
         converters = {}
-        if array_columns:
-            converters = dict([(column, lambda x: str_to_array(x)) for column in array_columns])
+        if _array_columns:
+            converters = dict([(column, lambda x: str_to_array(x)) for column in _array_columns])
         df = pd.read_csv(csv_file, comment='#', float_precision='high', converters=converters)
-        if matrix_columns:
-            for size_column, values_column in matrix_columns:
+        if _matrix_columns:
+            for size_column, values_column in _matrix_columns:
                 df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(str_to_array(row[values_column]),
                                                                                    row[size_column]), axis=1)
+            for band in BANDS:
+                df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
         return df
 
-    def _parse_fits(self, fits_file, array_columns=None, matrix_columns=None):
+    def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None):
         """
         Parse the input FITS file and store the result in a pandas DataFrame.
 
@@ -111,33 +119,31 @@ class GenericParser(object):
             DataFrame: A pandas DataFrame representing the FITS file.
         """
         table = Table.read(fits_file, format='fits')
-        columns = table.columns.keys()
-        fits_as_gen = ([table[column][index] for column in columns] for index, _ in enumerate(table))
-        df = pd.DataFrame(fits_as_gen, columns=columns)
-        if matrix_columns:
-            for size_column, values_column in matrix_columns:
+        df = table.to_pandas()
+        if _matrix_columns:
+            for size_column, values_column in _matrix_columns:
                 df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
                                              axis=1)
         return df
 
-    def _parse_xml(self, xml_file, array_columns=None):
+    def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None):
         """
         Parse the input XML file and store the result in a pandas DataFrame.
 
         Args:
             xml_file (str): Path to an XML file.
-            array_columns (list): List of columns in the file that contain arrays as strings.
+            _array_columns (list): List of columns in the file that contain arrays as strings.
 
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
         """
         votable = parse_single_table(xml_file).to_table(use_names_over_ids=True)
-        if array_columns:
-            columns = list(votable.columns)
-            votable_as_list = ([votable[column][index].filled() if column in array_columns else votable[column][index]
-                                for column in columns] for index, _ in enumerate(votable))
-            return pd.DataFrame(votable_as_list, columns=columns)
-        return votable.to_pandas()
+        df = votable.to_pandas()
+        if _matrix_columns:
+            for size_column, values_column in _matrix_columns:
+                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
+                                             axis=1)
+        return df
 
 
 def _get_file_extension(file_path):

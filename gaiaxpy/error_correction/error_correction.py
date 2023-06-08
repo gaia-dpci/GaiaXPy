@@ -41,42 +41,36 @@ def _read_system_table(system):
 
 def _get_correction_array(_mag_G_values, system):
     correction_table = _read_system_table(system)
-    factor_columns = [column for column in correction_table.columns if 'factor_' in column]
-    # Min and max range values in the table
-    min_value = correction_table['min_Gmag_bin'].iloc[0]
-    max_value = correction_table['max_Gmag_bin'].iloc[-1]
-    correction_array = np.array([_get_correction_factors(mag, correction_table, factor_columns, min_value, max_value)
-                                 for mag in _mag_G_values])
-    return correction_array
+    min_value, max_value = correction_table['min_Gmag_bin'].iloc[0], correction_table['max_Gmag_bin'].iloc[-1]
+    floor_mag_dict = correction_table.set_index('min_Gmag_bin').T.to_dict()
+    factor_columns = [col for col in correction_table.columns if 'factor_' in col]
+    _mag_G_values = _mag_G_values.to_frame(name='mag_G')
+    _mag_G_values['row'] = _mag_G_values['mag_G'].map(lambda x: floor_mag_dict.get(float(floor(x))))
+    return _mag_G_values.apply(_get_correction_factor, args=(correction_table, factor_columns,
+                                                                      min_value, max_value,), axis=1)
 
 
-def _get_correction_factors(mag, correction_table, factor_columns, min_value, max_value):
-    # See whether the mag is in the table
-    if mag > max_value or isnan(mag):
+def _get_correction_factor(mag_row, correction_table, factor_columns, min_value, max_value):
+    mag = mag_row['mag_G']
+    row = mag_row['row']
+    if (mag > max_value) or isnan(mag):
         return correction_table[factor_columns].iloc[-1].values
     elif mag < min_value:
         return correction_table[factor_columns].iloc[0].values
-    # Find the range of the given mag, and extract the row of the table that matches this value
-    range_row = correction_table[correction_table['min_Gmag_bin'] == floor(mag)].iloc[0]
-    # If the column extracted is the last one, we have no way to extrapolate, so we return the correction factors
-    factors = range_row[factor_columns]
-    bin_centre = range_row['bin_centre']
-    range_row_max_Gmag_bin = range_row['max_Gmag_bin']
-    try:
-        next_range_row = correction_table[correction_table['min_Gmag_bin'] == range_row_max_Gmag_bin].iloc[0]
-    except IndexError:
-        return factors.values
-    # Now for the rest
+    bin_centre = row['bin_centre']
+    factors = np.array([row[factor] for factor in factor_columns])
     if mag <= bin_centre:
-        return factors.values
-    # Or interpolate
-    elif bin_centre < mag < range_row_max_Gmag_bin:
-        next_factors = next_range_row[factor_columns]
-        correction_factors = interp1d(np.array([bin_centre, range_row_max_Gmag_bin]),
-                                      np.vstack([factors, next_factors]), axis=0)(mag)
-        return correction_factors
-    else:
-        raise ValueError('Check the variables being used. The program should never fall in this case.')
+        return factors
+    range_row_max_Gmag_bin = row['max_Gmag_bin']
+    if bin_centre < mag < range_row_max_Gmag_bin:
+        try:
+            next_range_row = correction_table[correction_table['min_Gmag_bin'] == range_row_max_Gmag_bin].iloc[0]
+            next_factors = next_range_row[factor_columns]
+        except IndexError:
+            return factors
+        return interp1d(np.array([bin_centre, range_row_max_Gmag_bin]),np.vstack([factors, next_factors]), axis=0)(mag)
+    # Raise an exception if none of the conditions match
+    raise ValueError('Check the variables being used. The program should never fall in this case.')
 
 
 def _correct_system(system_df, correction_array):
@@ -86,6 +80,7 @@ def _correct_system(system_df, correction_array):
     if len(error_df_columns) != len(correction_array[0]):
         raise ValueError('DataFrames should have the same number of columns.')
     error_df = np.array(error_df)
+    correction_array = np.array([x for x in correction_array])
     product_array = error_df * correction_array
     return pd.DataFrame(product_array, columns=error_df_columns)
 

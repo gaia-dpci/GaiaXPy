@@ -102,19 +102,21 @@ class OutputData(object):
                 raise ValueError('The parameter output_file cannot be None.')
             if output_format is None:
                 output_format = extension
-            print("Saving file...", end='\r')
+            print(f'Saving file...', end='\r')
             output_format = _standardise_output_format(output_format)
             if output_format == 'avro':
-                return self._save_avro(output_path, output_file)
+                self._save_avro(output_path, output_file)
             elif output_format == 'csv':
-                return self._save_csv(output_path, output_file)
+                self._save_csv(output_path, output_file)
             elif output_format == 'ecsv':
-                return self._save_ecsv(output_path, output_file)
+                self._save_ecsv(output_path, output_file)
             elif output_format == 'fits':
-                return self._save_fits(output_path, output_file)
+                self._save_fits(output_path, output_file)
             elif output_format == 'xml':
-                return self._save_xml(output_path, output_file)
-            raise InvalidExtensionError()
+                self._save_xml(output_path, output_file)
+            else:
+                raise InvalidExtensionError()
+            print(f"Done! Output saved to path: {join(output_path, output_file + '.' + output_format)}", end='\r')
 
     def _save_avro(self, output_path, output_file):
         raise NotImplementedError()

@@ -7,10 +7,12 @@ Module to represent a dataframe of sampled spectra.
 from os.path import join
 from pathlib import Path
 
+import warnings
 import numpy as np
 import pandas as pd
 from astropy.io import fits
 from astropy.io.votable.tree import Field, Param, Resource, Table, VOTableFile
+from astropy.units import UnitsWarning
 from fastavro import parse_schema, writer
 from fastavro.validation import validate_many
 from numpy import ndarray
@@ -18,6 +20,8 @@ from numpy import ndarray
 from .output_data import OutputData
 from .utils import _add_ecsv_header, _array_to_standard, _build_ecsv_header, _generate_fits_header,\
     _get_sampling_dict, _load_header_dict
+
+warnings.filterwarnings('ignore', category=UnitsWarning)
 
 
 class SampledSpectraData(OutputData):

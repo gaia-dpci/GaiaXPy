@@ -7,16 +7,20 @@ Module to represent continuous spectra data.
 from os.path import join
 from pathlib import Path
 
+import warnings
 import numpy as np
 import pandas as pd
 from astropy.io import fits
 from astropy.io.votable.tree import Field, Resource, Table, VOTableFile
+from astropy.units import UnitsWarning
 from fastavro import parse_schema, writer
 from fastavro.validation import validate_many
 
 from gaiaxpy.core.satellite import BANDS
 from .output_data import OutputData
 from .utils import _add_ecsv_header, _build_ecsv_header, _generate_fits_header, _load_header_dict
+
+warnings.filterwarnings('ignore', category=UnitsWarning)
 
 
 class ContinuousSpectraData(OutputData):

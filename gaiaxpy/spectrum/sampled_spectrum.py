@@ -4,11 +4,13 @@ sampled_spectrum.py
 Module to represent a sampled spectrum.
 """
 
-import math
 import numpy as np
 import matplotlib.pyplot as plt
 from os import path
 from pathlib import Path
+
+from numpy import ndarray, nan
+
 from .generic_spectrum import Spectrum
 
 
@@ -114,7 +116,9 @@ class SampledSpectrum(Spectrum):
         Returns:
             ndarray: 1D array containing the flux values for all samples.
         """
-        return coefficients @ design_matrix
+        if isinstance(coefficients, ndarray) and coefficients.size > 0:
+            return coefficients @ design_matrix
+        return nan
 
     @staticmethod
     def _sample_error(covariance, design_matrix, standard_deviation):

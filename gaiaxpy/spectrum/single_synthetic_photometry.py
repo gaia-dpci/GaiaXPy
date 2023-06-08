@@ -11,7 +11,7 @@ import numpy as np
 from .absolute_sampled_spectrum import AbsoluteSampledSpectrum
 
 # Ignore negative flux, handled in the code.
-warnings.filterwarnings("ignore", category=RuntimeWarning)
+warnings.filterwarnings('ignore', category=RuntimeWarning)
 
 
 def flux_to_mag(flux, zero_point):

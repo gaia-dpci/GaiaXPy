@@ -10,12 +10,15 @@ import pandas as pd
 
 def get_covariance_matrix(row, band):
     columns = row.keys() if isinstance(row, dict) else row.index
-    if f'{band}_coefficient_covariances' in columns:
-        return row[f'{band}_coefficient_covariances']  # It is AVRO
-    else:
+    if f'{band}_covariance_matrix' in columns:
+        return row[f'{band}_covariance_matrix']
+    elif f'{band}_coefficient_covariances' in columns:
+        return row[f'{band}_coefficient_covariances']
+    elif f'{band}_coefficient_correlations' in columns:
         return _correlation_to_covariance_dr3int5(row[f'{band}_coefficient_correlations'],
                                                   row[f'{band}_coefficient_errors'],
                                                   row[f'{band}_standard_deviation'])
+    raise ValueError(f'None of the expected columns could be found in the input row. Columns are: {columns}.')
 
 def _correlation_to_covariance_dr3int5(correlation_matrix, formal_errors, standard_deviation):
     """

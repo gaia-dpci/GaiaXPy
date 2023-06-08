@@ -45,9 +45,9 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
             raise ValueError('At least one band must be present.')
         pos = sampled_bases[available_bands[0]].get_sampling_grid()
         SampledSpectrum.__init__(self, source_id, pos)
+        self.pos = pos  # TODO: may not be required
         split_spectrum = self.__generate_spectra(xp_spectra, sampled_bases, available_bands, truncation,
                                                  with_correlation=with_correlation)
-        self.pos = pos
         self.__merge_output(split_spectrum, merge, with_correlation=with_correlation)
 
     def __generate_spectra(self, xp_spectra, sampled_bases, available_bands, truncation, with_correlation):
@@ -97,7 +97,7 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
                 masked_pos[masked_pos >= BP_WL.high] = np.nan
             else:
                 raise ValueError(f'Band {existing_band} is not a valid band.')
-            # Get the indices of all the values in pos that are less than the lowest RP range value
+            # Get the indices of all the values in pos that are smaller than the lowest RP range value
             self.flux[np.argwhere(np.isnan(masked_pos))] = np.nan
             self.error[np.argwhere(np.isnan(masked_pos))] = np.nan
             if with_correlation:

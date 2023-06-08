@@ -21,7 +21,6 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from gaiaxpy.spectrum.utils import get_covariance_matrix
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from .config import get_config, load_config
@@ -89,9 +88,6 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     validate_pwl_sampling(sampling)
     validate_arguments(convert.__defaults__[4], output_file, save_file)
     parsed_input_data, extension = InputReader(input_object, convert, username, password).read()
-    for band in BANDS:
-        parsed_input_data[f'{band}_covariance_matrix'] = parsed_input_data.apply(get_covariance_matrix, axis=1,
-                                                                                 args=(band,))
     config_parser = ConfigParser()
     config_parser.read(path.join(config_path, 'config.ini'))
     config_file = path.join(config_path, config_parser.get(__FUNCTION_KEY, 'optimised_bases'))

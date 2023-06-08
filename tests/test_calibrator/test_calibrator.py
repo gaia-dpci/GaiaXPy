@@ -13,7 +13,6 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from gaiaxpy.spectrum.utils import get_covariance_matrix
 from tests.files.paths import files_path
 from tests.utils.utils import df_columns_to_array, pos_file_to_array
 
@@ -66,13 +65,9 @@ _atol = 1e-10
 def generate_single_spectrum(mean_spectrum_path):
     # Read mean Spectrum
     parsed_spectrum_file, extension = parser._parse(mean_spectrum_path)
-    for band in BANDS:
-        parsed_spectrum_file[f'{band}_covariance_matrix'] = parsed_spectrum_file.apply(get_covariance_matrix,
-                                                                                       axis=1, args=(band,))
     # Create sampled basis functions
-    sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid,
-                                                                         xp_design_matrices[band]) for band in
-                          BANDS}
+    sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(
+        xp_sampling_grid, xp_design_matrices[band]) for band in BANDS}
     first_row = parsed_spectrum_file.iloc[0]
     return _create_spectrum(first_row, False, sampled_basis_func, xp_merge)
 
@@ -244,14 +239,3 @@ class TestCalibratorSamplingRange(unittest.TestCase):
     def test_sampling_both_wrong(self):
         with self.assertRaises(ValueError):
             calibrate(mean_spectrum_avro, sampling=np.linspace(200, 2000, 100), save_file=False)
-
-
-class TestCalibratorSingleElement(unittest.TestCase):
-
-    def test_single_element_query(self):
-        query = "SELECT * FROM gaiadr3.gaia_source WHERE source_id='5853498713190525696'"
-        output_df, sampling = calibrate(query, save_file=False)
-        source_data_output = output_df[output_df['source_id'] == 5853498713190525696]
-        source_data_solution = solution_default_df[solution_default_df['source_id'] == 5853498713190525696]
-        pdt.assert_frame_equal(source_data_output, source_data_solution, atol=_atol, rtol=_rtol)
-        npt.assert_array_equal(sampling, solution_default_sampling)

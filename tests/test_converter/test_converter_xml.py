@@ -18,7 +18,6 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from gaiaxpy.spectrum.utils import get_covariance_matrix
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from tests.files.paths import files_path
 from tests.utils.utils import get_spectrum_with_source_id_and_xp
@@ -44,8 +43,6 @@ converter_solution_df = pd.read_csv(join(converter_solution_path, 'converter_sol
 parser = InternalContinuousParser()
 # Parsed files
 parsed_input, _ = parser._parse(input_file)
-for band in BANDS:
-    parsed_input[f'{band}_covariance_matrix'] = parsed_input.apply(get_covariance_matrix, axis=1, args=(band,))
 
 sampling = np.linspace(0, 60, 481)
 unique_bases_ids = get_unique_basis_ids(parsed_input)

@@ -13,7 +13,7 @@ mean_spectrum_csv = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 
 
 class TestPlotter(unittest.TestCase):
-    # for visual inspection
+    # For visual inspection
 
     def test_lines_plotter(self):
         lines = linefinder(mean_spectrum_csv, plot_spectra=True, save_file=False)

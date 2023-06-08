@@ -24,12 +24,10 @@ class TestCalibratorWithCovariance(unittest.TestCase):
 
     def test_with_covariance(self):
         spectra, sampling = calibrate(f, with_correlation=True, save_file=False)
-        # spectra = spectra.drop(index=1)  # Drop row containing nans as it doesn't add new information when testing
         # Load spectra
         _converters = {key: (lambda x: str_to_array(x)) for key in ['flux', 'flux_error', 'covariance']}
         solution = join(files_path, 'calibrator_solution', 'calibrate_with_covariance_solution.csv')
         solution_df = pd.read_csv(solution, float_precision='high', converters=_converters)
-        # solution_df = solution_df.drop(index=1)
         stdev_pairs = [(1.1224667, 1.3151282), 1.0339215, (1.0479343, 1.0767492)]
 
         def scale_error(error_array, stdevs):
@@ -49,13 +47,10 @@ class TestCalibratorWithCovariance(unittest.TestCase):
                                  zip(spectra['correlation'].values, scaled_errors, np.ones(3))]
         spectra = spectra.drop(columns=['correlation'])
         npt.assert_array_equal(sampling, sampling_solution_array)
-
         spectra = spectra.drop(index=1)
         solution_df = solution_df.drop(index=1)
-
         pdt.assert_frame_equal(spectra.loc[:, spectra.columns != 'covariance'],
                                solution_df.loc[:, solution_df.columns != 'covariance'], atol=_atol, rtol=_rtol)
-
         for actual_cov, solution_cov in zip(spectra['covariance'].values, solution_df['covariance'].values):
             # Issues with all close, so this approach was used instead
             num_close = np.sum(np.isclose(actual_cov, solution_cov, rtol=_rtol))

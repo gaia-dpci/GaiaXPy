@@ -126,38 +126,3 @@ class TestCalibratorMissingBPDataFrameInput(unittest.TestCase):
         output_df, sampling = calibrate(df, save_file=False)
         pdt.assert_frame_equal(output_df, missing_solution_df, atol=_atol, rtol=_rtol)
         npt.assert_array_equal(sampling, solution_sampling)
-
-
-class TestCalibratorMissingBPQueryInput(unittest.TestCase):
-
-    def test_missing_bp_query(self):
-        query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5853498713190525696', " \
-                f"{missing_bp_source_id}, '5762406957886626816')"
-        output_df, sampling = calibrate(query, save_file=False)
-        sorted_output_df = output_df.sort_values('source_id', ignore_index=True)
-        sorted_solution_df = with_missing_solution_df.sort_values('source_id', ignore_index=True)
-        pdt.assert_frame_equal(sorted_output_df, sorted_solution_df, atol=_atol, rtol=_rtol)
-        npt.assert_array_equal(sampling, solution_sampling)
-
-    def test_missing_bp_query_isolated(self):
-        query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ({missing_bp_source_id})"
-        output_df, sampling = calibrate(query, save_file=False)
-        pdt.assert_frame_equal(output_df, missing_solution_df, atol=_atol, rtol=_rtol)
-        npt.assert_array_equal(sampling, solution_sampling)
-
-
-class TestCalibratorMissingBPListInput(unittest.TestCase):
-
-    def test_missing_bp_list(self):
-        src_list = ['5853498713190525696', str(missing_bp_source_id), '5762406957886626816']
-        output_df, sampling = calibrate(src_list, save_file=False)
-        sorted_output_df = output_df.sort_values('source_id', ignore_index=True)
-        sorted_solution_df = with_missing_solution_df.sort_values('source_id', ignore_index=True)
-        pdt.assert_frame_equal(sorted_output_df, sorted_solution_df, check_dtype=False, atol=_atol, rtol=_rtol)
-        npt.assert_array_equal(sampling, solution_sampling)
-
-    def test_missing_bp_isolated(self):
-        src_list = [missing_bp_source_id]
-        output_df, sampling = calibrate(src_list, save_file=False)
-        pdt.assert_frame_equal(output_df, missing_solution_df, check_dtype=False, atol=_atol, rtol=_rtol)
-        npt.assert_array_equal(sampling, solution_sampling)

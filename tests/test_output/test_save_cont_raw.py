@@ -2,7 +2,10 @@ import unittest
 from os.path import join
 
 import numpy as np
+import pandas as pd
 import pandas.testing as pdt
+from astropy.io.votable import parse_single_table
+from astropy.table import Table
 
 from gaiaxpy import calibrate, convert, generate, PhotometricSystem, fastfinder, extremafinder, linefinder
 from gaiaxpy.file_parser.parse_generic import GenericParser
@@ -13,6 +16,24 @@ _rtol, _atol = 1e-10, 1e-10
 mean_spectrum = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 
 
+def _parse_output_fits(fits_file, _array_columns=None):
+    table = Table.read(fits_file, format='fits')
+    columns = table.columns.keys()
+    fits_as_gen = ([table[column][index] for column in columns] for index, _ in enumerate(table))
+    return pd.DataFrame(fits_as_gen, columns=columns)
+
+def _parse_output_xml(xml_file, _array_columns=None):
+    votable = parse_single_table(xml_file).to_table(use_names_over_ids=True)
+    if _array_columns:
+        columns = list(votable.columns)
+        votable_as_list = ([votable[column][index].filled() if column in _array_columns else votable[column][index]
+                            for column in columns] for index, _ in enumerate(votable))
+        df = pd.DataFrame(votable_as_list, columns=columns)
+    else:
+        df = votable.to_pandas()
+    return df
+
+
 def compare_frames(output_file, solution_file, extension, function_name):
     parser = GenericParser()
     function, array_columns = None, None
@@ -21,12 +42,12 @@ def compare_frames(output_file, solution_file, extension, function_name):
     if extension in ['csv', 'ecsv']:
         function = parser._parse_csv
     elif extension == 'fits':
-        function = parser._parse_fits
+        function = _parse_output_fits
     elif extension == 'xml':
-        function = parser._parse_xml
+        function = _parse_output_xml
     if array_columns:
-        output_df = function(output_file, array_columns=array_columns)
-        solution_df = function(solution_file, array_columns=array_columns)
+        output_df = function(output_file, _array_columns=array_columns)
+        solution_df = function(solution_file, _array_columns=array_columns)
     else:
         output_df = function(output_file)
         solution_df = function(solution_file)
@@ -153,21 +174,3 @@ class TestSaveContRawLineFinder(unittest.TestCase):
 
     def test_save_output_xml(self):
         run_output_test(linefinder, 'linefinder', 'xml')
-
-
-    # Empty lines
-    def test_empty_lines_csv(self):
-        e = linefinder([6236992043706872832], output_path='tests_output_files', output_file='empty_lines',
-                       output_format='csv')
-
-    def test_empty_lines_ecsv(self):
-        e = linefinder([6236992043706872832], output_path='tests_output_files', output_file='empty_lines',
-                       output_format='ecsv')
-
-    def test_empty_lines_fits(self):
-        e = linefinder([6236992043706872832], output_path='tests_output_files', output_file='empty_lines',
-                       output_format='fits')
-
-    def test_empty_lines_xml(self):
-        e = linefinder([6236992043706872832], output_path='tests_output_files', output_file='empty_lines',
-                       output_format='xml')

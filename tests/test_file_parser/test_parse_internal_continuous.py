@@ -58,7 +58,9 @@ type_map = {'source_id': dtype('int64'),
             'rp_coefficient_correlations': dtype('O'),
             'bp_coefficient_correlations': dtype('O'),
             'rp_relative_shrinking': dtype('float64'),
-            'bp_relative_shrinking': dtype('float64')}
+            'bp_relative_shrinking': dtype('float64'),
+            'bp_covariance_matrix': dtype('O'),
+            'rp_covariance_matrix': dtype('O')}
 
 
 class TestInternalContinuousParserCSV(unittest.TestCase):
@@ -74,37 +76,27 @@ class TestInternalContinuousParserCSV(unittest.TestCase):
 
     def test_bp_coefficients_types(self):
         self.assertIsInstance(parsed_csv_file[f'{BANDS.bp}_coefficients'][0], ndarray)
-        self.assertIsInstance(
-            parsed_csv_file[f'{BANDS.bp}_coefficient_errors'][0], ndarray)
-        self.assertIsInstance(
-            parsed_csv_file[f'{BANDS.bp}_coefficient_correlations'][0], ndarray)
+        self.assertIsInstance(parsed_csv_file[f'{BANDS.bp}_coefficient_errors'][0], ndarray)
+        self.assertIsInstance(parsed_csv_file[f'{BANDS.bp}_coefficient_correlations'][0], ndarray)
 
     def test_rp_coefficients_type(self):
         self.assertIsInstance(parsed_csv_file[f'{BANDS.rp}_coefficients'][0], ndarray)
-        self.assertIsInstance(
-            parsed_csv_file[f'{BANDS.rp}_coefficient_errors'][0], ndarray)
-        self.assertIsInstance(
-            parsed_csv_file[f'{BANDS.rp}_coefficient_correlations'][0], ndarray)
+        self.assertIsInstance(parsed_csv_file[f'{BANDS.rp}_coefficient_errors'][0], ndarray)
+        self.assertIsInstance(parsed_csv_file[f'{BANDS.rp}_coefficient_correlations'][0], ndarray)
 
     # The column 'bp_coefficient_correlations' should be a matrix of size
     # 'bp_num_of_parameters'^2
     def test_bp_coefficient_correlations_is_matrix(self):
-        self.assertIsInstance(
-            parsed_csv_file[f'{BANDS.bp}_coefficient_correlations'][0][0], ndarray)
-        self.assertEqual(
-            len(
-                parsed_csv_file[f'{BANDS.bp}_coefficient_correlations'][0][0]),
-            parsed_csv_file[f'{BANDS.bp}_n_parameters'][0])
+        self.assertIsInstance(parsed_csv_file[f'{BANDS.bp}_coefficient_correlations'][0][0], ndarray)
+        self.assertEqual(len(parsed_csv_file[f'{BANDS.bp}_coefficient_correlations'][0][0]),
+                         parsed_csv_file[f'{BANDS.bp}_n_parameters'][0])
 
     # The column 'rp_coefficient_correlations' should be a matrix of size
     # 'rp_num_of_parameters'^2
     def test_rp_coefficient_correlations_is_matrix(self):
-        self.assertIsInstance(
-            parsed_csv_file[f'{BANDS.rp}_coefficient_correlations'][0][0], ndarray)
-        self.assertEqual(
-            len(
-                parsed_csv_file[f'{BANDS.rp}_coefficient_correlations'][0][0]),
-            parsed_csv_file[f'{BANDS.rp}_n_parameters'][0])
+        self.assertIsInstance(parsed_csv_file[f'{BANDS.rp}_coefficient_correlations'][0][0], ndarray)
+        self.assertEqual(len(parsed_csv_file[f'{BANDS.rp}_coefficient_correlations'][0][0]),
+                         parsed_csv_file[f'{BANDS.rp}_n_parameters'][0])
 
 
 class TestInternalContinuousParserFITS(unittest.TestCase):
@@ -120,37 +112,25 @@ class TestInternalContinuousParserFITS(unittest.TestCase):
 
     def test_bp_coefficients_types(self):
         self.assertIsInstance(parsed_fits_file[f'{BANDS.bp}_coefficients'][0], ndarray)
-        self.assertIsInstance(
-            parsed_fits_file[f'{BANDS.bp}_coefficient_errors'][0], ndarray)
-        self.assertIsInstance(
-            parsed_fits_file[f'{BANDS.bp}_coefficient_correlations'][0], ndarray)
+        self.assertIsInstance(parsed_fits_file[f'{BANDS.bp}_coefficient_errors'][0], ndarray)
+        self.assertIsInstance(parsed_fits_file[f'{BANDS.bp}_coefficient_correlations'][0], ndarray)
 
     def test_rp_coefficients_type(self):
         self.assertIsInstance(parsed_fits_file[f'{BANDS.rp}_coefficients'][0], ndarray)
-        self.assertIsInstance(
-            parsed_fits_file[f'{BANDS.rp}_coefficient_errors'][0], ndarray)
-        self.assertIsInstance(
-            parsed_fits_file[f'{BANDS.rp}_coefficient_correlations'][0], ndarray)
+        self.assertIsInstance(parsed_fits_file[f'{BANDS.rp}_coefficient_errors'][0], ndarray)
+        self.assertIsInstance(parsed_fits_file[f'{BANDS.rp}_coefficient_correlations'][0], ndarray)
 
-    # The column 'bp_coefficient_correlations' should be a matrix of size
-    # 'bp_num_of_parameters'^2
+    # The column 'bp_coefficient_correlations' should be a matrix of size 'bp_num_of_parameters'^2
     def test_bp_coefficient_correlations_is_matrix(self):
-        self.assertIsInstance(
-            parsed_fits_file[f'{BANDS.bp}_coefficient_correlations'][0][0], ndarray)
-        self.assertEqual(
-            len(
-                parsed_fits_file[f'{BANDS.bp}_coefficient_correlations'][0][0]),
-            parsed_fits_file[f'{BANDS.bp}_n_parameters'][0])
+        self.assertIsInstance(parsed_fits_file[f'{BANDS.bp}_coefficient_correlations'][0][0], ndarray)
+        self.assertEqual(len(parsed_fits_file[f'{BANDS.bp}_coefficient_correlations'][0][0]),
+                         parsed_fits_file[f'{BANDS.bp}_n_parameters'][0])
 
-    # The column 'rp_coefficient_correlations' should be a matrix of size
-    # 'rp_num_of_parameters'^2
+    # The column 'rp_coefficient_correlations' should be a matrix of size 'rp_num_of_parameters'^2
     def test_rp_coefficient_correlations_is_matrix(self):
-        self.assertIsInstance(
-            parsed_fits_file[f'{BANDS.rp}_coefficient_correlations'][0][0], ndarray)
-        self.assertEqual(
-            len(
-                parsed_fits_file[f'{BANDS.rp}_coefficient_correlations'][0][0]),
-            parsed_fits_file[f'{BANDS.rp}_n_parameters'][0])
+        self.assertIsInstance(parsed_fits_file[f'{BANDS.rp}_coefficient_correlations'][0][0], ndarray)
+        self.assertEqual(len(parsed_fits_file[f'{BANDS.rp}_coefficient_correlations'][0][0]),
+                         parsed_fits_file[f'{BANDS.rp}_n_parameters'][0])
 
 
 class TestInternalContinuousParserXMLPlain(unittest.TestCase):
@@ -165,42 +145,26 @@ class TestInternalContinuousParserXMLPlain(unittest.TestCase):
             self.assertEqual(actual_dtypes[key], type_map[key])
 
     def test_bp_coefficients_types(self):
-        self.assertIsInstance(
-            parsed_plain_xml_file[f'{BANDS.bp}_coefficients'][0], ndarray)
-        self.assertIsInstance(
-            parsed_plain_xml_file[f'{BANDS.bp}_coefficient_errors'][0], ndarray)
-        self.assertIsInstance(
-            parsed_plain_xml_file[f'{BANDS.bp}_coefficient_correlations'][0], ndarray)
+        self.assertIsInstance(parsed_plain_xml_file[f'{BANDS.bp}_coefficients'][0], ndarray)
+        self.assertIsInstance(parsed_plain_xml_file[f'{BANDS.bp}_coefficient_errors'][0], ndarray)
+        self.assertIsInstance(parsed_plain_xml_file[f'{BANDS.bp}_coefficient_correlations'][0], ndarray)
 
     def test_rp_coefficients_type(self):
-        self.assertIsInstance(
-            parsed_plain_xml_file[f'{BANDS.rp}_coefficients'][0], ndarray)
-        self.assertIsInstance(
-            parsed_plain_xml_file[f'{BANDS.rp}_coefficient_errors'][0], ndarray)
-        self.assertIsInstance(
-            parsed_plain_xml_file[f'{BANDS.rp}_coefficient_correlations'][0], ndarray)
+        self.assertIsInstance(parsed_plain_xml_file[f'{BANDS.rp}_coefficients'][0], ndarray)
+        self.assertIsInstance(parsed_plain_xml_file[f'{BANDS.rp}_coefficient_errors'][0], ndarray)
+        self.assertIsInstance(parsed_plain_xml_file[f'{BANDS.rp}_coefficient_correlations'][0], ndarray)
 
-    # The column 'bp_coefficient_correlations' should be a matrix of size
-    # 'bp_num_of_parameters'^2
+    # The column 'bp_coefficient_correlations' should be a matrix of size 'bp_num_of_parameters'^2
     def test_bp_coefficient_correlations_is_matrix(self):
-        self.assertIsInstance(
-            parsed_plain_xml_file[f'{BANDS.bp}_coefficient_correlations'][0][0],
-            ndarray)
-        self.assertEqual(
-            len(
-                parsed_plain_xml_file[f'{BANDS.bp}_coefficient_correlations'][0][0]),
-            parsed_plain_xml_file[f'{BANDS.bp}_n_parameters'][0])
+        self.assertIsInstance(parsed_plain_xml_file[f'{BANDS.bp}_coefficient_correlations'][0][0], ndarray)
+        self.assertEqual(len(parsed_plain_xml_file[f'{BANDS.bp}_coefficient_correlations'][0][0]),
+                         parsed_plain_xml_file[f'{BANDS.bp}_n_parameters'][0])
 
-    # The column 'rp_coefficient_correlations' should be a matrix of size
-    # 'rp_num_of_parameters'^2
+    # The column 'rp_coefficient_correlations' should be a matrix of size 'rp_num_of_parameters'^2
     def test_rp_coefficient_correlations_is_matrix(self):
-        self.assertIsInstance(
-            parsed_plain_xml_file[f'{BANDS.rp}_coefficient_correlations'][0][0],
-            ndarray)
-        self.assertEqual(
-            len(
-                parsed_plain_xml_file[f'{BANDS.rp}_coefficient_correlations'][0][0]),
-            parsed_plain_xml_file[f'{BANDS.rp}_n_parameters'][0])
+        self.assertIsInstance(parsed_plain_xml_file[f'{BANDS.rp}_coefficient_correlations'][0][0], ndarray)
+        self.assertEqual(len(parsed_plain_xml_file[f'{BANDS.rp}_coefficient_correlations'][0][0]),
+                         parsed_plain_xml_file[f'{BANDS.rp}_n_parameters'][0])
 
 
 class TestInternalContinuousParserXML(unittest.TestCase):
@@ -216,37 +180,25 @@ class TestInternalContinuousParserXML(unittest.TestCase):
 
     def test_bp_coefficients_types(self):
         self.assertIsInstance(parsed_xml_file[f'{BANDS.bp}_coefficients'][0], ndarray)
-        self.assertIsInstance(
-            parsed_xml_file[f'{BANDS.bp}_coefficient_errors'][0], ndarray)
-        self.assertIsInstance(
-            parsed_xml_file[f'{BANDS.bp}_coefficient_correlations'][0], ndarray)
+        self.assertIsInstance(parsed_xml_file[f'{BANDS.bp}_coefficient_errors'][0], ndarray)
+        self.assertIsInstance(parsed_xml_file[f'{BANDS.bp}_coefficient_correlations'][0], ndarray)
 
     def test_rp_coefficients_type(self):
         self.assertIsInstance(parsed_xml_file[f'{BANDS.rp}_coefficients'][0], ndarray)
-        self.assertIsInstance(
-            parsed_xml_file[f'{BANDS.rp}_coefficient_errors'][0], ndarray)
-        self.assertIsInstance(
-            parsed_xml_file[f'{BANDS.rp}_coefficient_correlations'][0], ndarray)
+        self.assertIsInstance(parsed_xml_file[f'{BANDS.rp}_coefficient_errors'][0], ndarray)
+        self.assertIsInstance(parsed_xml_file[f'{BANDS.rp}_coefficient_correlations'][0], ndarray)
 
-    # The column 'bp_coefficient_correlations' should be a matrix of size
-    # 'bp_num_of_parameters'^2
+    # The column 'bp_coefficient_correlations' should be a matrix of size 'bp_num_of_parameters'^2
     def test_bp_coefficient_correlations_is_matrix(self):
-        self.assertIsInstance(
-            parsed_xml_file[f'{BANDS.bp}_coefficient_correlations'][0][0], ndarray)
-        self.assertEqual(
-            len(
-                parsed_xml_file[f'{BANDS.bp}_coefficient_correlations'][0][0]),
-            parsed_xml_file[f'{BANDS.bp}_n_parameters'][0])
+        self.assertIsInstance(parsed_xml_file[f'{BANDS.bp}_coefficient_correlations'][0][0], ndarray)
+        self.assertEqual(len(parsed_xml_file[f'{BANDS.bp}_coefficient_correlations'][0][0]),
+                         parsed_xml_file[f'{BANDS.bp}_n_parameters'][0])
 
-    # The column 'rp_coefficient_correlations' should be a matrix of size
-    # 'rp_num_of_parameters'^2
+    # The column 'rp_coefficient_correlations' should be a matrix of size 'rp_num_of_parameters'^2
     def test_rp_coefficient_correlations_is_matrix(self):
-        self.assertIsInstance(
-            parsed_xml_file[f'{BANDS.rp}_coefficient_correlations'][0][0], ndarray)
-        self.assertEqual(
-            len(
-                parsed_xml_file[f'{BANDS.rp}_coefficient_correlations'][0][0]),
-            parsed_xml_file[f'{BANDS.rp}_n_parameters'][0])
+        self.assertIsInstance(parsed_xml_file[f'{BANDS.rp}_coefficient_correlations'][0][0], ndarray)
+        self.assertEqual(len(parsed_xml_file[f'{BANDS.rp}_coefficient_correlations'][0][0]),
+                         parsed_xml_file[f'{BANDS.rp}_n_parameters'][0])
 
 
 class TestInternalContinuousParserAVRO(unittest.TestCase):
@@ -283,7 +235,9 @@ class TestInternalContinuousParserAVRO(unittest.TestCase):
                           f'{BANDS.rp}_coefficient_covariances',
                           f'{BANDS.rp}_coefficients',
                           f'{BANDS.bp}_coefficient_covariances',
-                          f'{BANDS.bp}_coefficients'])
+                          f'{BANDS.bp}_coefficients',
+                          f'{BANDS.bp}_covariance_matrix',
+                          f'{BANDS.rp}_covariance_matrix'])
 
     # 'O' stands for object
     def test_column_types(self):
@@ -293,33 +247,23 @@ class TestInternalContinuousParserAVRO(unittest.TestCase):
 
     def test_bp_coefficients_types(self):
         self.assertIsInstance(parsed_avro_file[f'{BANDS.bp}_coefficients'][0], ndarray)
-        self.assertIsInstance(
-            parsed_avro_file[f'{BANDS.bp}_coefficient_covariances'][0], ndarray)
+        self.assertIsInstance(parsed_avro_file[f'{BANDS.bp}_coefficient_covariances'][0], ndarray)
 
     def test_rp_coefficients_type(self):
         self.assertIsInstance(parsed_avro_file[f'{BANDS.rp}_coefficients'][0], ndarray)
-        self.assertIsInstance(
-            parsed_avro_file[f'{BANDS.rp}_coefficient_covariances'][0], ndarray)
+        self.assertIsInstance(parsed_avro_file[f'{BANDS.rp}_coefficient_covariances'][0], ndarray)
 
-    # The column 'bp_coefficient_covariances' should be a matrix of size
-    # 'bp_num_of_parameters'^2
+    # The column 'bp_coefficient_covariances' should be a matrix of size 'bp_num_of_parameters'^2
     def test_bp_coefficient_covariances_is_matrix(self):
-        self.assertIsInstance(
-            parsed_avro_file[f'{BANDS.bp}_coefficient_covariances'][0][0], ndarray)
-        self.assertEqual(
-            len(
-                parsed_avro_file[f'{BANDS.bp}_coefficient_covariances'][0][0]),
-            parsed_avro_file[f'{BANDS.bp}_n_parameters'][0])
+        self.assertIsInstance(parsed_avro_file[f'{BANDS.bp}_coefficient_covariances'][0][0], ndarray)
+        self.assertEqual(len(parsed_avro_file[f'{BANDS.bp}_coefficient_covariances'][0][0]),
+                         parsed_avro_file[f'{BANDS.bp}_n_parameters'][0])
 
-    # The column 'rp_coefficient_covariances' should be a matrix of size
-    # 'rp_num_of_parameters'^2
+    # The column 'rp_coefficient_covariances' should be a matrix of size 'rp_num_of_parameters'^2
     def test_rp_coefficient_covariances_is_matrix(self):
-        self.assertIsInstance(
-            parsed_avro_file[f'{BANDS.rp}_coefficient_covariances'][0][0], ndarray)
-        self.assertEqual(
-            len(
-                parsed_avro_file[f'{BANDS.rp}_coefficient_covariances'][0][0]),
-            parsed_avro_file[f'{BANDS.rp}_n_parameters'][0])
+        self.assertIsInstance(parsed_avro_file[f'{BANDS.rp}_coefficient_covariances'][0][0], ndarray)
+        self.assertEqual(len(parsed_avro_file[f'{BANDS.rp}_coefficient_covariances'][0][0]),
+                         parsed_avro_file[f'{BANDS.rp}_n_parameters'][0])
 
 
 class TestFormatEquality(unittest.TestCase):
@@ -335,6 +279,7 @@ class TestFormatEquality(unittest.TestCase):
             self.assertEqual(fits_data.keys(), plain_xml_data.keys())
             self.assertEqual(plain_xml_data.keys(), xml_data.keys())
             for key in csv_data.keys():
-                npt.assert_almost_equal(csv_data[key], fits_data[key], decimal=4)  # Precision varies across formats
-                npt.assert_almost_equal(fits_data[key], plain_xml_data[key], decimal=4)
-                npt.assert_almost_equal(plain_xml_data[key], xml_data[key], decimal=4)
+                decimal = 2 if key in ['bp_covariance_matrix', 'rp_covariance_matrix'] else 4
+                npt.assert_almost_equal(csv_data[key], fits_data[key], decimal=decimal)  # Precision varies across formats
+                npt.assert_almost_equal(fits_data[key], plain_xml_data[key], decimal=decimal)
+                npt.assert_almost_equal(plain_xml_data[key], xml_data[key], decimal=decimal)

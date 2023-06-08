@@ -74,24 +74,3 @@ class TestLineFinderInput(unittest.TestCase):
         isolated_df = pd.read_csv(missing_bp_csv_file)
         isolated_output = linefinder(isolated_df, save_file=False)
         pdt.assert_frame_equal(isolated_output, isolated_missing_bp_solution)
-
-    def test_query_input_with_missing_bp(self):
-        source_ids = ('5853498713190525696', str(missing_bp_source_id), '5762406957886626816')
-        query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN {source_ids}"
-        with_missing_output = linefinder(query, save_file=False)
-        pdt.assert_frame_equal(with_missing_output, found_lines_no_bp_real.sort_values('source_id', ignore_index=True))
-
-    def test_query_input_isolated_missing_bp(self):
-        isolated_output = linefinder(f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN"
-                                     f" ({str(missing_bp_source_id)})", save_file=False)
-        pdt.assert_frame_equal(isolated_output, isolated_missing_bp_solution)
-
-    def test_list_input_with_missing_bp(self):
-        sources = ['5853498713190525696', missing_bp_source_id, 5762406957886626816]
-        with_missing_output = linefinder(sources, save_file=False)
-        pdt.assert_frame_equal(with_missing_output, found_lines_no_bp_real)
-
-    def test_list_input_isolated_missing_bp(self):
-        sources = [missing_bp_source_id]
-        missing_output = linefinder(sources, save_file=False)
-        pdt.assert_frame_equal(missing_output, isolated_missing_bp_solution)

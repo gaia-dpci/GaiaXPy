@@ -131,35 +131,3 @@ class TestGeneratorMissingBPDataFrameInput(unittest.TestCase):
         df, _ = InputReader(missing_bp_csv_file, generate).read()
         output_df = generate(df, photometric_system=phot_systems, save_file=False)
         pdt.assert_frame_equal(output_df, missing_solution_df_no_corr, atol=_atol, rtol=_rtol)
-
-
-class TestGeneratorMissingBPQueryInput(unittest.TestCase):
-
-    def test_missing_bp_query(self):
-        query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5853498713190525696', " \
-                f"{missing_bp_source_id}, '5762406957886626816')"
-        output_df = generate(query, photometric_system=phot_systems, save_file=False)
-        sorted_output_df = output_df.sort_values('source_id', ignore_index=True)
-        sorted_solution_df = with_missing_solution_df_no_corr.sort_values('source_id', ignore_index=True)
-        pdt.assert_frame_equal(sorted_output_df, sorted_solution_df, atol=_atol, rtol=_rtol)
-
-    def test_missing_bp_query_isolated(self):
-        query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ({missing_bp_source_id})"
-        output_df = generate(query, photometric_system=phot_systems, save_file=False)
-        pdt.assert_frame_equal(output_df, missing_solution_df_no_corr, atol=_atol, rtol=_rtol)
-
-
-class TestGeneratorMissingBPListInput(unittest.TestCase):
-
-    def test_missing_bp_list(self):
-        src_list = ['5853498713190525696', str(missing_bp_source_id), '5762406957886626816']
-        output_df = generate(src_list, photometric_system=phot_systems, save_file=False)
-        sorted_output_df = output_df.sort_values('source_id', ignore_index=True)
-        sorted_solution_df = with_missing_solution_df_no_corr.sort_values('source_id', ignore_index=True)
-        pdt.assert_frame_equal(sorted_output_df, sorted_solution_df, check_dtype=False, atol=_atol, rtol=_rtol)
-
-    def test_missing_bp_isolated(self):
-        src_list = [missing_bp_source_id]
-        output_df = generate(src_list, photometric_system=phot_systems, save_file=False)
-        pdt.assert_frame_equal(output_df, missing_solution_df_no_corr, check_dtype=False, atol=_atol, rtol=_rtol)
-

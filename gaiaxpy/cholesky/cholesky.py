@@ -16,19 +16,19 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 
 
-def __get_dot_product(L_inv: np.ndarray) -> Optional[np.ndarray]:
+def __get_dot_product(_L_inv: np.ndarray) -> Optional[np.ndarray]:
     """
     Calculate the dot product of the transpose of L_inv with itself.
 
     Args:
-        L_inv (ndarray): A 2D numpy array.
+        _L_inv (ndarray): A 2D numpy array.
 
     Returns:
         ndarray: The dot product of the transpose of L_inv with itself. None: If L_inv does not have the attribute `T`
             (transpose).
     """
     try:
-        return dot(L_inv.T, L_inv)
+        return dot(_L_inv.T, _L_inv)
     except AttributeError:
         return None
 
@@ -155,24 +155,24 @@ def get_inverse_covariance_matrix(input_object: Union[list, Path, str], band: st
         return output_df
 
 
-def get_chi2(L_inv: np.ndarray, residuals: np.ndarray) -> np.ndarray:
+def get_chi2(_L_inv: np.ndarray, residuals: np.ndarray) -> np.ndarray:
     """
     Compute chi-squared (chi2) from given inverse Cholesky of the covariance matrix (L^-1) and a residual vector
     (r = data - model). This function defines x = L^-1 * r such that chi2 = |x|^2, which guarantees that chi2 >= 0.
 
     Args:
-        L_inv (ndarray): Inverse square root of the covariance, as computed from the function
+        _L_inv (ndarray): Inverse square root of the covariance, as computed from the function
             get_inverse_square_root_covariance_matrix.
         residuals (ndarray): Difference between the observed coefficient vector and some model prediction of it.
 
     Returns:
         float: Chi-squared value.
     """
-    if L_inv is None or residuals is None:  # Cannot be checked with 'not' as the truth value of an array is ambiguous.
+    if _L_inv is None or residuals is None:  # Cannot be checked with 'not' as the truth value of an array is ambiguous.
         raise ValueError('Input parameters cannot be None.')
-    if L_inv.shape != (55, 55):
+    if _L_inv.shape != (55, 55):
         raise ValueError('Inverse covariance matrix shape must be (55, 55).')
     if residuals.shape != (55,):
         raise ValueError('Residuals shape must be (55,).')
-    x = dot(L_inv, residuals)
+    x = dot(_L_inv, residuals)
     return dot(x.T, x)

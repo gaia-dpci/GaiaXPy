@@ -18,12 +18,13 @@ def extremes_are_enclosing(first_row, column):
 
 class ListReader(ArchiveReader):
 
-    def __init__(self, content, function, user, password):
+    def __init__(self, content, function, user, password, disable_info=False):
         super(ListReader, self).__init__(function, user, password)
         if content:
             self.content = content
         else:
             raise ValueError('Input list cannot be empty.')
+        self.disable_info = disable_info
 
     def _read(self, _data_release=data_release):
         # TODO: list could contain elements that are not sourceIds
@@ -35,7 +36,8 @@ class ListReader(ArchiveReader):
         gaia = GaiaClass(gaia_tap_server=gaia_server, gaia_data_server=gaia_server)
         self._login(gaia)
         # ADQL query
-        print('Launching query...', end='\r')
+        if not self.disable_info:
+            print('Running query...', end='\r')
         result = gaia.load_data(ids=sources, format='csv', data_release=_data_release, data_structure='raw',
                                 retrieval_type='XP_CONTINUOUS', avoid_datatype_check=True)
         try:

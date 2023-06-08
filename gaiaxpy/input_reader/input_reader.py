@@ -13,11 +13,12 @@ default_extension = 'csv'
 
 class InputReader(object):
 
-    def __init__(self, content, function, user=None, password=None):
+    def __init__(self, content, function, user=None, password=None, disable_info=False):
         self.content = content
         self.function = function
         self.user = user
         self.password = password
+        self.disable_info = disable_info
 
     def __string_reader(self):
         content = self.content
@@ -26,12 +27,13 @@ class InputReader(object):
         password = self.password
         # Check whether content is path
         if isfile(content) or isabs(content):
-            selector = FileReader(function)
+            selector = FileReader(function, disable_info=self.disable_info)
             parser = selector._select()  # Select type of parser required
             parsed_input_data, extension = parser._parse(content)
         # Query should start with select
         elif content.lower().startswith('select'):
-            parsed_input_data, extension = QueryReader(content, function, user, password)._read()
+            parsed_input_data, extension = QueryReader(content, function, user=user, password=password,
+                                                       disable_info=self.disable_info)._read()
         else:
             raise ValueError('Input string does not correspond to an existing file and it is not an ADQL query.')
         return parsed_input_data, extension
@@ -44,11 +46,12 @@ class InputReader(object):
         # DataFrame reader
         if isinstance(content, pd.DataFrame):
             # Call Dataframe reader
-            parsed_data, extension = DataFrameReader(content)._read_df()
+            parsed_data, extension = DataFrameReader(content, disable_info=self.disable_info)._read_df()
         # List reader for query
         elif isinstance(content, list):
             # Construct query from list
-            parsed_data, extension = ListReader(content, function, user, password)._read()
+            parsed_data, extension = ListReader(content, function, user, password,
+                                                disable_info=self.disable_info)._read()
         # String can be either query or file path
         elif isinstance(content, str):
             parsed_data, extension = self.__string_reader()

@@ -30,8 +30,9 @@ function_parser_dict = {'apply_colour_equation': raise_error,
 
 class FileReader(object):
 
-    def __init__(self, function):
+    def __init__(self, function, disable_info=False):
         self.function = function.__name__
+        self.disable_info = disable_info
 
     def _select(self):
         return function_parser_dict[self.function]()

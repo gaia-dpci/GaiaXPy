@@ -2,9 +2,9 @@ from typing import Union
 
 import pandas as pd
 
-from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
+from gaiaxpy.colour_equation.xp_filter_system_colour_equation import _apply_colour_equation
 from gaiaxpy.core.generic_functions import cast_output, validate_arguments
-from gaiaxpy.error_correction.error_correction import apply_error_correction
+from gaiaxpy.error_correction.error_correction import _apply_error_correction
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
@@ -76,10 +76,11 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
     photometry_df = generator.generate(parsed_input_data, extension, output_file=None, output_format=None,
                                        save_file=False)
     if colour_equation:
-        photometry_df = apply_colour_equation(photometry_df, photometric_system=internal_photometric_system,
-                                              save_file=False)
+        photometry_df = _apply_colour_equation(photometry_df, photometric_system=internal_photometric_system,
+                                               save_file=False, disable_info=True)
     if error_correction:
-        photometry_df = apply_error_correction(photometry_df, photometric_system=photometric_system, save_file=False)
+        photometry_df = _apply_error_correction(photometry_df, photometric_system=photometric_system, save_file=False,
+                                                disable_info=True)
     if not gaia_initially_in_systems:
         # Remove Gaia_DR3_Vega system from the final result
         gaia_label = gaia_system.get_system_label()

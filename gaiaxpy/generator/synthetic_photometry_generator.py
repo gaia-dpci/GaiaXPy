@@ -46,11 +46,7 @@ def _generate_synthetic_photometry(row, design_matrix, merge, photometric_system
     Returns:
         SingleSyntheticPhotometry: The output synthetic photometry.
     """
-    cont_dict = dict()
-    for band in BANDS:
-        covariance_matrix = get_covariance_matrix(row, band)
-        if covariance_matrix is not None:
-            continuous_spectrum = XpContinuousSpectrum(row['source_id'], band.upper(), row[f'{band}_coefficients'],
-                                                       covariance_matrix, row[f'{band}_standard_deviation'])
-            cont_dict[band] = continuous_spectrum
+    cont_dict = {band: XpContinuousSpectrum(row['source_id'], band.upper(), row[f'{band}_coefficients'],
+                                            get_covariance_matrix(row, band), row[f'{band}_standard_deviation'])
+                 for band in BANDS}
     return SingleSyntheticPhotometry(row['source_id'], cont_dict, design_matrix, merge, photometric_system)

@@ -31,10 +31,10 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
         # One list per system
         photometry_list_of_lists = [self._create_photometry_list(parsed_input_data, phot_system, sampled_basis_func,
                                                                  xp_merge) for phot_system, sampled_basis_func, xp_merge
-                                    in tqdm(zip(systems, sampled_basis_func_list, xp_merge_list),
-                                            desc='Generating photometry', total=len(systems),
-                                            unit=pbar_units['photometry'], leave=False, colour=pbar_colour)]
+                                    in zip(systems, sampled_basis_func_list, xp_merge_list)]
         # Now the first list contains the photometries in all systems for the first source_id, and so on.
-        rearranged_photometry_list = [sublist for sublist in zip(*photometry_list_of_lists)]  # list of tuples is enough
+        rearranged_photometry_list = [sublist for sublist in tqdm(zip(*photometry_list_of_lists),
+                                            desc='Generating photometry', total=len(parsed_input_data),
+                                            unit=pbar_units['photometry'], leave=False, colour=pbar_colour)]
         multi_photometry_df = MultiSyntheticPhotometry(systems, rearranged_photometry_list)._generate_output_df()
         return multi_photometry_df

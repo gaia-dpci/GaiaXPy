@@ -53,7 +53,7 @@ class ExternalInstrumentModel(object):
         _resp = np.genfromtxt(response_path, delimiter=',')
         response = dict(zip(['wavelength', 'response'], [_resp[0], _resp[1]]))
         # Bases
-        bases, ext = InverseBasesParser()._parse(bases_path)
+        bases, _ = InverseBasesParser()._parse(bases_path)
         bases['inverseBasesCoefficients'][0] = bases['inverseBasesCoefficients'][0].reshape(
             bases['nBases'][0], bases['nInverseBasesCoefficients'][0])
         bases['transformationMatrix'][0] = bases['transformationMatrix'][0].reshape(

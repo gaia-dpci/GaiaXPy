@@ -26,8 +26,8 @@ from gaiaxpy.spectrum.utils import get_covariance_matrix
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from .external_instrument_model import ExternalInstrumentModel
 
-
 __FUNCTION_KEY = 'calibrator'
+
 
 def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None, truncation: bool = False,
               output_path: Union[Path, str] = '.', output_file: str = 'output_spectra', output_format: str = None,
@@ -86,9 +86,6 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
     validate_arguments(_calibrate.__defaults__[3], output_file, save_file)
     parsed_input_data, extension = InputReader(input_object, _calibrate, username, password).read()
     xp_design_matrices, xp_merge = __generate_xp_matrices_and_merge(__FUNCTION_KEY, sampling, bp_model, rp_model)
-    for band in BANDS:
-        parsed_input_data[f'{band}_covariance_matrix'] = parsed_input_data.apply(get_covariance_matrix, axis=1,
-                                                                                 args=(band,))
     spectra_df, positions = __create_spectra(parsed_input_data, truncation, xp_design_matrices, xp_merge,
                                              with_correlation=with_correlation)
     output_data = SampledSpectraData(spectra_df, positions)
@@ -225,7 +222,7 @@ def _create_spectrum(row, truncation, design_matrix, merge, with_correlation=Fal
     """
     source_id = row['source_id']
     continuous_dict = {band: XpContinuousSpectrum(source_id, band, row[f'{band}_coefficients'],
-                                                  row[f'{band}_covariance_matrix'], row[f'{band}_standard_deviation'])
+                                                  get_covariance_matrix(row, band), row[f'{band}_standard_deviation'])
                        for band in BANDS}
     recommended_truncation = {band: row[f'{band}_n_relevant_bases'] for band in BANDS} if truncation else dict()
     return AbsoluteSampledSpectrum(source_id, continuous_dict, design_matrix, merge, truncation=recommended_truncation,

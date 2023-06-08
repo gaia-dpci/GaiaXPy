@@ -29,7 +29,7 @@ from gaiaxpy.linefinder.lines import Extrema, Lines
 from gaiaxpy.linefinder.plotter import plot_spectra_with_lines
 from gaiaxpy.output.line_data import LineData
 
-warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
+warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
 config_parser = ConfigParser()
 config_parser.read(path.join(config_path, 'config.ini'))
@@ -39,8 +39,6 @@ basis_function_id = {BANDS.bp: 56, BANDS.rp: 57}
 
 tolerance = 1.  # [pix] tolerance to detect a line
 
-# Activate tqdm for pandas
-# tqdm.pandas(desc='Finding lines', unit=pbar_units['linefinder'], leave=False, colour=pbar_colour)
 
 def _get_configuration(config):
     """

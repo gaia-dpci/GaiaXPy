@@ -136,7 +136,7 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
         return {'flux': 'electron/s', 'flux_error': 'electron/s', 'standard_deviation': 'electron/s', 'pos': 'pwl'}
 
     @classmethod
-    def _get_flux_label(cls):
+    def get_flux_label(cls):
         return "Flux [e-/s]"
 
     @classmethod

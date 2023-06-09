@@ -15,11 +15,6 @@ Pandas does not yet have a robust method of propagating metadata attached to Dat
 so if some operations are performed over the DataFrame, this information may be lost.
 Luckily, most common operations preserve metadata.
 
-The plotter can only receive pandas DataFrames and not pandas Series, which may be important when
-selecting a particular row of a DataFrame.
-
-For example, if :python:`df` is a DataFrame returned by GaiaXPy corresponding to either the calibrator or converter output,
-and we want to select row :python:`0` and the use :python:`plot_spectra` on it:
 
 .. code-block:: python
 

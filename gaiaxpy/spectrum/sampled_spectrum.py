@@ -74,7 +74,7 @@ class SampledSpectrum(Spectrum):
         """
         return self.pos
 
-    def _get_flux_label(self):
+    def get_flux_label(self):
         """
         Get the labels describing the flux measurements.
 
@@ -94,11 +94,6 @@ class SampledSpectrum(Spectrum):
 
     def _get_inputs(self, spectrum):
         return spectrum.get_positions(), spectrum._get_fluxes(), spectrum._get_flux_errors()
-
-    def _save_figure(self, output_path, file_name, output_format):
-        if output_path:
-            Path(output_path).mkdir(parents=True, exist_ok=True)
-            plt.savefig(path.join(output_path, f'{file_name}.{output_format}'), format=output_format, transparent=False)
 
     @staticmethod
     def _sample_flux(coefficients, design_matrix):

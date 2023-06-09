@@ -31,7 +31,7 @@ class MultiXpPlotter(Plotter):
         for axis in ax:
             axis.set_ylim(0, 1.05 * max_flux)
             axis.set_xlabel(spectra_class.get_position_label())
-            axis.set_ylabel(spectra_class._get_flux_label())
+            axis.set_ylabel(spectra_class.get_flux_label())
             if show_legend:
                 handles, labels = plt.gca().get_legend_handles_labels()
                 by_label = dict(zip(labels, handles))
@@ -39,15 +39,15 @@ class MultiXpPlotter(Plotter):
                 fig.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1, 1), loc='upper right',
                            borderaxespad=0.1)
 
-    def _plot(self):
+    def plot_fig(self):
         n_spectra = len(self.spectra)
         if self.show_plot and self.legend and n_spectra > self.max_spectra_on_multi:
             raise ValueError(f'The legend can only be shown for a list of spectra no longer than '
                              f'{self.max_spectra_on_multi} elements. Try setting legend to False or retry with a '
                              f'shorter list.')
         self._plot_multi_xp()
-        if self.output_path:
-            self._save_figure(self.output_path, self.output_file, self.format)
+        if self.output_path or self.output_file:
+            self._save_figure()
         if self.show_plot:
             plt.show()
         plt.close()

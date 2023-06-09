@@ -118,7 +118,7 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
         return {'flux': 'W.nm**-1.m**-2', 'flux_error': 'W.nm**-1.m**-2', 'pos': 'nm'}
 
     @classmethod
-    def _get_flux_label(cls):
+    def get_flux_label(cls):
         return 'Flux [W nm^-1 m^-2]'
 
     @classmethod

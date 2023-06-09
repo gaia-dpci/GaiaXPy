@@ -15,7 +15,7 @@ class ExternalParser(GenericParser):
     Parser for externally calibrated sampled spectra.
     """
 
-    def _parse_csv(self, csv_file, _array_columns=array_columns):
+    def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None):
         """
         Parse the input CSV file and store the result in a pandas DataFrame if it contains externally calibrated sampled
             spectra.
@@ -27,9 +27,11 @@ class ExternalParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
         """
+        if _array_columns is None:
+            _array_columns = array_columns
         return super()._parse_csv(csv_file, _array_columns)
 
-    def _parse_fits(self, fits_file, _array_columns=array_columns):
+    def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None):
         """
         Parse the input FITS file and store the result in a pandas DataFrame if it contains externally calibrated
             sampled spectra.
@@ -41,9 +43,11 @@ class ExternalParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the FITS file.
         """
+        if _array_columns is None:
+            _array_columns = array_columns
         return super()._parse_fits(fits_file, _array_columns=_array_columns)
 
-    def _parse_xml(self, xml_file, _array_columns=array_columns):
+    def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None):
         """
         Parse the input XML file and store the result in a pandas DataFrame if it contains externally calibrated sampled
             spectra.
@@ -55,4 +59,6 @@ class ExternalParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the XML file.
         """
+        if _array_columns is None:
+            _array_columns = array_columns
         return super()._parse_xml(xml_file, _array_columns=_array_columns)

@@ -23,12 +23,23 @@ matrix_columns = [('bp_n_parameters', 'bp_coefficient_correlations'),
                   ('rp_n_parameters', 'rp_coefficient_correlations')]
 
 
+def _parse_generic(file, function, _array_columns, _matrix_columns):
+    if _matrix_columns is None:
+        _matrix_columns = matrix_columns
+    if _array_columns is None:
+        _array_columns = array_columns
+    df = function(file, _array_columns=array_columns, _matrix_columns=matrix_columns)
+    for band in BANDS:
+        df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
+    return df
+
+
 class InternalContinuousParser(GenericParser):
     """
     Parser for internally calibrated continuous spectra.
     """
 
-    def _parse_csv(self, csv_file):
+    def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None):
         """
         Parse the input CSV file and store the result in a pandas DataFrame if it contains internally calibrated
             continuous spectra.
@@ -39,7 +50,8 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
         """
-        return super()._parse_csv(csv_file, _array_columns=array_columns, _matrix_columns=matrix_columns)
+        return _parse_generic(csv_file, super()._parse_csv, _array_columns=_array_columns,
+                                   _matrix_columns=_matrix_columns)
 
     def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None):
         """
@@ -52,15 +64,8 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the FITS file.
         """
-        if _matrix_columns is None:
-            _matrix_columns = matrix_columns
-        if _array_columns is None:
-            _array_columns = array_columns
-        df = super()._parse_fits(fits_file, _array_columns=array_columns, _matrix_columns=matrix_columns)
-        if _matrix_columns:
-            for band in BANDS:
-                df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
-        return df
+        return _parse_generic(fits_file, super()._parse_fits, _array_columns=_array_columns,
+                                   _matrix_columns=_matrix_columns)
 
     def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None):
         """
@@ -72,16 +77,8 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
         """
-        if _matrix_columns is None:
-            _matrix_columns = matrix_columns
-        if _array_columns is None:
-            _array_columns = _array_columns
-        df = super()._parse_xml(xml_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns)
-        if _matrix_columns:
-            for band in BANDS:
-                df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
-        return df
-
+        return _parse_generic(xml_file, super()._parse_xml, _array_columns=_array_columns,
+                                   _matrix_columns=_matrix_columns)
     @staticmethod
     def __process_avro_record(record):
         return {key: np.array(_get_from_dict(record, _csv_to_avro_map[key])) if

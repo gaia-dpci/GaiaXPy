@@ -54,7 +54,7 @@ class GenericParser(object):
         """
         if extension == 'avro':
             return self._parse_avro
-        elif extension == 'csv' or extension == 'ecsv':
+        elif extension in ['csv', 'ecsv']:
             return self._parse_csv
         elif extension == 'fits':
             return self._parse_fits
@@ -80,7 +80,7 @@ class GenericParser(object):
         parsed_data = _cast(parser(file_path))
         return parsed_data, extension
 
-    def _parse_avro(self, avro_file, _array_columns=None, _matrix_columns=None):
+    def _parse_avro(self, avro_file):
         raise NotImplementedError('Method not implemented for base class.')
 
     def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None):
@@ -96,16 +96,15 @@ class GenericParser(object):
         Returns:
             DataFrame: A pandas DataFrame representing the CSV file.
         """
-        converters = {}
-        if _array_columns:
-            converters = dict([(column, lambda x: str_to_array(x)) for column in _array_columns])
-        df = pd.read_csv(csv_file, comment='#', float_precision='high', converters=converters)
+        df = pd.read_csv(csv_file, comment='#', float_precision='high')
+        if _array_columns:  # Pandas converters seemed to be slower
+            for column in _array_columns:
+                if column in df.columns:
+                    df[column] = df[column].apply(lambda x: str_to_array(x))
         if _matrix_columns:
             for size_column, values_column in _matrix_columns:
                 df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(str_to_array(row[values_column]),
                                                                                    row[size_column]), axis=1)
-            for band in BANDS:
-                df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
         return df
 
     def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None):

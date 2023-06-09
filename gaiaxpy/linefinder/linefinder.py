@@ -386,7 +386,8 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
         if plot_spectra:
             con_spectra_m_con_bp_flux_values = None if is_na_bp_np else con_spectra[m_con_bp]['flux'].values[0]
             plot_spectra_with_lines(sid, con_sampling, con_spectra_m_con_bp_flux_values, _con_spectra_m_con_rp_flux,
-                                    cal_sampling, _cal_spectra_m_cal_flux, bp_found_lines, rp_found_lines, save_plots)
+                                    cal_sampling, _cal_spectra_m_cal_flux, bp_found_lines, rp_found_lines, save_plots,
+                                    output_path, prefix='lines')
 
         output_lines.extend(_format_output(sid, bp_found_lines, rp_found_lines))
 
@@ -475,7 +476,8 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
             con_spectra_m_con_bp_flux_values = None if is_na_bp_np else con_spectra[m_con_bp]['flux'].values[0]
             plot_spectra_with_lines(sid, con_sampling, con_spectra_m_con_bp_flux_values,
                                     _con_spectra_m_con_rp_flux, cal_sampling,
-                                    cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots)
+                                    cal_spectra[m_cal]['flux'].values[0], bp_found_lines, rp_found_lines, save_plots,
+                                    output_path, prefix='extrema')
 
         output_lines.extend(_format_output(sid, bp_found_lines, rp_found_lines))
 

@@ -182,11 +182,11 @@ def array_to_symmetric_matrix(array, array_size):
     def contains_diagonal(_array_size, _array):
         return not len(_array) == len(np.tril_indices(_array_size - 1)[0])
 
-    # Is NaN
-    if (isinstance(array_size, float) and pd.isna(array_size)) or (isinstance(array, float) and pd.isna(array)):
+    # Is NaN size or NaN array
+    if pd.isna(array_size) or (isinstance(array, float) and pd.isna(array)):
         return array
     if isinstance(array_size, float):  # If the missing band source is present, floats may be returned when parsing
-        array_size = round(array_size)  # This should raise an error if the decimal part is not .0
+        array_size = int(array_size)  # TODO: This should raise an error if the decimal part is not .0
     if isinstance(array, np.ndarray):
         n_dim = array.ndim
         if array.size == 0 or n_dim == 2:  # Either empty or already a matrix
@@ -200,7 +200,7 @@ def array_to_symmetric_matrix(array, array_size):
             transpose = matrix.transpose()
             transpose[np.tril_indices(array_size, -1)] = matrix[np.tril_indices(array_size, -1)]
             return transpose
-    raise TypeError('Wrong argument types. Must be np.ndarray and integer.')
+    raise TypeError('Wrong argument types. Must be np.ndarray and integer or float.')
 
 
 def _extract_systems_from_data(data_columns, photometric_system=None):

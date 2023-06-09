@@ -6,7 +6,6 @@ Module to hold some functions used by different subpackages.
 
 import sys
 from ast import literal_eval
-from numbers import Number
 from os.path import join
 from string import capwords
 
@@ -64,6 +63,8 @@ def str_to_matrix(str_matrix):
 
 
 def str_to_array(str_array):
+    if isinstance(str_array, np.ndarray):
+        return str_array
     if isinstance(str_array, str) and len(str_array) >= 2 and str_array[0] == '(' and str_array[1] == '(':
         return str_to_matrix(str_array)
     elif isinstance(str_array, str):
@@ -181,25 +182,25 @@ def array_to_symmetric_matrix(array, array_size):
     def contains_diagonal(_array_size, _array):
         return not len(_array) == len(np.tril_indices(_array_size - 1)[0])
 
-    # Bad cases
-    if (not isinstance(array, np.ndarray) and pd.isna(array)) or isinstance(array_size, np.ma.core.MaskedConstant) \
-            or array.size == 0:
+    # Is NaN
+    if (isinstance(array_size, float) and pd.isna(array_size)) or (isinstance(array, float) and pd.isna(array)):
         return array
-    # Enforce array type, second check verifies that array is 1D.
-    if isinstance(array, np.ndarray) and isinstance(array[0], Number) and isinstance(array_size, Number):
-        array_size = int(array_size)
-        matrix = np.zeros((array_size, array_size))
-        np.fill_diagonal(matrix, 1.0)  # Add values in diagonal
-        k = 0 if contains_diagonal(array_size, array) else -1  # Diagonal offset (from Numpy documentation)
-        matrix[np.tril_indices(array_size, k=k)] = array
-        transpose = matrix.transpose()
-        transpose[np.tril_indices(array_size, -1)] = matrix[np.tril_indices(array_size, -1)]
-        return transpose
-    elif isinstance(array, np.ndarray) and isinstance(array[0], np.ndarray):
-        # Input array is already a matrix, we assume that it contains the required values.
-        return array
-    else:
-        raise TypeError('Wrong argument types. Must be np.ndarray and integer.')
+    if isinstance(array_size, float):  # If the missing band source is present, floats may be returned when parsing
+        array_size = round(array_size)  # This should raise an error if the decimal part is not .0
+    if isinstance(array, np.ndarray):
+        n_dim = array.ndim
+        if array.size == 0 or n_dim == 2:  # Either empty or already a matrix
+            return array
+        elif n_dim == 1:
+            array_size = int(array_size)
+            matrix = np.zeros((array_size, array_size))
+            np.fill_diagonal(matrix, 1.0)  # Add values in diagonal
+            k = 0 if contains_diagonal(array_size, array) else -1  # Diagonal offset (from Numpy documentation)
+            matrix[np.tril_indices(array_size, k=k)] = array
+            transpose = matrix.transpose()
+            transpose[np.tril_indices(array_size, -1)] = matrix[np.tril_indices(array_size, -1)]
+            return transpose
+    raise TypeError('Wrong argument types. Must be np.ndarray and integer.')
 
 
 def _extract_systems_from_data(data_columns, photometric_system=None):

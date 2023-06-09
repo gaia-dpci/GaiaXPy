@@ -1,4 +1,5 @@
 from os.path import join
+from typing import Union
 
 import matplotlib.pyplot as plt
 
@@ -7,13 +8,13 @@ from gaiaxpy.output.utils import _standardise_output_format
 colours = [f'tab:{colour}' for colour in ['green', 'orange', 'purple', 'brown', 'pink', 'olive', 'cyan', 'grey']]
 
 
-def plot_spectra_with_lines(source_id, sampling, bp_flux, rp_flux, wavelength, flux, bp_lines, rp_lines, save_plots,
-                            output_path=None, prefix='', format='jpg'):
+def plot_spectra_with_lines(source_id: Union[int, str], sampling, bp_flux, rp_flux, wavelength, flux, bp_lines,
+                            rp_lines, save_plots, output_path=None, prefix='', format='jpg'):
     """
     Plots spectra with lines for a given source ID.
 
     Args:
-        source_id (str): The ID of the source.
+        source_id (str/int): The ID of the source.
         sampling (ndarray): The sampling values.
         bp_flux (ndarray): The flux values for the BP spectra.
         rp_flux (ndarray): The flux values for the RP spectra.

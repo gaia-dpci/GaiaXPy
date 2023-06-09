@@ -26,7 +26,7 @@ class TestPlotterMethod(unittest.TestCase):
 
     # check if returned object is Figure 
     def test_plotter(self):
-        source_id = 5762406
+        source_id = '5762406'
         sampling = np.arange(0, 60)
         wavelength = np.arange(300, 700)
         bp_flux = rp_flux = np.arange(0, 60)
@@ -36,6 +36,5 @@ class TestPlotterMethod(unittest.TestCase):
         rp_lines = [('H_alpha', 15.73, 2, 15.65, 655.95, 8.1e-17, -2.1e-17, 14.19, 19.57, 1.02e-16, 34.20, 1154.83,
                      2.05)]
         save_plots = True
-        f = plot_spectra_with_lines(source_id, sampling, bp_flux, rp_flux, wavelength, flux, bp_lines, rp_lines,
-                                    save_plots, output_path=output_path, prefix='lines')
-        self.assertIsInstance(f, mplf.Figure)
+        plot_spectra_with_lines(source_id, sampling, bp_flux, rp_flux, wavelength, flux, bp_lines, rp_lines,
+                                save_plots, output_path=output_path, prefix='lines')

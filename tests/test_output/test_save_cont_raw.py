@@ -7,7 +7,7 @@ import pandas.testing as pdt
 from astropy.io.votable import parse_single_table
 from astropy.table import Table
 
-from gaiaxpy import calibrate, convert, generate, PhotometricSystem, fastfinder, extremafinder, linefinder
+from gaiaxpy import calibrate, convert, generate, PhotometricSystem, find_fast, find_extrema, find_lines
 from gaiaxpy.file_parser.parse_generic import GenericParser
 from tests.files.paths import files_path, solution_path, output_path
 
@@ -69,7 +69,7 @@ def run_output_test(function, filename, output_format, sampling=None, phot_syste
     current_file = f'{filename}.{output_format}'
     compare_frames(join(output_path, current_file), join(solution_path, current_file), extension=output_format,
                    function_name=function.__name__)
-    if output_format in ['csv', '.csv'] and phot_systems is None and 'finder' not in function.__name__:
+    if output_format in ['csv', '.csv'] and phot_systems is None and 'find' not in function.__name__:
         # A sampling file will be generated too (calibrate and convert), it needs to be tested
         current_sampling_file = f'{filename}_sampling.{output_format}'
         compare_frames(join(output_path, current_sampling_file), join(solution_path, current_sampling_file),
@@ -134,43 +134,43 @@ class TestSaveContRawGenerator(unittest.TestCase):
 class TestSaveContRawFastFinder(unittest.TestCase):
 
     def test_save_output_csv(self):
-        run_output_test(fastfinder, 'fastfinder', 'csv')
+        run_output_test(find_fast, 'fastfinder', 'csv')
 
     def test_save_output_ecsv(self):
-        run_output_test(fastfinder, 'fastfinder', 'ecsv')
+        run_output_test(find_fast, 'fastfinder', 'ecsv')
 
     def test_save_output_fits(self):
-        run_output_test(fastfinder, 'fastfinder', 'fits')
+        run_output_test(find_fast, 'fastfinder', 'fits')
 
     def test_save_output_xml(self):
-        run_output_test(fastfinder, 'fastfinder', 'xml')
+        run_output_test(find_fast, 'fastfinder', 'xml')
 
 
 class TestSaveContRawExtremaFinder(unittest.TestCase):
 
     def test_save_output_csv(self):
-        run_output_test(extremafinder, 'extremafinder', 'csv')
+        run_output_test(find_extrema, 'extremafinder', 'csv')
 
     def test_save_output_ecsv(self):
-        run_output_test(extremafinder, 'extremafinder', 'ecsv')
+        run_output_test(find_extrema, 'extremafinder', 'ecsv')
 
     def test_save_output_fits(self):
-        run_output_test(extremafinder, 'extremafinder', 'fits')
+        run_output_test(find_extrema, 'extremafinder', 'fits')
 
     def test_save_output_xml(self):
-        run_output_test(extremafinder, 'extremafinder', 'xml')
+        run_output_test(find_extrema, 'extremafinder', 'xml')
 
 
 class TestSaveContRawLineFinder(unittest.TestCase):
 
     def test_save_output_csv(self):
-        run_output_test(linefinder, 'linefinder', 'csv')
+        run_output_test(find_lines, 'linefinder', 'csv')
 
     def test_save_output_ecsv(self):
-        run_output_test(linefinder, 'linefinder', 'ecsv')
+        run_output_test(find_lines, 'linefinder', 'ecsv')
 
     def test_save_output_fits(self):
-        run_output_test(linefinder, 'linefinder', 'fits')
+        run_output_test(find_lines, 'linefinder', 'fits')
 
     def test_save_output_xml(self):
-        run_output_test(linefinder, 'linefinder', 'xml')
+        run_output_test(find_lines, 'linefinder', 'xml')

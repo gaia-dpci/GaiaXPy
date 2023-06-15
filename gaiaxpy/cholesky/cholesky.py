@@ -145,8 +145,8 @@ def get_inverse_covariance_matrix(input_object: Union[list, Path, str], band: st
         # The formal errors need to be scaled by the inverse standard deviation.
         xp_errors = parsed_input_data[f'{b}_coefficient_errors'] / parsed_input_data[f'{b}_standard_deviation']
         xp_correlation_matrix = parsed_input_data[f'{b}_coefficient_correlations']
-        L_inv_iterable = map(_get_inverse_square_root_covariance_matrix_aux, xp_errors, xp_correlation_matrix)
-        band_output = map(__get_dot_product, L_inv_iterable)
+        _L_inv_iterable = map(_get_inverse_square_root_covariance_matrix_aux, xp_errors, xp_correlation_matrix)
+        band_output = map(__get_dot_product, _L_inv_iterable)
         bands_output.append(band_output)
     output_df = __output_list_to_df(parsed_input_data, bands_output, output_columns)
     if len(bands_to_process) == 1 and len(output_df) == 1:

@@ -13,7 +13,7 @@ class QueryReader(ArchiveReader):
         self.content = content
         super(QueryReader, self).__init__(function, user, password, disable_info=disable_info)
 
-    def _read(self, _data_release=data_release):
+    def read(self, _data_release=data_release):
         query = self.content
         function_name = self.function.__name__
         if function_name in not_supported_functions:

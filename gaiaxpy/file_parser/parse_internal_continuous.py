@@ -10,6 +10,7 @@ from fastavro import __version__ as fa_version
 from packaging import version
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
+from gaiaxpy.core.generic_variables import INTERNAL_CONT_COLS
 from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
@@ -23,62 +24,85 @@ matrix_columns = [('bp_n_parameters', 'bp_coefficient_correlations'),
                   ('rp_n_parameters', 'rp_coefficient_correlations')]
 
 
-def _parse_generic(file, function, _array_columns, _matrix_columns):
-    if _matrix_columns is None:
-        _matrix_columns = matrix_columns
-    if _array_columns is None:
-        _array_columns = array_columns
-    df = function(file, _array_columns=array_columns, _matrix_columns=matrix_columns)
-    for band in BANDS:
-        df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
-    return df
-
-
 class InternalContinuousParser(GenericParser):
     """
     Parser for internally calibrated continuous spectra.
     """
 
-    def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None):
+    def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
         Parse the input CSV file and store the result in a pandas DataFrame if it contains internally calibrated
             continuous spectra.
 
         Args:
             csv_file (str): Path to a CSV file.
+            _array_columns (list): List of columns in the file that contain arrays as strings.
+            _matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
+                square matrix which values are those contained in the second element of the tuple.
+            _usecols (list): Columns to read.
 
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
         """
-        return _parse_generic(csv_file, super()._parse_csv, _array_columns=_array_columns,
-                                   _matrix_columns=_matrix_columns)
+        if _matrix_columns is None:
+            _matrix_columns = matrix_columns
+        if _array_columns is None:
+            _array_columns = array_columns
+        df = super()._parse_csv(csv_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
+                                _usecols=INTERNAL_CONT_COLS)
+        for band in BANDS:
+            df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
+        return df
 
-    def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None):
+    def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
         Parse the input FITS file and store the result in a pandas DataFrame if it contains internally calibrated
             continuous spectra.
 
         Args:
             fits_file (str): Path to a FITS file.
+            _array_columns (list): List of columns in the file that contain arrays as strings.
+            _matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
+                square matrix which values are those contained in the second element of the tuple.
+            _usecols (list): Columns to read.
 
         Returns:
             DataFrame: Pandas DataFrame representing the FITS file.
         """
-        return _parse_generic(fits_file, super()._parse_fits, _array_columns=_array_columns,
-                                   _matrix_columns=_matrix_columns)
+        if _matrix_columns is None:
+            _matrix_columns = matrix_columns
+        if _array_columns is None:
+            _array_columns = array_columns
+        df = super()._parse_fits(fits_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
+                                _usecols=INTERNAL_CONT_COLS)
+        for band in BANDS:
+            df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
+        return df
 
-    def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None):
+    def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
         Parse the input XML file and store the result in a pandas DataFrame.
 
         Args:
             xml_file (str): Path to an XML file.
+            _array_columns (list): List of columns in the file that contain arrays as strings.
+            _matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
+                square matrix which values are those contained in the second element of the tuple.
+            _usecols (list): Columns to read.
 
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
         """
-        return _parse_generic(xml_file, super()._parse_xml, _array_columns=_array_columns,
-                                   _matrix_columns=_matrix_columns)
+        if _matrix_columns is None:
+            _matrix_columns = matrix_columns
+        if _array_columns is None:
+            _array_columns = array_columns
+        df = super()._parse_xml(xml_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
+                                _usecols=INTERNAL_CONT_COLS)
+        for band in BANDS:
+            df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
+        return df
+
     @staticmethod
     def __process_avro_record(record):
         return {key: np.array(_get_from_dict(record, _csv_to_avro_map[key])) if

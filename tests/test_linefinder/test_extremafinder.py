@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 import pandas.testing as pdt
 
 from gaiaxpy.linefinder.linefinder import find_extrema

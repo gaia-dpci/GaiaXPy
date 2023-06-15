@@ -1,11 +1,13 @@
 import json
 from numbers import Number
+
 import numpy as np
 import pandas as pd
-import pytest
+
 from gaiaxpy.core.generic_functions import str_to_array, array_to_symmetric_matrix
 
 missing_bp_source_id = 5405570973190252288
+
 
 def array_to_symmetric_matrix_row_major(size, array):
     """
@@ -35,6 +37,7 @@ def array_to_symmetric_matrix_row_major(size, array):
         return array  # Input array is already a matrix, we assume that it contains the required values.
     else:
         raise TypeError('Wrong argument types. Must be integer and np.ndarray.')
+
 
 _rtol, _atol = 1e-7, 1e-7
 
@@ -86,7 +89,7 @@ def get_converters(columns, dtypes=None):
             return {column: lambda x: str_to_array(x) for column in columns}
     raise ValueError("Input doesn't correspond to any of the expected types.")
 
-    
+
 def df_columns_to_array(df, columns):
     for index, row in enumerate(df.to_dict('records')):
         for column in columns:
@@ -98,5 +101,6 @@ def reconstruct_covariance(array):
     def get_matrix_size(d):
         num_elements = len(d)
         return int((-1 + np.sqrt(1 + 8 * num_elements)) / 2)
+
     size = get_matrix_size(array)
     return array_to_symmetric_matrix(array, size)

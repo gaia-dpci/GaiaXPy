@@ -1,26 +1,27 @@
 import unittest
 from os.path import join
 
+import numpy.testing as npt
 import pandas as pd
+import pandas.testing as pdt
 
 from gaiaxpy import convert
 from gaiaxpy.core.generic_functions import str_to_array
 from tests.files.paths import files_path
 from tests.utils.utils import missing_bp_source_id, pos_file_to_array
 
-import numpy.testing as npt
-import pandas.testing as pdt
-
 # Load solution
 solution_path = join(files_path, 'converter_solution')
 converters = dict([(column, lambda x: str_to_array(x)) for column in ['flux', 'flux_error']])
-with_missing_solution_df = pd.read_csv(join(solution_path, 'with_missing_converter_solution.csv'), converters=converters)
+with_missing_solution_df = pd.read_csv(join(solution_path, 'with_missing_converter_solution.csv'),
+                                       converters=converters)
 solution_sampling = pos_file_to_array(join(solution_path, 'with_missing_converter_solution_sampling.csv'))
 
 missing_solution_df = with_missing_solution_df[with_missing_solution_df['source_id'] ==
                                                missing_bp_source_id].reset_index(drop=True)
 
 _rtol, _atol = 1e-7, 1e-7
+
 
 class TestConverterMissingBPQueryInput(unittest.TestCase):
 

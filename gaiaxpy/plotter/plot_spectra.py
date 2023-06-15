@@ -14,6 +14,7 @@ from .multi_absolute import MultiAbsolutePlotter
 from .multi_xp import MultiXpPlotter
 from .single import SinglePlotter
 
+
 def __plot_multi(spectra_type: str, spectra: pd.DataFrame, sampling: ndarray, show_plot: bool,
                  output_path: Optional[Union[Path, str]], output_file: Optional[str], format: str, legend: bool,
                  save_file: bool):
@@ -25,6 +26,7 @@ def __plot_multi(spectra_type: str, spectra: pd.DataFrame, sampling: ndarray, sh
     else:
         raise ValueError('Unrecognised spectra type.')
     return plotter
+
 
 def plot_spectra(spectra: pd.DataFrame, sampling: ndarray = None, multi: bool = False, show_plot: bool = True,
                  output_path: Optional[Union[Path, str]] = None, output_file: Optional[str] = None, format: str = None,

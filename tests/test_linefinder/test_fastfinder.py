@@ -28,6 +28,7 @@ found_fast_no_bp = find_fast(with_missing_bp_csv_file, save_file=False)
 isolated_missing_bp_solution = found_fast_no_bp_real[found_fast_no_bp_real['source_id'] ==
                                                      missing_bp_source_id].reset_index(drop=True)
 
+
 class TestFastFinder(unittest.TestCase):
 
     def test_output(self):
@@ -52,6 +53,7 @@ class TestFastFinder(unittest.TestCase):
         for _input_file in missing_input_files:
             output = find_fast(_input_file, save_file=False)
             pdt.assert_frame_equal(output, isolated_missing_bp_solution)
+
     def test_df_input_with_missing_bp(self):
         with_missing_df = pd.read_csv(with_missing_bp_csv_file)
         with_missing_output = find_fast(with_missing_df, save_file=False)

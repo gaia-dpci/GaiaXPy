@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Union
 
 import pandas as pd
@@ -9,7 +10,6 @@ from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
 from .photometric_system import PhotometricSystem
-from pathlib import Path
 
 
 def generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],

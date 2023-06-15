@@ -2,12 +2,11 @@ import unittest
 from os.path import join
 
 import pandas as pd
+import pandas.testing as pdt
 
 from gaiaxpy import find_extrema, find_fast, find_lines
 from tests.files.paths import files_path, with_missing_bp_csv_file
 from tests.utils.utils import missing_bp_source_id, get_converters
-
-import pandas.testing as pdt
 
 # Input file with xp continuous spectra
 continuous_path = join(files_path, 'xp_continuous')
@@ -62,6 +61,7 @@ isolated_missing_bp_solution_line = found_lines_no_bp_real[found_lines_no_bp_rea
 
 _rtol, _atol = 1e-7, 1e-7
 
+
 class TestExtremaFinderArchive(unittest.TestCase):
     def test_query_input_with_missing_bp(self):
         source_ids = ('5853498713190525696', str(missing_bp_source_id), '5762406957886626816')
@@ -75,7 +75,7 @@ class TestExtremaFinderArchive(unittest.TestCase):
 
     def test_query_input_isolated_missing_bp(self):
         isolated_output = find_extrema("SELECT * FROM gaiadr3.gaia_source WHERE source_id IN"
-                                        f" ({str(missing_bp_source_id)})", save_file=False)
+                                       f" ({str(missing_bp_source_id)})", save_file=False)
         pdt.assert_frame_equal(isolated_output, isolated_solution)
 
     def test_list_input_with_missing_bp(self):
@@ -103,7 +103,7 @@ class TestFastFinderArchive(unittest.TestCase):
 
     def test_query_input_isolated_missing_bp(self):
         isolated_output = find_fast(f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN"
-                                     f" ({str(missing_bp_source_id)})", save_file=False)
+                                    f" ({str(missing_bp_source_id)})", save_file=False)
         pdt.assert_frame_equal(isolated_output, isolated_missing_bp_solution_fast)
 
     def test_list_input_with_missing_bp(self):

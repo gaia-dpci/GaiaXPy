@@ -5,10 +5,6 @@ Module to represent a sampled spectrum.
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
-from os import path
-from pathlib import Path
-
 from numpy import ndarray, nan
 
 from .generic_spectrum import Spectrum

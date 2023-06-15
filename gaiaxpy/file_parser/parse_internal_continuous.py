@@ -74,7 +74,7 @@ class InternalContinuousParser(GenericParser):
         if _array_columns is None:
             _array_columns = array_columns
         df = super()._parse_fits(fits_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
-                                _usecols=INTERNAL_CONT_COLS)
+                                 _usecols=INTERNAL_CONT_COLS)
         for band in BANDS:
             df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
         return df
@@ -162,8 +162,9 @@ class InternalContinuousParser(GenericParser):
                              ('rp_n_parameters', 'rp_coefficient_covariances')]
         for size_column, values_column in to_matrix_columns:
             try:
-                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
-                                             axis=1)
+                df[values_column] = df.apply(
+                    lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
+                    axis=1)
             except TypeError:
                 continue  # Value can be NaN when a band is not present
         for band in BANDS:

@@ -8,12 +8,12 @@ import warnings
 from configparser import ConfigParser
 from os import path
 from pathlib import Path
-from tqdm import tqdm
 from typing import Union
 
 import numpy as np
 import pandas as pd
 from scipy import interpolate
+from tqdm import tqdm
 
 from gaiaxpy.calibrator.calibrator import _calibrate
 from gaiaxpy.config.paths import config_path
@@ -189,11 +189,11 @@ def _find(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff
     line_sig_pwl_values = abs(line_depth_pwl_values) / flux_err(line_roots)
     return [(name, line_pwl, i_line, line_root, line_wl, line_flux, line_depth, line_width, line_sig, line_continuum,
              line_sig_pwl, line_continuum_pwl, line_width_pwl) for name, line_pwl, line_root, i_line, line_width_pwl,
-             line_width, line_test, line_continuum, line_continuum_pwl, line_wl, line_flux, line_depth, line_depth_pwl,
-             line_sig, line_sig_pwl in zip(line_names, lines, line_roots, i_lines, line_width_pwl_values, line_widths,
-                                           line_tests, line_continuum_values, line_continuum_pwl_values, line_wl_values,
-                                           line_flux_values, line_depth_values, line_depth_pwl_values, line_sig_values,
-                                           line_sig_pwl_values)]
+            line_width, line_test, line_continuum, line_continuum_pwl, line_wl, line_flux, line_depth, line_depth_pwl,
+            line_sig, line_sig_pwl in zip(line_names, lines, line_roots, i_lines, line_width_pwl_values, line_widths,
+                                          line_tests, line_continuum_values, line_continuum_pwl_values, line_wl_values,
+                                          line_flux_values, line_depth_values, line_depth_pwl_values, line_sig_values,
+                                          line_sig_pwl_values)]
 
 
 def _find_all(transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff, calibrated_flux, calibrated_flux_err,
@@ -238,8 +238,9 @@ def _find_all(transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff, 
 
     return [(name, line_root, i_line, line_root, line_wl, line_flux, line_depth, line_width, line_sig, line_continuum,
              line_sig_pwl, line_continuum_pwl, line_width_pwl) \
-            for i_line, (line_root, line_width_pwl, line_width, line_test, line_flux, line_continuum, line_continuum_pwl,
-                         line_depth, line_wl, line_sig, line_flux_pwl, line_depth_pwl, line_sig_pwl, name) \
+            for
+            i_line, (line_root, line_width_pwl, line_width, line_test, line_flux, line_continuum, line_continuum_pwl,
+                     line_depth, line_wl, line_sig, line_flux_pwl, line_depth_pwl, line_sig_pwl, name) \
             in enumerate(zip(roots_pwl, line_width_pwl_values, line_widths, line_tests, line_flux_values,
                              line_continuum_values, line_continuum_pwl_values, line_depth_values, line_wl_values,
                              line_sig_values, line_flux_pwl_values, line_depth_pwl_values, line_sig_pwl_values,
@@ -321,7 +322,7 @@ def find_lines(input_object: Union[list, Path, str], truncation: bool = False, s
     # Parse input
     parsed_input_data, extension = InputReader(input_object, find_lines, username, password).read()
     # Internal info will be disabled, but the user will need some info
-    print('Preparing required internal data...' + ' '* 10, end='\r')
+    print('Preparing required internal data...' + ' ' * 10, end='\r')
     # Get converted spectra
     con_spectra, con_sampling = _convert(parsed_input_data, truncation=truncation, save_file=False, disable_info=True)
     # Get calibrated spectra
@@ -433,7 +434,7 @@ def find_extrema(input_object: Union[list, Path, str], truncation: bool = False,
     # Parse input
     parsed_input_data, extension = InputReader(input_object, find_lines, username, password).read()
     # Internal info will be disabled, but the user will need some info
-    print('Preparing required internal data...' + ' '* 10, end='\r')
+    print('Preparing required internal data...' + ' ' * 10, end='\r')
     # Get converted spectra
     con_spectra, con_sampling = _convert(parsed_input_data, truncation=truncation, save_file=False, disable_info=True)
     # Get calibrated spectra
@@ -458,14 +459,16 @@ def find_extrema(input_object: Union[list, Path, str], truncation: bool = False,
         _con_spectra_m_con_rp_flux = con_spectra[m_con_rp]['flux'].values[0]
 
         # Run line finder for BP
-        bp_found_lines = [] if is_na_bp_np else _find_all(bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp, bp_coeff,
+        bp_found_lines = [] if is_na_bp_np else _find_all(bp_tm, bp_n, bp_rel_n, bp_scale, bp_offset, BANDS.bp,
+                                                          bp_coeff,
                                                           _interp_m_cal_flux, _interp_m_cal_flux_error,
                                                           _flux_interp(con_sampling,
                                                                        con_spectra[m_con_bp]['flux'].values[0]),
                                                           _flux_interp(con_sampling,
                                                                        con_spectra[m_con_bp]['flux_error'].values[0]))
         # Run line finder for RP (is_na_rp_np is expected to be False always)
-        rp_found_lines = [] if is_na_rp_np else _find_all(rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp, rp_coeff,
+        rp_found_lines = [] if is_na_rp_np else _find_all(rp_tm, rp_n, rp_rel_n, rp_scale, rp_offset, BANDS.rp,
+                                                          rp_coeff,
                                                           _interp_m_cal_flux, _interp_m_cal_flux_error,
                                                           _flux_interp(con_sampling, _con_spectra_m_con_rp_flux),
                                                           _flux_interp(con_sampling,

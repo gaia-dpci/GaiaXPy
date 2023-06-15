@@ -6,8 +6,10 @@ Module to represent a set of basis functions evaluated on a grid.
 
 import functools
 import math
+
 import numpy as np
 from scipy.special import eval_hermite, gamma
+
 from gaiaxpy.core import nature, satellite
 
 sqrt_4_pi = np.pi ** (-0.25)
@@ -60,8 +62,8 @@ class SampledBasisFunctions(object):
 
         bases_transformation = external_instrument_model.bases['transformationMatrix'][0]
         evaluated_hermite_bases = np.array([_evaluate_hermite_function(n_h, pos, weight) for pos, weight in zip(
-                rescaled_pwl, weights) for n_h in np.arange(int(
-                    external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
+            rescaled_pwl, weights) for n_h in np.arange(int(
+            external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
             n_samples, int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))
         _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'][0] @ evaluated_hermite_bases.T
         transformed_design_matrix = bases_transformation @ _design_matrix

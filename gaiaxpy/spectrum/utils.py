@@ -20,6 +20,7 @@ def get_covariance_matrix(row, band):
                                                   row[f'{band}_standard_deviation'])
     raise ValueError(f'None of the expected columns could be found in the input row. Columns are: {columns}.')
 
+
 def _correlation_to_covariance_dr3int5(correlation_matrix, formal_errors, standard_deviation):
     """
     Compute the covariance matrix from the correlation matrix and the parameter formal errors.

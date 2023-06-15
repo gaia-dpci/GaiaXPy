@@ -41,6 +41,7 @@ def __replace_masked_constant(value):
         return np.nan if value.item() == 0.0 else value
     return value
 
+
 def _cast(df):
     """
     Cast types to the defined ones to standardise the different input formats.

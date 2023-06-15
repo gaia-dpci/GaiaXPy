@@ -20,7 +20,7 @@ from .config import _CFG_FILE_PATH
 
 class InternalPhotometricSystem(object):
 
-    def __init__(self, name: str, config_file: str = None, bp_model: str = 'v375wi', rp_model: str ='v142r'):
+    def __init__(self, name: str, config_file: str = None, bp_model: str = 'v375wi', rp_model: str = 'v142r'):
         self.label = _get_system_label(name)
         self.version = None
         self.__set_version(config_file)

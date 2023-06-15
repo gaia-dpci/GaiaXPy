@@ -45,7 +45,8 @@ class TestSyntheticPhotometryGeneratorCSV(unittest.TestCase):
             sampled_basis_func[band] = SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_sampling[band])
         photometry_list = []
         for row in parsed_correlation_csv.to_dict('records'):
-            synthetic_photometry = _generate_synthetic_photometry(row, sampled_basis_func, xp_merge, phot_system_johnson)
+            synthetic_photometry = _generate_synthetic_photometry(row, sampled_basis_func, xp_merge,
+                                                                  phot_system_johnson)
             photometry_list.append(synthetic_photometry)
         first_row = parsed_correlation_csv.iloc[0]
         synthetic_photometry = _generate_synthetic_photometry(first_row, sampled_basis_func, xp_merge,
@@ -80,7 +81,8 @@ class TestSyntheticPhotometryGeneratorXMLPlain(unittest.TestCase):
         xp_sampling = load_xpsampling_from_xml(system_sdss_label)
         xp_sampling_grid, xp_merge = load_xpmerge_from_xml(system_sdss_label)
         # Create sampled basis functions
-        sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_sampling[band]) for band in BANDS}
+        sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_sampling[band]) for
+                              band in BANDS}
         photometry_list = []
         for row in parsed_correlation_xml_plain.to_dict('records'):
             synthetic_photometry = _generate_synthetic_photometry(row, sampled_basis_func, xp_merge, phot_system_sdss)

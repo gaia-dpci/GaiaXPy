@@ -67,7 +67,7 @@ def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None,
 def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None, truncation: bool = False,
                output_path: Union[Path, str] = '.', output_file: str = 'output_spectra', output_format: str = None,
                save_file: bool = True, with_correlation: bool = False, username: str = None, password: str = None,
-               bp_model: str = 'v375wi', rp_model: str = 'v142r', disable_info: bool = False) ->\
+               bp_model: str = 'v375wi', rp_model: str = 'v142r', disable_info: bool = False) -> \
         (pd.DataFrame, np.ndarray):
     """
     Internal method of the calibration utility. Refer to "calibrate".

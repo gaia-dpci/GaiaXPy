@@ -2,12 +2,11 @@ import unittest
 from os.path import join
 
 import pandas as pd
+import pandas.testing as pdt
 
 from gaiaxpy import generate, PhotometricSystem
 from tests.files.paths import files_path
 from tests.utils.utils import missing_bp_source_id
-
-import pandas.testing as pdt
 
 _rtol, _atol = 1e-7, 1e-7
 
@@ -32,6 +31,7 @@ phot_systems = [PhotometricSystem.Els_Custom_W09_S2, PhotometricSystem.Euclid_VI
                 PhotometricSystem.PanSTARRS1_Std, PhotometricSystem.Pristine, PhotometricSystem.SDSS,
                 PhotometricSystem.SDSS_Std, PhotometricSystem.Stromgren, PhotometricSystem.Stromgren_Std,
                 PhotometricSystem.WFIRST]
+
 
 class TestGeneratorMissingBPQueryInput(unittest.TestCase):
 

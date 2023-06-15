@@ -1,4 +1,3 @@
-
 def _validate_source_type(source_type):
     if not isinstance(source_type, str):
         raise ValueError('The variable source_type must be a string.')

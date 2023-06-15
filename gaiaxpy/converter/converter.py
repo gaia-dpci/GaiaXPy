@@ -61,15 +61,16 @@ def convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lins
     Raises:
         ValueError: If the sampling is out of the expected boundaries.
     """
-    return _convert(input_object=input_object, sampling=sampling, truncation=truncation, with_correlation=with_correlation,
+    return _convert(input_object=input_object, sampling=sampling, truncation=truncation,
+                    with_correlation=with_correlation,
                     output_path=output_path, output_file=output_file, output_format=output_format, save_file=save_file,
                     username=username, password=password)
 
 
 def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.linspace(0, 60, 600),
-            truncation: bool = False, with_correlation: bool = False, output_path: Union[Path, str] = '.',
-            output_file: str = 'output_spectra', output_format: str = None, save_file: bool = True,
-            username: str = None, password: str = None, disable_info: bool = False) -> (pd.DataFrame, np.ndarray):
+             truncation: bool = False, with_correlation: bool = False, output_path: Union[Path, str] = '.',
+             output_file: str = 'output_spectra', output_format: str = None, save_file: bool = True,
+             username: str = None, password: str = None, disable_info: bool = False) -> (pd.DataFrame, np.ndarray):
     """
     Internal method of the calibration utility. Refer to "convert".
 
@@ -104,6 +105,7 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return output_data.data, positions
+
 
 def _create_spectrum(row: pd.Series, truncation: bool, design_matrices: dict, band: str,
                      with_correlation: bool = False) -> XpSampledSpectrum:

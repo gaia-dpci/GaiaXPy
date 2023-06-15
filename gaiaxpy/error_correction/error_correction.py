@@ -47,7 +47,7 @@ def _get_correction_array(_mag_G_values, system):
     _mag_G_values = _mag_G_values.to_frame(name='mag_G')
     _mag_G_values['row'] = _mag_G_values['mag_G'].map(lambda x: floor_mag_dict.get(float(floor(x))))
     return _mag_G_values.apply(_get_correction_factor, args=(correction_table, factor_columns,
-                                                                      min_value, max_value,), axis=1)
+                                                             min_value, max_value,), axis=1)
 
 
 def _get_correction_factor(mag_row, correction_table, factor_columns, min_value, max_value):
@@ -68,7 +68,7 @@ def _get_correction_factor(mag_row, correction_table, factor_columns, min_value,
             next_factors = next_range_row[factor_columns]
         except IndexError:
             return factors
-        return interp1d(np.array([bin_centre, range_row_max_Gmag_bin]),np.vstack([factors, next_factors]), axis=0)(mag)
+        return interp1d(np.array([bin_centre, range_row_max_Gmag_bin]), np.vstack([factors, next_factors]), axis=0)(mag)
     # Raise an exception if none of the conditions match
     raise ValueError('Check the variables being used. The program should never fall in this case.')
 

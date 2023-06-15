@@ -92,7 +92,7 @@ def get_inverse_square_root_covariance_matrix(input_object: Union[list, Path, st
         return output_df
 
 
-def _get_inverse_square_root_covariance_matrix_aux(xp_errors: np.ndarray, xp_correlation_matrix: np.ndarray) ->\
+def _get_inverse_square_root_covariance_matrix_aux(xp_errors: np.ndarray, xp_correlation_matrix: np.ndarray) -> \
         Optional[np.ndarray]:
     """
     Calculate the inverse square root of the covariance matrix.

@@ -13,7 +13,6 @@ input_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 
 _rtol, _atol = 1e-7, 1e-7
 
-
 # Results to compare
 solution_folder = 'linefinder_files'
 found_lines_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_output.csv'))

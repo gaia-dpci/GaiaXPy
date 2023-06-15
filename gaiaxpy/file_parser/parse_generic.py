@@ -123,8 +123,9 @@ class GenericParser(object):
         df = table.to_pandas()[_usecols] if _usecols else table.to_pandas()
         if _matrix_columns:
             for size_column, values_column in _matrix_columns:
-                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
-                                             axis=1)
+                df[values_column] = df.apply(
+                    lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
+                    axis=1)
         return df
 
     def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None, _usecols=None):
@@ -147,8 +148,9 @@ class GenericParser(object):
         df = table.to_pandas()[_usecols]
         if _matrix_columns:
             for size_column, values_column in _matrix_columns:
-                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
-                                             axis=1)
+                df[values_column] = df.apply(
+                    lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
+                    axis=1)
         return df
 
 

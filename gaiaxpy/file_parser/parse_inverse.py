@@ -1,5 +1,6 @@
-from typing import Union
 from pathlib import Path
+from typing import Union
+
 from gaiaxpy.file_parser.parse_generic import GenericParser
 
 

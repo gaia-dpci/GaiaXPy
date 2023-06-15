@@ -280,6 +280,7 @@ class TestFormatEquality(unittest.TestCase):
             self.assertEqual(plain_xml_data.keys(), xml_data.keys())
             for key in csv_data.keys():
                 decimal = 2 if key in ['bp_covariance_matrix', 'rp_covariance_matrix'] else 4
-                npt.assert_almost_equal(csv_data[key], fits_data[key], decimal=decimal)  # Precision varies across formats
+                npt.assert_almost_equal(csv_data[key], fits_data[key],
+                                        decimal=decimal)  # Precision varies across formats
                 npt.assert_almost_equal(fits_data[key], plain_xml_data[key], decimal=decimal)
                 npt.assert_almost_equal(plain_xml_data[key], xml_data[key], decimal=decimal)

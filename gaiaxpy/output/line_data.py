@@ -72,7 +72,7 @@ class LineData(OutputData):
         if 'extrema' in data.columns:
             column_formats = {'source_id': 'K', 'xp': '2A', 'extrema': 'D'}
         else:
-            column_formats = {'source_id': 'K', 'line_name': '7A', 'wavelength_nm': 'D',  'line_flux': 'D',
+            column_formats = {'source_id': 'K', 'line_name': '7A', 'wavelength_nm': 'D', 'line_flux': 'D',
                               'depth': 'D', 'width': 'D', 'significance': 'D', 'sig_pwl': 'D'}
         # create a list of HDUs
         hdu_list = list()

@@ -4,10 +4,10 @@ continuous_spectra_data.py
 Module to represent continuous spectra data.
 """
 
+import warnings
 from os.path import join
 from pathlib import Path
 
-import warnings
 import numpy as np
 import pandas as pd
 from astropy.io import fits

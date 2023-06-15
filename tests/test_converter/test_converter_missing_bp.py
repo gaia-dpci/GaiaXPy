@@ -1,5 +1,4 @@
 import unittest
-from os.path import join
 
 import numpy.testing as npt
 import pandas as pd
@@ -14,7 +13,8 @@ from tests.utils.utils import pos_file_to_array, missing_bp_source_id
 # Load solution
 solution_path = join(files_path, 'converter_solution')
 converters = dict([(column, lambda x: str_to_array(x)) for column in ['flux', 'flux_error']])
-with_missing_solution_df = pd.read_csv(join(solution_path, 'with_missing_converter_solution.csv'), converters=converters)
+with_missing_solution_df = pd.read_csv(join(solution_path, 'with_missing_converter_solution.csv'),
+                                       converters=converters)
 solution_sampling = pos_file_to_array(join(solution_path, 'with_missing_converter_solution_sampling.csv'))
 
 missing_solution_df = with_missing_solution_df[with_missing_solution_df['source_id'] ==

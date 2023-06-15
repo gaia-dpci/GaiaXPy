@@ -1,7 +1,6 @@
 import unittest
 from os import path
 
-import matplotlib.figure as mplf
 import numpy as np
 
 from gaiaxpy.linefinder.linefinder import find_lines, find_extrema

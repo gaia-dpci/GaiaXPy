@@ -22,6 +22,7 @@ def _parse_output_fits(fits_file, _array_columns=None):
     fits_as_gen = ([table[column][index] for column in columns] for index, _ in enumerate(table))
     return pd.DataFrame(fits_as_gen, columns=columns)
 
+
 def _parse_output_xml(xml_file, _array_columns=None):
     votable = parse_single_table(xml_file).to_table(use_names_over_ids=True)
     if _array_columns:

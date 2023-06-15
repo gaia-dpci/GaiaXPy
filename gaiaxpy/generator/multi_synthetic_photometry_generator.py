@@ -34,7 +34,9 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
                                     in zip(systems, sampled_basis_func_list, xp_merge_list)]
         # Now the first list contains the photometries in all systems for the first source_id, and so on.
         rearranged_photometry_list = [sublist for sublist in tqdm(zip(*photometry_list_of_lists),
-                                            desc='Generating photometry', total=len(parsed_input_data),
-                                            unit=pbar_units['photometry'], leave=False, colour=pbar_colour)]
+                                                                  desc='Generating photometry',
+                                                                  total=len(parsed_input_data),
+                                                                  unit=pbar_units['photometry'], leave=False,
+                                                                  colour=pbar_colour)]
         multi_photometry_df = MultiSyntheticPhotometry(systems, rearranged_photometry_list)._generate_output_df()
         return multi_photometry_df

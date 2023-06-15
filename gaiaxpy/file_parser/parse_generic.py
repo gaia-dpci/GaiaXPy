@@ -70,6 +70,7 @@ class GenericParser(object):
             DataFrame: Pandas DataFrame representing the file.
             str: File extension ('.csv', '.fits', or '.xml').
         """
+        print('Reading input file...', end='\r')
         extension = _get_file_extension(file_path)
         parser = self.get_parser(extension)
         parsed_data = _cast(parser(file_path))

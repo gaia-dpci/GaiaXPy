@@ -7,6 +7,7 @@ import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import convert
+from gaiaxpy.core.generic_variables import INTERNAL_CONT_COLS
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import files_path
 from tests.utils.utils import parse_matrices
@@ -14,11 +15,11 @@ from tests.utils.utils import parse_matrices
 solution_file = join(files_path, 'input_reader_solution.csv')
 solution_array_columns = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations', 'rp_coefficients',
                           'rp_coefficient_errors', 'rp_coefficient_correlations']
-masked_constant_columns = ['bp_basis_function_id', 'bp_degrees_of_freedom', 'bp_n_measurements', 'bp_n_parameters',
-                           'bp_n_rejected_measurements', 'bp_n_relevant_bases']
+masked_constant_columns = ['bp_basis_function_id', 'bp_n_parameters', 'bp_n_relevant_bases']
+
 array_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
 
-solution_df = pd.read_csv(solution_file, converters=array_converters)
+solution_df = pd.read_csv(solution_file, converters=array_converters, usecols=INTERNAL_CONT_COLS)
 for column in masked_constant_columns:
     solution_df[column] = solution_df[column].astype('Int64')
 
@@ -56,7 +57,7 @@ class TestInputReaderMissingBPFile(unittest.TestCase):
         pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol)
 
     def test_fits_file_missing_bp(self):
-        solution_df = pd.read_csv(solution_file, converters=array_converters)
+        solution_df = pd.read_csv(solution_file, converters=array_converters, usecols=INTERNAL_CONT_COLS)
         file = join(xp_continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.fits')
         parsed_data_file, _ = InputReader(file, convert).read()
         columns_to_drop = ['bp_coefficient_errors', 'bp_coefficient_correlations', 'rp_coefficient_errors']
@@ -68,7 +69,7 @@ class TestInputReaderMissingBPFile(unittest.TestCase):
         pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False)
 
     def test_xml_file_missing_bp(self):
-        solution_df = pd.read_csv(solution_file, converters=array_converters)
+        solution_df = pd.read_csv(solution_file, converters=array_converters, usecols=INTERNAL_CONT_COLS)
         file = join(xp_continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.xml')
         parsed_data_file, _ = InputReader(file, convert).read()
         columns_to_drop = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations',

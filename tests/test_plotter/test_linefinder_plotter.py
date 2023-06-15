@@ -4,7 +4,7 @@ from os import path
 import matplotlib.figure as mplf
 import numpy as np
 
-from gaiaxpy.linefinder.linefinder import linefinder, extremafinder
+from gaiaxpy.linefinder.linefinder import find_lines, find_extrema
 from gaiaxpy.linefinder.plotter import plot_spectra_with_lines
 from tests.files.paths import files_path, output_path
 
@@ -16,10 +16,10 @@ class TestPlotter(unittest.TestCase):
     # For visual inspection
 
     def test_lines_plotter(self):
-        lines = linefinder(mean_spectrum_csv, plot_spectra=True, save_file=False)
+        lines = find_lines(mean_spectrum_csv, plot_spectra=True, save_file=False)
 
     def test_extrema_plotter(self):
-        extrema = extremafinder(mean_spectrum_csv, plot_spectra=True, save_file=False)
+        extrema = find_extrema(mean_spectrum_csv, plot_spectra=True, save_file=False)
 
 
 class TestPlotterMethod(unittest.TestCase):

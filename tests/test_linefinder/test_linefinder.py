@@ -3,7 +3,7 @@ import unittest
 import pandas as pd
 import pandas.testing as pdt
 
-from gaiaxpy import linefinder
+from gaiaxpy import find_lines
 from tests.files.paths import *
 from tests.utils.utils import missing_bp_source_id
 
@@ -22,10 +22,10 @@ found_lines_trunc_real = pd.read_csv(join(files_path, solution_folder, 'linefind
 found_lines_no_bp_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_no_bp_output.csv'))
 
 # Results to test
-found_lines = linefinder(input_file, save_file=False)
-found_lines_trunc = linefinder(input_file, truncation=True, save_file=False)
-found_lines_no_bp = linefinder(with_missing_bp_csv_file, save_file=False)
-found_lines_redshift = linefinder(input_file, redshift=[0., 0.], save_file=False)
+found_lines = find_lines(input_file, save_file=False)
+found_lines_trunc = find_lines(input_file, truncation=True, save_file=False)
+found_lines_no_bp = find_lines(with_missing_bp_csv_file, save_file=False)
+found_lines_redshift = find_lines(input_file, redshift=[0., 0.], save_file=False)
 
 isolated_missing_bp_solution = found_lines_no_bp_real[found_lines_no_bp_real['source_id'] ==
                                                       missing_bp_source_id].reset_index(drop=True)
@@ -52,7 +52,7 @@ class TestLineFinderInput(unittest.TestCase):
         with_missing_input_files = [with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file,
                                     with_missing_bp_xml_file, with_missing_bp_xml_plain_file]
         for _input_file in with_missing_input_files:
-            output = linefinder(_input_file, save_file=False)
+            output = find_lines(_input_file, save_file=False)
             pdt.assert_frame_equal(output, found_lines_no_bp_real)
 
     # Missing BP source in isolation
@@ -62,15 +62,15 @@ class TestLineFinderInput(unittest.TestCase):
         missing_input_files = [missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,
                                missing_bp_xml_plain_file]
         for _input_file in missing_input_files:
-            output = linefinder(_input_file, save_file=False)
+            output = find_lines(_input_file, save_file=False)
             pdt.assert_frame_equal(output, isolated_solution)
 
     def test_df_input_with_missing_bp(self):
         with_missing_df = pd.read_csv(with_missing_bp_csv_file)
-        with_missing_output = linefinder(with_missing_df, save_file=False)
+        with_missing_output = find_lines(with_missing_df, save_file=False)
         pdt.assert_frame_equal(with_missing_output, found_lines_no_bp_real)
 
     def test_df_input_isolated_missing_bp(self):
         isolated_df = pd.read_csv(missing_bp_csv_file)
-        isolated_output = linefinder(isolated_df, save_file=False)
+        isolated_output = find_lines(isolated_df, save_file=False)
         pdt.assert_frame_equal(isolated_output, isolated_missing_bp_solution)

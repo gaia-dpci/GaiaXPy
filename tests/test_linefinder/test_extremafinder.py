@@ -4,7 +4,7 @@ import pandas as pd
 
 import pandas.testing as pdt
 
-from gaiaxpy.linefinder.linefinder import extremafinder
+from gaiaxpy.linefinder.linefinder import find_extrema
 from tests.files.paths import *
 from tests.utils.utils import missing_bp_source_id
 
@@ -19,9 +19,9 @@ found_extrema_real = pd.read_csv(join(files_path, solution_folder, 'extremafinde
 found_extrema_trunc_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_trunc_output.csv'))
 found_extrema_no_bp_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_no_bp_output.csv'))
 
-found_extrema = extremafinder(input_file, save_file=False)
-found_extrema_trunc = extremafinder(input_file, truncation=True, save_file=False)
-found_extrema_no_bp = extremafinder(with_missing_bp_csv_file, save_file=False)
+found_extrema = find_extrema(input_file, save_file=False)
+found_extrema_trunc = find_extrema(input_file, truncation=True, save_file=False)
+found_extrema_no_bp = find_extrema(with_missing_bp_csv_file, save_file=False)
 
 isolated_solution = found_extrema_no_bp_real[found_extrema_no_bp_real['source_id'] ==
                                              missing_bp_source_id].reset_index(drop=True)
@@ -42,7 +42,7 @@ class TestExtremaFinder(unittest.TestCase):
         with_missing_input_files = [with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file,
                                     with_missing_bp_xml_file, with_missing_bp_xml_plain_file]
         for _input_file in with_missing_input_files:
-            output = extremafinder(_input_file, save_file=False)
+            output = find_extrema(_input_file, save_file=False)
             pdt.assert_frame_equal(output, found_extrema_no_bp_real)
 
     # Missing BP source in isolation
@@ -50,15 +50,15 @@ class TestExtremaFinder(unittest.TestCase):
         missing_input_files = [missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,
                                missing_bp_xml_plain_file]
         for _input_file in missing_input_files:
-            output = extremafinder(_input_file, save_file=False)
+            output = find_extrema(_input_file, save_file=False)
             pdt.assert_frame_equal(output, isolated_solution)
 
     def test_df_input_with_missing_bp(self):
         with_missing_df = pd.read_csv(with_missing_bp_csv_file)
-        with_missing_output = extremafinder(with_missing_df, save_file=False)
+        with_missing_output = find_extrema(with_missing_df, save_file=False)
         pdt.assert_frame_equal(with_missing_output, found_extrema_no_bp_real)
 
     def test_df_input_isolated_missing_bp(self):
         isolated_df = pd.read_csv(missing_bp_csv_file)
-        isolated_output = extremafinder(isolated_df, save_file=False)
+        isolated_output = find_extrema(isolated_df, save_file=False)
         pdt.assert_frame_equal(isolated_output, isolated_solution)

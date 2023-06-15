@@ -45,8 +45,7 @@ def _get_configuration(config):
     Get info from config file.
     
     Args:
-        config (DataFrame): The configuration of the set of bases
-                loaded into a DataFrame.
+        config (DataFrame): The configuration of the set of bases loaded into a DataFrame.
     
     Returns:
         (tuple): bases_transformation, n_bases, scale, offset
@@ -311,7 +310,7 @@ def find_lines(input_object: Union[list, Path, str], truncation: bool = False, s
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
         
     Returns:
-        (DataFrame): dataframe with arrays of found lines and their properties for each source
+        (DataFrame): DataFrame with arrays of found lines and their properties for each source.
     """
     __FUNCTION_KEY = 'linefinder'
     source_type = _check_source_redshift_type(source_type, redshift)
@@ -423,7 +422,7 @@ def find_extrema(input_object: Union[list, Path, str], truncation: bool = False,
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
         
     Returns:
-        (DataFrame): dataframe with values of found extrema.
+        (DataFrame): DataFrame with values of found extrema.
     """
     __FUNCTION_KEY = 'extremafinder'
     _check_truncation(truncation)
@@ -511,7 +510,7 @@ def find_fast(input_object: Union[list, Path, str], truncation: bool = False, ou
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
         
     Returns:
-        (DataFrame): dataframe with arrays of found extrema for each source
+        (DataFrame): DataFrame with arrays of found extrema for each source.
     """
     __FUNCTION_KEY = 'fastfinder'
     _check_truncation(truncation)

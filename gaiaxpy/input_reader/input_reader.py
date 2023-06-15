@@ -33,7 +33,7 @@ class InputReader(object):
         # Query should start with select
         elif content.lower().startswith('select'):
             parsed_input_data, extension = QueryReader(content, function, user=user, password=password,
-                                                       disable_info=self.disable_info)._read()
+                                                       disable_info=self.disable_info).read()
         else:
             raise ValueError('Input string does not correspond to an existing file and it is not an ADQL query.')
         return parsed_input_data, extension
@@ -51,7 +51,7 @@ class InputReader(object):
         elif isinstance(content, list):
             # Construct query from list
             parsed_data, extension = ListReader(content, function, user, password,
-                                                disable_info=self.disable_info)._read()
+                                                disable_info=self.disable_info).read()
         # String can be either query or file path
         elif isinstance(content, str):
             parsed_data, extension = self.__string_reader()

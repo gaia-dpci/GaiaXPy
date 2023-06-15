@@ -26,7 +26,7 @@ class ListReader(ArchiveReader):
             raise ValueError('Input list cannot be empty.')
         self.disable_info = disable_info
 
-    def _read(self, _data_release=data_release):
+    def read(self, _data_release=data_release):
         # TODO: list could contain elements that are not sourceIds
         sources = self.content
         function_name = self.function.__name__

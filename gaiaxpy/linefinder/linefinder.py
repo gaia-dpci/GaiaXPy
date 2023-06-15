@@ -282,12 +282,12 @@ def _format_output(source_id, bp_found_lines, rp_found_lines):
     return sorted(found_lines, key=lambda x: x[2])
 
 
-def linefinder(input_object: Union[list, Path, str], truncation: bool = False, source_type: str = 'star',
+def find_lines(input_object: Union[list, Path, str], truncation: bool = False, source_type: str = 'star',
                redshift: Union[float, list] = None, user_lines: list = None, output_path: Union[Path, str] = '.',
                output_file: str = 'output_lines', output_format: str = None, save_file: bool = True,
                plot_spectra: bool = False, save_plots: bool = False, username: str = None, password: str = None):
     """
-    Line finding: get the input internally calibrated mean spectra from the continuous representation to a
+    Line finding: Get the input internally calibrated mean spectra from the continuous representation to a
     sampled form. In between it looks for emission and absorption lines. The lines can be defined by user
     or chosen from internal library, the source redshift and type can be specified.
     
@@ -320,7 +320,7 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
     bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
                                                                                                       basis_function_id)
     # Parse input
-    parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
+    parsed_input_data, extension = InputReader(input_object, find_lines, username, password).read()
     # Internal info will be disabled, but the user will need some info
     print('Preparing required internal data...' + ' '* 10, end='\r')
     # Get converted spectra
@@ -349,8 +349,8 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
 
     output_lines = []
     parsed_input_data_dict = parsed_input_data.to_dict('records')
-    for row in tqdm(parsed_input_data_dict, desc=pbar_message[__FUNCTION_KEY],
-                    unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour):
+    for row in tqdm(parsed_input_data_dict, desc=pbar_message[__FUNCTION_KEY], unit=pbar_units[__FUNCTION_KEY],
+                    leave=False, colour=pbar_colour):
         sid, bp_coeff, rp_coeff, bp_rel_n, rp_rel_n = _extract_elements_from_item(row, truncation, bp_n, rp_n)
 
         # Prep lines cont.
@@ -400,11 +400,11 @@ def linefinder(input_object: Union[list, Path, str], truncation: bool = False, s
     return output_data.data
 
 
-def extremafinder(input_object: Union[list, Path, str], truncation: bool = False, output_path: Union[Path, str] = '.',
-                  output_file: str = 'output_lines', output_format: str = None, save_file: bool = True,
-                  plot_spectra: bool = False, save_plots: bool = False, username=None, password=None) -> pd.DataFrame:
+def find_extrema(input_object: Union[list, Path, str], truncation: bool = False, output_path: Union[Path, str] = '.',
+                 output_file: str = 'output_lines', output_format: str = None, save_file: bool = True,
+                 plot_spectra: bool = False, save_plots: bool = False, username=None, password=None) -> pd.DataFrame:
     """
-    Line finding: get the input internally calibrated mean spectra from the continuous representation to a
+    Line finding: Get the input internally calibrated mean spectra from the continuous representation to a
     sampled form. In between it looks for all lines (=extrema in spectra).
     
     Args:
@@ -432,7 +432,7 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
     bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
                                                                                                       basis_function_id)
     # Parse input
-    parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
+    parsed_input_data, extension = InputReader(input_object, find_lines, username, password).read()
     # Internal info will be disabled, but the user will need some info
     print('Preparing required internal data...' + ' '* 10, end='\r')
     # Get converted spectra
@@ -490,9 +490,9 @@ def extremafinder(input_object: Union[list, Path, str], truncation: bool = False
     return output_data.data
 
 
-def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, output_path: Union[Path, str] = '.',
-               output_file: str = 'output_lines', output_format: str = None, save_file: bool = True, username=None,
-               password=None) -> pd.DataFrame:
+def find_fast(input_object: Union[list, Path, str], truncation: bool = False, output_path: Union[Path, str] = '.',
+              output_file: str = 'output_lines', output_format: str = None, save_file: bool = True, username=None,
+              password=None) -> pd.DataFrame:
     """
     Line finding: get the input coefficients for internally calibrated mean spectra and look for the extrema.
     No evaluation of spectra in both sampled and continuous forms is performed.
@@ -517,7 +517,7 @@ def fastfinder(input_object: Union[list, Path, str], truncation: bool = False, o
     _check_truncation(truncation)
     bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
                                                                                                       basis_function_id)
-    parsed_input_data, extension = InputReader(input_object, linefinder, username, password).read()
+    parsed_input_data, extension = InputReader(input_object, find_lines, username, password).read()
     parsed_input_data_dict = parsed_input_data.to_dict('records')
 
     def process_rows():

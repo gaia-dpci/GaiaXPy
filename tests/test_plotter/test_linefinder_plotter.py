@@ -15,15 +15,13 @@ class TestPlotter(unittest.TestCase):
     # For visual inspection
 
     def test_lines_plotter(self):
-        lines = find_lines(mean_spectrum_csv, plot_spectra=True, save_file=False)
+        find_lines(mean_spectrum_csv, plot_spectra=True, save_file=False)
 
     def test_extrema_plotter(self):
-        extrema = find_extrema(mean_spectrum_csv, plot_spectra=True, save_file=False)
+        find_extrema(mean_spectrum_csv, plot_spectra=True, save_file=False)
 
 
 class TestPlotterMethod(unittest.TestCase):
-
-    # check if returned object is Figure 
     def test_plotter(self):
         source_id = '5762406'
         sampling = np.arange(0, 60)

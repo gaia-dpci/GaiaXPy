@@ -1,10 +1,13 @@
 import unittest
+from os.path import join
 
 import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy.linefinder.linefinder import find_extrema
-from tests.files.paths import *
+from tests.files.paths import files_path, missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, \
+    missing_bp_xml_file, missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, \
+    with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file
 from tests.utils.utils import missing_bp_source_id
 
 _rtol, _atol = 1e-7, 1e-7

@@ -1,10 +1,13 @@
 import unittest
+from os.path import join
 
 import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import find_lines
-from tests.files.paths import *
+from tests.files.paths import files_path, missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, \
+    missing_bp_xml_file, missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, \
+    with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file
 from tests.utils.utils import missing_bp_source_id
 
 # Input file with xp continuous spectra

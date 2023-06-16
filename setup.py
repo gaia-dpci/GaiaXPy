@@ -8,6 +8,7 @@ https://packaging.python.org/tutorials/packaging-projects
 """
 import re
 from os import path
+
 from setuptools import setup, find_packages
 
 current_path = path.abspath(path.dirname(__file__))
@@ -16,6 +17,7 @@ current_path = path.abspath(path.dirname(__file__))
 def get_property(prop):
     result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open('gaiaxpy' + '/core/version.py').read())
     return result.group(1)
+
 
 AUTHORS = 'Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
 

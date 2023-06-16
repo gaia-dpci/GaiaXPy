@@ -24,7 +24,7 @@ class TestErrorCorrection(unittest.TestCase):
         corrected_synth_phot = apply_error_correction(synthetic_photometry, save_file=False)
         corrected_errors_df = pd.read_csv(corrected_errors_solution_path, usecols=corrected_synth_phot.columns)
         error_columns = [column for column in corrected_errors_df.columns if 'error' in column]
-        other_columns = [column for column in corrected_errors_df.columns if not 'error' in column]
+        other_columns = [column for column in corrected_errors_df.columns if 'error' not in column]
         pdt.assert_frame_equal(corrected_errors_df[error_columns], corrected_synth_phot[error_columns], rtol=_ertol,
                                atol=_eatol)
         pdt.assert_frame_equal(corrected_errors_df[other_columns], corrected_synth_phot[other_columns], rtol=_rtol,
@@ -42,7 +42,7 @@ class TestErrorCorrection(unittest.TestCase):
         corrected_multiphotometry = apply_error_correction(multi_synthetic_photometry, save_file=False)
         # Load solution
         error_columns = [column for column in corrected_multiphotometry.columns if 'error' in column]
-        other_columns = [column for column in corrected_multiphotometry.columns if not 'error' in column]
+        other_columns = [column for column in corrected_multiphotometry.columns if 'error' not in column]
         corrected_multiphotometry_solution = pd.read_csv(corrected_errors_solution_path, float_precision='high')
         pdt.assert_frame_equal(corrected_multiphotometry[error_columns],
                                corrected_multiphotometry_solution[error_columns], rtol=_ertol, atol=_eatol)
@@ -65,7 +65,7 @@ class TestErrorCorrection(unittest.TestCase):
         corrected_multiphotometry_solution_first_two = corrected_multiphotometry_solution.drop(columns=hst_columns)
         complete_solution = pd.concat([corrected_multiphotometry_solution_first_two, halpha_photometry], axis=1)
         error_columns = [column for column in corrected_multiphotometry.columns if 'error' in column]
-        other_columns = [column for column in corrected_multiphotometry.columns if not 'error' in column]
+        other_columns = [column for column in corrected_multiphotometry.columns if 'error' not in column]
         pdt.assert_frame_equal(corrected_multiphotometry[error_columns], complete_solution[error_columns], rtol=_ertol,
                                atol=_eatol)
         pdt.assert_frame_equal(corrected_multiphotometry[other_columns], complete_solution[other_columns], rtol=_rtol,

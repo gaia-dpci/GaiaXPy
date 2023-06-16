@@ -4,14 +4,15 @@
 
 # -- Path setup --------------------------------------------------------------
 
+import os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 import re
-import os
 import sys
+
 import numpy as np
-import sphinx_rtd_theme
+
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.append('gaiaxpy')
 from gaiaxpy import __version__
@@ -61,7 +62,6 @@ version = f'{__version__} (latest)'
 # The full version, including alpha/beta/rc tags
 release = __version__
 
-
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -110,7 +110,6 @@ exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -135,8 +134,6 @@ html_theme_options = {
     'includehidden': True,
     'titles_only': False,
 }
-
-#html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -165,7 +162,6 @@ html_css_files = [
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'GaiaXPydoc'
-
 
 # -- Options for LaTeX output ------------------------------------------------
 
@@ -203,7 +199,6 @@ latex_documents = [
      u'Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres', 'manual'),
 ]
 
-
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
@@ -213,7 +208,6 @@ man_pages = [
      [author], 1)
 ]
 
-
 # -- Options for Texinfo output ----------------------------------------------
 
 # Grouping the document tree into Texinfo files. List of tuples
@@ -221,10 +215,10 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'GaiaXPy', u'GaiaXPy Documentation',
-     author, 'GaiaXPy', 'Tools to generate sampled Gaia BP/RP mean spectra from the data served via the Gaia DR3 archive.',
+     author, 'GaiaXPy',
+     'Tools to generate sampled Gaia BP/RP mean spectra from the data served via the Gaia DR3 archive.',
      'Miscellaneous'),
 ]
-
 
 # -- Options for Epub output -------------------------------------------------
 
@@ -242,6 +236,5 @@ epub_title = project
 
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
-
 
 # -- Extension configuration -------------------------------------------------

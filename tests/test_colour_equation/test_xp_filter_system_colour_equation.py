@@ -64,7 +64,6 @@ class TestSingleColourEquation(unittest.TestCase):
         """
         csv_path = path.join(continuous_path, 'XP_CONTINUOUS_RAW_colour_eq_dr3int6.csv')
         phot_system = PhotometricSystem.JKC_Std
-        bands = phot_system.get_bands()
         label = phot_system.get_system_label()
         # The band the changes in Johnson_Std is U, all the other stay the same
         affected_band = 'U'
@@ -73,6 +72,7 @@ class TestSingleColourEquation(unittest.TestCase):
         unchanged_columns = [column for column in output_photometry.columns if affected_band not in column]
         affected_columns = [column for column in output_photometry.columns if affected_band in column]
         output_photometry_equal = output_photometry[unchanged_columns]
+        pdt.assert_frame_equal(output_photometry_equal, output_photometry[unchanged_columns])
         # TODO: generate new test files with errors in flux and not magnitude
         # Compare changes in photometry
         output_photometry_differences = output_photometry[['source_id'] + affected_columns]

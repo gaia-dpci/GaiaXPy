@@ -43,10 +43,10 @@ tolerance = 1.  # [pix] tolerance to detect a line
 def _get_configuration(config):
     """
     Get info from config file.
-    
+
     Args:
         config (DataFrame): The configuration of the set of bases loaded into a DataFrame.
-    
+
     Returns:
         (tuple): bases_transformation, n_bases, scale, offset
     """
@@ -140,7 +140,7 @@ def _find(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff
           calibrated_flux_err, flux, flux_err):
     """
     Line detection: get Hermite coefficients and try to detect lines from the list.
-     
+
     Args:
         bases_transform_matrix (ndarray): Bases transformation matrix.
         n_bases (int): Number of bases.
@@ -155,6 +155,7 @@ def _find(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff
         calibrated_flux_err (ndarray): Error of calibrated flux.
         flux (ndarray): Flux in pwl [e/s].
         flux_err (ndarray): Error of flux.
+
     Returns:
         (list): Found lines with their properties.
     """
@@ -200,7 +201,7 @@ def _find_all(transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff, 
               flux, flux_err):
     """
     Extrema detection: get Hermite coefficients and try to detect all lines/extrema.
-     
+
     Args:
         transform_matrix (ndarray): Bases transformation matrix.
         n_bases (int): Number of bases.
@@ -213,6 +214,7 @@ def _find_all(transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff, 
         calibrated_flux_err (ndarray): Error of calibrated flux.
         flux (ndarray): Flux in pwl [e/s].
         flux_err (ndarray): Error of flux.
+
     Returns:
         (list): All found extrema (within dispersion function range) with their properties.
     """
@@ -237,10 +239,10 @@ def _find_all(transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff, 
     line_names = [xp + '_' + str(int(line_wl)) for line_wl in line_wl_values]
 
     return [(name, line_root, i_line, line_root, line_wl, line_flux, line_depth, line_width, line_sig, line_continuum,
-             line_sig_pwl, line_continuum_pwl, line_width_pwl) \
+             line_sig_pwl, line_continuum_pwl, line_width_pwl)
             for
             i_line, (line_root, line_width_pwl, line_width, line_test, line_flux, line_continuum, line_continuum_pwl,
-                     line_depth, line_wl, line_sig, line_flux_pwl, line_depth_pwl, line_sig_pwl, name) \
+                     line_depth, line_wl, line_sig, line_flux_pwl, line_depth_pwl, line_sig_pwl, name)
             in enumerate(zip(roots_pwl, line_width_pwl_values, line_widths, line_tests, line_flux_values,
                              line_continuum_values, line_continuum_pwl_values, line_depth_values, line_wl_values,
                              line_sig_values, line_flux_pwl_values, line_depth_pwl_values, line_sig_pwl_values,
@@ -250,7 +252,7 @@ def _find_all(transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff, 
 def _find_fast(bases_transform_matrix, n_bases, n_rel_bases, scale, offset, xp, coeff):
     """
     Extrema (fast) detection: get Hermite coefficients and try to detect all lines/extrema.
-     
+
     Args:
         bases_transform_matrix (ndarray): Bases transformation matrix.
         n_bases (int): Number of bases.
@@ -290,7 +292,7 @@ def find_lines(input_object: Union[list, Path, str], truncation: bool = False, s
     Line finding: Get the input internally calibrated mean spectra from the continuous representation to a
     sampled form. In between it looks for emission and absorption lines. The lines can be defined by user
     or chosen from internal library, the source redshift and type can be specified.
-    
+
     Args:
         input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
             continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
@@ -309,7 +311,7 @@ def find_lines(input_object: Union[list, Path, str], truncation: bool = False, s
         save_plots (bool): Whether to save plots with spectra.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
-        
+
     Returns:
         (DataFrame): DataFrame with arrays of found lines and their properties for each source.
     """
@@ -406,7 +408,7 @@ def find_extrema(input_object: Union[list, Path, str], truncation: bool = False,
     """
     Line finding: Get the input internally calibrated mean spectra from the continuous representation to a
     sampled form. In between it looks for all lines (=extrema in spectra).
-    
+
     Args:
         input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
             continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
@@ -421,7 +423,7 @@ def find_extrema(input_object: Union[list, Path, str], truncation: bool = False,
         save_plots (bool): Whether to save plots with spectra.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
-        
+
     Returns:
         (DataFrame): DataFrame with values of found extrema.
     """
@@ -498,7 +500,7 @@ def find_fast(input_object: Union[list, Path, str], truncation: bool = False, ou
     """
     Line finding: get the input coefficients for internally calibrated mean spectra and look for the extrema.
     No evaluation of spectra in both sampled and continuous forms is performed.
-    
+
     Args:
         input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
             continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
@@ -511,7 +513,7 @@ def find_fast(input_object: Union[list, Path, str], truncation: bool = False, ou
         save_file (bool): Whether to save the output in a file. If false, output_format and output_file will be ignored.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
-        
+
     Returns:
         (DataFrame): DataFrame with arrays of found extrema for each source.
     """

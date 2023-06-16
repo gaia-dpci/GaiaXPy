@@ -58,7 +58,7 @@ def _cast(df):
                 df[column] = df[column].apply(lambda x: __replace_masked_array(x))
             # Only try to cast if required. If the type is float, it will just parse it. If it's already an int type,
             # it will skip the casting
-            elif not 'int' in str(df[column].dtype).__str__().lower():
+            elif 'int' not in str(df[column].dtype).__str__().lower():
                 df[column] = df[column].astype(type_value)
         except (TypeError, IntCastingNaNError):
             df[column] = df[column].astype(type_value.title())

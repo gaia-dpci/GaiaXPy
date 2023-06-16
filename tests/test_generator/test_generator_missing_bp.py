@@ -1,4 +1,5 @@
 import unittest
+from os.path import join
 
 import pandas as pd
 import pandas.testing as pdt
@@ -6,7 +7,7 @@ import pandas.testing as pdt
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.input_reader.input_reader import InputReader
-from tests.files.paths import *
+from tests.files.paths import files_path, missing_bp_csv_file, with_missing_bp_csv_file
 from tests.utils.utils import missing_bp_source_id
 
 _rtol, _atol = 1e-7, 1e-7

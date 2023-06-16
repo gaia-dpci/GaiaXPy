@@ -51,7 +51,7 @@ def replace_file_name(_config_file, label, key, bp_model, rp_model, system):
 def get_file(label, key, system, bp_model, rp_model, config_file=None):
     """
     Get the file path corresponding to the given label and key.
-    
+
     Args:
         label (str): Label of the photometric system or functionality (e.g.: 'Johnson' or 'calibrator').
         key (str): Type of file to load ('zeropoint', 'merge', 'sampling').

@@ -15,6 +15,7 @@ from numpy import ndarray
 
 from gaiaxpy.config.paths import filters_path, config_path
 from gaiaxpy.core.satellite import BANDS
+from gaiaxpy.core.custom_errors import InvalidBandError
 from gaiaxpy.generator.config import get_additional_filters_path
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 
@@ -47,7 +48,7 @@ def parse_band(band):
     if band in BANDS:
         return band
     else:
-        raise ValueError(f"String {band} is not a valid band. Band must be either 'bp' or 'rp'.")
+        raise InvalidBandError(band)
 
 
 def str_to_matrix(str_matrix):
@@ -58,7 +59,7 @@ def str_to_matrix(str_matrix):
     str_matrix = str_matrix.replace('nan', 'None')
     evaluated = literal_eval(str_matrix)
     evaluated = np.array(evaluated)
-    evaluated = np.where(evaluated == None, np.nan, evaluated)
+    evaluated = np.where(evaluated is None, np.nan, evaluated)
     return np.array(evaluated)
 
 

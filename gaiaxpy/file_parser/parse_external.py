@@ -4,7 +4,7 @@ parse_external.py
 Module to parse input files containing externally calibrated sampled spectra.
 """
 
-from .parse_generic import *
+from .parse_generic import GenericParser
 
 # Columns that contain arrays (as strings)
 array_columns = ['wl', 'flux', 'flux_error']

@@ -22,13 +22,12 @@ class Lines:
     def __init__(self, xp, src_type, user_lines=None):
         """
         Initialise line lists.
-        
+
         Args:
             xp (str): BP or RP.
             src_type (str): Type of sources (star or quasars).
             user_lines (list/str): List of lines defined by user.
         """
-
         self.xp = xp
         self.src_type = _validate_source_type(src_type)
 
@@ -56,10 +55,10 @@ class Lines:
     def get_lines_pwl(self, zet=0.):
         """
         Calculate pseudo-wavelength of lines.
-        
+
         Args:
             zet (float): Redshift of source. Default = 0. (for stars).
-    
+
         Returns:
             list: List of (redshifted) lines in pseudo-wavelengths with their names.
         """

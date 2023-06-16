@@ -12,7 +12,7 @@ class HermiteDerivative:
     def __init__(self, bases_transform_matrix, n_bases, n_rel_bases, coeff):
         """
         Initialise Hermite Derivative object.
-        
+
         Args:
             bases_transform_matrix (ndarray): 2D array containing bases transformation matrix.
             n_bases (int): Number of bases.

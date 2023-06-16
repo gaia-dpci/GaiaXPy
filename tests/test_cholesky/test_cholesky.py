@@ -67,7 +67,7 @@ class TestCholesky(unittest.TestCase):
         matrix = np.random.rand(55, 55)
         residuals = np.random.rand(54)
         with self.assertRaises(ValueError):
-            output = get_chi2(matrix, residuals)
+            get_chi2(matrix, residuals)
 
     def test_get_chi2_values(self):
         f = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')

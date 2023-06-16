@@ -15,7 +15,8 @@ from tqdm import tqdm
 
 from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
-from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_wl_sampling
+from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_wl_sampling, \
+    parse_band
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -108,8 +109,7 @@ def __create_merge(xp: str, sampling: np.ndarray) -> np.ndarray:
     Returns:
         ndarray: A numpy array containing an array with weights for the given band.
     """
-    if xp not in BANDS:
-        raise ValueError(f"Band must be either 'bp' or 'rp'.")
+    xp = parse_band(xp)
     wl_high = BP_WL.high
     wl_low = RP_WL.low
     return np.array([1.0 if wl < wl_low else 0.0 if wl > wl_high else (1.0 - (wl - wl_low) / (wl_high - wl_low)) for
@@ -149,8 +149,7 @@ def __generate_xp_matrices_and_merge(label: str, sampling: np.ndarray, bp_model:
         Raises:
             ValueError: If the xp band is not 'bp' or 'rp'.
         """
-        if xp not in BANDS:
-            raise ValueError(f"Band must be either 'bp' or 'rp'.")
+        xp = parse_band(xp)
         config_parser = ConfigParser()
         config_parser.read(join(config_path, 'config.ini'))
         file_name = config_parser.get(label, key)

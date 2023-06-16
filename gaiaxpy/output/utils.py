@@ -95,10 +95,10 @@ def _build_ecsv_header(df, positions=None):
         if units_dict.get(column, None):
             header.append(f'#   unit: {units_dict[column]}')
         if header_dict[column].get('meta', None):
-            header.append(f'#   meta:')
+            header.append('#   meta:')
             header.append(f'#     ucd: {header_dict[column]["meta"]}')
     if positions:
-        header.append(f'# meta:')
+        header.append('# meta:')
         header.append(f'#   sampling: {positions}')
     return '\n'.join(header) + '\n'
 

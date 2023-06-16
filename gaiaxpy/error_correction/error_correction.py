@@ -121,7 +121,7 @@ def _apply_error_correction(input_multi_photometry, photometric_system=None, out
     input_multi_photometry, extension = InputReader(input_multi_photometry, apply_error_correction,
                                                     disable_info=disable_info).read()
     # Validate that it is a multi-photometry, but how? First try below:
-    if not gaia_G_mag_column in input_multi_photometry.columns:
+    if gaia_G_mag_column not in input_multi_photometry.columns:
         raise ValueError('System Gaia_DR3_Vega, required to apply the error correction is not present in the input'
                          ' photometry.')
     columns = list(input_multi_photometry.columns)
@@ -134,8 +134,8 @@ def _apply_error_correction(input_multi_photometry, photometric_system=None, out
         print()
     for system in systems_to_skip:
         _warning(f'System {system} does not have a correction table. The program will not apply error correction over'
-                 f' this system.')
-    for system in tqdm(systems, desc=f'Correcting systems', total=len(systems), unit=pbar_units['correction'],
+                 ' this system.')
+    for system in tqdm(systems, desc='Correcting systems', total=len(systems), unit=pbar_units['correction'],
                        leave=False, colour=pbar_colour):
         system_df = input_multi_photometry[[column for column in input_multi_photometry.columns if
                                             (column.startswith(system) and f'{system}Std' not in column) or

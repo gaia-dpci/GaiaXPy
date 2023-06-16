@@ -102,7 +102,7 @@ class OutputData(object):
                 raise ValueError('The parameter output_file cannot be None.')
             if output_format is None:
                 output_format = extension
-            print(f'Saving file...', end='\r')
+            print('Saving file...', end='\r')
             output_format = _standardise_output_format(output_format)
             if output_format == 'avro':
                 self._save_avro(output_path, output_file)

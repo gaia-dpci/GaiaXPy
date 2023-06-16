@@ -106,8 +106,8 @@ class InternalContinuousParser(GenericParser):
     @staticmethod
     def __process_avro_record(record):
         return {key: np.array(_get_from_dict(record, _csv_to_avro_map[key])) if
-        isinstance(_get_from_dict(record, _csv_to_avro_map[key]), list) else
-        _get_from_dict(record, _csv_to_avro_map[key]) for key in _csv_to_avro_map.keys()}
+                isinstance(_get_from_dict(record, _csv_to_avro_map[key]), list) else
+                _get_from_dict(record, _csv_to_avro_map[key]) for key in _csv_to_avro_map.keys()}
 
     @staticmethod
     def __get_records_up_to_1_4_7(avro_file):

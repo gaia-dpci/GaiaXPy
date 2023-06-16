@@ -71,7 +71,7 @@ def str_to_array(str_array):
     elif isinstance(str_array, str):
         try:
             return np.fromstring(str_array[1:-1], sep=',')
-        except:  # np.fromstring may not raise an error but only show a warning depending on the version
+        except Exception:  # np.fromstring may not raise an error but only show a warning depending on the version
             raise ValueError('Input cannot be converted to array.')
     elif isinstance(str_array, float):
         return float('NaN')

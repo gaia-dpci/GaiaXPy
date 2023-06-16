@@ -26,8 +26,8 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
         xp_sampling_grid_list = [element[0] for element in xp_sampling_grid_xp_merge_tuples_list]
         xp_merge_list = [element[1] for element in xp_sampling_grid_xp_merge_tuples_list]
         # Get basis functions list
-        sampled_basis_func_list = [self._get_sampled_basis_functions(xp_sampling, xp_sampling_grid) for xp_sampling,
-                                    xp_sampling_grid in zip(xp_sampling_list, xp_sampling_grid_list)]
+        sampled_basis_func_list = [self._get_sampled_basis_functions(xp_sampling, xp_sampling_grid) for
+                                   xp_sampling, xp_sampling_grid in zip(xp_sampling_list, xp_sampling_grid_list)]
         # One list per system
         photometry_list_of_lists = [self._create_photometry_list(parsed_input_data, phot_system, sampled_basis_func,
                                                                  xp_merge) for phot_system, sampled_basis_func, xp_merge

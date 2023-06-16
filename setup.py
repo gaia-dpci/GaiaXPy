@@ -17,31 +17,44 @@ def get_property(prop):
     result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open('gaiaxpy' + '/core/version.py').read())
     return result.group(1)
 
+AUTHORS = 'Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
 
-with open("requirements.txt") as f:
-    required_packages = f.readlines()
+CLASSIFIERS = ['Programming Language :: Python :: 3',
+               'License :: OSI Approved :: BSD License',
+               'Operating System :: OS Independent']
+
+INSTALL_REQUIRES = ['aenum',
+                    'astropy',
+                    'astroquery',
+                    'fastavro',
+                    'matplotlib',
+                    'numpy>1.13',
+                    'packaging',
+                    'pandas>=1.0.0',
+                    'scipy',
+                    'tqdm>=4.64.0']
+
+SETUP_REQUIRES = INSTALL_REQUIRES + ['setuptools', 'setuptools_scm', 'wheel']
+
+EXTRAS_REQUIRE = {'tests': ['pytest', 'pytest-cov']}
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    LONG_DESCRIPTION = fh.read()
 
 setup(
     name='GaiaXPy',
     version=get_property('__version__'),
-    author="Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres",
-    author_email="fda@ast.cam.ac.uk",
-    maintainer="Daniela Ruz-Mieres",
-    maintainer_email="d.ruzmieres@ast.cam.ac.uk",
-    description="Utilities to handle BP/RP (XP) Gaia low-resolution spectra as delivered via the archive",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    url="https://gaia-dpci.github.io/GaiaXPy-website/",
-    python_requires='>=3.6',
+    author=AUTHORS,
+    author_email='fda@ast.cam.ac.uk',
+    maintainer='Daniela Ruz-Mieres',
+    maintainer_email='d.ruzmieres@ast.cam.ac.uk',
+    description='Utilities to handle BP/RP (XP) Gaia low-resolution spectra as delivered via the archive',
+    long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/markdown',
+    url='https://gaia-dpci.github.io/GaiaXPy-website/',
+    python_requires='>=3.7',
     packages=find_packages(),
-    install_requires=required_packages,
+    install_requires=INSTALL_REQUIRES,
     include_package_data=True,
-    classifiers=[
-        'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: BSD License',
-        'Operating System :: OS Independent',
-    ]
+    classifiers=CLASSIFIERS
 )

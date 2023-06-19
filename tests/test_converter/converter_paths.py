@@ -32,7 +32,7 @@ converter_csv_solution_0_60_481_df = pd.read_csv(join(converter_sol_path, 'conve
   Continuous files with missing BP
 ====================================
 """
-mean_spectrum_csv_file_with_missing = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP.csv')
+mean_spectrum_csv_file_with_missing = join(continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
 mean_spectrum_csv_with_missing_int6 = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.csv')
 mean_spectrum_fits_with_missing_int6 = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.fits')
 mean_spectrum_xml_with_missing_int6 = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.xml')

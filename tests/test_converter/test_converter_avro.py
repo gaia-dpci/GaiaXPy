@@ -1,7 +1,5 @@
 import unittest
-from configparser import ConfigParser
 from itertools import islice
-from os import path
 
 import numpy as np
 import numpy.testing as npt
@@ -9,49 +7,26 @@ import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import convert
-from gaiaxpy.config.paths import config_path
-from gaiaxpy.converter.config import load_config
 from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices, get_unique_basis_ids
-from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-from tests.files.paths import files_path
+from tests.test_converter.converter_paths import converter_avro_solution_0_60_481_df, mean_spectrum_avro_file, \
+    ref_sampled_csv, ref_sampled_truncated_csv, optimised_bases_df
 from tests.utils.utils import get_spectrum_with_source_id_and_xp
-
-current_path = path.abspath(path.dirname(__file__))
-configparser = ConfigParser()
-configparser.read(path.join(config_path, 'config.ini'))
-config_file = path.join(config_path, configparser.get('converter', 'optimised_bases'))
-config_df = load_config(config_file)
-
-# Generate converters
-columns_to_parse = ['flux', 'flux_error']
-converters = dict([(column, lambda x: str_to_array(x)) for column in columns_to_parse])
-
-# File under test
-converter_solution_path = path.join(files_path, 'converter_solution')
-continuous_path = path.join(files_path, 'xp_continuous')
-input_file = path.join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
-converter_solution_df = pd.read_csv(path.join(converter_solution_path, 'converter_avro_solution_0_60_481.csv'),
-                                    float_precision='high', converters=converters)
 
 # Parsers
 parser = InternalContinuousParser()
 # Parsed files
-parsed_input, _ = parser._parse(input_file)
+parsed_input, _ = parser._parse(mean_spectrum_avro_file)
 
 sampling = np.linspace(0, 60, 481)
 unique_bases_ids = get_unique_basis_ids(parsed_input)
-design_matrices = get_design_matrices(unique_bases_ids, sampling, config_df)
+design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_bases_df)
 
-converted_df, positions = convert(input_file, sampling=sampling, save_file=False)
-
-# Files to compare the sampled spectrum with value by value without/with truncation applied
-ref_sampled_csv = path.join(converter_solution_path, 'SampledMeanSpectrum.csv')
-ref_sampled_truncated_csv = path.join(converter_solution_path, 'SampledMeanSpectrum_truncated.csv')
+converted_df, positions = convert(mean_spectrum_avro_file, sampling=sampling, save_file=False)
 
 sampled_parser = InternalSampledParser()
 ref_sampled, _ = sampled_parser._parse(ref_sampled_csv)
@@ -95,7 +70,7 @@ class TestConverter(unittest.TestCase):
     def test_converter_both_types(self):
         self.assertIsInstance(converted_df, pd.DataFrame)
         self.assertEqual(len(converted_df), 4)
-        pdt.assert_frame_equal(converted_df, converter_solution_df, rtol=_rtol, atol=_atol)
+        pdt.assert_frame_equal(converted_df, converter_avro_solution_0_60_481_df, rtol=_rtol, atol=_atol)
 
     def test_conversion(self):
         for spectrum in converted_df.to_dict('records'):
@@ -107,7 +82,8 @@ class TestConverter(unittest.TestCase):
 class TestTruncation(unittest.TestCase):
 
     def test_truncation(self):
-        converted_truncated_df, _ = convert(input_file, sampling=sampling, truncation=True, save_file=False)
+        converted_truncated_df, _ = convert(mean_spectrum_avro_file, sampling=sampling, truncation=True,
+                                            save_file=False)
         for spectrum in converted_truncated_df.to_dict('records'):
             ref = get_spectrum_with_source_id_and_xp(spectrum['source_id'], spectrum['xp'], ref_sampled_truncated)
             npt.assert_almost_equal(ref['flux'], spectrum['flux'], decimal=TOL)
@@ -117,21 +93,21 @@ class TestTruncation(unittest.TestCase):
 class TestConverterSamplingRange(unittest.TestCase):
 
     def test_sampling_equal(self):
-        _, positions = convert(input_file, sampling=sampling, truncation=True, save_file=False)
+        _, positions = convert(mean_spectrum_avro_file, sampling=sampling, truncation=True, save_file=False)
         npt.assert_array_equal(sampling, positions)
 
     def test_sampling_low(self):
         with self.assertRaises(ValueError):
-            convert(input_file, sampling=np.linspace(-15, 60, 600), save_file=False)
+            convert(mean_spectrum_avro_file, sampling=np.linspace(-15, 60, 600), save_file=False)
 
     def test_sampling_high(self):
         with self.assertRaises(ValueError):
-            convert(input_file, sampling=np.linspace(-10, 71, 600), save_file=False)
+            convert(mean_spectrum_avro_file, sampling=np.linspace(-10, 71, 600), save_file=False)
 
     def test_sampling_both_wrong(self):
         with self.assertRaises(ValueError):
-            convert(input_file, sampling=np.linspace(-11, 71, 600), save_file=False)
+            convert(mean_spectrum_avro_file, sampling=np.linspace(-11, 71, 600), save_file=False)
 
     def test_sampling_none(self):
         with self.assertRaises(ValueError):
-            convert(input_file, sampling=None, save_file=False)
+            convert(mean_spectrum_avro_file, sampling=None, save_file=False)

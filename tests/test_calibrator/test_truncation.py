@@ -13,8 +13,12 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from tests.test_calibrator.calibrator_paths import mean_spectrum_csv, mean_spectrum_fits, mean_spectrum_xml,\
+    mean_spectrum_xml_plain
 from tests.files.paths import files_path
 from tests.utils.utils import pos_file_to_array
+
+# TODO: Add tests for AVRO format
 
 parser = InternalContinuousParser()
 
@@ -26,14 +30,6 @@ xp_design_matrices = load_xpsampling_from_xml(bp_model=bp_model)
 
 # Path to solution files
 calibrator_sol_path = join(files_path, 'calibrator_solution')
-
-# Load XP continuous file
-continuous_path = join(files_path, 'xp_continuous')
-mean_spectrum_avro = join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
-mean_spectrum_csv = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
-mean_spectrum_fits = join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
-mean_spectrum_xml = join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
-mean_spectrum_xml_plain = join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 
 # Calibrate data in files
 spectra_df_fits, _ = calibrate(mean_spectrum_fits, save_file=False, truncation=True)

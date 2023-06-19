@@ -9,13 +9,7 @@ import pandas.testing as pdt
 from gaiaxpy import calibrate
 from gaiaxpy.core.generic_functions import str_to_array, correlation_to_covariance
 from tests.files.paths import files_path
-
-f = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
-
-# Load sampling
-sampling_solution = join(files_path, 'calibrator_solution', 'calibrate_with_covariance_solution_sampling.csv')
-converters = {'pos': (lambda x: str_to_array(x))}
-sampling_solution_array = pd.read_csv(sampling_solution, float_precision='high', converters=converters).iloc[0]['pos']
+from tests.test_calibrator.calibrator_paths import mean_spectrum_csv_with_missing, sol_with_covariance_sampling
 
 _atol, _rtol = 1e-10, 1e-10
 
@@ -23,7 +17,7 @@ _atol, _rtol = 1e-10, 1e-10
 class TestCalibratorWithCovariance(unittest.TestCase):
 
     def test_with_covariance(self):
-        spectra, sampling = calibrate(f, with_correlation=True, save_file=False)
+        spectra, sampling = calibrate(mean_spectrum_csv_with_missing, with_correlation=True, save_file=False)
         # Load spectra
         _converters = {key: (lambda x: str_to_array(x)) for key in ['flux', 'flux_error', 'covariance']}
         solution = join(files_path, 'calibrator_solution', 'calibrate_with_covariance_solution.csv')
@@ -35,8 +29,8 @@ class TestCalibratorWithCovariance(unittest.TestCase):
                 error_array = error_array / stdevs
             elif len(stdevs) == 2:
                 midpoint = len(error_array) // 2
-                error_array[:midpoint] /= stdevs[0]  # divide the first half by stdev[0]
-                error_array[midpoint:] /= stdevs[1]  # divide the second half by stdev[1]
+                error_array[:midpoint] /= stdevs[0]  # Divide the first half by stdev[0]
+                error_array[midpoint:] /= stdevs[1]  # Divide the second half by stdev[1]
             return error_array
 
         scaled_errors = [scale_error(arr, devs) for arr, devs in
@@ -46,7 +40,7 @@ class TestCalibratorWithCovariance(unittest.TestCase):
         spectra['covariance'] = [correlation_to_covariance(corr, err, st) for corr, err, st in
                                  zip(spectra['correlation'].values, scaled_errors, np.ones(3))]
         spectra = spectra.drop(columns=['correlation'])
-        npt.assert_array_equal(sampling, sampling_solution_array)
+        npt.assert_array_equal(sampling, sol_with_covariance_sampling)
         spectra = spectra.drop(index=1)
         solution_df = solution_df.drop(index=1)
         pdt.assert_frame_equal(spectra.loc[:, spectra.columns != 'covariance'],

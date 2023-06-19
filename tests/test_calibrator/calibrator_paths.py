@@ -30,7 +30,7 @@ mean_spectrum_csv_with_missing = join(continuous_path, 'XP_CONTINUOUS_RAW_with_m
 
 """
 ============================
-  Tests sampling solutions
+  Sampling solutions
 ============================
 """
 # Default model

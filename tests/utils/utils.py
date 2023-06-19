@@ -90,13 +90,6 @@ def get_converters(columns, dtypes=None):
     raise ValueError("Input doesn't correspond to any of the expected types.")
 
 
-def df_columns_to_array(df, columns):
-    for index, row in enumerate(df.to_dict('records')):
-        for column in columns:
-            df[column][index] = str_to_array(row[column])
-    return df
-
-
 def reconstruct_covariance(array):
     def get_matrix_size(d):
         num_elements = len(d)

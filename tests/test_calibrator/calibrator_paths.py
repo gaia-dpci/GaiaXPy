@@ -44,7 +44,8 @@ sol_v211w_custom_sampling = pos_file_to_array(join(calibrator_sol_path,
                                                    'calibrator_solution_v211w_custom_sampling.csv'))
 
 # With missing
-sol_with_missing_sampling = pos_file_to_array(join(calibrator_sol_path, 'with_missing_calibrator_solution_sampling.csv'))
+sol_with_missing_sampling = pos_file_to_array(
+    join(calibrator_sol_path, 'with_missing_calibrator_solution_sampling.csv'))
 
 # With covariance
 sol_with_covariance_sampling = pos_file_to_array(join(files_path, 'calibrator_solution',

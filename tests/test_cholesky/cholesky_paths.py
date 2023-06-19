@@ -1,6 +1,6 @@
-import pandas as pd
-
 from os.path import join
+
+import pandas as pd
 
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS

@@ -13,9 +13,9 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from tests.test_calibrator.calibrator_paths import mean_spectrum_csv, mean_spectrum_fits, mean_spectrum_xml,\
-    mean_spectrum_xml_plain
 from tests.files.paths import files_path
+from tests.test_calibrator.calibrator_paths import mean_spectrum_csv, mean_spectrum_fits, mean_spectrum_xml, \
+    mean_spectrum_xml_plain
 from tests.utils.utils import pos_file_to_array
 
 # TODO: Add tests for AVRO format

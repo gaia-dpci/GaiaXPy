@@ -47,7 +47,7 @@ class SampledBasisFunctions(object):
                 the dispersion, response and inverse bases.
 
         Returns:
-            object: An instance of this class.
+            SampledBasisFunctions: An instance of this class.
         """
         n_samples = len(sampling)
         scale = (external_instrument_model.bases['normRangeMax'][0] -

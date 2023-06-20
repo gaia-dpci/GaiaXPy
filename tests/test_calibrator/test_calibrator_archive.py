@@ -4,8 +4,8 @@ import numpy.testing as npt
 import pandas.testing as pdt
 
 from gaiaxpy import calibrate
-from tests.test_calibrator.calibrator_paths import solution_default_df, sol_default_sampling, \
-    with_missing_solution_df, sol_with_missing_sampling
+from tests.test_calibrator.calibrator_paths import solution_default_df, with_missing_solution_df, \
+    sol_with_missing_sampling_array, sol_default_sampling_array
 from tests.utils.utils import missing_bp_source_id
 
 _rtol = 1e-10
@@ -23,7 +23,7 @@ class TestCalibratorSingleElement(unittest.TestCase):
         source_data_output = output_df[output_df['source_id'] == 5853498713190525696]
         source_data_solution = solution_default_df[solution_default_df['source_id'] == 5853498713190525696]
         pdt.assert_frame_equal(source_data_output, source_data_solution, atol=_atol, rtol=_rtol)
-        npt.assert_array_equal(sampling, sol_default_sampling)
+        npt.assert_array_equal(sampling, sol_default_sampling_array)
 
 
 class TestCalibratorMissingBPQueryInput(unittest.TestCase):
@@ -35,13 +35,13 @@ class TestCalibratorMissingBPQueryInput(unittest.TestCase):
         sorted_output_df = output_df.sort_values('source_id', ignore_index=True)
         sorted_solution_df = with_missing_solution_df.sort_values('source_id', ignore_index=True)
         pdt.assert_frame_equal(sorted_output_df, sorted_solution_df, atol=_atol, rtol=_rtol)
-        npt.assert_array_equal(sampling, sol_with_missing_sampling)
+        npt.assert_array_equal(sampling, sol_with_missing_sampling_array)
 
     def test_missing_bp_query_isolated(self):
         query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ({missing_bp_source_id})"
         output_df, sampling = calibrate(query, save_file=False)
         pdt.assert_frame_equal(output_df, missing_solution_df, atol=_atol, rtol=_rtol)
-        npt.assert_array_equal(sampling, sol_with_missing_sampling)
+        npt.assert_array_equal(sampling, sol_with_missing_sampling_array)
 
 
 class TestCalibratorMissingBPListInput(unittest.TestCase):
@@ -52,10 +52,10 @@ class TestCalibratorMissingBPListInput(unittest.TestCase):
         sorted_output_df = output_df.sort_values('source_id', ignore_index=True)
         sorted_solution_df = with_missing_solution_df.sort_values('source_id', ignore_index=True)
         pdt.assert_frame_equal(sorted_output_df, sorted_solution_df, check_dtype=False, atol=_atol, rtol=_rtol)
-        npt.assert_array_equal(sampling, sol_with_missing_sampling)
+        npt.assert_array_equal(sampling, sol_with_missing_sampling_array)
 
     def test_missing_bp_isolated(self):
         src_list = [missing_bp_source_id]
         output_df, sampling = calibrate(src_list, save_file=False)
         pdt.assert_frame_equal(output_df, missing_solution_df, check_dtype=False, atol=_atol, rtol=_rtol)
-        npt.assert_array_equal(sampling, sol_with_missing_sampling)
+        npt.assert_array_equal(sampling, sol_with_missing_sampling_array)

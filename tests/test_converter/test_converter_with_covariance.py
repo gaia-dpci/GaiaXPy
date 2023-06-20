@@ -7,11 +7,11 @@ import pandas.testing as pdt
 
 from gaiaxpy import convert
 from gaiaxpy.core.generic_functions import str_to_array, correlation_to_covariance
-from tests.files.paths import files_path, with_missing_bp_csv_file
+from tests.files.paths import with_missing_bp_csv_file, converter_sol_path
 from tests.test_converter.converter_paths import mean_spectrum_csv_with_cov_sol_df
 
 # Load sampling
-sampling_solution = join(files_path, 'converter_solution', 'converter_with_covariance_missing_bp_solution_sampling.csv')
+sampling_solution = join(converter_sol_path, 'converter_with_covariance_missing_bp_solution_sampling.csv')
 converters = {'pos': (lambda x: str_to_array(x))}
 sampling_solution_array = pd.read_csv(sampling_solution, float_precision='high', converters=converters).iloc[0]['pos']
 

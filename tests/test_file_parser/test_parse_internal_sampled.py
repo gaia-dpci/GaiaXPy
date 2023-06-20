@@ -5,10 +5,10 @@ import pandas as pd
 from numpy import ndarray, dtype
 
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
-from tests.files.paths import files_path
+from tests.files.paths import converter_sol_path
 
 # Files to test parse
-csv_file = path.join(files_path, 'converter_solution', 'SampledMeanSpectrum.csv')
+csv_file = path.join(converter_sol_path, 'SampledMeanSpectrum.csv')
 
 parser = InternalSampledParser()
 parsed_csv_file, _ = parser._parse(csv_file)

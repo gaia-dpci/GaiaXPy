@@ -9,7 +9,7 @@ from astropy.table import Table
 
 from gaiaxpy import calibrate, convert, generate, PhotometricSystem, find_fast, find_extrema, find_lines
 from gaiaxpy.file_parser.parse_generic import GenericParser
-from tests.files.paths import solution_path, output_path, mean_spectrum_csv_file
+from tests.files.paths import output_sol_path, output_path, mean_spectrum_csv_file
 
 _rtol, _atol = 1e-10, 1e-10
 
@@ -66,12 +66,12 @@ def run_output_test(function, filename, output_format, sampling=None, phot_syste
     elif sampling is None and phot_systems is None:
         function(mean_spectrum_csv_file, output_path=output_path, output_file=filename, output_format=output_format)
     current_file = f'{filename}.{output_format}'
-    compare_frames(join(output_path, current_file), join(solution_path, current_file), extension=output_format,
+    compare_frames(join(output_path, current_file), join(output_sol_path, current_file), extension=output_format,
                    function_name=function.__name__)
     if output_format in ['csv', '.csv'] and phot_systems is None and 'find' not in function.__name__:
         # A sampling file will be generated too (calibrate and convert), it needs to be tested
         current_sampling_file = f'{filename}_sampling.{output_format}'
-        compare_frames(join(output_path, current_sampling_file), join(solution_path, current_sampling_file),
+        compare_frames(join(output_path, current_sampling_file), join(output_sol_path, current_sampling_file),
                        extension=output_format, function_name=function.__name__)
 
 

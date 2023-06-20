@@ -43,10 +43,10 @@ found_lines_trunc_real = pd.read_csv(join(files_path, solution_folder, 'linefind
 found_lines_no_bp_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_no_bp_output.csv'))
 
 # Results to test
-found_lines = find_lines(input_file, save_file=False)
-found_lines_trunc = find_lines(input_file, truncation=True, save_file=False)
+found_lines = find_lines(mean_spectrum_csv_file, save_file=False)
+found_lines_trunc = find_lines(mean_spectrum_csv_file, truncation=True, save_file=False)
 found_lines_no_bp = find_lines(with_missing_bp_csv_file, save_file=False)
-found_lines_redshift = find_lines(input_file, redshift=[0., 0.], save_file=False)
+found_lines_redshift = find_lines(mean_spectrum_csv_file, redshift=[0., 0.], save_file=False)
 
 isolated_missing_bp_solution_line = found_lines_no_bp_real[found_lines_no_bp_real['source_id'] ==
                                                            missing_bp_source_id].reset_index(drop=True)

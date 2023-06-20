@@ -12,14 +12,13 @@ import numpy as np
 import pandas as pd
 from scipy import interpolate
 
-from gaiaxpy.config.paths import config_path
+from gaiaxpy.config.paths import config_path, config_ini_file
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
-
 
 @lru_cache(maxsize=None)
 def read_config_file():
     config_parser = ConfigParser()
-    config_parser.read(join(config_path, 'config.ini'))
+    config_parser.read(config_ini_file)
     config_file = join(config_path, config_parser.get('core', 'dispersion_function'))
     return pd.read_csv(config_file)
 

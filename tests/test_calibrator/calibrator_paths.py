@@ -3,11 +3,10 @@ from os.path import join
 import pandas as pd
 
 from gaiaxpy.core.generic_functions import str_to_array
-from tests.files.paths import files_path
+from tests.files.paths import calibrator_sol_path, sol_default_sampling, sol_custom_sampling, \
+    sol_v211w_default_sampling, sol_v211w_custom_sampling, sol_with_missing_sampling, sol_with_covariance_sampling
 from tests.utils.utils import pos_file_to_array
 
-continuous_path = join(files_path, 'xp_continuous')
-calibrator_sol_path = join(files_path, 'calibrator_solution')
 solution_converters = dict([(column, lambda x: str_to_array(x)) for column in ['flux', 'flux_error']])
 
 """
@@ -16,22 +15,18 @@ solution_converters = dict([(column, lambda x: str_to_array(x)) for column in ['
 ============================
 """
 # Default model
-sol_default_sampling = pos_file_to_array(join(calibrator_sol_path, 'calibrator_solution_default_sampling.csv'))
-sol_custom_sampling = pos_file_to_array(join(calibrator_sol_path, 'calibrator_solution_custom_sampling.csv'))
+sol_default_sampling_array = pos_file_to_array(sol_default_sampling)
+sol_custom_sampling_array = pos_file_to_array(sol_custom_sampling)
 
 # v211w model
-sol_v211w_default_sampling = pos_file_to_array(join(calibrator_sol_path,
-                                                    'calibrator_solution_v211w_default_sampling.csv'))
-sol_v211w_custom_sampling = pos_file_to_array(join(calibrator_sol_path,
-                                                   'calibrator_solution_v211w_custom_sampling.csv'))
+sol_v211w_default_sampling_array = pos_file_to_array(sol_v211w_default_sampling)
+sol_v211w_custom_sampling_array = pos_file_to_array(sol_v211w_custom_sampling)
 
 # With missing
-sol_with_missing_sampling = pos_file_to_array(
-    join(calibrator_sol_path, 'with_missing_calibrator_solution_sampling.csv'))
+sol_with_missing_sampling_array = pos_file_to_array(sol_with_missing_sampling)
 
 # With covariance
-sol_with_covariance_sampling = pos_file_to_array(join(files_path, 'calibrator_solution',
-                                                      'calibrate_with_covariance_solution_sampling.csv'))
+sol_with_covariance_sampling_array = pos_file_to_array(sol_with_covariance_sampling)
 
 """
 ===========================

@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from gaiaxpy.config.paths import config_path
+from gaiaxpy.config.paths import config_path, config_ini_file
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_wl_sampling, \
     parse_band
@@ -151,7 +151,7 @@ def __generate_xp_matrices_and_merge(label: str, sampling: np.ndarray, bp_model:
         """
         xp = parse_band(xp)
         config_parser = ConfigParser()
-        config_parser.read(join(config_path, 'config.ini'))
+        config_parser.read(config_ini_file)
         file_name = config_parser.get(label, key)
         model = _bp_model if xp == BANDS.bp else _rp_model
         return join(config_path, f"{file_name.replace('xp', xp).replace('model', model)}")

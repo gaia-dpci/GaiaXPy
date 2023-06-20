@@ -7,7 +7,7 @@ Module to handle the calibrator and generator configuration files.
 from configparser import ConfigParser
 from os.path import join
 
-from gaiaxpy.config.paths import config_path, filters_path
+from gaiaxpy.config.paths import config_path, filters_path, config_ini_file
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.xml_utils import get_file_root, get_array_text, get_xp_merge, get_xp_sampling_matrix
 
@@ -63,7 +63,7 @@ def get_file(label, key, system, bp_model, rp_model, config_file=None):
     Returns:
         str: Path of a file.
     """
-    _config_file = join(config_path, 'config.ini') if config_file is None else config_file
+    _config_file = config_ini_file if config_file is None else config_file
     file_name = replace_file_name(_config_file, label, key, bp_model, rp_model, system)
     file_path = get_file_path(config_file)
     return join(file_path, file_name)

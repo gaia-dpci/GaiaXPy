@@ -24,8 +24,6 @@ solution_df = pd.read_csv(solution_file, converters=array_converters, usecols=IN
 for column in masked_constant_columns:
     solution_df[column] = solution_df[column].astype('Int64')
 
-xp_continuous_path = join(files_path, 'xp_continuous')
-
 _rtol, _atol = 1e-7, 1e-7
 
 

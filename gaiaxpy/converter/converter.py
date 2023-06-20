@@ -14,7 +14,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from gaiaxpy.config.paths import config_path
 from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_pwl_sampling
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS
@@ -24,6 +23,7 @@ from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from .config import get_config, load_config
+from ..config.paths import optimised_bases_file
 
 __FUNCTION_KEY = 'converter'
 
@@ -90,10 +90,7 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     validate_arguments(convert.__defaults__[4], output_file, save_file)
     parsed_input_data, extension = InputReader(input_object, convert, username, password,
                                                disable_info=disable_info).read()
-    config_parser = ConfigParser()
-    config_parser.read(path.join(config_path, 'config.ini'))
-    config_file = path.join(config_path, config_parser.get(__FUNCTION_KEY, 'optimised_bases'))
-    config_df = load_config(config_file)
+    config_df = load_config(optimised_bases_file)
     # Union of unique ids as sets
     unique_bases_ids = get_unique_basis_ids(parsed_input_data)
     # Get design matrices

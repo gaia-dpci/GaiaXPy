@@ -1,8 +1,7 @@
 import unittest
 from configparser import ConfigParser
-from os import path
 
-from gaiaxpy.config.paths import config_path
+from gaiaxpy.config.paths import config_ini_file
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
@@ -13,7 +12,7 @@ from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from tests.files.paths import mean_spectrum_csv_file
 
 configparser = ConfigParser()
-configparser.read(path.join(config_path, 'config.ini'))
+configparser.read(config_ini_file)
 
 label = 'calibrator'
 

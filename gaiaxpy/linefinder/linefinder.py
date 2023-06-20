@@ -16,7 +16,7 @@ from scipy import interpolate
 from tqdm import tqdm
 
 from gaiaxpy.calibrator.calibrator import _calibrate
-from gaiaxpy.config.paths import config_path
+from gaiaxpy.config.paths import config_path, optimised_bases_file
 from gaiaxpy.converter.config import load_config, get_config
 from gaiaxpy.converter.converter import _convert
 from gaiaxpy.core.dispersion_function import pwl_to_wl, pwl_range
@@ -30,10 +30,6 @@ from gaiaxpy.linefinder.plotter import plot_spectra_with_lines
 from gaiaxpy.output.line_data import LineData
 
 warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
-
-config_parser = ConfigParser()
-config_parser.read(path.join(config_path, 'config.ini'))
-config_file = path.join(config_path, config_parser.get('converter', 'optimised_bases'))
 
 basis_function_id = {BANDS.bp: 56, BANDS.rp: 57}
 
@@ -319,8 +315,8 @@ def find_lines(input_object: Union[list, Path, str], truncation: bool = False, s
     source_type = _check_source_redshift_type(source_type, redshift)
     _check_truncation(truncation)
 
-    bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
-                                                                                                      basis_function_id)
+    bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(
+        optimised_bases_file, basis_function_id)
     # Parse input
     parsed_input_data, extension = InputReader(input_object, find_lines, username, password).read()
     # Internal info will be disabled, but the user will need some info
@@ -431,7 +427,7 @@ def find_extrema(input_object: Union[list, Path, str], truncation: bool = False,
     _check_truncation(truncation)
     _check_plot_arguments(plot_spectra, save_plots)
 
-    bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
+    bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(optimised_bases_file,
                                                                                                       basis_function_id)
     # Parse input
     parsed_input_data, extension = InputReader(input_object, find_lines, username, password).read()
@@ -519,7 +515,7 @@ def find_fast(input_object: Union[list, Path, str], truncation: bool = False, ou
     """
     __FUNCTION_KEY = 'fastfinder'
     _check_truncation(truncation)
-    bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(config_file,
+    bp_tm, bp_n, bp_scale, bp_offset, rp_tm, rp_n, rp_scale, rp_offset = _get_configuration_variables(optimised_bases_file,
                                                                                                       basis_function_id)
     parsed_input_data, extension = InputReader(input_object, find_lines, username, password).read()
     parsed_input_data_dict = parsed_input_data.to_dict('records')

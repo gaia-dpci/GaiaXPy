@@ -4,7 +4,7 @@ from os import path
 
 import numpy as np
 
-from gaiaxpy.config.paths import config_path
+from gaiaxpy.config.paths import optimised_bases_file
 from gaiaxpy.converter.config import load_config
 from gaiaxpy.converter.converter import get_design_matrices, get_unique_basis_ids
 from gaiaxpy.core.satellite import BANDS
@@ -17,14 +17,10 @@ from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from gaiaxpy.spectrum.xp_spectrum import XpSpectrum
 from tests.files.paths import mean_spectrum_csv_file
 
-configparser = ConfigParser()
-configparser.read(path.join(config_path, 'config.ini'))
-config_file = path.join(config_path, configparser.get('converter', 'optimised_bases'))
-
 parser = InternalContinuousParser()
 correlation_parsed_file, _ = parser._parse(mean_spectrum_csv_file)
 
-parsed_config = load_config(config_file)
+parsed_config = load_config(optimised_bases_file)
 
 # Sampling grid
 n_samples = 481

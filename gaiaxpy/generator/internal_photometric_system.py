@@ -6,9 +6,9 @@ Module for the parent class of the standardised and regular photometric systems.
 from configparser import ConfigParser
 from glob import glob
 from os import remove
-from os.path import join, exists
+from os.path import exists
 
-from gaiaxpy.config.paths import config_path
+from gaiaxpy.config.paths import config_ini_file
 from gaiaxpy.core.config import get_filter_version_from_config, replace_file_name, get_file_path, \
     ADDITIONAL_SYSTEM_PREFIX
 from gaiaxpy.core.generic_functions import _get_system_label
@@ -24,7 +24,7 @@ class InternalPhotometricSystem(object):
         self.label = _get_system_label(name)
         self.version = None
         self.__set_version(config_file)
-        config_file = join(config_path, 'config.ini') if not config_file else config_file
+        config_file = config_ini_file if not config_file else config_file
         self.config_file = config_file
         self.filter_file = None
         self._set_file(bp_model=bp_model, rp_model=rp_model)

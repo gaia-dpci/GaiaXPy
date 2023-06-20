@@ -1,15 +1,13 @@
-from configparser import ConfigParser
 from os.path import join
 
 import pandas as pd
 
-from gaiaxpy.config.paths import config_path
+from gaiaxpy.config.paths import optimised_bases_file
 from gaiaxpy.converter.config import load_config as load_con_config
 from gaiaxpy.core.generic_functions import str_to_array
-from tests.files.paths import files_path, continuous_path
+from tests.files.paths import converter_sol_path
 from tests.utils.utils import pos_file_to_array, missing_bp_source_id
 
-converter_sol_path = join(files_path, 'converter_solution')
 """
 ==========================
 Regular continuous files
@@ -56,7 +54,4 @@ mean_spectrum_csv_with_cov_sol_df = pd.read_csv(mean_spectrum_csv_with_cov_sol, 
   Optimised bases
 ===================
 """
-configparser = ConfigParser()
-configparser.read(join(config_path, 'config.ini'))
-config_file = join(config_path, configparser.get('converter', 'optimised_bases'))
-optimised_bases_df = load_con_config(config_file)
+optimised_bases_df = load_con_config(optimised_bases_file)

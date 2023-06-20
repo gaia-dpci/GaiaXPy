@@ -5,9 +5,8 @@ Module for the generation of synthetic photometry.
 """
 
 from configparser import ConfigParser
-from os import path
 
-from gaiaxpy.config.paths import config_path
+from gaiaxpy.config.paths import config_ini_file
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.single_synthetic_photometry import SingleSyntheticPhotometry
@@ -15,7 +14,7 @@ from gaiaxpy.spectrum.utils import get_covariance_matrix
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 
 config_parser = ConfigParser()
-config_parser.read(path.join(config_path, 'config.ini'))
+config_parser.read(config_ini_file)
 
 
 class SyntheticPhotometryGenerator(object):

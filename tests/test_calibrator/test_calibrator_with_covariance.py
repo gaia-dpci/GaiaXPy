@@ -9,7 +9,7 @@ import pandas.testing as pdt
 from gaiaxpy import calibrate
 from gaiaxpy.core.generic_functions import str_to_array, correlation_to_covariance
 from tests.files.paths import files_path, with_missing_bp_csv_file
-from tests.test_calibrator.calibrator_paths import sol_with_covariance_sampling
+from tests.test_calibrator.calibrator_paths import sol_with_covariance_sampling_array
 
 _atol, _rtol = 1e-10, 1e-10
 
@@ -40,7 +40,7 @@ class TestCalibratorWithCovariance(unittest.TestCase):
         spectra['covariance'] = [correlation_to_covariance(corr, err, st) for corr, err, st in
                                  zip(spectra['correlation'].values, scaled_errors, np.ones(3))]
         spectra = spectra.drop(columns=['correlation'])
-        npt.assert_array_equal(sampling, sol_with_covariance_sampling)
+        npt.assert_array_equal(sampling, sol_with_covariance_sampling_array)
         spectra = spectra.drop(index=1)
         solution_df = solution_df.drop(index=1)
         pdt.assert_frame_equal(spectra.loc[:, spectra.columns != 'covariance'],

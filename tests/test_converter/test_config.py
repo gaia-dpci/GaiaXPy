@@ -1,20 +1,14 @@
 import unittest
-from configparser import ConfigParser
-from os import path
 
 import pandas as pd
 
-from gaiaxpy.config.paths import config_path
+from gaiaxpy.config.paths import optimised_bases_file
 from gaiaxpy.converter import config
-
-configparser = ConfigParser()
-configparser.read(path.join(config_path, 'config.ini'))
-config_file = path.join(config_path, configparser.get('converter', 'optimised_bases'))
 
 columns = ['uniqueId', 'dimension', 'range', 'normalizedRange', 'transformedSetDimension', 'transformationMatrix']
 
-parsed_config = config.parse_configuration_file(config_file, columns)
-loaded_config = config.load_config(config_file)  # id 7 not in the config file
+parsed_config = config.parse_configuration_file(optimised_bases_file, columns)
+loaded_config = config.load_config(optimised_bases_file)  # id 7 not in the config file
 
 not_empty_df = config.get_config(parsed_config, 57)  # id 57 in the config file
 empty_df = config.get_config(parsed_config, 7)

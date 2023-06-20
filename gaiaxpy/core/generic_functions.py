@@ -21,8 +21,8 @@ from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 
 
 def _get_built_in_systems() -> list:
-    f = open(join(config_path, 'available_systems.txt'), 'r')
-    return f.read().splitlines()
+    av_sys = open(join(config_path, 'available_systems.txt'), 'r')
+    return av_sys.read().splitlines()
 
 
 def _is_built_in_system(system):

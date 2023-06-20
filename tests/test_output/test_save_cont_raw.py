@@ -9,11 +9,9 @@ from astropy.table import Table
 
 from gaiaxpy import calibrate, convert, generate, PhotometricSystem, find_fast, find_extrema, find_lines
 from gaiaxpy.file_parser.parse_generic import GenericParser
-from tests.files.paths import files_path, solution_path, output_path
+from tests.files.paths import solution_path, output_path, mean_spectrum_csv_file
 
 _rtol, _atol = 1e-10, 1e-10
-
-mean_spectrum = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
 
 
 def _parse_output_fits(fits_file, _array_columns=None):
@@ -60,13 +58,13 @@ def run_output_test(function, filename, output_format, sampling=None, phot_syste
     This class generates GaiaXPy output files. Then, it compares them with the output solution files using filecmp.
     """
     if sampling is not None:
-        function(mean_spectrum, sampling=sampling, output_path=output_path, output_file=filename,
+        function(mean_spectrum_csv_file, sampling=sampling, output_path=output_path, output_file=filename,
                  output_format=output_format)
     if phot_systems is not None:
-        function(mean_spectrum, photometric_system=phot_systems, output_path=output_path, output_file=filename,
+        function(mean_spectrum_csv_file, photometric_system=phot_systems, output_path=output_path, output_file=filename,
                  output_format=output_format)
     elif sampling is None and phot_systems is None:
-        function(mean_spectrum, output_path=output_path, output_file=filename, output_format=output_format)
+        function(mean_spectrum_csv_file, output_path=output_path, output_file=filename, output_format=output_format)
     current_file = f'{filename}.{output_format}'
     compare_frames(join(output_path, current_file), join(solution_path, current_file), extension=output_format,
                    function_name=function.__name__)

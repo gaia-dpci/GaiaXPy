@@ -5,11 +5,9 @@ import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import generate, apply_error_correction, PhotometricSystem
-from tests.files.paths import files_path
+from tests.files.paths import files_path, mean_spectrum_csv_file
 
 # Files to test parse
-continuous_path = join(files_path, 'xp_continuous')
-correlation_csv_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 corrected_errors_solution_path = join(files_path, 'error_correction_solution', 'corrected_errors_solution.csv')
 
 _ertol, _eatol = 1e-24, 1e-24
@@ -20,7 +18,7 @@ class TestErrorCorrection(unittest.TestCase):
 
     def test_single_phot_object(self):
         phot_system = PhotometricSystem.Gaia_DR3_Vega
-        synthetic_photometry = generate(correlation_csv_file, photometric_system=phot_system, save_file=False)
+        synthetic_photometry = generate(mean_spectrum_csv_file, photometric_system=phot_system, save_file=False)
         corrected_synth_phot = apply_error_correction(synthetic_photometry, save_file=False)
         corrected_errors_df = pd.read_csv(corrected_errors_solution_path, usecols=corrected_synth_phot.columns)
         error_columns = [column for column in corrected_errors_df.columns if 'error' in column]
@@ -32,13 +30,13 @@ class TestErrorCorrection(unittest.TestCase):
 
     def test_error_correction_no_vega(self):
         phot_list = [PhotometricSystem.Euclid_VIS, PhotometricSystem.HST_HUGS_Std]
-        multi_synthetic_photometry = generate(correlation_csv_file, photometric_system=phot_list, save_file=False)
+        multi_synthetic_photometry = generate(mean_spectrum_csv_file, photometric_system=phot_list, save_file=False)
         with self.assertRaises(ValueError):
             apply_error_correction(multi_synthetic_photometry, save_file=False)
 
     def test_error_correction(self):
         phot_list = [PhotometricSystem.Euclid_VIS, PhotometricSystem.Gaia_DR3_Vega, PhotometricSystem.HST_HUGS_Std]
-        multi_synthetic_photometry = generate(correlation_csv_file, photometric_system=phot_list, save_file=False)
+        multi_synthetic_photometry = generate(mean_spectrum_csv_file, photometric_system=phot_list, save_file=False)
         corrected_multiphotometry = apply_error_correction(multi_synthetic_photometry, save_file=False)
         # Load solution
         error_columns = [column for column in corrected_multiphotometry.columns if 'error' in column]
@@ -52,7 +50,7 @@ class TestErrorCorrection(unittest.TestCase):
     def test_error_correction_system_with_no_table(self):
         # Here the Halpha system has got no correction table
         phot_list = [PhotometricSystem.Euclid_VIS, PhotometricSystem.Gaia_DR3_Vega, PhotometricSystem.Halpha_Custom_AB]
-        multi_synthetic_photometry = generate(correlation_csv_file, photometric_system=phot_list, save_file=False)
+        multi_synthetic_photometry = generate(mean_spectrum_csv_file, photometric_system=phot_list, save_file=False)
         # Extract Halpha columns from the original photometry
         halpha_columns = [column for column in multi_synthetic_photometry.columns if
                           column.startswith('HalphaCustomAb_')]

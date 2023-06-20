@@ -5,15 +5,8 @@ import pandas as pd
 
 from gaiaxpy.generator.generator import generate
 from gaiaxpy.generator.photometric_system import PhotometricSystem
-from tests.files.paths import files_path
-
-# Files to test parse
-continuous_path = path.join(files_path, 'xp_continuous')
-covariance_avro_file = path.join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
-correlation_csv_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
-correlation_fits_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
-correlation_xml_plain_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
-correlation_xml_file = path.join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
+from tests.files.paths import mean_spectrum_csv_file, mean_spectrum_avro_file, mean_spectrum_fits_file,\
+    mean_spectrum_xml_file
 
 photometric_system_johnson = PhotometricSystem.JKC
 
@@ -23,11 +16,8 @@ class TestSingleSyntheticPhotometryGeneratorCSV(unittest.TestCase):
     def test_generate_johnson(self):
         photometric_system = PhotometricSystem.JKC
         label = photometric_system.get_system_label()
-        synthetic_photometry = generate(
-            correlation_csv_file,
-            photometric_system=photometric_system,
-            output_format='.csv',
-            save_file=False)
+        synthetic_photometry = generate(mean_spectrum_csv_file, photometric_system=photometric_system,
+                                        output_format='.csv', save_file=False)
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
         self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
@@ -47,11 +37,8 @@ class TestSingleSyntheticPhotometryGeneratorFITS(unittest.TestCase):
     def test_generate_johnson(self):
         photometric_system = PhotometricSystem.JKC
         label = photometric_system.get_system_label()
-        synthetic_photometry = generate(
-            correlation_fits_file,
-            photometric_system=photometric_system,
-            output_format='.csv',
-            save_file=False)
+        synthetic_photometry = generate(mean_spectrum_fits_file, photometric_system=photometric_system,
+                                        output_format='.csv', save_file=False)
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
         self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
@@ -70,11 +57,8 @@ class TestSyntheticPhotometryGeneratorXML(unittest.TestCase):
     def test_generate_sdss_doi(self):
         photometric_system = PhotometricSystem.SDSS
         label = photometric_system.get_system_label()
-        synthetic_photometry = generate(
-            correlation_xml_file,
-            photometric_system=photometric_system,
-            output_format='.csv',
-            save_file=False)
+        synthetic_photometry = generate(mean_spectrum_xml_file, photometric_system=photometric_system,
+                                        output_format='.csv', save_file=False)
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
         self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
@@ -93,18 +77,13 @@ class TestSyntheticPhotometryGeneratorAVRO(unittest.TestCase):
     def test_generate_sdss_type(self):
         photometric_system = PhotometricSystem.SDSS
         label = photometric_system.get_system_label()
-        synthetic_photometry = generate(
-            covariance_avro_file,
-            photometric_system=photometric_system,
-            output_format='avro',
-            save_file=False)
+        synthetic_photometry = generate(mean_spectrum_avro_file, photometric_system=photometric_system,
+                                        output_format='avro', save_file=False)
         self.assertIsInstance(synthetic_photometry, pd.DataFrame)
         self.assertEqual(len(synthetic_photometry), 2)
-        self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
-                                                               f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r',
-                                                               f'{label}_mag_i',
-                                                               f'{label}_mag_z', f'{label}_flux_u', f'{label}_flux_g',
-                                                               f'{label}_flux_r',
+        self.assertTrue(list(synthetic_photometry.columns) == ['source_id', f'{label}_mag_u', f'{label}_mag_g',
+                                                               f'{label}_mag_r', f'{label}_mag_i', f'{label}_mag_z',
+                                                               f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r',
                                                                f'{label}_flux_i', f'{label}_flux_z',
                                                                f'{label}_flux_error_u', f'{label}_flux_error_g',
                                                                f'{label}_flux_error_r', f'{label}_flux_error_i',

@@ -13,9 +13,8 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from tests.files.paths import files_path
-from tests.test_calibrator.calibrator_paths import mean_spectrum_csv, mean_spectrum_fits, mean_spectrum_xml, \
-    mean_spectrum_xml_plain
+from tests.files.paths import files_path, mean_spectrum_fits_file, mean_spectrum_csv_file, mean_spectrum_xml_file, \
+    mean_spectrum_xml_plain_file
 from tests.utils.utils import pos_file_to_array
 
 # TODO: Add tests for AVRO format
@@ -32,9 +31,9 @@ xp_design_matrices = load_xpsampling_from_xml(bp_model=bp_model)
 calibrator_sol_path = join(files_path, 'calibrator_solution')
 
 # Calibrate data in files
-spectra_df_fits, _ = calibrate(mean_spectrum_fits, save_file=False, truncation=True)
-spectra_df_xml, _ = calibrate(mean_spectrum_xml, save_file=False, truncation=True)
-spectra_df_xml_plain, _ = calibrate(mean_spectrum_xml_plain, save_file=False, truncation=True)
+spectra_df_fits, _ = calibrate(mean_spectrum_fits_file, save_file=False, truncation=True)
+spectra_df_xml, _ = calibrate(mean_spectrum_xml_file, save_file=False, truncation=True)
+spectra_df_xml_plain, _ = calibrate(mean_spectrum_xml_plain_file, save_file=False, truncation=True)
 
 # Generate converters
 columns_to_parse = ['flux', 'flux_error']
@@ -52,7 +51,7 @@ class TestCalibratorTruncation(unittest.TestCase):
 
     def test_create_spectrum(self):
         # Read mean Spectrum
-        parsed_spectrum_file, extension = parser._parse(mean_spectrum_csv)
+        parsed_spectrum_file, extension = parser._parse(mean_spectrum_csv_file)
         # Create sampled basis functions
         sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[band])
                               for band in BANDS}
@@ -62,7 +61,7 @@ class TestCalibratorTruncation(unittest.TestCase):
 
     def test_calibrate_both_bands_default_calibration_model_csv(self):
         # Default sampling and default calibration sampling
-        spectra_df_csv, positions = calibrate(mean_spectrum_csv, truncation=True, save_file=False)
+        spectra_df_csv, positions = calibrate(mean_spectrum_csv_file, truncation=True, save_file=False)
         npt.assert_array_equal(positions, solution_default_sampling)
         pdt.assert_frame_equal(spectra_df_csv, truncation_default_solution_df, rtol=_rtol, atol=_atol)
         pdt.assert_frame_equal(spectra_df_fits, truncation_default_solution_df, rtol=_rtol, atol=_atol)

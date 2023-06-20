@@ -7,6 +7,13 @@ solution_path = join(files_path, 'output_solution')  # Read the expected solutio
 
 # Load XP continuous file
 continuous_path = join(files_path, 'xp_continuous')
+# Regular mean spectra files
+mean_spectrum_avro_file = join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
+mean_spectrum_csv_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
+mean_spectrum_ecsv_file = join(continuous_path, 'XP_CONTINUOUS_RAW.ecsv')
+mean_spectrum_fits_file = join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
+mean_spectrum_xml_file = join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
+mean_spectrum_xml_plain_file = join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 # Three sources including the one without BP
 with_missing_bp_csv_file = join(continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
 with_missing_bp_ecsv_file = join(continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.ecsv')

@@ -5,20 +5,16 @@ import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import find_extrema, find_fast, find_lines
-from tests.files.paths import files_path, with_missing_bp_csv_file
+from tests.files.paths import files_path, with_missing_bp_csv_file, mean_spectrum_csv_file
 from tests.utils.utils import missing_bp_source_id, get_converters
-
-# Input file with xp continuous spectra
-continuous_path = join(files_path, 'xp_continuous')
-input_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 
 solution_folder = 'linefinder_files'
 found_extrema_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_output.csv'))
 found_extrema_trunc_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_trunc_output.csv'))
 found_extrema_no_bp_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_no_bp_output.csv'))
 
-found_extrema = find_extrema(input_file, save_file=False)
-found_extrema_trunc = find_extrema(input_file, truncation=True, save_file=False)
+found_extrema = find_extrema(mean_spectrum_csv_file, save_file=False)
+found_extrema_trunc = find_extrema(mean_spectrum_csv_file, truncation=True, save_file=False)
 found_extrema_no_bp = find_extrema(with_missing_bp_csv_file, save_file=False)
 
 isolated_solution = found_extrema_no_bp_real[found_extrema_no_bp_real['source_id'] ==
@@ -32,12 +28,8 @@ found_fast_trunc_real = pd.read_csv(join(files_path, solution_folder, 'fastfinde
 found_fast_no_bp_real = pd.read_csv(join(files_path, solution_folder, 'fastfinder_no_bp_output.csv'),
                                     converters=get_converters(['extrema_bp', 'extrema_rp']))
 
-# Input file with xp continuous spectra
-continuous_path = join(files_path, 'xp_continuous')
-input_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
-
-found_fast = find_fast(input_file, save_file=False)
-found_fast_trunc = find_fast(input_file, truncation=True, save_file=False)
+found_fast = find_fast(mean_spectrum_csv_file, save_file=False)
+found_fast_trunc = find_fast(mean_spectrum_csv_file, truncation=True, save_file=False)
 found_fast_no_bp = find_fast(with_missing_bp_csv_file, save_file=False)
 
 isolated_missing_bp_solution_fast = found_fast_no_bp_real[found_fast_no_bp_real['source_id'] ==
@@ -123,7 +115,10 @@ class TestLineFinderArchive(unittest.TestCase):
         source_ids = ('5853498713190525696', str(missing_bp_source_id), '5762406957886626816')
         query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN {source_ids}"
         with_missing_output = find_lines(query, save_file=False)
-        pdt.assert_frame_equal(with_missing_output, found_lines_no_bp_real.sort_values('source_id', ignore_index=True))
+        with_missing_output = with_missing_output.sort_values(by=['source_id', 'line_name'], ignore_index=True)
+        found_lines_no_bp_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_no_bp_output.csv'))
+        found_lines_no_bp_real = found_lines_no_bp_real.sort_values(by=['source_id', 'line_name'], ignore_index=True)
+        pdt.assert_frame_equal(with_missing_output, found_lines_no_bp_real)
 
     def test_query_input_isolated_missing_bp(self):
         isolated_output = find_lines(f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN"

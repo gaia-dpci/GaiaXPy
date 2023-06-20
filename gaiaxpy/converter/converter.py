@@ -8,7 +8,7 @@ from configparser import ConfigParser
 from numbers import Number
 from os import path
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 import numpy as np
 import pandas as pd
@@ -28,7 +28,7 @@ from .config import get_config, load_config
 __FUNCTION_KEY = 'converter'
 
 
-def convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.linspace(0, 60, 600),
+def convert(input_object: Union[list, Path, str], sampling: Optional[np.ndarray] = np.linspace(0, 60, 600),
             truncation: bool = False, with_correlation: bool = False, output_path: Union[Path, str] = '.',
             output_file: str = 'output_spectra', output_format: str = None, save_file: bool = True,
             username: str = None, password: str = None) -> (pd.DataFrame, np.ndarray):

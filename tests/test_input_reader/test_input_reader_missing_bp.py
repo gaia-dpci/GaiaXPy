@@ -9,7 +9,8 @@ import pandas.testing as pdt
 from gaiaxpy import convert
 from gaiaxpy.core.generic_variables import INTERNAL_CONT_COLS
 from gaiaxpy.input_reader.input_reader import InputReader
-from tests.files.paths import files_path
+from tests.files.paths import files_path, with_missing_bp_csv_file, with_missing_bp_ecsv_file, \
+    with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file
 from tests.utils.utils import parse_matrices
 
 solution_file = join(files_path, 'input_reader_solution.csv')
@@ -43,23 +44,20 @@ def check_special_columns(columns, data, solution):
 class TestInputReaderMissingBPFile(unittest.TestCase):
 
     def test_csv_file_missing_bp(self):
-        file = join(xp_continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
-        parsed_data_file, _ = InputReader(file, convert).read()
+        parsed_data_file, _ = InputReader(with_missing_bp_csv_file, convert).read()
         # Temporarily opt for removing cov matrices before comparing
         parsed_data_file = parsed_data_file.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
         pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol)
 
     def test_ecsv_file_missing_bp(self):
-        file = join(xp_continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.ecsv')
-        parsed_data_file, _ = InputReader(file, convert).read()
+        parsed_data_file, _ = InputReader(with_missing_bp_ecsv_file, convert).read()
         # Temporarily opt for removing cov matrices before comparing
         parsed_data_file = parsed_data_file.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
         pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol)
 
     def test_fits_file_missing_bp(self):
         solution_df = pd.read_csv(solution_file, converters=array_converters, usecols=INTERNAL_CONT_COLS)
-        file = join(xp_continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.fits')
-        parsed_data_file, _ = InputReader(file, convert).read()
+        parsed_data_file, _ = InputReader(with_missing_bp_fits_file, convert).read()
         columns_to_drop = ['bp_coefficient_errors', 'bp_coefficient_correlations', 'rp_coefficient_errors']
         check_special_columns(columns_to_drop, parsed_data_file, solution_df)
         parsed_data_file = parsed_data_file.drop(columns=columns_to_drop)
@@ -70,8 +68,7 @@ class TestInputReaderMissingBPFile(unittest.TestCase):
 
     def test_xml_file_missing_bp(self):
         solution_df = pd.read_csv(solution_file, converters=array_converters, usecols=INTERNAL_CONT_COLS)
-        file = join(xp_continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.xml')
-        parsed_data_file, _ = InputReader(file, convert).read()
+        parsed_data_file, _ = InputReader(with_missing_bp_xml_file, convert).read()
         columns_to_drop = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations',
                            'rp_coefficient_errors']
         check_special_columns(columns_to_drop, parsed_data_file, solution_df)
@@ -82,8 +79,7 @@ class TestInputReaderMissingBPFile(unittest.TestCase):
         pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False)
 
     def test_xml_plain_file_missing_bp(self):
-        file = join(xp_continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP_plain.xml')
-        parsed_data_file, _ = InputReader(file, convert).read()
+        parsed_data_file, _ = InputReader(with_missing_bp_xml_plain_file, convert).read()
         # Temporarily opt for removing cov matrices before comparing
         parsed_data_file = parsed_data_file.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
         pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False)

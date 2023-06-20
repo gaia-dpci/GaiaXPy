@@ -7,22 +7,18 @@ import pandas.testing as pdt
 from gaiaxpy.linefinder.linefinder import find_extrema
 from tests.files.paths import files_path, missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, \
     missing_bp_xml_file, missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, \
-    with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file
+    with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file, mean_spectrum_csv_file
 from tests.utils.utils import missing_bp_source_id
 
 _rtol, _atol = 1e-7, 1e-7
-
-# Input file with xp continuous spectra
-continuous_path = join(files_path, 'xp_continuous')
-input_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
 
 solution_folder = 'linefinder_files'
 found_extrema_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_output.csv'))
 found_extrema_trunc_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_trunc_output.csv'))
 found_extrema_no_bp_real = pd.read_csv(join(files_path, solution_folder, 'extremafinder_no_bp_output.csv'))
 
-found_extrema = find_extrema(input_file, save_file=False)
-found_extrema_trunc = find_extrema(input_file, truncation=True, save_file=False)
+found_extrema = find_extrema(mean_spectrum_csv_file, save_file=False)
+found_extrema_trunc = find_extrema(mean_spectrum_csv_file, truncation=True, save_file=False)
 found_extrema_no_bp = find_extrema(with_missing_bp_csv_file, save_file=False)
 
 isolated_solution = found_extrema_no_bp_real[found_extrema_no_bp_real['source_id'] ==

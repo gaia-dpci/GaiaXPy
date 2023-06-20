@@ -5,9 +5,9 @@ import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy.linefinder.linefinder import find_fast
-from tests.files.paths import files_path, missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file,\
-    missing_bp_xml_file, missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file,\
-    with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file
+from tests.files.paths import files_path, missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, \
+    missing_bp_xml_file, missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, \
+    with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file, mean_spectrum_csv_file
 from tests.utils.utils import get_converters, missing_bp_source_id
 
 _rtol, _atol = 1e-7, 1e-7
@@ -20,12 +20,8 @@ found_fast_trunc_real = pd.read_csv(join(files_path, solution_folder, 'fastfinde
 found_fast_no_bp_real = pd.read_csv(join(files_path, solution_folder, 'fastfinder_no_bp_output.csv'),
                                     converters=get_converters(['extrema_bp', 'extrema_rp']))
 
-# Input file with xp continuous spectra
-continuous_path = join(files_path, 'xp_continuous')
-input_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
-
-found_fast = find_fast(input_file, save_file=False)
-found_fast_trunc = find_fast(input_file, truncation=True, save_file=False)
+found_fast = find_fast(mean_spectrum_csv_file, save_file=False)
+found_fast_trunc = find_fast(mean_spectrum_csv_file, truncation=True, save_file=False)
 found_fast_no_bp = find_fast(with_missing_bp_csv_file, save_file=False)
 
 isolated_missing_bp_solution = found_fast_no_bp_real[found_fast_no_bp_real['source_id'] ==

@@ -7,7 +7,7 @@ import numpy.testing as npt
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.core.generic_functions import _get_system_label, _extract_systems_from_data, validate_pwl_sampling, \
     array_to_symmetric_matrix, correlation_to_covariance, get_matrix_size_from_lower_triangle
-from tests.files.paths import files_path
+from tests.files.paths import files_path, mean_spectrum_fits_file
 
 array = np.array([1, 2, 3, 4, 5, 6])
 size = 3
@@ -44,8 +44,7 @@ class TestGenericFunctions(unittest.TestCase):
         expected_output = ['Wfirst', 'HstWfc3uvis', 'GaiaDr3Vega', 'ElsCustomW09S2']
         phot_list = [PhotometricSystem.WFIRST, PhotometricSystem.HST_WFC3UVIS, PhotometricSystem.Gaia_DR3_Vega,
                      PhotometricSystem.Els_Custom_W09_S2]
-        f = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.fits')
-        photometry = generate(f, photometric_system=phot_list, save_file=False)
+        photometry = generate(mean_spectrum_fits_file, photometric_system=phot_list, save_file=False)
         self.assertListEqual(_extract_systems_from_data(photometry), expected_output)
         self.assertListEqual(_extract_systems_from_data(photometry, photometric_system=phot_list), expected_output)
 

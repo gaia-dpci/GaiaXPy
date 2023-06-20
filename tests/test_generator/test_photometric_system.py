@@ -10,7 +10,7 @@ from numpy import ndarray
 from gaiaxpy import generate
 from gaiaxpy.core.generic_functions import _get_built_in_systems
 from gaiaxpy.generator.photometric_system import PhotometricSystem, load_additional_systems, remove_additional_systems
-from tests.files.paths import files_path
+from tests.files.paths import files_path, with_missing_bp_ecsv_file
 
 
 def get_system_by_name(lst, name):
@@ -100,8 +100,7 @@ class TestAdditionalSystems(unittest.TestCase):
         self.assertEqual(len(phot_system_list) + 3, len(new_phot_systems))
         ps = [_PhotometricSystem[s] for s in ['Pristine', 'SDSS', 'PanSTARRS1_Std', 'USER_Panstarrs1Std', 'USER_Sdss',
                                               'USER_Pristine']]
-        output = generate(join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.ecsv'),
-                          photometric_system=ps, save_file=False)
+        output = generate(with_missing_bp_ecsv_file, photometric_system=ps, save_file=False)
         built_in_columns = [c for c in output.columns if not c.startswith('USER')]
         built_in_columns.remove('source_id')
         for column in built_in_columns:

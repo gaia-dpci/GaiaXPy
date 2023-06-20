@@ -5,20 +5,17 @@ import numpy as np
 
 from gaiaxpy.linefinder.linefinder import find_lines, find_extrema
 from gaiaxpy.linefinder.plotter import plot_spectra_with_lines
-from tests.files.paths import files_path, output_path
-
-continuous_path = path.join(files_path, 'xp_continuous')
-mean_spectrum_csv = path.join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
+from tests.files.paths import files_path, output_path, mean_spectrum_csv_file
 
 
 class TestPlotter(unittest.TestCase):
     # For visual inspection
 
     def test_lines_plotter(self):
-        find_lines(mean_spectrum_csv, plot_spectra=True, save_file=False)
+        find_lines(mean_spectrum_csv_file, plot_spectra=True, save_file=False)
 
     def test_extrema_plotter(self):
-        find_extrema(mean_spectrum_csv, plot_spectra=True, save_file=False)
+        find_extrema(mean_spectrum_csv_file, plot_spectra=True, save_file=False)
 
 
 class TestPlotterMethod(unittest.TestCase):

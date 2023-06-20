@@ -14,9 +14,9 @@ from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousPars
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-from tests.test_converter.converter_paths import mean_spectrum_csv_file, mean_spectrum_csv_with_missing_int6, \
-    ref_sampled_csv, ref_sampled_truncated_csv, missing_band_sampling_solution, optimised_bases_df, \
-    converter_csv_solution_0_60_481_df
+from tests.files.paths import missing_bp_csv_file, mean_spectrum_csv_file
+from tests.test_converter.converter_paths import ref_sampled_csv, ref_sampled_truncated_csv,\
+    missing_band_sampling_solution, optimised_bases_df, converter_csv_solution_0_60_481_df
 from tests.utils.utils import get_spectrum_with_source_id_and_xp
 
 # Parsers
@@ -119,7 +119,7 @@ class TestConverterSamplingRange(unittest.TestCase):
 class TestConverterMissingBand(unittest.TestCase):
 
     def test_missing_band(self):
-        converted_spectra, sampling = convert(mean_spectrum_csv_with_missing_int6, save_file=False)
+        converted_spectra, sampling = convert(missing_bp_csv_file, save_file=False)
         npt.assert_array_equal(sampling, np.linspace(0, 60, 600))
         converted_spectra = converted_spectra.iloc[0]
         # Read solution

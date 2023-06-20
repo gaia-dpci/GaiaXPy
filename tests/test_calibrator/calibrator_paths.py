@@ -12,24 +12,6 @@ solution_converters = dict([(column, lambda x: str_to_array(x)) for column in ['
 
 """
 ============================
-  Regular continuous files
-============================
-"""
-mean_spectrum_avro = join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
-mean_spectrum_csv = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
-mean_spectrum_fits = join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
-mean_spectrum_xml = join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
-mean_spectrum_xml_plain = join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
-
-"""
-====================================
-  Continuous files with missing BP
-====================================
-"""
-mean_spectrum_csv_with_missing = join(continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
-
-"""
-============================
   Sampling solutions
 ============================
 """

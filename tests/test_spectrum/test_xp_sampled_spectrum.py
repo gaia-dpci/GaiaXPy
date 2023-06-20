@@ -15,17 +15,14 @@ from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from gaiaxpy.spectrum.xp_spectrum import XpSpectrum
-from tests.files.paths import files_path
+from tests.files.paths import mean_spectrum_csv_file
 
 configparser = ConfigParser()
 configparser.read(path.join(config_path, 'config.ini'))
 config_file = path.join(config_path, configparser.get('converter', 'optimised_bases'))
 
-# Files to test parse
-csv_file_with_correlation = path.join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW.csv')
-
 parser = InternalContinuousParser()
-correlation_parsed_file, _ = parser._parse(csv_file_with_correlation)
+correlation_parsed_file, _ = parser._parse(mean_spectrum_csv_file)
 
 parsed_config = load_config(config_file)
 
@@ -50,21 +47,13 @@ class TestXpSampledSpectrum(unittest.TestCase):
             correlation_matrix = row[f'{band}_coefficient_correlations'][0]
             parameters = row[f'{band}_coefficients'][0]
             standard_deviation = row[f'{band}_standard_deviation'][0]
-            design_matrix = design_matrices.get(
-                row[f'{band}_basis_function_id'][0])
-            covariance_matrix = _correlation_to_covariance_dr3int5(
-                correlation_matrix,
-                row[f'{band}_coefficient_errors'][0],
-                row[f'{band}_standard_deviation'][0])
-            continuous_spectrum = XpContinuousSpectrum(row['source_id'][0],
-                                                       band,
-                                                       parameters,
-                                                       covariance_matrix,
+            design_matrix = design_matrices.get(row[f'{band}_basis_function_id'][0])
+            covariance_matrix = _correlation_to_covariance_dr3int5(correlation_matrix,
+                                                                   row[f'{band}_coefficient_errors'][0],
+                                                                   row[f'{band}_standard_deviation'][0])
+            continuous_spectrum = XpContinuousSpectrum(row['source_id'][0], band, parameters, covariance_matrix,
                                                        standard_deviation)
-
-            spectrum = XpSampledSpectrum.from_continuous(
-                continuous_spectrum,
-                design_matrix)
+            spectrum = XpSampledSpectrum.from_continuous(continuous_spectrum, design_matrix)
             self.assertIsInstance(spectrum, XpSampledSpectrum)
             self.assertIsInstance(spectrum, SampledSpectrum)
             self.assertIsInstance(spectrum, XpSpectrum)

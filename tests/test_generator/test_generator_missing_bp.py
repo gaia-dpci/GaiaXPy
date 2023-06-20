@@ -7,7 +7,9 @@ import pandas.testing as pdt
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.input_reader.input_reader import InputReader
-from tests.files.paths import files_path, missing_bp_csv_file, with_missing_bp_csv_file
+from tests.files.paths import files_path, missing_bp_csv_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, \
+    with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file, missing_bp_fits_file, \
+    missing_bp_xml_file, missing_bp_ecsv_file, missing_bp_xml_plain_file
 from tests.utils.utils import missing_bp_source_id
 
 _rtol, _atol = 1e-7, 1e-7
@@ -38,53 +40,48 @@ phot_systems = [PhotometricSystem.Els_Custom_W09_S2, PhotometricSystem.Euclid_VI
 class TestGeneratorMissingBPFileInput(unittest.TestCase):
 
     def test_generate_missing_bp_no_correction_csv(self):
-        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
-        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        photometry_df = generate(with_missing_bp_csv_file, photometric_system=phot_systems, save_file=False)
         pdt.assert_frame_equal(photometry_df, with_missing_solution_df_no_corr, rtol=_rtol, atol=_atol)
 
     def test_generate_missing_bp_with_correction_csv_isolated(self):
-        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.csv')
-        photometry_df = generate(file, photometric_system=phot_systems, error_correction=True, save_file=False)
+        photometry_df = generate(missing_bp_csv_file, photometric_system=phot_systems, error_correction=True,
+                                 save_file=False)
         pdt.assert_frame_equal(photometry_df, missing_solution_df_with_corr, rtol=_rtol, atol=_atol)
 
     def test_generate_missing_bp_no_correction_ecsv(self):
-        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.ecsv')
-        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        photometry_df = generate(with_missing_bp_ecsv_file, photometric_system=phot_systems, save_file=False)
         pdt.assert_frame_equal(photometry_df, with_missing_solution_df_no_corr, rtol=_rtol, atol=_atol)
 
     def test_generate_missing_bp_with_correction_ecsv_isolated(self):
-        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.ecsv')
-        photometry_df = generate(file, photometric_system=phot_systems, error_correction=True, save_file=False)
+        photometry_df = generate(missing_bp_ecsv_file, photometric_system=phot_systems, error_correction=True,
+                                 save_file=False)
         pdt.assert_frame_equal(photometry_df, missing_solution_df_with_corr, rtol=_rtol, atol=_atol)
 
     def test_generate_missing_bp_no_correction_fits(self):
-        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.fits')
-        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        photometry_df = generate(with_missing_bp_fits_file, photometric_system=phot_systems, save_file=False)
         pdt.assert_frame_equal(photometry_df, with_missing_solution_df_no_corr, rtol=_rtol, atol=_atol)
 
     def test_generate_missing_bp_with_correction_fits_isolated(self):
-        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.fits')
-        photometry_df = generate(file, photometric_system=phot_systems, error_correction=True, save_file=False)
+        photometry_df = generate(missing_bp_fits_file, photometric_system=phot_systems, error_correction=True,
+                                 save_file=False)
         pdt.assert_frame_equal(photometry_df, missing_solution_df_with_corr, rtol=_rtol, atol=_atol)
 
     def test_generate_missing_bp_no_correction_bin_xml(self):
-        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP.xml')
-        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        photometry_df = generate(with_missing_bp_xml_file, photometric_system=phot_systems, save_file=False)
         pdt.assert_frame_equal(photometry_df, with_missing_solution_df_no_corr, rtol=_rtol, atol=_atol)
 
     def test_generate_missing_bp_with_correction_bin_xml_isolated(self):
-        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.xml')
-        photometry_df = generate(file, photometric_system=phot_systems, error_correction=True, save_file=False)
+        photometry_df = generate(missing_bp_xml_file, photometric_system=phot_systems, error_correction=True,
+                                 save_file=False)
         pdt.assert_frame_equal(photometry_df, missing_solution_df_with_corr, rtol=_rtol, atol=_atol)
 
     def test_generate_missing_bp_no_correction_plain_xml(self):
-        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_with_missing_BP_plain.xml')
-        photometry_df = generate(file, photometric_system=phot_systems, save_file=False)
+        photometry_df = generate(with_missing_bp_xml_plain_file, photometric_system=phot_systems, save_file=False)
         pdt.assert_frame_equal(photometry_df, with_missing_solution_df_no_corr, rtol=_rtol, atol=_atol)
 
     def test_generate_missing_bp_with_correction_plain_xml_isolated(self):
-        file = join(files_path, 'xp_continuous', 'XP_CONTINUOUS_RAW_missing_BP_plain_dr3int6.xml')
-        photometry_df = generate(file, photometric_system=phot_systems, error_correction=True, save_file=False)
+        photometry_df = generate(missing_bp_xml_plain_file, photometric_system=phot_systems, error_correction=True,
+                                 save_file=False)
         pdt.assert_frame_equal(photometry_df, missing_solution_df_with_corr, rtol=_rtol, atol=_atol)
 
 

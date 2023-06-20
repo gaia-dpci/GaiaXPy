@@ -15,28 +15,12 @@ converter_sol_path = join(files_path, 'converter_solution')
 Regular continuous files
 ==========================
 """
-mean_spectrum_avro_file = join(continuous_path, 'MeanSpectrumSolutionWithCov.avro')
-mean_spectrum_csv_file = join(continuous_path, 'XP_CONTINUOUS_RAW.csv')
-mean_spectrum_fits_file = join(continuous_path, 'XP_CONTINUOUS_RAW.fits')
-mean_spectrum_xml_file = join(continuous_path, 'XP_CONTINUOUS_RAW.xml')
-mean_spectrum_xml_plain_file = join(continuous_path, 'XP_CONTINUOUS_RAW_plain.xml')
 converter_avro_solution_0_60_481_df = pd.read_csv(join(converter_sol_path, 'converter_avro_solution_0_60_481.csv'),
                                                   float_precision='high', converters=dict([(
         column, lambda x: str_to_array(x)) for column in ['flux', 'flux_error']]))
 converter_csv_solution_0_60_481_df = pd.read_csv(join(converter_sol_path, 'converter_solution_0_60_481.csv'),
                                                  float_precision='high', converters=dict([(
         column, lambda x: str_to_array(x)) for column in ['flux', 'flux_error']]))
-
-"""
-====================================
-  Continuous files with missing BP
-====================================
-"""
-mean_spectrum_csv_file_with_missing = join(continuous_path, 'XP_CONTINUOUS_RAW_with_missing_BP.csv')
-mean_spectrum_csv_with_missing_int6 = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.csv')
-mean_spectrum_fits_with_missing_int6 = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.fits')
-mean_spectrum_xml_with_missing_int6 = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.xml')
-mean_spectrum_xml_plain_with_missing_int6 = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_plain_dr3int6.xml')
 
 """
 ============================

@@ -33,17 +33,14 @@ class TestConfig(unittest.TestCase):
 
     def test_load_xpoffset(self):
         # Standard system has got an offset file
-        system = InternalPhotometricSystem('JKC_Std')
-        xp_offset = system.offsets
+        xp_offset = InternalPhotometricSystem('JKC_Std').offsets
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.array([2.44819e-19, 4.62320e-20, 1.81103e-20, 2.15027e-20, 1.73864e-20]))
 
-        system = InternalPhotometricSystem('SDSS_Std')
-        xp_offset = system.offsets
+        xp_offset = InternalPhotometricSystem('SDSS_Std').offsets
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.array([1.05000e-31, 2.47850e-32, 3.49926e-32, 3.80023e-32, 3.23519e-32]))
 
-        system = InternalPhotometricSystem('Stromgren_Std')
-        xp_offset = system.offsets
+        xp_offset = InternalPhotometricSystem('Stromgren_Std').offsets
         self.assertIsInstance(xp_offset, ndarray)
         npt.assert_array_equal(xp_offset, np.zeros(3))

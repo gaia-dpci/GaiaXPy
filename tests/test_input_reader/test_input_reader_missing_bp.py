@@ -13,16 +13,17 @@ from tests.files.paths import files_path, with_missing_bp_csv_file, with_missing
     with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file
 from tests.utils.utils import parse_matrices
 
-solution_file = join(files_path, 'input_reader_solution.csv')
-solution_array_columns = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations', 'rp_coefficients',
+input_reader_solution_path = join(files_path, 'input_reader_solution.csv')
+ir_solution_array_columns = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations', 'rp_coefficients',
                           'rp_coefficient_errors', 'rp_coefficient_correlations']
-masked_constant_columns = ['bp_basis_function_id', 'bp_n_parameters', 'bp_n_relevant_bases']
+ir_masked_constant_columns = ['bp_basis_function_id', 'bp_n_parameters', 'bp_n_relevant_bases']
 
-array_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
+ir_array_converters = dict([(column, lambda x: parse_matrices(x)) for column in ir_solution_array_columns])
 
-solution_df = pd.read_csv(solution_file, converters=array_converters, usecols=INTERNAL_CONT_COLS)
-for column in masked_constant_columns:
-    solution_df[column] = solution_df[column].astype('Int64')
+input_reader_solution_df = pd.read_csv(input_reader_solution_path, converters=ir_array_converters,
+                                       usecols=INTERNAL_CONT_COLS)
+for column in ir_masked_constant_columns:
+    input_reader_solution_df[column] = input_reader_solution_df[column].astype('Int64')
 
 _rtol, _atol = 1e-7, 1e-7
 
@@ -45,16 +46,16 @@ class TestInputReaderMissingBPFile(unittest.TestCase):
         parsed_data_file, _ = InputReader(with_missing_bp_csv_file, convert).read()
         # Temporarily opt for removing cov matrices before comparing
         parsed_data_file = parsed_data_file.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
-        pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol)
+        pdt.assert_frame_equal(parsed_data_file, input_reader_solution_df, rtol=_rtol, atol=_atol)
 
     def test_ecsv_file_missing_bp(self):
         parsed_data_file, _ = InputReader(with_missing_bp_ecsv_file, convert).read()
         # Temporarily opt for removing cov matrices before comparing
         parsed_data_file = parsed_data_file.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
-        pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol)
+        pdt.assert_frame_equal(parsed_data_file, input_reader_solution_df, rtol=_rtol, atol=_atol)
 
     def test_fits_file_missing_bp(self):
-        solution_df = pd.read_csv(solution_file, converters=array_converters, usecols=INTERNAL_CONT_COLS)
+        solution_df = pd.read_csv(input_reader_solution_path, converters=ir_array_converters, usecols=INTERNAL_CONT_COLS)
         parsed_data_file, _ = InputReader(with_missing_bp_fits_file, convert).read()
         columns_to_drop = ['bp_coefficient_errors', 'bp_coefficient_correlations', 'rp_coefficient_errors']
         check_special_columns(columns_to_drop, parsed_data_file, solution_df)
@@ -65,7 +66,7 @@ class TestInputReaderMissingBPFile(unittest.TestCase):
         pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False)
 
     def test_xml_file_missing_bp(self):
-        solution_df = pd.read_csv(solution_file, converters=array_converters, usecols=INTERNAL_CONT_COLS)
+        solution_df = pd.read_csv(input_reader_solution_path, converters=ir_array_converters, usecols=INTERNAL_CONT_COLS)
         parsed_data_file, _ = InputReader(with_missing_bp_xml_file, convert).read()
         columns_to_drop = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations',
                            'rp_coefficient_errors']
@@ -80,4 +81,4 @@ class TestInputReaderMissingBPFile(unittest.TestCase):
         parsed_data_file, _ = InputReader(with_missing_bp_xml_plain_file, convert).read()
         # Temporarily opt for removing cov matrices before comparing
         parsed_data_file = parsed_data_file.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
-        pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False)
+        pdt.assert_frame_equal(parsed_data_file, input_reader_solution_df, rtol=_rtol, atol=_atol, check_dtype=False)

@@ -4,15 +4,12 @@ import numpy.testing as npt
 import pandas.testing as pdt
 
 from gaiaxpy import calibrate
-from tests.test_calibrator.calibrator_paths import solution_default_df, with_missing_solution_df, \
-    sol_with_missing_sampling_array, sol_default_sampling_array
+from tests.test_calibrator.calibrator_paths import solution_default_df, sol_with_missing_sampling_array, \
+    sol_default_sampling_array, with_missing_solution_df, missing_solution_df
 from tests.utils.utils import missing_bp_source_id
 
 _rtol = 1e-10
 _atol = 1e-10
-
-missing_solution_df = with_missing_solution_df[with_missing_solution_df['source_id'] ==
-                                               missing_bp_source_id].reset_index(drop=True)
 
 
 class TestCalibratorSingleElement(unittest.TestCase):

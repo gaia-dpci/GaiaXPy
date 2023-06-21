@@ -1,17 +1,13 @@
 import unittest
-from os import path
 
 import pandas as pd
 from numpy import ndarray, dtype
 
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
-from tests.files.paths import converter_sol_path
-
-# Files to test parse
-csv_file = path.join(converter_sol_path, 'SampledMeanSpectrum.csv')
+from tests.test_converter.converter_paths import ref_sampled_csv
 
 parser = InternalSampledParser()
-parsed_csv_file, _ = parser._parse(csv_file)
+parsed_csv_file, _ = parser._parse(ref_sampled_csv)
 
 
 class TestInternalSampledParserCSV(unittest.TestCase):

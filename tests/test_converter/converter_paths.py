@@ -27,7 +27,9 @@ converter_csv_solution_0_60_481_df = pd.read_csv(join(converter_sol_path, 'conve
 """
 with_missing_solution_sampling = pos_file_to_array(join(converter_sol_path,
                                                         'with_missing_converter_solution_sampling.csv'))
-missing_band_sampling_solution = join(converter_sol_path, 'missing_band_default_sampling_solution.csv')
+missing_band_sampling_solution_path = join(converter_sol_path, 'missing_band_default_sampling_solution.csv')
+with_cov_missing_sampling = pos_file_to_array(join(converter_sol_path,
+                                                   'converter_with_covariance_missing_bp_solution_sampling.csv'))
 
 """
 ==================

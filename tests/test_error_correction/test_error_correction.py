@@ -1,14 +1,10 @@
 import unittest
-from os.path import join
 
 import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import generate, apply_error_correction, PhotometricSystem
-from tests.files.paths import files_path, mean_spectrum_csv_file
-
-# Files to test parse
-corrected_errors_solution_path = join(files_path, 'error_correction_solution', 'corrected_errors_solution.csv')
+from tests.files.paths import mean_spectrum_csv_file, corrected_errors_solution_path
 
 _ertol, _eatol = 1e-24, 1e-24
 _rtol, _atol = 1e-15, 1e-15

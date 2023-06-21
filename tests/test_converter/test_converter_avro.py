@@ -56,6 +56,7 @@ class TestCreateSpectrum(unittest.TestCase):
     def test_create_spectrum(self):
         truncation = True
         parsed_input_dict = parsed_input.to_dict('records')
+        spectrum_bp, spectrum_rp = None, None
         for row in islice(parsed_input_dict, 1):  # Just the first row
             spectrum_bp = _create_spectrum(row, truncation, design_matrices, BANDS.bp)
             spectrum_rp = _create_spectrum(row, truncation, design_matrices, BANDS.rp)

@@ -72,7 +72,8 @@ class TestCholesky(unittest.TestCase):
 class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
 
     def test_internal_inverse_square_root_covariance_matrix_no_missing_bands(self):
-        parsed_input_data, extension = InputReader(mean_spectrum_csv_file, get_inverse_square_root_covariance_matrix).read()
+        parsed_input_data, extension = InputReader(mean_spectrum_csv_file,
+                                                   get_inverse_square_root_covariance_matrix).read()
         output_columns = ['source_id', 'bp_inverse_square_root_covariance_matrix',
                           'rp_inverse_square_root_covariance_matrix']
         bands_output = []

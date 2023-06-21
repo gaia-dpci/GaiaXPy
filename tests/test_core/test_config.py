@@ -31,12 +31,6 @@ class TestConfig(unittest.TestCase):
         self.assertIsInstance(xp_merge, dict)
         self.assertIsInstance(xp_sampling_grid, np.ndarray)
 
-    def test_load_xpzeropoint_from_xml(self):
-        zero_points = system.get_zero_points()
-        bands = system.get_bands()
-        npt.assert_array_equal(zero_points, np.array([-25.9651, -25.4918, -26.0952, -26.6505, -27.3326]))
-        npt.assert_array_equal(bands, np.array(['U', 'B', 'V', 'R', 'I']))
-
     def test_load_xpoffset(self):
         # Standard system has got an offset file
         _system = InternalPhotometricSystem('JKC_Std')

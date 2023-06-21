@@ -1,21 +1,18 @@
 import unittest
-from os.path import join
 
 import numpy.testing as npt
-import pandas as pd
 from pandas import testing as pdt
 
 from gaiaxpy import calibrate
 from gaiaxpy.calibrator.calibrator import _create_spectrum
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
-from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from tests.files.paths import files_path, mean_spectrum_fits_file, mean_spectrum_csv_file, mean_spectrum_xml_file, \
+from tests.files.paths import mean_spectrum_fits_file, mean_spectrum_csv_file, mean_spectrum_xml_file,\
     mean_spectrum_xml_plain_file
-from tests.test_calibrator.calibrator_paths import sol_default_sampling_array
+from tests.test_calibrator.calibrator_paths import sol_default_sampling_array, truncation_default_solution_df
 
 # TODO: Add tests for AVRO format
 
@@ -27,21 +24,11 @@ bp_model = 'v211w'  # Alternative bp model
 xp_sampling_grid, xp_merge = load_xpmerge_from_xml(bp_model=bp_model)
 xp_design_matrices = load_xpsampling_from_xml(bp_model=bp_model)
 
-# Path to solution files
-calibrator_sol_path = join(files_path, 'calibrator_solution')
-
 # Calibrate data in files
 spectra_df_fits, _ = calibrate(mean_spectrum_fits_file, save_file=False, truncation=True)
 spectra_df_xml, _ = calibrate(mean_spectrum_xml_file, save_file=False, truncation=True)
 spectra_df_xml_plain, _ = calibrate(mean_spectrum_xml_plain_file, save_file=False, truncation=True)
 
-# Generate converters
-columns_to_parse = ['flux', 'flux_error']
-converters = dict([(column, lambda x: str_to_array(x)) for column in columns_to_parse])
-
-# Load solution files, default model
-truncation_default_solution_df = pd.read_csv(join(calibrator_sol_path, 'calibrator_solution_truncation_default.csv'),
-                                             float_precision='high', converters=converters)
 
 _rtol, _atol = 1e-22, 1e-22
 

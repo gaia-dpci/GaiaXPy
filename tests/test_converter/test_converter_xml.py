@@ -15,7 +15,7 @@ from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from tests.test_converter.converter_paths import optimised_bases_df, ref_sampled_csv, ref_sampled_truncated_csv, \
-    converter_csv_solution_0_60_481_df, missing_band_sampling_solution
+    converter_csv_solution_0_60_481_df, missing_band_sampling_solution_path
 from tests.files.paths import missing_bp_xml_file, mean_spectrum_xml_file
 from tests.utils.utils import get_spectrum_with_source_id_and_xp
 
@@ -121,7 +121,7 @@ class TestConverterMissingBand(unittest.TestCase):
         npt.assert_array_equal(sampling, np.linspace(0, 60, 600))
         converted_spectra = converted_spectra.iloc[0]
         # Read solution
-        solution_values = pd.read_csv(missing_band_sampling_solution, float_precision='high').iloc[0]
+        solution_values = pd.read_csv(missing_band_sampling_solution_path, float_precision='high').iloc[0]
         self.assertEqual(converted_spectra['source_id'], solution_values['source_id'])
         self.assertEqual(converted_spectra['xp'], solution_values['xp'])
         npt.assert_array_almost_equal(converted_spectra['flux'], np.array(literal_eval(solution_values['flux'])))

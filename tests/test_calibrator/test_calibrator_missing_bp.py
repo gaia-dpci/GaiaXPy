@@ -10,11 +10,8 @@ from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file, \
     missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file, \
     with_missing_bp_xml_file, with_missing_bp_xml_plain_file
-from tests.test_calibrator.calibrator_paths import with_missing_solution_df, sol_with_missing_sampling_array
-from tests.utils.utils import missing_bp_source_id
-
-missing_solution_df = with_missing_solution_df[with_missing_solution_df['source_id'] ==
-                                               missing_bp_source_id].reset_index(drop=True)
+from tests.test_calibrator.calibrator_paths import sol_with_missing_sampling_array, with_missing_solution_df, \
+    missing_solution_df
 
 _atol = 1e-10
 _rtol = 1e-10

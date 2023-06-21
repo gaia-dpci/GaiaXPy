@@ -1,16 +1,12 @@
 import unittest
 from collections import Counter
-from os.path import join
 
 import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import generate, PhotometricSystem
-from tests.files.paths import files_path, missing_bp_csv_file, mean_spectrum_avro_file, mean_spectrum_fits_file
-
-# Files to test parse
-continuous_path = join(files_path, 'xp_continuous')
-solution_path = join(files_path, 'generator_solution')
+from tests.files.paths import missing_bp_csv_file, mean_spectrum_fits_file
+from tests.test_generator.generator_paths import gen_missing_band_sol_path
 
 _ertol, _eatol = 1e-23, 1e-23
 _rtol, _atol = 1e-14, 1e-14
@@ -29,7 +25,7 @@ class TestGenerator(unittest.TestCase):
                    PhotometricSystem.Stromgren, PhotometricSystem.Stromgren_Std, PhotometricSystem.WFIRST]
         generated_photometry = generate(missing_bp_csv_file, photometric_system=systems, save_file=False)
         # Load solution
-        solution_df = pd.read_csv(join(solution_path, 'generator_missing_band_solution.csv'), float_precision='high')
+        solution_df = pd.read_csv(gen_missing_band_sol_path, float_precision='high')
         error_columns = [column for column in solution_df.columns if 'error' in column]
         other_columns = [column for column in solution_df.columns if 'error' not in column]
         pdt.assert_frame_equal(generated_photometry[error_columns], solution_df[error_columns], rtol=_ertol,

@@ -13,9 +13,8 @@ from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from tests.files.paths import mean_spectrum_csv_file, mean_spectrum_avro_file, mean_spectrum_fits_file, \
     mean_spectrum_xml_file, mean_spectrum_xml_plain_file
-from tests.test_calibrator.calibrator_paths import solution_default_df, \
-    solution_custom_df, solution_v211w_default_df, \
-    solution_v211w_custom_df, sol_custom_sampling_array, sol_v211w_default_sampling_array, \
+from tests.test_calibrator.calibrator_paths import solution_default_df, solution_custom_df, solution_v211w_default_df, \
+    solution_v211w_custom_df, sol_custom_sampling_array, sol_v211w_default_sampling_array,\
     sol_v211w_custom_sampling_array, sol_default_sampling_array
 
 parser = InternalContinuousParser()

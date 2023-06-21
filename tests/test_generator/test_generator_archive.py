@@ -6,14 +6,12 @@ import pandas.testing as pdt
 
 from gaiaxpy import generate, PhotometricSystem
 from tests.files.paths import files_path
+from tests.test_generator.generator_paths import no_correction_solution_path, correction_solution_path
 from tests.utils.utils import missing_bp_source_id
 
 _rtol, _atol = 1e-7, 1e-7
 
 # Load solution
-no_correction_solution_path = join(files_path, 'generator_solution', 'generator_solution_with_missing_BP.csv')
-correction_solution_path = join(files_path, 'generator_solution',
-                                'generator_solution_with_missing_BP_error_correction.csv')
 with_missing_solution_df_no_corr = pd.read_csv(no_correction_solution_path, float_precision='high')
 with_missing_solution_df_with_corr = pd.read_csv(correction_solution_path, float_precision='high')
 

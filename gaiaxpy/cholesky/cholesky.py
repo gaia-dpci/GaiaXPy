@@ -51,7 +51,8 @@ def __output_list_to_df(parsed_input_data: pd.DataFrame, bands_output: list, out
     return pd.DataFrame(zip(*output_list), columns=output_columns)
 
 
-def get_inverse_square_root_covariance_matrix(input_object: Union[list, Path, str], band: Optional[str] = None):
+def get_inverse_square_root_covariance_matrix(input_object: Union[list, Path, str],
+                                              band: Optional[Union[list, str]] = None):
     """
     Compute the inverse square root covariance matrix.
 

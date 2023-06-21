@@ -1,5 +1,4 @@
 import unittest
-from os.path import join
 
 import numpy as np
 import numpy.testing as npt
@@ -7,7 +6,7 @@ import numpy.testing as npt
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.core.generic_functions import _get_system_label, _extract_systems_from_data, validate_pwl_sampling, \
     array_to_symmetric_matrix, correlation_to_covariance, get_matrix_size_from_lower_triangle
-from tests.files.paths import files_path, mean_spectrum_fits_file
+from tests.files.paths import mean_spectrum_fits_file
 
 array = np.array([1, 2, 3, 4, 5, 6])
 size = 3

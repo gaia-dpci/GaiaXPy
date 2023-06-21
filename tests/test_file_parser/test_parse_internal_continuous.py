@@ -7,7 +7,7 @@ from numpy import ndarray, dtype
 
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
-from tests.files.paths import files_path, mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_fits_file, \
+from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_fits_file,\
     mean_spectrum_xml_file
 from tests.utils.utils import get_spectrum_with_source_id
 
@@ -20,40 +20,40 @@ parsed_xml_file, _ = parser._parse(mean_spectrum_xml_file)
 
 type_map = {'source_id': dtype('int64'),
             'solution_id': dtype('int64'),
-            'rp_n_parameters': dtype('int64'),
-            'bp_n_parameters': dtype('int64'),
-            'rp_n_rejected_measurements': dtype('int64'),
-            'bp_n_rejected_measurements': dtype('int64'),
-            'rp_n_measurements': dtype('int64'),
-            'bp_n_measurements': dtype('int64'),
-            'rp_standard_deviation': dtype('float64'),
-            'bp_standard_deviation': dtype('float64'),
-            'rp_num_of_transits': dtype('int64'),
-            'bp_num_of_transits': dtype('int64'),
-            'rp_num_of_blended_transits': dtype('int64'),
-            'bp_num_of_blended_transits': dtype('int64'),
-            'rp_num_of_contaminated_transits': dtype('int64'),
-            'bp_num_of_contaminated_transits': dtype('int64'),
-            'rp_coefficients': dtype('O'),
-            'bp_coefficients': dtype('O'),
-            'rp_coefficient_covariances': dtype('O'),
-            'bp_coefficient_covariances': dtype('O'),
-            'rp_degrees_of_freedom': dtype('int64'),
-            'bp_degrees_of_freedom': dtype('int64'),
-            'rp_n_relevant_bases': dtype('int64'),
-            'bp_n_relevant_bases': dtype('int64'),
-            'rp_basis_function_id': dtype('int64'),
-            'bp_basis_function_id': dtype('int64'),
-            'rp_chi_squared': dtype('float64'),
-            'bp_chi_squared': dtype('float64'),
-            'rp_coefficient_errors': dtype('O'),
-            'bp_coefficient_errors': dtype('O'),
-            'rp_coefficient_correlations': dtype('O'),
-            'bp_coefficient_correlations': dtype('O'),
-            'rp_relative_shrinking': dtype('float64'),
-            'bp_relative_shrinking': dtype('float64'),
-            'bp_covariance_matrix': dtype('O'),
-            'rp_covariance_matrix': dtype('O')}
+            f'{BANDS.rp}_n_parameters': dtype('int64'),
+            f'{BANDS.bp}_n_parameters': dtype('int64'),
+            f'{BANDS.rp}_n_rejected_measurements': dtype('int64'),
+            f'{BANDS.bp}_n_rejected_measurements': dtype('int64'),
+            f'{BANDS.rp}_n_measurements': dtype('int64'),
+            f'{BANDS.bp}_n_measurements': dtype('int64'),
+            f'{BANDS.rp}_standard_deviation': dtype('float64'),
+            f'{BANDS.bp}_standard_deviation': dtype('float64'),
+            f'{BANDS.rp}_num_of_transits': dtype('int64'),
+            f'{BANDS.bp}_num_of_transits': dtype('int64'),
+            f'{BANDS.rp}_num_of_blended_transits': dtype('int64'),
+            f'{BANDS.bp}_num_of_blended_transits': dtype('int64'),
+            f'{BANDS.rp}_num_of_contaminated_transits': dtype('int64'),
+            f'{BANDS.bp}_num_of_contaminated_transits': dtype('int64'),
+            f'{BANDS.rp}_coefficients': dtype('O'),
+            f'{BANDS.bp}_coefficients': dtype('O'),
+            f'{BANDS.rp}_coefficient_covariances': dtype('O'),
+            f'{BANDS.bp}_coefficient_covariances': dtype('O'),
+            f'{BANDS.rp}_degrees_of_freedom': dtype('int64'),
+            f'{BANDS.bp}_degrees_of_freedom': dtype('int64'),
+            f'{BANDS.rp}_n_relevant_bases': dtype('int64'),
+            f'{BANDS.bp}_n_relevant_bases': dtype('int64'),
+            f'{BANDS.rp}_basis_function_id': dtype('int64'),
+            f'{BANDS.bp}_basis_function_id': dtype('int64'),
+            f'{BANDS.rp}_chi_squared': dtype('float64'),
+            f'{BANDS.bp}_chi_squared': dtype('float64'),
+            f'{BANDS.rp}_coefficient_errors': dtype('O'),
+            f'{BANDS.bp}_coefficient_errors': dtype('O'),
+            f'{BANDS.rp}_coefficient_correlations': dtype('O'),
+            f'{BANDS.bp}_coefficient_correlations': dtype('O'),
+            f'{BANDS.rp}_relative_shrinking': dtype('float64'),
+            f'{BANDS.bp}_relative_shrinking': dtype('float64'),
+            f'{BANDS.bp}_covariance_matrix': dtype('O'),
+            f'{BANDS.rp}_covariance_matrix': dtype('O')}
 
 
 class TestInternalContinuousParserCSV(unittest.TestCase):

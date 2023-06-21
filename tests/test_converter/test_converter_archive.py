@@ -17,8 +17,9 @@ class TestConverterMissingBPQueryInput(unittest.TestCase):
         query = "SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5853498713190525696'," \
                 f" {str(missing_bp_source_id)}, '5762406957886626816')"
         output_df, sampling = convert(query, save_file=False)
-        sorted_output_df = output_df.sort_values('source_id', ignore_index=True)
-        sorted_solution_df = with_missing_solution_df.sort_values('source_id', ignore_index=True)
+        sort_columns = ['source_id', 'xp']
+        sorted_output_df = output_df.sort_values(by=sort_columns, ignore_index=True)
+        sorted_solution_df = with_missing_solution_df.sort_values(by=sort_columns, ignore_index=True)
         pdt.assert_frame_equal(sorted_output_df, sorted_solution_df, rtol=_rtol, atol=_atol)
         npt.assert_array_equal(sampling, with_missing_solution_sampling)
 

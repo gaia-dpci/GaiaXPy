@@ -44,29 +44,24 @@ generator_sol_path = join(files_path, 'generator_solution')
 corrected_errors_solution_path = join(files_path, 'error_correction_solution', 'corrected_errors_solution.csv')
 
 """
-==================================
-  Calibrator samplings solutions
-==================================
+========================================
+  Calibrator samplings solutions paths
+========================================
 """
 # Default model
-sol_default_sampling = join(calibrator_sol_path, 'calibrator_solution_default_sampling.csv')
-sol_custom_sampling = join(calibrator_sol_path, 'calibrator_solution_custom_sampling.csv')
+sol_default_sampling_path = join(calibrator_sol_path, 'calibrator_solution_default_sampling.csv')
+sol_custom_sampling_path = join(calibrator_sol_path, 'calibrator_solution_custom_sampling.csv')
 # v211w model
-sol_v211w_default_sampling = join(calibrator_sol_path, 'calibrator_solution_v211w_default_sampling.csv')
-sol_v211w_custom_sampling = join(calibrator_sol_path, 'calibrator_solution_v211w_custom_sampling.csv')
+sol_v211w_default_sampling_path = join(calibrator_sol_path, 'calibrator_solution_v211w_default_sampling.csv')
+sol_v211w_custom_sampling_path = join(calibrator_sol_path, 'calibrator_solution_v211w_custom_sampling.csv')
 # With missing
-sol_with_missing_sampling = join(calibrator_sol_path, 'with_missing_calibrator_solution_sampling.csv')
+sol_with_missing_sampling_path = join(calibrator_sol_path, 'with_missing_calibrator_solution_sampling.csv')
 # With covariance
-sol_with_covariance_sampling = join(calibrator_sol_path, 'calibrate_with_covariance_solution_sampling.csv')
+sol_with_covariance_sampling_path = join(calibrator_sol_path, 'calibrate_with_covariance_solution_sampling.csv')
 
 """
-================================
-  Calibrator spectra solutions
-================================
-"""
-"""
 ===========================
-  Tests regular solutions
+  Regular solutions paths
 ===========================
 """
 # Calibrator solution converters
@@ -81,6 +76,7 @@ solution_v211w_custom_path = join(calibrator_sol_path, 'calibrator_solution_v211
 with_missing_solution_path = join(calibrator_sol_path, 'with_missing_calibrator_solution.csv')
 # With truncation
 with_truncation_solution_path = join(calibrator_sol_path, 'calibrator_solution_truncation_default.csv')
+
 """
 ================================
   Mini files (first test files)

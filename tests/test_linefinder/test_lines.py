@@ -1,15 +1,11 @@
 import unittest
-from os.path import join
 
 import numpy as np
 import numpy.testing as npt
 
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.linefinder.lines import Lines
-from tests.files.paths import files_path
-
-lines_path = join(files_path, 'linefinder_files')
-file_lines = join(lines_path, 'lines_example.txt')
+from tests.files.paths import file_lines_example_path
 
 bp_true = (np.array(['H_beta', 'He I_1', 'He I_2'], dtype='<U7'), np.array([24.42300844, 28.392607, 17.449061]))
 rp_true = (np.array(['H_alpha', 'He I_3'], dtype='<U7'), np.array([15.73198734, 22.367717]))
@@ -48,8 +44,8 @@ class TestLines(unittest.TestCase):
         npt.assert_allclose(rpl.get_lines_pwl()[1], rp_true_list[1])
 
     def test_lines_file_star(self):
-        bpl = Lines(BANDS.bp, 'star', user_lines=file_lines)
-        rpl = Lines(BANDS.rp, 'star', user_lines=file_lines)
+        bpl = Lines(BANDS.bp, 'star', user_lines=file_lines_example_path)
+        rpl = Lines(BANDS.rp, 'star', user_lines=file_lines_example_path)
         npt.assert_array_equal(bpl.get_lines_pwl()[0], bp_true_list[0])
         npt.assert_array_equal(rpl.get_lines_pwl()[0], rp_true_list[0])
         npt.assert_allclose(bpl.get_lines_pwl()[1], bp_true_list[1])

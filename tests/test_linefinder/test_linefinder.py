@@ -7,17 +7,16 @@ import pandas.testing as pdt
 from gaiaxpy import find_lines
 from tests.files.paths import files_path, missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, \
     missing_bp_xml_file, missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, \
-    with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file, mean_spectrum_csv_file
+    with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file, mean_spectrum_csv_file, \
+    found_lines_real_path, found_lines_trunc_real_path, found_lines_no_bp_real_path
 from tests.utils.utils import missing_bp_source_id
 
 _rtol, _atol = 1e-7, 1e-7
 
 # Results to compare
-solution_folder = 'linefinder_files'
-found_lines_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_output.csv'))
-
-found_lines_trunc_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_trunc_output.csv'))
-found_lines_no_bp_real = pd.read_csv(join(files_path, solution_folder, 'linefinder_no_bp_output.csv'))
+found_lines_real = pd.read_csv(found_lines_real_path)
+found_lines_trunc_real = pd.read_csv(found_lines_trunc_real_path)
+found_lines_no_bp_real = pd.read_csv(found_lines_no_bp_real_path)
 
 # Results to test
 found_lines = find_lines(mean_spectrum_csv_file, save_file=False)

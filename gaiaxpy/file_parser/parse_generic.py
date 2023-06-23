@@ -59,12 +59,13 @@ class GenericParser(object):
         else:
             raise InvalidExtensionError()
 
-    def _parse(self, file_path):
+    def _parse(self, file_path, additional_columns=None):
         """
         Parse the input file according to its extension.
 
         Args:
             file_path (str): Path to a file.
+            additional_columns (dict): Dictionary of additional columns to include in the output. For internal use.
 
         Returns:
             DataFrame: Pandas DataFrame representing the file.
@@ -73,7 +74,7 @@ class GenericParser(object):
         print('Reading input file...', end='\r')
         extension = _get_file_extension(file_path)
         parser = self.get_parser(extension)
-        parsed_data = _cast(parser(file_path))
+        parsed_data = _cast(parser(file_path, additional_columns=additional_columns))
         return parsed_data, extension
 
     def _parse_avro(self, avro_file):

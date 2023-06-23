@@ -15,7 +15,7 @@ from .photometric_system import PhotometricSystem
 def generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
              output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
              output_format: str = None, save_file: bool = True, error_correction: bool = False, username: str = None,
-             password: str = None) -> pd.DataFrame:
+             password: str = None, additional_columns=None) -> pd.DataFrame:
     """
     Synthetic photometry utility: generates synthetic photometry in a set of available systems from the input
     internally-calibrated continuously-represented mean spectra.
@@ -60,7 +60,8 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')
     validate_arguments(generate.__defaults__[1], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, generate, username, password).read()  # Load data
+    parsed_input_data, extension = InputReader(input_object, generate, username, password,
+                                               additional_columns=additional_columns).read()  # Load data
     # Prepare systems, keep track of original systems
     internal_photometric_system = photometric_system.copy() if isinstance(photometric_system, list) else \
         [photometric_system].copy()
@@ -86,6 +87,11 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
         gaia_label = gaia_system.get_system_label()
         gaia_columns = [column for column in photometry_df if column.startswith(gaia_label)]
         photometry_df = photometry_df.drop(columns=gaia_columns)
+    if additional_columns:
+        photometry_df.set_index('source_id', inplace=True)
+        additional_columns_data = parsed_input_data[['source_id'] + list(additional_columns.keys())]
+        additional_columns_data.set_index('source_id', inplace=True)
+        photometry_df = photometry_df.merge(additional_columns_data, left_index=True, right_index=True, how='outer')
     output_data = PhotometryData(photometry_df)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)

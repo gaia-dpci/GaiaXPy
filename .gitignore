@@ -3,6 +3,7 @@
 .coverage
 .eggs/
 .env/
+.env10/
 .idea/
 .pytest_cache/
 .svn/

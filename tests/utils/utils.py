@@ -1,5 +1,6 @@
 import json
 from numbers import Number
+from os.path import basename, isfile
 
 import numpy as np
 import pandas as pd
@@ -97,3 +98,15 @@ def reconstruct_covariance(array):
 
     size = get_matrix_size(array)
     return array_to_symmetric_matrix(array, size)
+
+def npt_array_err_message(file):
+    return f'Array not equal for input file {basename(file)}.'
+
+def is_instance_err_message(_input, instance):
+    instance = instance if isinstance(instance, str) else instance.__name__
+    msg = f'Output generated from file {basename(_input)} is not an instance of {instance}.' if isfile(_input)\
+        else f'Input {_input} is not an instance of {instance}.'
+    return msg
+
+def assert_band_err(band):
+    return f'Assertion failed for band {band}.'

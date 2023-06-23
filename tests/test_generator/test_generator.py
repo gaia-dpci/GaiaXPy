@@ -5,8 +5,7 @@ import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import generate, PhotometricSystem
-from tests.files.paths import missing_bp_csv_file, mean_spectrum_fits_file
-from tests.test_generator.generator_paths import gen_missing_band_sol_path
+from tests.files.paths import missing_bp_csv_file, mean_spectrum_fits_file, gen_missing_band_sol_path
 
 _ertol, _eatol = 1e-23, 1e-23
 _rtol, _atol = 1e-14, 1e-14

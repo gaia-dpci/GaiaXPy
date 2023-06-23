@@ -1,90 +1,31 @@
 import unittest
-from os import path
 
 import pandas as pd
+from itertools import product
 
 from gaiaxpy.generator.generator import generate
 from gaiaxpy.generator.photometric_system import PhotometricSystem
 from tests.files.paths import mean_spectrum_csv_file, mean_spectrum_avro_file, mean_spectrum_fits_file,\
     mean_spectrum_xml_file
 
-photometric_system_johnson = PhotometricSystem.JKC
+def columns_from_vars(bands, label):
+    cols_vars = ['mag', 'flux', 'flux_error']
+    return ['source_id'] + [f'{label}_{var}_{band}' for var, band in product(cols_vars, bands)]
 
+phot_system_johnson = PhotometricSystem.JKC
+phot_system_sdss = PhotometricSystem.SDSS
 
-class TestSingleSyntheticPhotometryGeneratorCSV(unittest.TestCase):
+jkc_columns = columns_from_vars(['U', 'B', 'V', 'R', 'I'], 'Jkc')
+sdss_columns = columns_from_vars(['u', 'g', 'r', 'i', 'z'], 'Sdss')
 
-    def test_generate_johnson(self):
-        photometric_system = PhotometricSystem.JKC
-        label = photometric_system.get_system_label()
-        synthetic_photometry = generate(mean_spectrum_csv_file, photometric_system=photometric_system,
-                                        output_format='.csv', save_file=False)
-        self.assertIsInstance(synthetic_photometry, pd.DataFrame)
-        self.assertEqual(len(synthetic_photometry), 2)
-        self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
-                                                               f'{label}_mag_U', f'{label}_mag_B', f'{label}_mag_V',
-                                                               f'{label}_mag_R',
-                                                               f'{label}_mag_I', f'{label}_flux_U', f'{label}_flux_B',
-                                                               f'{label}_flux_V',
-                                                               f'{label}_flux_R', f'{label}_flux_I',
-                                                               f'{label}_flux_error_U',
-                                                               f'{label}_flux_error_B', f'{label}_flux_error_V',
-                                                               f'{label}_flux_error_R',
-                                                               f'{label}_flux_error_I'])
+class TestSingleSyntheticPhotometryGenerator(unittest.TestCase):
 
-
-class TestSingleSyntheticPhotometryGeneratorFITS(unittest.TestCase):
-
-    def test_generate_johnson(self):
-        photometric_system = PhotometricSystem.JKC
-        label = photometric_system.get_system_label()
-        synthetic_photometry = generate(mean_spectrum_fits_file, photometric_system=photometric_system,
-                                        output_format='.csv', save_file=False)
-        self.assertIsInstance(synthetic_photometry, pd.DataFrame)
-        self.assertEqual(len(synthetic_photometry), 2)
-        self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
-                                                               f'{label}_mag_U', f'{label}_mag_B', f'{label}_mag_V',
-                                                               f'{label}_mag_R',
-                                                               f'{label}_mag_I', f'{label}_flux_U', f'{label}_flux_B',
-                                                               f'{label}_flux_V',
-                                                               f'{label}_flux_R', f'{label}_flux_I',
-                                                               f'{label}_flux_error_U', f'{label}_flux_error_B',
-                                                               f'{label}_flux_error_V', f'{label}_flux_error_R',
-                                                               f'{label}_flux_error_I'])
-
-
-class TestSyntheticPhotometryGeneratorXML(unittest.TestCase):
-
-    def test_generate_sdss_doi(self):
-        photometric_system = PhotometricSystem.SDSS
-        label = photometric_system.get_system_label()
-        synthetic_photometry = generate(mean_spectrum_xml_file, photometric_system=photometric_system,
-                                        output_format='.csv', save_file=False)
-        self.assertIsInstance(synthetic_photometry, pd.DataFrame)
-        self.assertEqual(len(synthetic_photometry), 2)
-        self.assertTrue(list(synthetic_photometry.columns) == ['source_id',
-                                                               f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r',
-                                                               f'{label}_mag_i',
-                                                               f'{label}_mag_z', f'{label}_flux_u', f'{label}_flux_g',
-                                                               f'{label}_flux_r',
-                                                               f'{label}_flux_i', f'{label}_flux_z',
-                                                               f'{label}_flux_error_u', f'{label}_flux_error_g',
-                                                               f'{label}_flux_error_r', f'{label}_flux_error_i',
-                                                               f'{label}_flux_error_z'])
-
-
-class TestSyntheticPhotometryGeneratorAVRO(unittest.TestCase):
-
-    def test_generate_sdss_type(self):
-        photometric_system = PhotometricSystem.SDSS
-        label = photometric_system.get_system_label()
-        synthetic_photometry = generate(mean_spectrum_avro_file, photometric_system=photometric_system,
-                                        output_format='avro', save_file=False)
-        self.assertIsInstance(synthetic_photometry, pd.DataFrame)
-        self.assertEqual(len(synthetic_photometry), 2)
-        self.assertTrue(list(synthetic_photometry.columns) == ['source_id', f'{label}_mag_u', f'{label}_mag_g',
-                                                               f'{label}_mag_r', f'{label}_mag_i', f'{label}_mag_z',
-                                                               f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r',
-                                                               f'{label}_flux_i', f'{label}_flux_z',
-                                                               f'{label}_flux_error_u', f'{label}_flux_error_g',
-                                                               f'{label}_flux_error_r', f'{label}_flux_error_i',
-                                                               f'{label}_flux_error_z'])
+    def test_generate_single(self):
+        input_files = [mean_spectrum_csv_file, mean_spectrum_fits_file, mean_spectrum_avro_file, mean_spectrum_xml_file]
+        phot_systems = [phot_system_johnson, phot_system_johnson, phot_system_sdss, phot_system_sdss]
+        output_columns = [jkc_columns, jkc_columns, sdss_columns, sdss_columns]
+        for file, syst, cols in zip(input_files, phot_systems, output_columns):
+            synthetic_photometry = generate(file, photometric_system=syst, output_format='.csv', save_file=False)
+            self.assertIsInstance(synthetic_photometry, pd.DataFrame)
+            self.assertEqual(len(synthetic_photometry), 2)
+            self.assertTrue(list(synthetic_photometry.columns) == cols)

@@ -7,10 +7,10 @@ import pandas.testing as pdt
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.input_reader.input_reader import InputReader
-from tests.files.paths import files_path, missing_bp_csv_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, \
+from tests.files.paths import missing_bp_csv_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, \
     with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file, missing_bp_fits_file, \
-    missing_bp_xml_file, missing_bp_ecsv_file, missing_bp_xml_plain_file
-from tests.test_generator.generator_paths import no_correction_solution_path, correction_solution_path
+    missing_bp_xml_file, missing_bp_ecsv_file, missing_bp_xml_plain_file, no_correction_solution_path, \
+    correction_solution_path
 from tests.utils.utils import missing_bp_source_id
 
 _rtol, _atol = 1e-7, 1e-7

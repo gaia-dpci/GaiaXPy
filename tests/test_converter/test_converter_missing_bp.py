@@ -19,6 +19,7 @@ _rtol, _atol = 1e-7, 1e-7
 class TestConverterMissingBPFileInput(unittest.TestCase):
 
     def test_missing_bp_csv_file(self):
+        # TODO: test sampling
         output_df, sampling = convert(with_missing_bp_csv_file, save_file=False)
         pdt.assert_frame_equal(output_df, with_missing_solution_df, rtol=_rtol, atol=_atol)
         npt.assert_array_equal(sampling, with_missing_solution_sampling)

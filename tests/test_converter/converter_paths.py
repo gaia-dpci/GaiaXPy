@@ -1,5 +1,3 @@
-from os.path import join
-
 import pandas as pd
 
 from gaiaxpy.config.paths import optimised_bases_file

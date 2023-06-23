@@ -104,10 +104,12 @@ def npt_array_err_message(_input):
         else f'Array not equal for input {_input}.'
     return msg
 
-def is_instance_err_message(_input, instance):
+def is_instance_err_message(_input, instance, band=None):
     instance = instance if isinstance(instance, str) else instance.__name__
-    msg = f'Output generated from file {basename(_input)} is not an instance of {instance}.' if isfile(_input)\
-        else f'Input {_input} is not an instance of {instance}.'
+    msg = f'Output generated from file {basename(_input)}' if isfile(_input) else f'Input {_input}'
+    if isinstance(band, str):
+        msg += msg + f' and band {band}'
+    msg += f' is not an instance of {instance}.'
     return msg
 
 def assert_band_err(band):

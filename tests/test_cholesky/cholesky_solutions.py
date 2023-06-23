@@ -26,14 +26,14 @@ inv_sqrt_cov_matrix_sol_df_no_missing_df = pd.read_csv(join(cholesky_sol_path,
                                                             'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
                                                        converters=solution_converters)
 # With missing inv sqrt
-inv_sqrt_cov_matrix_sol_df_with_missing_df = pd.read_csv(join(cholesky_sol_path,
-                                                              'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),
-                                                         converters=solution_converters)
+inv_sqrt_cov_matrix_sol_with_missing_df = pd.read_csv(join(cholesky_sol_path,
+                                                           'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),
+                                                      converters=solution_converters)
 # With missing cov
-inv_cov_with_missing = join(cholesky_sol_path, 'get_inv_cov_with_missing_bp.csv')
-inv_cov_with_missing_df = pd.read_csv(inv_cov_with_missing, converters=dict([(column, lambda x: parse_matrices(x))
-                                                                             for column in [f'{band}_inverse_covariance'
-                                                                                            for band in BANDS]]))
+inv_cov_with_missing_path = join(cholesky_sol_path, 'get_inv_cov_with_missing_bp.csv')
+inv_cov_with_missing_df = pd.read_csv(inv_cov_with_missing_path,
+                                      converters=dict([(column, lambda x: parse_matrices(x)) for column in
+                                                       [f'{band}_inverse_covariance' for band in BANDS]]))
 # With missing
 input_array_columns = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations', 'rp_coefficients',
                        'rp_coefficient_errors', 'rp_coefficient_correlations']

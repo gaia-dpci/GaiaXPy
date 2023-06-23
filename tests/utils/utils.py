@@ -99,8 +99,10 @@ def reconstruct_covariance(array):
     size = get_matrix_size(array)
     return array_to_symmetric_matrix(array, size)
 
-def npt_array_err_message(file):
-    return f'Array not equal for input file {basename(file)}.'
+def npt_array_err_message(_input):
+    msg = f'Array not equal for input file {basename(_input)}.' if isfile(_input)\
+        else f'Array not equal for input {_input}.'
+    return msg
 
 def is_instance_err_message(_input, instance):
     instance = instance if isinstance(instance, str) else instance.__name__

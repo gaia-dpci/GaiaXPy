@@ -14,7 +14,8 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_xml_file, \
     mean_spectrum_csv_file
-from tests.test_cholesky.cholesky_paths import cholesky_solution, cholesky_sol_path
+from tests.test_cholesky.cholesky_solutions import cholesky_solution, cholesky_sol_path, \
+    inv_sqrt_cov_matrix_sol_df_no_missing_df, inv_sqrt_cov_matrix_sol_with_missing_df
 from tests.utils.utils import parse_matrices
 
 _rtol = 1e-05
@@ -86,11 +87,7 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
         for element in bands_output:
             output_list.append(element)
         output_df = pd.DataFrame(zip(*output_list), columns=output_columns)
-        solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
-        solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
-        solution_df = pd.read_csv(join(cholesky_sol_path, 'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
-                                  converters=solution_converters)
-        pdt.assert_frame_equal(output_df, solution_df)
+        pdt.assert_frame_equal(output_df, inv_sqrt_cov_matrix_sol_df_no_missing_df)
 
     def test_internal_inverse_square_root_covariance_matrix_with_missing_bands(self):
         parsed_input_data, extension = InputReader(with_missing_bp_csv_file,
@@ -107,73 +104,39 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
         for element in bands_output:
             output_list.append(element)
         output_df = pd.DataFrame(zip(*output_list), columns=output_columns)
-        solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
-        solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
-        solution_df = pd.read_csv(join(cholesky_sol_path, 'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),
-                                  converters=solution_converters)
-        pdt.assert_frame_equal(output_df, solution_df)
+        pdt.assert_frame_equal(output_df, inv_sqrt_cov_matrix_sol_with_missing_df)
 
     # File input
-
     def test_external_inverse_square_root_covariance_matrix_no_missing_bands_both_bands_file_input(self):
         output_df = get_inverse_square_root_covariance_matrix(mean_spectrum_csv_file)
-        solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
-        solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
-        solution_df = pd.read_csv(join(cholesky_sol_path, 'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
-                                  converters=solution_converters)
-        pdt.assert_frame_equal(output_df, solution_df)
+        pdt.assert_frame_equal(output_df, inv_sqrt_cov_matrix_sol_df_no_missing_df)
 
     def test_external_inverse_square_root_covariance_matrix_with_missing_bands_file_input(self):
         output_df = get_inverse_square_root_covariance_matrix(with_missing_bp_csv_file)
-        solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
-        solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
-        solution_df = pd.read_csv(join(cholesky_sol_path, 'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),
-                                  converters=solution_converters)
-        pdt.assert_frame_equal(output_df, solution_df)
+        pdt.assert_frame_equal(output_df, inv_sqrt_cov_matrix_sol_with_missing_df)
 
     # DF input
     def test_external_inverse_square_root_covariance_matrix_no_missing_bands_both_bands_df_input(self):
         output_df = get_inverse_square_root_covariance_matrix(mean_spectrum_csv_file)
-        solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
-        solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
-        solution_df = pd.read_csv(join(cholesky_sol_path, 'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
-                                  converters=solution_converters)
-        pdt.assert_frame_equal(output_df, solution_df)
+        pdt.assert_frame_equal(output_df, inv_sqrt_cov_matrix_sol_df_no_missing_df)
 
     def test_external_inverse_square_root_covariance_matrix_with_missing_bands_df_input(self):
         output_df = get_inverse_square_root_covariance_matrix(with_missing_bp_csv_file)
-        solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
-        solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
-        solution_df = pd.read_csv(join(cholesky_sol_path, 'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),
-                                  converters=solution_converters)
-        pdt.assert_frame_equal(output_df, solution_df)
+        pdt.assert_frame_equal(output_df, inv_sqrt_cov_matrix_sol_with_missing_df)
 
     # Single band tests
     def test_external_inverse_square_root_covariance_matrix_no_missing_bands_bp_file_input(self):
         output_df = get_inverse_square_root_covariance_matrix(mean_spectrum_csv_file, band='BP')
-        solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
-        solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
-        solution_df = pd.read_csv(join(cholesky_sol_path, 'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
-                                  converters=solution_converters)
-        output_columns = output_df.columns
-        pdt.assert_frame_equal(output_df, solution_df[output_columns])
+        pdt.assert_frame_equal(output_df, inv_sqrt_cov_matrix_sol_df_no_missing_df[output_df.columns])
 
     def test_external_inverse_square_root_covariance_matrix_with_missing_bands_rp_file_input(self):
         output_df = get_inverse_square_root_covariance_matrix(with_missing_bp_ecsv_file, band=['rP'])
-        solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
-        solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
-        solution_df = pd.read_csv(join(cholesky_sol_path, 'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),
-                                  converters=solution_converters)
-        output_columns = output_df.columns
-        pdt.assert_frame_equal(output_df, solution_df[output_columns])
+        pdt.assert_frame_equal(output_df, inv_sqrt_cov_matrix_sol_with_missing_df[output_df.columns])
 
     # One source ID
     def test_external_inverse_square_root_covariance_matrix_one_row_one_band_input(self):
         input_object = pd.read_csv(with_missing_bp_csv_file).iloc[[2]]  # Select just one row
         output = get_inverse_square_root_covariance_matrix(input_object, band='rP')
-        solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
-        solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
-        solution_df = pd.read_csv(join(cholesky_sol_path, 'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),
-                                  converters=solution_converters)
         # Almost equal as the solution file contains fewer decimals than the ones returned by the function
-        npt.assert_array_almost_equal(output, solution_df['rp_inverse_square_root_covariance_matrix'].iloc[2])
+        npt.assert_array_almost_equal(
+            output, inv_sqrt_cov_matrix_sol_with_missing_df['rp_inverse_square_root_covariance_matrix'].iloc[2])

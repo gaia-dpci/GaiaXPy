@@ -26,10 +26,8 @@ output_samples = np.linspace(0, 60, n_samples)
 
 # Get unique basis set for both bands
 unique_bases_ids = get_unique_basis_ids(correlation_parsed_file)
-# Generate design matrices containing the basis functions sampled on the
-# defined sampling grid.
-design_matrices = get_design_matrices(
-    unique_bases_ids, output_samples, parsed_config)
+# Generate design matrices containing the basis functions sampled on the defined sampling grid.
+design_matrices = get_design_matrices(unique_bases_ids, output_samples, parsed_config)
 
 
 class TestXpContinuousSpectrum(unittest.TestCase):

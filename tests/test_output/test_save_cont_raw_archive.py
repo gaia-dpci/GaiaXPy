@@ -1,19 +1,18 @@
+import shutil
+import tempfile
 import unittest
 
 from gaiaxpy import find_lines
-from tests.files.paths import output_path
 
 
 class TestEmptyLineFinder(unittest.TestCase):
 
-    def test_empty_lines_csv(self):
-        find_lines([6236992043706872832], output_path=output_path, output_file='empty_lines', output_format='csv')
+    def setUp(self):
+        self.temp_dir = tempfile.mkdtemp()
 
-    def test_empty_lines_ecsv(self):
-        find_lines([6236992043706872832], output_path=output_path, output_file='empty_lines', output_format='ecsv')
+    def test_empty_lines(self):
+        for ext in ['csv', 'ecsv', 'fits', 'xml']:
+            find_lines([6236992043706872832], output_path=self.temp_dir, output_file='empty_lines', output_format=ext)
 
-    def test_empty_lines_fits(self):
-        find_lines([6236992043706872832], output_path=output_path, output_file='empty_lines', output_format='fits')
-
-    def test_empty_lines_xml(self):
-        find_lines([6236992043706872832], output_path=output_path, output_file='empty_lines', output_format='xml')
+    def tearDown(self):
+        shutil.rmtree(self.temp_dir)

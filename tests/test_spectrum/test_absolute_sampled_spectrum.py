@@ -23,41 +23,27 @@ parser = InternalContinuousParser()
 parsed_correlation, _ = parser._parse(mean_spectrum_csv_file)
 
 # Create sampled basis functions
-sampled_basis_func = {}
-for band in BANDS:
-    sampled_basis_func[band] = SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[band])
+sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[band])
+                      for band in BANDS}
 
 
 class TestAbsoluteSampledSpectrum(unittest.TestCase):
 
-    def test_init_no_truncation(self):
-        parsed_correlation_dict = parsed_correlation.to_dict('records')
-        for row in parsed_correlation_dict:
-            source_id = row['source_id']
-            cont_dict = {}
-            # Split both bands
-            for _band in BANDS:
-                covariance_matrix = _correlation_to_covariance_dr3int5(row[f'{_band}_coefficient_correlations'],
-                                                                       row[f'{_band}_coefficient_errors'],
-                                                                       row[f'{_band}_standard_deviation'])
-                continuous_object = XpContinuousSpectrum(source_id, _band, row[f'{_band}_coefficients'],
-                                                         covariance_matrix, row[f'{_band}_standard_deviation'])
-                cont_dict[_band] = continuous_object
-            spectrum = AbsoluteSampledSpectrum(source_id, cont_dict, sampled_basis_func, xp_merge, truncation={})
-            self.assertIsInstance(spectrum, AbsoluteSampledSpectrum)
-
     def test_init_truncation(self):
-        for row in parsed_correlation.to_dict('records'):
-            source_id = row['source_id']
-            cont_dict = {}
-            # Split both bands
-            for _band in BANDS:
-                covariance_matrix = _correlation_to_covariance_dr3int5(row[f'{_band}_coefficient_correlations'],
-                                                                       row[f'{_band}_coefficient_errors'],
-                                                                       row[f'{_band}_standard_deviation'])
-                continuous_object = XpContinuousSpectrum(source_id, _band, row[f'{_band}_coefficients'],
-                                                         covariance_matrix, row[f'{_band}_standard_deviation'])
-                cont_dict[_band] = continuous_object
-            spectrum = AbsoluteSampledSpectrum(source_id, cont_dict, sampled_basis_func, xp_merge,
-                                               truncation={'bp': 50, 'rp': 40})
-            self.assertIsInstance(spectrum, AbsoluteSampledSpectrum)
+        truncations = [{}, {'bp': 50, 'rp': 40}]
+        for truncation in truncations:
+            parsed_correlation_dict = parsed_correlation.to_dict('records')
+            for row in parsed_correlation_dict:
+                source_id = row['source_id']
+                cont_dict = {}
+                # Split both bands
+                for _band in BANDS:
+                    covariance_matrix = _correlation_to_covariance_dr3int5(row[f'{_band}_coefficient_correlations'],
+                                                                           row[f'{_band}_coefficient_errors'],
+                                                                           row[f'{_band}_standard_deviation'])
+                    continuous_object = XpContinuousSpectrum(source_id, _band, row[f'{_band}_coefficients'],
+                                                             covariance_matrix, row[f'{_band}_standard_deviation'])
+                    cont_dict[_band] = continuous_object
+                spectrum = AbsoluteSampledSpectrum(source_id, cont_dict, sampled_basis_func, xp_merge,
+                                                   truncation=truncation)
+                self.assertIsInstance(spectrum, AbsoluteSampledSpectrum)

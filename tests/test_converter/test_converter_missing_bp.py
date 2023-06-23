@@ -29,7 +29,7 @@ class TestConverterMissingBPFileInput(unittest.TestCase):
             pdt.assert_frame_equal(output_df, with_missing_solution_df, rtol=_rtol, atol=_atol)
 
     def test_missing_bp_file_isolated(self):
-        for file in con_with_missing_input_files:
+        for file in con_isolated_missing_input_files:
             output_df, sampling = convert(file, save_file=False)
             pdt.assert_frame_equal(output_df, missing_solution_df, atol=_atol, rtol=_rtol)
             npt.assert_array_equal(sampling, with_missing_solution_sampling)

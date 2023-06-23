@@ -1,3 +1,5 @@
+import shutil
+import tempfile
 import unittest
 from os.path import join
 
@@ -9,7 +11,7 @@ from astropy.table import Table
 
 from gaiaxpy import calibrate, convert, generate, PhotometricSystem, find_fast, find_extrema, find_lines
 from gaiaxpy.file_parser.parse_generic import GenericParser
-from tests.files.paths import output_sol_path, output_path, mean_spectrum_csv_file
+from tests.files.paths import output_sol_path, mean_spectrum_csv_file
 
 _rtol, _atol = 1e-10, 1e-10
 
@@ -53,123 +55,74 @@ def compare_frames(output_file, solution_file, extension, function_name):
     pdt.assert_frame_equal(output_df, solution_df, rtol=_rtol, atol=_atol)
 
 
-def run_output_test(function, filename, output_format, sampling=None, phot_systems=None):
-    """
-    This class generates GaiaXPy output files. Then, it compares them with the output solution files using filecmp.
-    """
-    if sampling is not None:
-        function(mean_spectrum_csv_file, sampling=sampling, output_path=output_path, output_file=filename,
-                 output_format=output_format)
-    if phot_systems is not None:
-        function(mean_spectrum_csv_file, photometric_system=phot_systems, output_path=output_path, output_file=filename,
-                 output_format=output_format)
-    elif sampling is None and phot_systems is None:
-        function(mean_spectrum_csv_file, output_path=output_path, output_file=filename, output_format=output_format)
-    current_file = f'{filename}.{output_format}'
-    compare_frames(join(output_path, current_file), join(output_sol_path, current_file), extension=output_format,
-                   function_name=function.__name__)
-    if output_format in ['csv', '.csv'] and phot_systems is None and 'find' not in function.__name__:
-        # A sampling file will be generated too (calibrate and convert), it needs to be tested
-        current_sampling_file = f'{filename}_sampling.{output_format}'
-        compare_frames(join(output_path, current_sampling_file), join(output_sol_path, current_sampling_file),
-                       extension=output_format, function_name=function.__name__)
+class TestSaveContRaw(unittest.TestCase):
 
+    def setUp(self):
+        self.temp_dir = tempfile.mkdtemp()
 
-class TestSaveContRawCalibrator(unittest.TestCase):
+    def tearDown(self):
+        shutil.rmtree(self.temp_dir)
 
-    def test_save_output_csv(self):
-        run_output_test(calibrate, 'calibrator', 'csv')
+    def run_output_test(self, function, filename, output_format, sampling=None, phot_systems=None):
+        """
+        This class generates GaiaXPy output files. Then, it compares them with the output solution files using filecmp.
+        """
+        output_path = self.temp_dir
+        if sampling is not None:
+            function(mean_spectrum_csv_file, sampling=sampling, output_path=output_path, output_file=filename,
+                     output_format=output_format)
+        if phot_systems is not None:
+            function(mean_spectrum_csv_file, photometric_system=phot_systems, output_path=output_path,
+                     output_file=filename,
+                     output_format=output_format)
+        elif sampling is None and phot_systems is None:
+            function(mean_spectrum_csv_file, output_path=output_path, output_file=filename, output_format=output_format)
+        current_file = f'{filename}.{output_format}'
+        compare_frames(join(output_path, current_file), join(output_sol_path, current_file), extension=output_format,
+                       function_name=function.__name__)
+        if output_format in ['csv', '.csv'] and phot_systems is None and 'find' not in function.__name__:
+            # A sampling file will be generated too (calibrate and convert), it needs to be tested
+            current_sampling_file = f'{filename}_sampling.{output_format}'
+            compare_frames(join(output_path, current_sampling_file), join(output_sol_path, current_sampling_file),
+                           extension=output_format, function_name=function.__name__)
 
-    def test_save_output_ecsv(self):
-        run_output_test(calibrate, 'calibrator', 'ecsv')
+    def test_save_output_calibrator(self):
+        for extension in ['csv', 'ecsv', 'fits', 'xml']:
+            self.run_output_test(calibrate, 'calibrator', extension)
 
-    def test_save_output_fits(self):
-        run_output_test(calibrate, 'calibrator', 'fits')
-
-    def test_save_output_xml(self):
-        run_output_test(calibrate, 'calibrator', 'xml')
-
-
-class TestSaveContRawConverter(unittest.TestCase):
-
-    def test_save_output_csv(self):
-        run_output_test(convert, 'converter', 'csv')
+    def test_save_output_converter(self):
+        for extension in ['csv', 'ecsv', 'fits', 'xml']:
+            self.run_output_test(convert, 'converter', extension)
 
     def test_save_output_csv_custom_0_40_350(self):
-        run_output_test(convert, 'converter_custom_0_40_350', 'csv', sampling=np.linspace(0, 40, 350))
-
-    def test_save_output_ecsv(self):
-        run_output_test(convert, 'converter', 'ecsv')
-
-    def test_save_output_fits(self):
-        run_output_test(convert, 'converter', 'fits')
+        self.run_output_test(convert, 'converter_custom_0_40_350', 'csv', sampling=np.linspace(0, 40, 350))
 
     def test_save_output_fits_custom_0_45_400(self):
-        run_output_test(convert, 'converter_custom_0_45_400', 'fits')
-
-    def test_save_output_xml(self):
-        run_output_test(convert, 'converter', 'xml')
+        self.run_output_test(convert, 'converter_custom_0_45_400', 'fits')
 
     def test_save_output_xml_custom_0_30_300(self):
-        run_output_test(convert, 'converter_custom_0_30_300', 'xml')
-
-
-class TestSaveContRawGenerator(unittest.TestCase):
+        self.run_output_test(convert, 'converter_custom_0_30_300', 'xml')
 
     def test_save_output_csv_gaia_2(self):
-        run_output_test(generate, 'photometry_gaia_2', 'csv', phot_systems=PhotometricSystem.Gaia_2)
+        self.run_output_test(generate, 'photometry_gaia_2', 'csv', phot_systems=PhotometricSystem.Gaia_2)
 
     def test_save_output_ecsv_sdss_std(self):
-        run_output_test(generate, 'photometry_sdss_std', 'ecsv', phot_systems=PhotometricSystem.SDSS_Std)
+        self.run_output_test(generate, 'photometry_sdss_std', 'ecsv', phot_systems=PhotometricSystem.SDSS_Std)
 
     def test_save_output_fits_multi(self):
-        run_output_test(generate, 'photometry_multi', 'fits', phot_systems=[PhotometricSystem.Gaia_DR3_Vega,
+        self.run_output_test(generate, 'photometry_multi', 'fits', phot_systems=[PhotometricSystem.Gaia_DR3_Vega,
                                                                             PhotometricSystem.HST_HUGS_Std])
 
     def test_save_output_xml_pristine(self):
-        run_output_test(generate, 'photometry_pristine', 'xml', phot_systems=[PhotometricSystem.Pristine])
+        self.run_output_test(generate, 'photometry_pristine', 'xml', phot_systems=[PhotometricSystem.Pristine])
 
+    def test_save_fastfinder(self):
+        for extension in ['csv', 'ecsv', 'fits', 'xml']:
+            self.run_output_test(find_fast, 'fastfinder', extension)
 
-class TestSaveContRawFastFinder(unittest.TestCase):
-
-    def test_save_output_csv(self):
-        run_output_test(find_fast, 'fastfinder', 'csv')
-
-    def test_save_output_ecsv(self):
-        run_output_test(find_fast, 'fastfinder', 'ecsv')
-
-    def test_save_output_fits(self):
-        run_output_test(find_fast, 'fastfinder', 'fits')
-
-    def test_save_output_xml(self):
-        run_output_test(find_fast, 'fastfinder', 'xml')
-
-
-class TestSaveContRawExtremaFinder(unittest.TestCase):
-
-    def test_save_output_csv(self):
-        run_output_test(find_extrema, 'extremafinder', 'csv')
-
-    def test_save_output_ecsv(self):
-        run_output_test(find_extrema, 'extremafinder', 'ecsv')
-
-    def test_save_output_fits(self):
-        run_output_test(find_extrema, 'extremafinder', 'fits')
-
-    def test_save_output_xml(self):
-        run_output_test(find_extrema, 'extremafinder', 'xml')
-
-
-class TestSaveContRawLineFinder(unittest.TestCase):
-
-    def test_save_output_csv(self):
-        run_output_test(find_lines, 'linefinder', 'csv')
-
-    def test_save_output_ecsv(self):
-        run_output_test(find_lines, 'linefinder', 'ecsv')
-
-    def test_save_output_fits(self):
-        run_output_test(find_lines, 'linefinder', 'fits')
-
-    def test_save_output_xml(self):
-        run_output_test(find_lines, 'linefinder', 'xml')
+    def test_save_extremafinder(self):
+        for extension in ['csv', 'ecsv', 'fits', 'xml']:
+            self.run_output_test(find_extrema, 'extremafinder', extension)
+    def test_save_linefinder(self):
+        for extension in ['csv', 'ecsv', 'fits', 'xml']:
+            self.run_output_test(find_lines, 'linefinder', extension)

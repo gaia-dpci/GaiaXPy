@@ -31,6 +31,8 @@ missing_bp_ecsv_file = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3in
 missing_bp_fits_file = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.fits')
 missing_bp_xml_file = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int6.xml')
 missing_bp_xml_plain_file = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_plain_dr3int6.xml')
+# Colour equation
+colour_eq_csv_file = join(continuous_path, 'XP_CONTINUOUS_RAW_colour_eq_dr3int6.csv')
 
 """
 ==================
@@ -39,6 +41,7 @@ missing_bp_xml_plain_file = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_
 """
 output_sol_path = join(files_path, 'output_solution')  # Read the expected solution to compare with the output files
 calibrator_sol_path = join(files_path, 'calibrator_solution')
+colour_eq_sol_path = join(files_path, 'colour_equation')
 converter_sol_path = join(files_path, 'converter_solution')
 generator_sol_path = join(files_path, 'generator_solution')
 corrected_errors_solution_path = join(files_path, 'error_correction_solution', 'corrected_errors_solution.csv')
@@ -60,9 +63,9 @@ sol_with_missing_sampling_path = join(calibrator_sol_path, 'with_missing_calibra
 sol_with_covariance_sampling_path = join(calibrator_sol_path, 'calibrate_with_covariance_solution_sampling.csv')
 
 """
-===========================
-  Regular solutions paths
-===========================
+======================================
+  Calibrator regular solutions paths
+======================================
 """
 # Calibrator solution converters
 calibrator_sol_converters = dict([(column, lambda x: str_to_array(x)) for column in ['flux', 'flux_error']])
@@ -76,6 +79,13 @@ solution_v211w_custom_path = join(calibrator_sol_path, 'calibrator_solution_v211
 with_missing_solution_path = join(calibrator_sol_path, 'with_missing_calibrator_solution.csv')
 # With truncation
 with_truncation_solution_path = join(calibrator_sol_path, 'calibrator_solution_truncation_default.csv')
+
+"""
+===============================
+Colour equation solution path
+===============================
+"""
+johnson_solution_path = join(colour_eq_sol_path, 'Landolt_Johnson_Ucorr_v375wiv142r_SAMPLE.csv')
 
 """
 ================================

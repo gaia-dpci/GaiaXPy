@@ -9,7 +9,8 @@ import pandas.testing as pdt
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
 from gaiaxpy.core.generic_functions import cast_output
-from tests.test_colour_equation.colour_equation_paths import johnson_solution_path, colour_eq_csv
+from tests.files.paths import colour_eq_csv_file
+from tests.test_colour_equation.colour_equation_paths import johnson_solution_path
 
 _rtol, _atol = 1e-24, 1e-24
 
@@ -30,7 +31,7 @@ class TestSingleColourEquation(unittest.TestCase):
         phot_system = PhotometricSystem.JKC_Std
         bands = phot_system.get_bands()
         label = phot_system.get_system_label()
-        output_photometry = generate(colour_eq_csv, phot_system, save_file=False)
+        output_photometry = generate(colour_eq_csv_file, phot_system, save_file=False)
         # Read PMN photometry
         # Source for which data could be extracted from Geapre
         sources_to_keep = [4408087461749558912, 4408087908426160384, 4408088011505376128]
@@ -55,7 +56,7 @@ class TestSingleColourEquation(unittest.TestCase):
         label = phot_system.get_system_label()
         # The band the changes in Johnson_Std is U, all the other stay the same
         affected_band = 'U'
-        output_photometry = generate(colour_eq_csv, phot_system, save_file=False)
+        output_photometry = generate(colour_eq_csv_file, phot_system, save_file=False)
         # DataFrame with all the columns that
         unchanged_columns = [column for column in output_photometry.columns if affected_band not in column]
         affected_columns = [column for column in output_photometry.columns if affected_band in column]

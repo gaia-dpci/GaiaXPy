@@ -14,9 +14,9 @@ from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousPars
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-from tests.files.paths import missing_bp_xml_plain_file, mean_spectrum_xml_plain_file
-from tests.test_converter.converter_paths import ref_sampled_csv, ref_sampled_truncated_csv,\
-    converter_csv_solution_0_60_481_df, missing_band_sampling_solution_path, optimised_bases_df
+from tests.files.paths import missing_bp_xml_plain_file, mean_spectrum_xml_plain_file, \
+    con_sol_missing_band_sampling_path, con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path
+from tests.test_converter.converter_paths import optimised_bases_df, converter_csv_solution_0_60_481_df
 from tests.utils.utils import get_spectrum_with_source_id_and_xp
 
 # Parsers
@@ -31,8 +31,8 @@ design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_base
 converted_df, _ = convert(mean_spectrum_xml_plain_file, sampling=sampling, save_file=False)
 
 sampled_parser = InternalSampledParser()
-ref_sampled, _ = sampled_parser._parse(ref_sampled_csv)
-ref_sampled_truncated, _ = sampled_parser._parse(ref_sampled_truncated_csv)
+ref_sampled, _ = sampled_parser._parse(con_ref_sampled_csv_path)
+ref_sampled_truncated, _ = sampled_parser._parse(con_ref_sampled_truncated_csv_path)
 
 TOL = 4
 _rtol, _atol = 1e-11, 1e-11
@@ -123,7 +123,7 @@ class TestConverterMissingBand(unittest.TestCase):
         npt.assert_array_equal(sampling, np.linspace(0, 60, 600))
         converted_spectra = converted_spectra.iloc[0]
         # Read solution
-        solution_values = pd.read_csv(missing_band_sampling_solution_path, float_precision='high').iloc[0]
+        solution_values = pd.read_csv(con_sol_missing_band_sampling_path, float_precision='high').iloc[0]
         self.assertEqual(converted_spectra['source_id'], solution_values['source_id'])
         self.assertEqual(converted_spectra['xp'], solution_values['xp'])
         npt.assert_array_almost_equal(converted_spectra['flux'], np.array(literal_eval(solution_values['flux'])))

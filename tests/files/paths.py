@@ -52,15 +52,15 @@ corrected_errors_solution_path = join(files_path, 'error_correction_solution', '
 ========================================
 """
 # Default model
-sol_default_sampling_path = join(calibrator_sol_path, 'calibrator_solution_default_sampling.csv')
+cal_sol_default_sampling_path = join(calibrator_sol_path, 'calibrator_solution_default_sampling.csv')
 sol_custom_sampling_path = join(calibrator_sol_path, 'calibrator_solution_custom_sampling.csv')
 # v211w model
-sol_v211w_default_sampling_path = join(calibrator_sol_path, 'calibrator_solution_v211w_default_sampling.csv')
-sol_v211w_custom_sampling_path = join(calibrator_sol_path, 'calibrator_solution_v211w_custom_sampling.csv')
+cal_sol_v211w_default_sampling_path = join(calibrator_sol_path, 'calibrator_solution_v211w_default_sampling.csv')
+cal_sol_v211w_custom_sampling_path = join(calibrator_sol_path, 'calibrator_solution_v211w_custom_sampling.csv')
 # With missing
-sol_with_missing_sampling_path = join(calibrator_sol_path, 'with_missing_calibrator_solution_sampling.csv')
+cal_sol_with_missing_sampling_path = join(calibrator_sol_path, 'with_missing_calibrator_solution_sampling.csv')
 # With covariance
-sol_with_covariance_sampling_path = join(calibrator_sol_path, 'calibrate_with_covariance_solution_sampling.csv')
+cal_sol_with_covariance_sampling_path = join(calibrator_sol_path, 'calibrate_with_covariance_solution_sampling.csv')
 
 """
 ======================================
@@ -70,22 +70,48 @@ sol_with_covariance_sampling_path = join(calibrator_sol_path, 'calibrate_with_co
 # Calibrator solution converters
 calibrator_sol_converters = dict([(column, lambda x: str_to_array(x)) for column in ['flux', 'flux_error']])
 # Default model
-solution_default_path = join(calibrator_sol_path, 'calibrator_solution_default.csv')
-solution_custom_path = join(calibrator_sol_path, 'calibrator_solution_custom.csv')
+cal_sol_default_path = join(calibrator_sol_path, 'calibrator_solution_default.csv')
+cal_sol_custom_path = join(calibrator_sol_path, 'calibrator_solution_custom.csv')
 # v211w model
-solution_v211w_default_path = join(calibrator_sol_path, 'calibrator_solution_v211w_default.csv')
-solution_v211w_custom_path = join(calibrator_sol_path, 'calibrator_solution_v211w_custom.csv')
+cal_sol_v211w_default_path = join(calibrator_sol_path, 'calibrator_solution_v211w_default.csv')
+cal_sol_v211w_custom_path = join(calibrator_sol_path, 'calibrator_solution_v211w_custom.csv')
 # With missing
-with_missing_solution_path = join(calibrator_sol_path, 'with_missing_calibrator_solution.csv')
+cal_sol_with_missing_path = join(calibrator_sol_path, 'with_missing_calibrator_solution.csv')
 # With truncation
-with_truncation_solution_path = join(calibrator_sol_path, 'calibrator_solution_truncation_default.csv')
+cal_sol_with_truncation_path = join(calibrator_sol_path, 'calibrator_solution_truncation_default.csv')
 
 """
 ===============================
 Colour equation solution path
 ===============================
 """
-johnson_solution_path = join(colour_eq_sol_path, 'Landolt_Johnson_Ucorr_v375wiv142r_SAMPLE.csv')
+col_eq_sol_johnson_path = join(colour_eq_sol_path, 'Landolt_Johnson_Ucorr_v375wiv142r_SAMPLE.csv')
+
+"""
+========================================
+  Converter samplings solutions paths
+========================================
+"""
+con_sol_missing_band_sampling_path = join(converter_sol_path, 'missing_band_default_sampling_solution.csv')
+con_sol_with_missing_sampling_path = join(converter_sol_path, 'with_missing_converter_solution_sampling.csv')
+con_sol_with_cov_missing_sampling_path = join(converter_sol_path,
+                                              'converter_with_covariance_missing_bp_solution_sampling.csv')
+
+"""
+===================================
+Converter regular solutions paths
+===================================
+"""
+con_converters=dict([(column, lambda x: str_to_array(x)) for column in ['flux', 'flux_error']])
+con_cov_converters={key: (lambda x: str_to_array(x)) for key in ['flux', 'flux_error', 'covariance']}
+# Files to compare the sampled spectrum with value by value without/with truncation applied
+con_ref_sampled_csv_path = join(converter_sol_path, 'SampledMeanSpectrum.csv')
+con_ref_sampled_truncated_csv_path = join(converter_sol_path, 'SampledMeanSpectrum_truncated.csv')
+con_sol_mean_spectrum_csv_with_cov_path = join(converter_sol_path,
+                                               'converter_with_covariance_missing_bp_solution.csv')
+con_sol_avro_0_60_481_path = join(converter_sol_path, 'converter_avro_solution_0_60_481.csv')
+con_sol_csv_0_60_481_path = join(converter_sol_path, 'converter_solution_0_60_481.csv')
+con_sol_with_missing_path = join(converter_sol_path, 'with_missing_converter_solution.csv')
 
 """
 ================================

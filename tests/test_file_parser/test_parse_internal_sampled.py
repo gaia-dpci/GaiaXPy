@@ -4,10 +4,10 @@ import pandas as pd
 from numpy import ndarray, dtype
 
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
-from tests.test_converter.converter_paths import ref_sampled_csv
+from tests.test_converter.converter_paths import ref_sampled_csv_path
 
 parser = InternalSampledParser()
-parsed_csv_file, _ = parser._parse(ref_sampled_csv)
+parsed_csv_file, _ = parser._parse(ref_sampled_csv_path)
 
 
 class TestInternalSampledParserCSV(unittest.TestCase):

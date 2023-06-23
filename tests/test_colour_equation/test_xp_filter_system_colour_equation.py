@@ -10,7 +10,7 @@ from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
 from gaiaxpy.core.generic_functions import cast_output
 from tests.files.paths import colour_eq_csv_file
-from tests.test_colour_equation.colour_equation_paths import johnson_solution_path
+from tests.test_colour_equation.colour_equation_paths import col_eq_sol_johnson_path
 
 _rtol, _atol = 1e-24, 1e-24
 
@@ -35,7 +35,7 @@ class TestSingleColourEquation(unittest.TestCase):
         # Read PMN photometry
         # Source for which data could be extracted from Geapre
         sources_to_keep = [4408087461749558912, 4408087908426160384, 4408088011505376128]
-        johnson_solution_df = pd.read_csv(johnson_solution_path)
+        johnson_solution_df = pd.read_csv(col_eq_sol_johnson_path)
         johnson_solution_df = johnson_solution_df.loc[johnson_solution_df['source_id'].isin(sources_to_keep)]
         for source_id in sources_to_keep:
             output_source = output_photometry[output_photometry['source_id'] == source_id].iloc[0]
@@ -67,7 +67,7 @@ class TestSingleColourEquation(unittest.TestCase):
         output_photometry_differences = output_photometry[['source_id'] + affected_columns]
         for source_id in output_photometry['source_id'].values:
             # solution columns format: {band}, {band}_err
-            johnson_solution_df = pd.read_csv(johnson_solution_path)
+            johnson_solution_df = pd.read_csv(col_eq_sol_johnson_path)
             source_solution = johnson_solution_df[johnson_solution_df['source_id'] == source_id].iloc[0]
             source_result = output_photometry_differences[output_photometry_differences['source_id'] ==
                                                           source_id].iloc[0]
@@ -78,7 +78,7 @@ class TestSingleColourEquation(unittest.TestCase):
                                       source_result[f'{label}_flux_error_{affected_band}'])
             npt.assert_almost_equal(source_solution[f'{affected_band}_err'], mag_error)
         # Read PMN's photometry
-        pmn_corrected_photometry = pd.read_csv(johnson_solution_path)
+        pmn_corrected_photometry = pd.read_csv(col_eq_sol_johnson_path)
         sources_to_keep = [4408087461749558912, 4408087908426160384, 4408088011505376128]
         pmn_corrected_photometry = pmn_corrected_photometry.loc[pmn_corrected_photometry['source_id'].isin(
             sources_to_keep)]

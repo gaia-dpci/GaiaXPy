@@ -13,9 +13,8 @@ from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousPars
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-from tests.files.paths import mean_spectrum_avro_file
-from tests.test_converter.converter_paths import converter_avro_solution_0_60_481_df, ref_sampled_csv,\
-    ref_sampled_truncated_csv, optimised_bases_df
+from tests.files.paths import mean_spectrum_avro_file, con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path
+from tests.test_converter.converter_paths import converter_avro_solution_0_60_481_df, optimised_bases_df
 from tests.utils.utils import get_spectrum_with_source_id_and_xp
 
 # Parsers
@@ -30,8 +29,8 @@ design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_base
 converted_df, positions = convert(mean_spectrum_avro_file, sampling=sampling, save_file=False)
 
 sampled_parser = InternalSampledParser()
-ref_sampled, _ = sampled_parser._parse(ref_sampled_csv)
-ref_sampled_truncated, _ = sampled_parser._parse(ref_sampled_truncated_csv)
+ref_sampled, _ = sampled_parser._parse(con_ref_sampled_csv_path)
+ref_sampled_truncated, _ = sampled_parser._parse(con_ref_sampled_truncated_csv_path)
 
 TOL = 4
 _rtol, _atol = 1e-11, 1e-11

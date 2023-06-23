@@ -1,5 +1,4 @@
 import unittest
-from types import NoneType
 
 import numpy as np
 import numpy.testing as npt
@@ -33,6 +32,7 @@ class TestCholeskyMissingBP(unittest.TestCase):
                 inv_cov_with_missing_df['source_id'] ==
                 missing_bp_source_id].iloc[0][f'{band}_inverse_covariance']
             # Solution can be empty for BP
+            NoneType = type(None)
             if isinstance(output, NoneType) and isinstance(solution, NoneType):
                 self.assertTrue(True)
             else:

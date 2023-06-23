@@ -12,7 +12,7 @@ from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from tests.files.paths import mean_spectrum_fits_file, mean_spectrum_csv_file, mean_spectrum_xml_file,\
     mean_spectrum_xml_plain_file
-from tests.test_calibrator.calibrator_paths import sol_default_sampling_array, truncation_default_solution_df
+from tests.test_calibrator.calibrator_solutions import sol_default_sampling_array, truncation_default_solution_df
 
 # TODO: Add tests for AVRO format
 

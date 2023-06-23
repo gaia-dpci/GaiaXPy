@@ -12,6 +12,7 @@ from gaiaxpy.core import satellite
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from tests.utils.utils import assert_band_err
 
 config_parser = ConfigParser()
 config_parser.read(config_ini_file)
@@ -45,29 +46,19 @@ for xp in satellite.BANDS:
                                                                                                      instr_model)
 
 
-class TestDesignMatrix(unittest.TestCase):
+class TestExternalInstrument(unittest.TestCase):
 
-    def test_bp_design_matrix_from_instrument_model_types(self):
-        self.assertIsInstance(design_matrices_from_instrument_model[BANDS.bp].design_matrix, ndarray)
-        self.assertIsInstance(design_matrices_from_csv[BANDS.bp], ndarray)
+    def test_band_design_matrix_from_instrument_model(self):
+        instance = ndarray
+        for band in BANDS:
+            self.assertIsInstance(design_matrices_from_instrument_model[band].design_matrix, instance,
+                                  msg=assert_band_err(band))
+            self.assertIsInstance(design_matrices_from_csv[band], instance, msg=assert_band_err(band))
+            self.assertTrue(np.allclose(design_matrices_from_instrument_model[band].design_matrix,
+                                        design_matrices_from_csv[band], rtol=rtol, atol=atol),
+                            msg=assert_band_err(band))
 
-    def test_bp_design_matrix_from_instrument_model(self):
-        self.assertTrue(np.allclose(design_matrices_from_instrument_model[BANDS.bp].design_matrix,
-                                    design_matrices_from_csv[BANDS.bp], rtol, atol))
-
-    def test_rp_design_matrix_from_instrument_model_types(self):
-        self.assertIsInstance(design_matrices_from_instrument_model[BANDS.rp].design_matrix, ndarray)
-        self.assertIsInstance(design_matrices_from_csv[BANDS.rp], ndarray)
-
-    def test_rp_design_matrix_from_instrument_model(self):
-        self.assertTrue(np.allclose(design_matrices_from_instrument_model[BANDS.rp].design_matrix,
-                                    design_matrices_from_csv[BANDS.rp], rtol, atol))
-
-
-class TestMerge(unittest.TestCase):
-
-    def test_bp_merge(self):
-        self.assertTrue(np.allclose(xp_merge_from_instrument_model[BANDS.bp], xp_merge[BANDS.bp], rtol, atol))
-
-    def test_rp_merge(self):
-        self.assertTrue(np.allclose(xp_merge_from_instrument_model[BANDS.rp], xp_merge[BANDS.rp], rtol, atol))
+    def test_band_merge(self):
+        for band in BANDS:
+            self.assertTrue(np.allclose(xp_merge_from_instrument_model[band], xp_merge[band], rtol=rtol, atol=atol),
+                            msg=assert_band_err(band))

@@ -105,6 +105,7 @@ class InternalContinuousParser(GenericParser):
 
     @staticmethod
     def __process_avro_record(record, additional_columns=None):
+        optional_columns = dict()
         # TODO: What happens if the key in additional_columns is already in mandatory_columns?
         mandatory_columns = {key: np.array(_get_from_dict(record, _csv_to_avro_map[key])) if isinstance(
             _get_from_dict(record, _csv_to_avro_map[key]), list) else _get_from_dict(record, _csv_to_avro_map[key])

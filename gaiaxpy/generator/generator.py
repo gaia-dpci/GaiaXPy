@@ -92,6 +92,7 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
         additional_columns_data = parsed_input_data[['source_id'] + list(additional_columns.keys())]
         additional_columns_data.set_index('source_id', inplace=True)
         photometry_df = photometry_df.merge(additional_columns_data, left_index=True, right_index=True, how='outer')
+        photometry_df.reset_index(inplace=True)
     output_data = PhotometryData(photometry_df)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)

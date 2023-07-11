@@ -157,3 +157,10 @@ mini_csv_file = join(mini_path, 'SPSS_mini.csv')
 mini_fits_file = join(mini_path, 'XP_SPECTRA_RAW_mini.fits')
 mini_xml_file = join(mini_path, 'XP_SPECTRA_RAW_mini.xml')
 no_ext_file = join(files_path, 'no_extension_file')
+
+"""
+=====================
+  Other input paths
+=====================
+"""
+phot_with_nan_path = join(files_path, 'phot_with_nan.csv')

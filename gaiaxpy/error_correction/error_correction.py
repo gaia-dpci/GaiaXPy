@@ -5,8 +5,8 @@ Module that implements the error correction over a multi-photometry.
 """
 
 from functools import lru_cache
-from math import isnan, floor
-from os import path, listdir
+from os import listdir
+from os.path import join
 
 import numpy as np
 import pandas as pd
@@ -29,7 +29,7 @@ def _get_correctable_systems():
 
 def _read_system_table(system):
     try:
-        correction_factors_path = path.join(correction_tables_path, f'DIDREQ-465-{system}-correction-factors.csv')
+        correction_factors_path = join(correction_tables_path, f'DIDREQ-465-{system}-correction-factors.csv')
         correction_table = pd.read_csv(correction_factors_path, float_precision='high')
     except FileNotFoundError:
         raise FileNotFoundError(f'No correction table found for system {system}.')
@@ -43,7 +43,7 @@ def _get_correction_array(_mag_G_values, system):
     floor_mag_dict = correction_table.set_index('min_Gmag_bin').T.to_dict()
     factor_columns = [col for col in correction_table.columns if 'factor_' in col]
     _mag_G_values = _mag_G_values.to_frame(name='mag_G')
-    _mag_G_values['row'] = _mag_G_values['mag_G'].map(lambda x: floor_mag_dict.get(float(floor(x))))
+    _mag_G_values['row'] = _mag_G_values['mag_G'].map(lambda x: floor_mag_dict.get(float(np.floor(x))))
     return _mag_G_values.apply(_get_correction_factor, args=(correction_table, factor_columns,
                                                              min_value, max_value,), axis=1)
 
@@ -51,7 +51,7 @@ def _get_correction_array(_mag_G_values, system):
 def _get_correction_factor(mag_row, correction_table, factor_columns, min_value, max_value):
     mag = mag_row['mag_G']
     row = mag_row['row']
-    if (mag > max_value) or isnan(mag):
+    if (mag > max_value) or pd.isna(mag):
         return correction_table[factor_columns].iloc[-1].values
     elif mag < min_value:
         return correction_table[factor_columns].iloc[0].values

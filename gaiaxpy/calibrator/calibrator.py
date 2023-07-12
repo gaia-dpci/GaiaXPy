@@ -16,7 +16,7 @@ from tqdm import tqdm
 from gaiaxpy.config.paths import config_path, config_ini_file
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_wl_sampling, \
-    parse_band
+    parse_band, get_additional_columns_names
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -32,8 +32,8 @@ __FUNCTION_KEY = 'calibrator'
 
 def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None, truncation: bool = False,
               output_path: Union[Path, str] = '.', output_file: str = 'output_spectra', output_format: str = None,
-              save_file: bool = True, with_correlation: bool = False, username: str = None, password: str = None) -> \
-        (pd.DataFrame, np.ndarray):
+              save_file: bool = True, with_correlation: bool = False, additional_columns: Union[dict, list] = None,
+              username: str = None, password: str = None) -> (pd.DataFrame, np.ndarray):
     """
     Calibration utility: calibrates the input internally-calibrated continuously-represented mean spectra to the
     absolute system. An absolute spectrum sampled on a user-defined or default wavelength grid is created for each set
@@ -52,6 +52,11 @@ def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None,
             the input file (e.g. 'csv').
         save_file (bool): Whether to save the output in a file. If false, output_format and output_file will be ignored.
         with_correlation (bool): Whether correlation information should be generated.
+        additional_columns (dict/list): A dictionary of additional columns to be included in the output. The dictionary
+        values need to correspond to the name of the column in the input data, or to a list of columns if the column is
+        nested (as it can be the case in AVRO files). The dictionary keys will correspond to the column name in the
+        output. If there are no nested columns or no columns need to be renamed, a list of columns can be used. The
+        columns in this list will be included in the output as additional columns.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
 
@@ -62,14 +67,15 @@ def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None,
             ndarray: The sampling used to calibrate the input spectra (user-provided or default).
     """
     return _calibrate(input_object, sampling, truncation, output_path, output_file, output_format, save_file,
-                      with_correlation=with_correlation, username=username, password=password)
+                      with_correlation=with_correlation, additional_columns=additional_columns, username=username,
+                      password=password)
 
 
 def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None, truncation: bool = False,
                output_path: Union[Path, str] = '.', output_file: str = 'output_spectra', output_format: str = None,
-               save_file: bool = True, with_correlation: bool = False, username: str = None, password: str = None,
-               bp_model: str = 'v375wi', rp_model: str = 'v142r', disable_info: bool = False) -> \
-        (pd.DataFrame, np.ndarray):
+               save_file: bool = True, with_correlation: bool = False, additional_columns: Union[dict, list] = None,
+               username: str = None, password: str = None, bp_model: str = 'v375wi', rp_model: str = 'v142r',
+               disable_info: bool = False) -> (pd.DataFrame, np.ndarray):
     """
     Internal method of the calibration utility. Refer to "calibrate".
 
@@ -87,15 +93,15 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
     validate_wl_sampling(sampling)
     validate_arguments(_calibrate.__defaults__[3], output_file, save_file)
     parsed_input_data, extension = InputReader(input_object, _calibrate, username, password,
-                                               disable_info=disable_info).read()
+                                               additional_columns=additional_columns, disable_info=disable_info).read()
     xp_design_matrices, xp_merge = __generate_xp_matrices_and_merge(__FUNCTION_KEY, sampling, bp_model, rp_model)
     spectra_df, positions = __create_spectra(parsed_input_data, truncation, xp_design_matrices, xp_merge,
-                                             with_correlation=with_correlation, disable_info=disable_info)
+                                             with_correlation=with_correlation, additional_columns=additional_columns,
+                                             disable_info=disable_info)
+    spectra_df = cast_output(spectra_df)
     output_data = SampledSpectraData(spectra_df, positions)
-    output_data.data = cast_output(output_data)
-    # Save output
     output_data.save(save_file, output_path, output_file, output_format, extension)
-    return output_data.data, positions
+    return spectra_df, positions
 
 
 def __create_merge(xp: str, sampling: np.ndarray) -> np.ndarray:
@@ -170,13 +176,13 @@ def __generate_xp_matrices_and_merge(label: str, sampling: np.ndarray, bp_model:
     return xp_design_matrices, xp_merge
 
 
-def __create_spectra(parsed_spectrum_file: pd.DataFrame, truncation: bool, design_matrices: dict, merge: dict,
-                     with_correlation: bool = False, disable_info: bool = False):
+def __create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_matrices: dict, merge: dict,
+                     with_correlation: bool = False, additional_columns = None, disable_info: bool = False):
     """
      Create a DataFrame of absolute sampled spectra for each source in the parsed mean spectra file.
 
      Args:
-         parsed_spectrum_file (DataFrame): DataFrame containing information for each source in the mean spectra file.
+         parsed_input_data (DataFrame): DataFrame containing information for each source in the mean spectra file.
              This includes columns for both bands (although one band could be missing).
          truncation (bool): If True, the set of bases is truncated.
          design_matrices (dict): Dictionary containing 2D arrays of basis functions sampled on the pseudo-wavelength
@@ -185,6 +191,7 @@ def __create_spectra(parsed_spectrum_file: pd.DataFrame, truncation: bool, desig
              band to the joined absolute spectrum.
          with_correlation (bool, optional): If True, the covariance information is included in the resulting
              AbsoluteSampledSpectrum objects. Defaults to False.
+         additional_columns (list/str): Additional columns to include in the output of the calibrator tool.
 
      Returns:
          tuple:
@@ -192,16 +199,21 @@ def __create_spectra(parsed_spectrum_file: pd.DataFrame, truncation: bool, desig
                  attributes 'data_type' indicating the type of spectra and 'positions' indicating the sample positions.
              positions (ndarray): 1D array of the sample positions.
      """
-    parsed_spectrum_file_dict = parsed_spectrum_file.to_dict('records')
+    additional_columns_df = None
+    if additional_columns:
+        additional_names = get_additional_columns_names(additional_columns)
+        additional_columns_df = parsed_input_data[additional_names]
+        parsed_input_data = parsed_input_data.drop(columns=additional_names)
+    parsed_spectrum_file_dict = parsed_input_data.to_dict('records')
     spectra_series = pd.Series([_create_spectrum(row, truncation, design_matrices, merge,
-                                                 with_correlation=with_correlation)
-                                for row in tqdm(parsed_spectrum_file_dict, desc=pbar_message[__FUNCTION_KEY],
-                                                unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour,
-                                                disable=disable_info)])
+                                                 with_correlation=with_correlation) for row in tqdm(
+        parsed_spectrum_file_dict, desc=pbar_message[__FUNCTION_KEY], unit=pbar_units[__FUNCTION_KEY], leave=False,
+        colour=pbar_colour, disable=disable_info)])
     positions = spectra_series.iloc[0].get_positions()
     spectra_type = get_spectra_type(spectra_series.iloc[0])
     spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict())
     spectra_df = pd.DataFrame(spectra_series.tolist())
+    spectra_df = pd.concat([spectra_df, additional_columns_df], axis=1)
     spectra_df.attrs['data_type'] = spectra_type
     return spectra_df, positions
 

@@ -45,4 +45,4 @@ class ListReader(ArchiveReader):
             data = result[continuous_key][0].to_pandas()
         except (KeyError, IndexError):
             raise ValueError('No continuous raw data found for the given sources.')
-        return DataFrameReader(data)._read_df()
+        return DataFrameReader(data).read_df()

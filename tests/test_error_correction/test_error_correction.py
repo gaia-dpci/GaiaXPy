@@ -1,10 +1,11 @@
 import unittest
+from os.path import join
 
 import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import generate, apply_error_correction, PhotometricSystem
-from tests.files.paths import mean_spectrum_csv_file, corrected_errors_solution_path
+from tests.files.paths import corrected_errors_solution_path, mean_spectrum_csv_file, phot_with_nan_path
 
 _ertol, _eatol = 1e-24, 1e-24
 _rtol, _atol = 1e-15, 1e-15
@@ -64,3 +65,10 @@ class TestErrorCorrection(unittest.TestCase):
                                atol=_eatol)
         pdt.assert_frame_equal(corrected_multiphotometry[other_columns], complete_solution[other_columns], rtol=_rtol,
                                atol=_atol)
+
+    def test_photometry_with_nan(self):
+        phot_with_nan_df = pd.read_csv(phot_with_nan_path)
+        output = apply_error_correction(phot_with_nan_df)
+        solution = pd.read_csv(join(corrected_errors_solution_path, 'phot_with_nan_corrected.csv'))
+        pdt.assert_frame_equal(output, solution)
+

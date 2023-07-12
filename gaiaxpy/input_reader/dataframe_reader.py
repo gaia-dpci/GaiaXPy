@@ -38,7 +38,7 @@ class DataFrameReader(object):
                     np_columns.append(column)
         return list(set(str_columns)), list(set(np_columns))
 
-    def _read_df(self):
+    def read_df(self):
         if not self.disable_info:
             print('Reading input DataFrame...', end='\r')
         content = self.content

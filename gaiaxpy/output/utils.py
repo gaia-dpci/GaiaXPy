@@ -49,22 +49,6 @@ def _get_sampling_dict(positions):
     return {'pos': _array_to_standard(positions)}
 
 
-def _standardise_output_format(_format):
-    """
-    Standardise the output format provided by the user which can contain or not an initial dot, and can contain a
-        mixture of uppercase and lowercase letters.
-
-    Args:
-        _format (str): Output format for the file as provided by the user.
-
-    Returns:
-        str: The format in lowercase letters and with no initial dot (eg.: 'csv').
-    """
-    # Remove initial dot if present
-    _format = _format[1:] if _format[0] == '.' else _format
-    return _format.lower()
-
-
 def _load_header_dict():
     current_path = dirname(abspath(__file__))
     header_dictionary_path = join(current_path, 'ecsv_headers', 'headers_dict.txt')

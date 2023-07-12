@@ -13,7 +13,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_pwl_sampling, \
-    get_additional_columns_names
+    get_additional_columns_names, standardise_extension
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -101,7 +101,7 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     unique_bases_ids = get_unique_basis_ids(parsed_input_data)
     # Get design matrices
     design_matrices = get_design_matrices(unique_bases_ids, sampling, config_df)
-    spectra_df, positions = _create_spectra(parsed_input_data, truncation, design_matrices,
+    spectra_df, positions = _create_spectra(parsed_input_data, extension, truncation, design_matrices,
                                             with_correlation=with_correlation, additional_columns=additional_columns,
                                             disable_info=disable_info)
     # Save output
@@ -137,7 +137,7 @@ def _create_spectrum(row: pd.Series, truncation: bool, design_matrices: dict, ba
                                              truncation=recommended_truncation, with_correlation=with_correlation)
 
 
-def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_matrices: dict,
+def _create_spectra(parsed_input_data: pd.DataFrame, extension: str, truncation: bool, design_matrices: dict,
                     with_correlation: bool = False, additional_columns: Union[dict, list] = None, disable_info=False)\
         -> tuple:
     """
@@ -145,6 +145,7 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
 
     Args:
         parsed_input_data (pd.DataFrame): The parsed input data to create the spectra from.
+        extension (str): Input file extension.
         truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
             the recommended value in the input files.
         design_matrices (dict): The design matrices for the input list of bases.
@@ -178,7 +179,7 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
 
     additional_columns_df = None
     if additional_columns:
-        additional_names = get_additional_columns_names(additional_columns)
+        additional_names = get_additional_columns_names(additional_columns, extension=standardise_extension(extension))
         additional_columns_df = parsed_input_data[additional_names]
         additional_columns_df = additional_columns_df.loc[additional_columns_df.index.repeat(len(BANDS))]
         additional_columns_df = additional_columns_df.reset_index(drop=True)

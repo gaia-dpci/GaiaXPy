@@ -16,7 +16,7 @@ from tqdm import tqdm
 from gaiaxpy.config.paths import config_path, config_ini_file
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_wl_sampling, \
-    parse_band, get_additional_columns_names
+    parse_band, get_additional_columns_names, standardise_extension
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -95,7 +95,7 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
     parsed_input_data, extension = InputReader(input_object, _calibrate, username, password,
                                                additional_columns=additional_columns, disable_info=disable_info).read()
     xp_design_matrices, xp_merge = __generate_xp_matrices_and_merge(__FUNCTION_KEY, sampling, bp_model, rp_model)
-    spectra_df, positions = __create_spectra(parsed_input_data, truncation, xp_design_matrices, xp_merge,
+    spectra_df, positions = __create_spectra(parsed_input_data, extension, truncation, xp_design_matrices, xp_merge,
                                              with_correlation=with_correlation, additional_columns=additional_columns,
                                              disable_info=disable_info)
     spectra_df = cast_output(spectra_df)
@@ -176,14 +176,16 @@ def __generate_xp_matrices_and_merge(label: str, sampling: np.ndarray, bp_model:
     return xp_design_matrices, xp_merge
 
 
-def __create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_matrices: dict, merge: dict,
-                     with_correlation: bool = False, additional_columns = None, disable_info: bool = False):
+def __create_spectra(parsed_input_data: pd.DataFrame, extension: str, truncation: bool, design_matrices: dict,
+                     merge: dict, with_correlation: bool = False, additional_columns = None,
+                     disable_info: bool = False):
     """
      Create a DataFrame of absolute sampled spectra for each source in the parsed mean spectra file.
 
      Args:
          parsed_input_data (DataFrame): DataFrame containing information for each source in the mean spectra file.
              This includes columns for both bands (although one band could be missing).
+         extension (str): Input extension.
          truncation (bool): If True, the set of bases is truncated.
          design_matrices (dict): Dictionary containing 2D arrays of basis functions sampled on the pseudo-wavelength
              grid (either user-defined or default) for both bands.
@@ -201,7 +203,7 @@ def __create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_m
      """
     additional_columns_df = None
     if additional_columns:
-        additional_names = get_additional_columns_names(additional_columns)
+        additional_names = get_additional_columns_names(additional_columns, extension=standardise_extension(extension))
         additional_columns_df = parsed_input_data[additional_names]
         parsed_input_data = parsed_input_data.drop(columns=additional_names)
     parsed_spectrum_file_dict = parsed_input_data.to_dict('records')

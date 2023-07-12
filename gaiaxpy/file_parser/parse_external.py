@@ -5,6 +5,7 @@ Module to parse input files containing externally calibrated sampled spectra.
 """
 
 from .parse_generic import GenericParser
+from ..core.generic_functions import _warning
 
 # Columns that contain arrays (as strings)
 array_columns = ['wl', 'flux', 'flux_error']
@@ -15,7 +16,7 @@ class ExternalParser(GenericParser):
     Parser for externally calibrated sampled spectra.
     """
 
-    def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None):
+    def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, additional_columns=None):
         """
         Parse the input CSV file and store the result in a pandas DataFrame if it contains externally calibrated sampled
             spectra.
@@ -23,10 +24,14 @@ class ExternalParser(GenericParser):
         Args:
             csv_file (str): Path to a CSV file.
             _array_columns (list): List of columns in the file that contain arrays as strings.
+            _matrix_columns (list): Parameter required in the parser hierarchy. Not used in this function.
+            additional_columns (dict/list): Parameter required in the parser hierarchy. Not used in this function.
 
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
         """
+        if additional_columns:
+            _warning(f'Parameter additional_columns not implemented. It will be ignored.')
         if _array_columns is None:
             _array_columns = array_columns
         return super()._parse_csv(csv_file, _array_columns)

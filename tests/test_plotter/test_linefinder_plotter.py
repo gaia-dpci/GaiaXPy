@@ -1,11 +1,12 @@
+import shutil
+import tempfile
 import unittest
-from os import path
 
 import numpy as np
 
 from gaiaxpy.linefinder.linefinder import find_lines, find_extrema
 from gaiaxpy.linefinder.plotter import plot_spectra_with_lines
-from tests.files.paths import files_path, output_path, mean_spectrum_csv_file
+from tests.files.paths import mean_spectrum_csv_file
 
 
 class TestPlotter(unittest.TestCase):
@@ -19,6 +20,13 @@ class TestPlotter(unittest.TestCase):
 
 
 class TestPlotterMethod(unittest.TestCase):
+
+    def setUp(self):
+        self.temp_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.temp_dir)
+
     def test_plotter(self):
         source_id = '5762406'
         sampling = np.arange(0, 60)
@@ -31,4 +39,4 @@ class TestPlotterMethod(unittest.TestCase):
                      2.05)]
         save_plots = True
         plot_spectra_with_lines(source_id, sampling, bp_flux, rp_flux, wavelength, flux, bp_lines, rp_lines,
-                                save_plots, output_path=output_path, prefix='lines')
+                                save_plots, output_path=self.temp_dir, prefix='lines')

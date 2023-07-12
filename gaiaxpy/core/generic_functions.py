@@ -20,25 +20,33 @@ from gaiaxpy.generator.config import get_additional_filters_path
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 
 
-def get_additional_columns_names(additional_columns):
+def get_additional_columns_names(additional_columns, extension='csv'):
     """
     Extract the names of the additional_columns parameter.
 
     Args:
-        additional_columns (dict/list/str): The additional columns to be included in the output of the corresponding tool.
+        additional_columns (dict/list/str): The additional columns to be included in the output of the corresponding
+        tool.
+        extension (str): Input file extension.
 
     Returns:
         (list): A list of the additional_columns names.
     """
+    extension = standardise_extension(extension)
+    if not additional_columns:
+        return list()
     if isinstance(additional_columns, str):
         return [additional_columns]
-    elif isinstance(additional_columns, dict):
-        return list(additional_columns.keys())
     elif isinstance(additional_columns, list):
         return additional_columns
+    if isinstance(additional_columns, dict):
+        if extension == 'avro':
+            return list(additional_columns.keys())
+        else:
+            return list(additional_columns.values())
     else:
-        raise TypeError(f"The input additional_columns is {type(additional_columns)}, and doesn't correspond to any of"
-                        f"the expected types.")
+        raise TypeError(f"The input additional_columns is {type(additional_columns)}, and doesn't correspond to any"
+                        f" of the expected types.")
 
 
 def _get_built_in_systems() -> list:
@@ -299,3 +307,19 @@ def get_matrix_size_from_lower_triangle(array):
         ValueError: If the length of array is not a valid input for a symmetric matrix lower triangle.
     """
     return int((np.sqrt(1 + 8 * len(array)) + 1) / 2)
+
+
+def standardise_extension(_extension):
+    """
+    Standardise the provided extension which can contain or not an initial dot, and can contain a mix of uppercase and
+    lowercase letters.
+
+    Args:
+        _extension (str): File extension which may or may not contain an initial dot.
+
+    Returns:
+        str: The extension in lowercase letters and with no initial dot (eg.: 'csv').
+    """
+    # Remove initial dot if present
+    _extension = _extension[1:] if _extension[0] == '.' else _extension
+    return _extension.lower()

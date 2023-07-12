@@ -6,8 +6,8 @@ Module to represent generic output data.
 from ast import literal_eval
 from os.path import dirname, abspath, join
 
+from gaiaxpy.core.generic_functions import standardise_extension
 from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
-from .utils import _standardise_output_format
 
 
 def _load_header_dict():
@@ -103,7 +103,7 @@ class OutputData(object):
             if output_format is None:
                 output_format = extension
             print('Saving file...', end='\r')
-            output_format = _standardise_output_format(output_format)
+            output_format = standardise_extension(output_format)
             if output_format == 'avro':
                 self._save_avro(output_path, output_file)
             elif output_format == 'csv':

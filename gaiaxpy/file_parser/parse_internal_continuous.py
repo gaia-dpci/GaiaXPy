@@ -9,7 +9,7 @@ import pandas as pd
 from fastavro import __version__ as fa_version
 from packaging import version
 
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, get_additional_columns_names
 from gaiaxpy.core.generic_variables import INTERNAL_CONT_COLS
 from .cast import _cast
 from .parse_generic import GenericParser
@@ -29,7 +29,7 @@ class InternalContinuousParser(GenericParser):
     Parser for internally calibrated continuous spectra.
     """
 
-    def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None):
+    def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None, additional_columns=None):
         """
         Parse the input CSV file and store the result in a pandas DataFrame if it contains internally calibrated
             continuous spectra.
@@ -40,21 +40,39 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
                 square matrix which values are those contained in the second element of the tuple.
             _usecols (list): Columns to read.
+            additional_columns (dict/list/str): Additional columns to include in the output.
 
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
         """
+        extension = 'csv'
         if _matrix_columns is None:
             _matrix_columns = matrix_columns
         if _array_columns is None:
             _array_columns = array_columns
+        _usecols = _usecols if _usecols else INTERNAL_CONT_COLS
+        # TODO: Extend to list as this will only work if additional_columns is a dictionary
+        if additional_columns:
+            # Check if there are duplicate columns. Required columns should not be included more than once nor renamed
+            additional_names = get_additional_columns_names(additional_columns, extension=extension)
+            # TODO: Add warning alerting about the intersection
+            duplicate_names = set(_usecols).intersection(additional_names)
+            additional_columns = dict()
+            for key, value in list(additional_columns.items()):
+                if value not in duplicate_names:
+                    additional_columns[key] = value
+            # Recompute additional names
+            additional_names = get_additional_columns_names(additional_columns, extension=extension)
+            _usecols = _usecols + additional_names
         df = super()._parse_csv(csv_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
-                                _usecols=INTERNAL_CONT_COLS)
+                                _usecols=_usecols)
+        if additional_columns:
+            df = df.rename(columns={v: k for k, v in additional_columns.items()})  # Rename columns accordingly
         for band in BANDS:
             df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
         return df
 
-    def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None, _usecols=None):
+    def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None, _usecols=None, additional_columns=None):
         """
         Parse the input FITS file and store the result in a pandas DataFrame if it contains internally calibrated
             continuous spectra.
@@ -65,6 +83,7 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
                 square matrix which values are those contained in the second element of the tuple.
             _usecols (list): Columns to read.
+            additional_columns (dict/list/str): Additional columns to include in the output.
 
         Returns:
             DataFrame: Pandas DataFrame representing the FITS file.
@@ -73,13 +92,18 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns = matrix_columns
         if _array_columns is None:
             _array_columns = array_columns
+        _usecols = _usecols if _usecols else INTERNAL_CONT_COLS
+        # TODO: Extend to list as this will only work if additional_columns is a dictionary
+        _usecols = _usecols + list(additional_columns.values()) if additional_columns else _usecols
         df = super()._parse_fits(fits_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
-                                 _usecols=INTERNAL_CONT_COLS)
+                                 _usecols=_usecols)
+        if additional_columns:
+            df = df.rename(columns={v: k for k, v in additional_columns.items()})  # Rename columns accordingly
         for band in BANDS:
             df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
         return df
 
-    def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None, _usecols=None):
+    def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None, _usecols=None, additional_columns=None):
         """
         Parse the input XML file and store the result in a pandas DataFrame.
 
@@ -89,6 +113,7 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
                 square matrix which values are those contained in the second element of the tuple.
             _usecols (list): Columns to read.
+            additional_columns (dict/list/str): Additional columns to include in the output.
 
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
@@ -97,8 +122,13 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns = matrix_columns
         if _array_columns is None:
             _array_columns = array_columns
+        _usecols = _usecols if _usecols else INTERNAL_CONT_COLS
+        # TODO: Extend to list as this will only work if additional_columns is a dictionary
+        _usecols = _usecols + list(additional_columns.values()) if additional_columns else _usecols
         df = super()._parse_xml(xml_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
-                                _usecols=INTERNAL_CONT_COLS)
+                                _usecols=_usecols)
+        if additional_columns:
+            df = df.rename(columns={v: k for k, v in additional_columns.items()})  # Rename columns accordingly
         for band in BANDS:
             df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
         return df

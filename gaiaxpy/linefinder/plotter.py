@@ -3,7 +3,7 @@ from typing import Union
 
 import matplotlib.pyplot as plt
 
-from gaiaxpy.output.utils import _standardise_output_format
+from gaiaxpy.core.generic_functions import standardise_extension
 
 colours = [f'tab:{colour}' for colour in ['green', 'orange', 'purple', 'brown', 'pink', 'olive', 'cyan', 'grey']]
 
@@ -88,7 +88,7 @@ def plot_spectra_with_lines(source_id: Union[int, str], sampling, bp_flux, rp_fl
     elif len(bp_lines + rp_lines) > 12:
         ax3.legend(fontsize=4)
     if save_plots:
-        format = _standardise_output_format(format)
+        format = standardise_extension(format)
         output_path = output_path if output_path else '.'
         output_file_name = str(source_id) + '.' + format
         if prefix:

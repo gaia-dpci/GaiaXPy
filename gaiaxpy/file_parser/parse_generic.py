@@ -3,13 +3,13 @@ parse_generic.py
 ====================================
 Module to parse input files containing spectra.
 """
-
+import warnings
 from os.path import splitext
 
 import pandas as pd
 from astropy.table import Table
 
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array, get_additional_columns_names
 from .cast import _cast
 
 valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']

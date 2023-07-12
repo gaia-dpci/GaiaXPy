@@ -47,7 +47,7 @@ colour_eq_sol_path = join(files_path, 'colour_equation')
 converter_sol_path = join(files_path, 'converter_solution')
 generator_sol_path = join(files_path, 'generator_solution')
 linefinder_sol_path = join(files_path, 'linefinder_solution')
-corrected_errors_solution_path = join(files_path, 'error_correction_solution', 'corrected_errors_solution.csv')
+corrected_error_sol_path = join(files_path, 'error_correction_solution')
 
 """
 ========================================

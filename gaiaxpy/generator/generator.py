@@ -14,8 +14,8 @@ from .photometric_system import PhotometricSystem
 
 def generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
              output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
-             output_format: str = None, save_file: bool = True, error_correction: bool = False, username: str = None,
-             password: str = None, additional_columns=None) -> pd.DataFrame:
+             output_format: str = None, save_file: bool = True, error_correction: bool = False,
+             additional_columns: Union[dict, list] = None, username: str = None, password: str = None) -> pd.DataFrame:
     """
     Synthetic photometry utility: generates synthetic photometry in a set of available systems from the input
     internally-calibrated continuously-represented mean spectra.
@@ -34,6 +34,11 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
             be ignored.
         error_correction (bool): Whether to apply to the photometric errors the tabulated factors to mitigate
             underestimated errors (see Montegriffo et al., 2022, for more details).
+        additional_columns (dict/list): A dictionary of additional columns to be included in the output. The dictionary
+        values need to correspond to the name of the column in the input data, or to a list of columns if the column is
+        nested (as it can be the case in AVRO files). The dictionary keys will correspond to the column name in the
+        output. If there are no nested columns or no columns need to be renamed, a list of columns can be used. The
+        columns in this list will be included in the output as additional columns.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
 
@@ -93,7 +98,7 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
         additional_columns_data.set_index('source_id', inplace=True)
         photometry_df = photometry_df.merge(additional_columns_data, left_index=True, right_index=True, how='outer')
         photometry_df.reset_index(inplace=True)
+    photometry_df = cast_output(photometry_df)
     output_data = PhotometryData(photometry_df)
-    output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
-    return output_data.data
+    return photometry_df

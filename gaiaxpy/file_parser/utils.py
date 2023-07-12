@@ -14,7 +14,7 @@ def _get_from_dict(dictionary, _map):
     except TypeError:
         return None
     except KeyError:
-        raise KeyError(f'Element {_map} not found in dictionary.')
+        raise KeyError(f'Element {_map} not found in AVRO dictionary. Is it an actual field in the input file?')
 
 
 # This dictionary contains the mapping from the usual CSV fields to the AVRO fields.

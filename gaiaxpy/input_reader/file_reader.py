@@ -35,5 +35,5 @@ class FileReader(object):
         self.function = function.__name__
         self.disable_info = disable_info
 
-    def _select(self):
+    def select(self):
         return function_parser_dict[self.function]()

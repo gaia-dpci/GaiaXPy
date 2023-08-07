@@ -9,7 +9,7 @@ import pandas as pd
 from fastavro import __version__ as fa_version
 from packaging import version
 
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, get_additional_columns_names
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
 from gaiaxpy.core.generic_variables import INTERNAL_CONT_COLS
 from .cast import _cast
 from .parse_generic import GenericParser
@@ -29,7 +29,7 @@ class InternalContinuousParser(GenericParser):
     Parser for internally calibrated continuous spectra.
     """
 
-    def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None, additional_columns=None):
+    def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
         Parse the input CSV file and store the result in a pandas DataFrame if it contains internally calibrated
             continuous spectra.
@@ -40,7 +40,6 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
                 square matrix which values are those contained in the second element of the tuple.
             _usecols (list): Columns to read.
-            additional_columns (dict/list/str): Additional columns to include in the output.
 
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
@@ -51,26 +50,13 @@ class InternalContinuousParser(GenericParser):
         if _array_columns is None:
             _array_columns = array_columns
         _usecols = _usecols if _usecols else INTERNAL_CONT_COLS
-        # TODO: Extend to list as this will only work if additional_columns is a dictionary
-        if additional_columns:
-            # Check if there are duplicate columns. Required columns should not be included more than once nor renamed
-            additional_names = get_additional_columns_names(additional_columns)
-            duplicate_columns = set(additional_names).intersection(set(_usecols))
-            if duplicate_columns:
-                raise ValueError(f'Additional columns {duplicate_columns} are already included in the original columns.'
-                                 f' This is currently not allowed.')
-            # Recompute additional names
-            additional_names = get_additional_columns_names(additional_columns, extension=extension)
-            _usecols = _usecols + additional_names
         df = super()._parse_csv(csv_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
                                 _usecols=_usecols)
-        if additional_columns:
-            df = df.rename(columns={v: k for k, v in additional_columns.items()})  # Rename columns accordingly
         for band in BANDS:
             df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
         return df
 
-    def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None, _usecols=None, additional_columns=None):
+    def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
         Parse the input FITS file and store the result in a pandas DataFrame if it contains internally calibrated
             continuous spectra.
@@ -81,7 +67,6 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
                 square matrix which values are those contained in the second element of the tuple.
             _usecols (list): Columns to read.
-            additional_columns (dict/list/str): Additional columns to include in the output.
 
         Returns:
             DataFrame: Pandas DataFrame representing the FITS file.
@@ -91,17 +76,13 @@ class InternalContinuousParser(GenericParser):
         if _array_columns is None:
             _array_columns = array_columns
         _usecols = _usecols if _usecols else INTERNAL_CONT_COLS
-        # TODO: Extend to list as this will only work if additional_columns is a dictionary
-        _usecols = _usecols + list(additional_columns.values()) if additional_columns else _usecols
         df = super()._parse_fits(fits_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
                                  _usecols=_usecols)
-        if additional_columns:
-            df = df.rename(columns={v: k for k, v in additional_columns.items()})  # Rename columns accordingly
         for band in BANDS:
             df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
         return df
 
-    def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None, _usecols=None, additional_columns=None):
+    def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
         Parse the input XML file and store the result in a pandas DataFrame.
 
@@ -111,7 +92,6 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns (list of tuples): List of tuples where the first element is the number of rows/columns of a
                 square matrix which values are those contained in the second element of the tuple.
             _usecols (list): Columns to read.
-            additional_columns (dict/list/str): Additional columns to include in the output.
 
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
@@ -121,38 +101,27 @@ class InternalContinuousParser(GenericParser):
         if _array_columns is None:
             _array_columns = array_columns
         _usecols = _usecols if _usecols else INTERNAL_CONT_COLS
-        # TODO: Extend to list as this will only work if additional_columns is a dictionary
-        _usecols = _usecols + list(additional_columns.values()) if additional_columns else _usecols
         df = super()._parse_xml(xml_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
                                 _usecols=_usecols)
-        if additional_columns:
-            df = df.rename(columns={v: k for k, v in additional_columns.items()})  # Rename columns accordingly
         for band in BANDS:
             df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
         return df
 
     @staticmethod
-    def __process_avro_record(record, additional_columns=None):
-        optional_columns = dict()
-        # TODO: What happens if the key in additional_columns is already in mandatory_columns? Add a check
-        mandatory_columns = {key: np.array(_get_from_dict(record, _csv_to_avro_map[key])) if isinstance(
-            _get_from_dict(record, _csv_to_avro_map[key]), list) else _get_from_dict(record, _csv_to_avro_map[key])
-                             for key in _csv_to_avro_map.keys()}
-        if additional_columns:
-            optional_columns = {key: np.array(_get_from_dict(record, value)) if isinstance(value, list) else
-            _get_from_dict(record, [value]) for key, value in additional_columns.items()}
-        return {**mandatory_columns, **optional_columns}
+    def __process_avro_record(record):
+        return {key: np.array(_get_from_dict(record, _csv_to_avro_map[key])) if
+        isinstance(_get_from_dict(record, _csv_to_avro_map[key]), list) else
+        _get_from_dict(record, _csv_to_avro_map[key]) for key in _csv_to_avro_map.keys()}
 
     @staticmethod
-    def __get_records_up_to_1_4_7(avro_file, additional_columns=None):
+    def __get_records_up_to_1_4_7(avro_file):
         from fastavro import reader
         f = open(avro_file, 'rb')
         avro_reader = reader(f)
         record = avro_reader.next()
         while record:
             try:
-                current_record = InternalContinuousParser.__process_avro_record(record,
-                                                                                additional_columns=additional_columns)
+                current_record = InternalContinuousParser.__process_avro_record(record)
                 yield current_record
             except KeyError:
                 raise KeyError("Keys in the input file don't match the expected ones.")
@@ -163,7 +132,7 @@ class InternalContinuousParser(GenericParser):
                 break
 
     @staticmethod
-    def __get_records_later_than_1_4_7(avro_file, additional_columns=None):
+    def __get_records_later_than_1_4_7(avro_file):
         def __yield_records(_avro_file):
             from fastavro import block_reader
             with open(_avro_file, 'rb') as fo:
@@ -173,9 +142,9 @@ class InternalContinuousParser(GenericParser):
 
         records = __yield_records(avro_file)
         for record in records:
-            yield InternalContinuousParser.__process_avro_record(record, additional_columns=additional_columns)
+            yield InternalContinuousParser.__process_avro_record(record)
 
-    def _parse_avro(self, avro_file, additional_columns=None):
+    def _parse_avro(self, avro_file):
         """
         Parse the input AVRO file and return the result as a Pandas DataFrame.
 
@@ -191,7 +160,7 @@ class InternalContinuousParser(GenericParser):
             __get_records = InternalContinuousParser.__get_records_later_than_1_4_7
         else:
             raise ValueError(f'Fastavro version {fa_version} may not have been parsed properly.')
-        df = pd.DataFrame(__get_records(avro_file, additional_columns=additional_columns))
+        df = pd.DataFrame(__get_records(avro_file))
         # Pairs of the form (matrix_size (N), values_to_put_in_matrix)
         to_matrix_columns = [('bp_n_parameters', 'bp_coefficient_covariances'),
                              ('rp_n_parameters', 'rp_coefficient_covariances')]

@@ -13,10 +13,9 @@ default_extension = 'csv'
 
 class InputReader(object):
 
-    def __init__(self, content, function, additional_columns=None, disable_info=False, user=None, password=None):
+    def __init__(self, content, function, disable_info=False, user=None, password=None):
         self.content = content
         self.function = function
-        self.additional_columns = additional_columns
         self.disable_info = disable_info
         self.user = user
         self.password = password
@@ -26,12 +25,11 @@ class InputReader(object):
         function = self.function
         user = self.user
         password = self.password
-        additional_columns = self.additional_columns
         disable_info = self.disable_info
         if isfile(content) or isabs(content):  # Check if content is file path
             selector = FileReader(function, disable_info=disable_info)
             parser = selector.select()  # Select type of parser required
-            parsed_input_data, extension = parser._parse(content, additional_columns=additional_columns)
+            parsed_input_data, extension = parser._parse(content)
         elif content.lower().startswith('select'):  # Query should start with select
             parsed_input_data, extension = QueryReader(content, function, user=user, password=password,
                                                        disable_info=disable_info).read()

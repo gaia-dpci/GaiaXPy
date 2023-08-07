@@ -3,13 +3,12 @@ parse_generic.py
 ====================================
 Module to parse input files containing spectra.
 """
-import warnings
 from os.path import splitext
 
 import pandas as pd
 from astropy.table import Table
 
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array, get_additional_columns_names
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
 from .cast import _cast
 
 valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']
@@ -59,13 +58,12 @@ class GenericParser(object):
         else:
             raise InvalidExtensionError()
 
-    def _parse(self, file_path, additional_columns=None):
+    def _parse(self, file_path):
         """
         Parse the input file according to its extension.
 
         Args:
             file_path (str): Path to a file.
-            additional_columns (dict): Dictionary of additional columns to include in the output. For internal use.
 
         Returns:
             DataFrame: Pandas DataFrame representing the file.
@@ -74,7 +72,7 @@ class GenericParser(object):
         print('Reading input file...', end='\r')
         extension = _get_file_extension(file_path)
         parser = self.get_parser(extension)
-        parsed_data = _cast(parser(file_path, additional_columns=additional_columns))
+        parsed_data = _cast(parser(file_path))
         return parsed_data, extension
 
     def _parse_avro(self, avro_file):
@@ -116,7 +114,6 @@ class GenericParser(object):
                 square matrix which values are those contained in the second element of the tuple.
             _usecols (list): Columns to read.
 
-
         Returns:
             DataFrame: A pandas DataFrame representing the FITS file.
         """
@@ -124,9 +121,8 @@ class GenericParser(object):
         df = table.to_pandas()[_usecols] if _usecols else table.to_pandas()
         if _matrix_columns:
             for size_column, values_column in _matrix_columns:
-                df[values_column] = df.apply(
-                    lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
-                    axis=1)
+                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column],
+                                                                                   row[size_column]), axis=1)
         return df
 
     def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None, _usecols=None):
@@ -149,9 +145,8 @@ class GenericParser(object):
         df = table.to_pandas()[_usecols]
         if _matrix_columns:
             for size_column, values_column in _matrix_columns:
-                df[values_column] = df.apply(
-                    lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
-                    axis=1)
+                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column],
+                                                                                   row[size_column]), axis=1)
         return df
 
 

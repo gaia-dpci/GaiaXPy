@@ -20,35 +20,6 @@ from gaiaxpy.generator.config import get_additional_filters_path
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 
 
-def get_additional_columns_names(additional_columns, extension='csv'):
-    """
-    Extract the names of the additional_columns parameter.
-
-    Args:
-        additional_columns (dict/list/str): The additional columns to be included in the output of the corresponding
-        tool.
-        extension (str): Input file extension.
-
-    Returns:
-        (list): A list of the additional_columns names.
-    """
-    extension = standardise_extension(extension)
-    if not additional_columns:
-        return list()
-    if isinstance(additional_columns, str):
-        return [additional_columns]
-    elif isinstance(additional_columns, list):
-        return additional_columns
-    if isinstance(additional_columns, dict):
-        if extension == 'avro':
-            return list(additional_columns.keys())
-        else:
-            return list(additional_columns.values())
-    else:
-        raise TypeError(f"The input additional_columns is {type(additional_columns)}, and doesn't correspond to any"
-                        f" of the expected types.")
-
-
 def _get_built_in_systems() -> list:
     av_sys = open(join(config_path, 'available_systems.txt'), 'r')
     return av_sys.read().splitlines()

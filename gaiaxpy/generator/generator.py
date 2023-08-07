@@ -15,7 +15,7 @@ from .photometric_system import PhotometricSystem
 def generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
              output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
              output_format: str = None, save_file: bool = True, error_correction: bool = False,
-             additional_columns: Union[dict, list] = None, username: str = None, password: str = None) -> pd.DataFrame:
+             username: str = None, password: str = None) -> pd.DataFrame:
     """
     Synthetic photometry utility: generates synthetic photometry in a set of available systems from the input
     internally-calibrated continuously-represented mean spectra.
@@ -34,11 +34,6 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
             be ignored.
         error_correction (bool): Whether to apply to the photometric errors the tabulated factors to mitigate
             underestimated errors (see Montegriffo et al., 2022, for more details).
-        additional_columns (dict/list): A dictionary of additional columns to be included in the output. The dictionary
-        values need to correspond to the name of the column in the input data, or to a list of columns if the column is
-        nested (as it can be the case in AVRO files). The dictionary keys will correspond to the column name in the
-        output. If there are no nested columns or no columns need to be renamed, a list of columns can be used. The
-        columns in this list will be included in the output as additional columns.
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
 
@@ -65,8 +60,7 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')
     validate_arguments(generate.__defaults__[1], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, generate, additional_columns=additional_columns,
-                                               user=username, password=password).read()  # Load data
+    parsed_input_data, extension = InputReader(input_object, generate, user=username, password=password).read()
     # Prepare systems, keep track of original systems
     internal_photometric_system = photometric_system.copy() if isinstance(photometric_system, list) else \
         [photometric_system].copy()
@@ -92,12 +86,6 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
         gaia_label = gaia_system.get_system_label()
         gaia_columns = [column for column in photometry_df if column.startswith(gaia_label)]
         photometry_df = photometry_df.drop(columns=gaia_columns)
-    if additional_columns:
-        photometry_df.set_index('source_id', inplace=True)
-        additional_columns_data = parsed_input_data[['source_id'] + list(additional_columns.keys())]
-        additional_columns_data.set_index('source_id', inplace=True)
-        photometry_df = photometry_df.merge(additional_columns_data, left_index=True, right_index=True, how='outer')
-        photometry_df.reset_index(inplace=True)
     photometry_df = cast_output(photometry_df)
     output_data = PhotometryData(photometry_df)
     output_data.save(save_file, output_path, output_file, output_format, extension)

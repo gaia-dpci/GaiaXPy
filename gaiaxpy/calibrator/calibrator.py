@@ -92,8 +92,9 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
     """
     validate_wl_sampling(sampling)
     validate_arguments(_calibrate.__defaults__[3], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, _calibrate, username, password,
-                                               additional_columns=additional_columns, disable_info=disable_info).read()
+    # Check that additional_columns dictionary doesn't contain a mandatory column, remove it if it does and warn the user
+    parsed_input_data, extension = InputReader(input_object, _calibrate, additional_columns=additional_columns,
+                                               disable_info=disable_info, user=username, password=password).read()
     xp_design_matrices, xp_merge = __generate_xp_matrices_and_merge(__FUNCTION_KEY, sampling, bp_model, rp_model)
     spectra_df, positions = __create_spectra(parsed_input_data, extension, truncation, xp_design_matrices, xp_merge,
                                              with_correlation=with_correlation, additional_columns=additional_columns,
@@ -203,7 +204,7 @@ def __create_spectra(parsed_input_data: pd.DataFrame, extension: str, truncation
      """
     additional_columns_df = None
     if additional_columns:
-        additional_names = get_additional_columns_names(additional_columns, extension=standardise_extension(extension))
+        additional_names = get_additional_columns_names(additional_columns, extension='avro')
         additional_columns_df = parsed_input_data[additional_names]
         parsed_input_data = parsed_input_data.drop(columns=additional_names)
     parsed_spectrum_file_dict = parsed_input_data.to_dict('records')

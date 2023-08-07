@@ -54,13 +54,11 @@ class InternalContinuousParser(GenericParser):
         # TODO: Extend to list as this will only work if additional_columns is a dictionary
         if additional_columns:
             # Check if there are duplicate columns. Required columns should not be included more than once nor renamed
-            additional_names = get_additional_columns_names(additional_columns, extension=extension)
-            # TODO: Add warning alerting about the intersection
-            duplicate_names = set(_usecols).intersection(additional_names)
-            additional_columns = dict()
-            for key, value in list(additional_columns.items()):
-                if value not in duplicate_names:
-                    additional_columns[key] = value
+            additional_names = get_additional_columns_names(additional_columns)
+            duplicate_columns = set(additional_names).intersection(set(_usecols))
+            if duplicate_columns:
+                raise ValueError(f'Additional columns {duplicate_columns} are already included in the original columns.'
+                                 f' This is currently not allowed.')
             # Recompute additional names
             additional_names = get_additional_columns_names(additional_columns, extension=extension)
             _usecols = _usecols + additional_names

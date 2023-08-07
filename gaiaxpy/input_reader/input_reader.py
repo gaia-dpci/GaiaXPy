@@ -13,28 +13,28 @@ default_extension = 'csv'
 
 class InputReader(object):
 
-    def __init__(self, content, function, user=None, password=None, additional_columns=None, disable_info=False):
+    def __init__(self, content, function, additional_columns=None, disable_info=False, user=None, password=None):
         self.content = content
         self.function = function
+        self.additional_columns = additional_columns
+        self.disable_info = disable_info
         self.user = user
         self.password = password
-        self.disable_info = disable_info
-        self.additional_columns = additional_columns
 
     def __string_reader(self):
         content = self.content
         function = self.function
         user = self.user
         password = self.password
-        # Check if content is file path
-        if isfile(content) or isabs(content):
-            selector = FileReader(function, disable_info=self.disable_info)
+        additional_columns = self.additional_columns
+        disable_info = self.disable_info
+        if isfile(content) or isabs(content):  # Check if content is file path
+            selector = FileReader(function, disable_info=disable_info)
             parser = selector.select()  # Select type of parser required
-            parsed_input_data, extension = parser._parse(content, additional_columns=self.additional_columns)
-        # Query should start with select
-        elif content.lower().startswith('select'):
+            parsed_input_data, extension = parser._parse(content, additional_columns=additional_columns)
+        elif content.lower().startswith('select'):  # Query should start with select
             parsed_input_data, extension = QueryReader(content, function, user=user, password=password,
-                                                       disable_info=self.disable_info).read()
+                                                       disable_info=disable_info).read()
         else:
             raise ValueError('Input string does not correspond to an existing file and it is not an ADQL query.')
         return parsed_input_data, extension

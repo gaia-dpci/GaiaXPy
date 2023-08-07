@@ -18,6 +18,5 @@ Subpackages
    gaiaxpy.core
    gaiaxpy.error_correction
    gaiaxpy.generator
-   gaiaxpy.linefinder
    gaiaxpy.plotter
    gaiaxpy.spectrum

@@ -81,8 +81,7 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     Internal method of the calibration utility. Refer to "convert".
 
     Args:
-        disable_info (bool): Whether to disable the progress tracker. Required to suppress the progress bar
-        of functions run internally in the linefinder module.
+        disable_info (bool): Whether to disable the progress tracker.
 
     Returns:
         DataFrame: A list of all sampled absolute spectra.
@@ -94,8 +93,8 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     # Check sampling
     validate_pwl_sampling(sampling)
     validate_arguments(convert.__defaults__[4], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, convert, username, password,
-                                               additional_columns=additional_columns, disable_info=disable_info).read()
+    parsed_input_data, extension = InputReader(input_object, convert, additional_columns=additional_columns,
+                                               disable_info=disable_info, user=username, password=password).read()
     config_df = load_config(optimised_bases_file)
     # Union of unique ids as sets
     unique_bases_ids = get_unique_basis_ids(parsed_input_data)
@@ -179,7 +178,7 @@ def _create_spectra(parsed_input_data: pd.DataFrame, extension: str, truncation:
 
     additional_columns_df = None
     if additional_columns:
-        additional_names = get_additional_columns_names(additional_columns, extension=standardise_extension(extension))
+        additional_names = get_additional_columns_names(additional_columns, extension='avro')
         additional_columns_df = parsed_input_data[additional_names]
         additional_columns_df = additional_columns_df.loc[additional_columns_df.index.repeat(len(BANDS))]
         additional_columns_df = additional_columns_df.reset_index(drop=True)

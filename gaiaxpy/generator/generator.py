@@ -65,8 +65,8 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')
     validate_arguments(generate.__defaults__[1], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, generate, username, password,
-                                               additional_columns=additional_columns).read()  # Load data
+    parsed_input_data, extension = InputReader(input_object, generate, additional_columns=additional_columns,
+                                               user=username, password=password).read()  # Load data
     # Prepare systems, keep track of original systems
     internal_photometric_system = photometric_system.copy() if isinstance(photometric_system, list) else \
         [photometric_system].copy()

@@ -26,6 +26,6 @@ class TestGetMethods(unittest.TestCase):
         # The Archive will return all columns, not only the ones required by the tools
         parsed_data_query = parsed_data_query[parsed_data_file.columns]
         # Windows version returns different dtypes
-        parsed_data_query = parsed_data_query.astype({'source_id': 'int64', 'solution_id': 'int64'})
+        parsed_data_query = parsed_data_query.astype({'source_id': 'int64'})
         pdt.assert_frame_equal(parsed_data_file.sort_values('source_id', ignore_index=True), parsed_data_query,
                                rtol=_rtol, atol=_atol, check_dtype=False)

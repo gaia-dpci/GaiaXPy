@@ -17,8 +17,10 @@ most common operations preserve metadata.
 Minimum requirements
 --------------------
 
-GaiaXPy works with Python 3.6 and later on Linux, MacOS, and Windows. If a problem is found, it is recommended to report
+GaiaXPy works with Python 3.7 and later on Linux, MacOS, and Windows. If a problem is found, it is recommended to report
 it by creating a `GitHub issue <https://github.com/gaia-dpci/GaiaXPy/issues>`_.
+
+Previous versions of GaiaXPy were compatible with Python 3.6.
 
 Filters
 -------

@@ -1,7 +1,7 @@
 Usage
 =====
 
-The package currently includes five different functionalities: a **calibrator**, a **converter**, a **synthetic photometry generator**, a **line finder** and a **plotter**. A further functionality, a **simulator**, is under development and will be released soon.
+The package currently includes four different functionalities: a **calibrator**, a **converter**, a **synthetic photometry generator**, and a **plotter**. Two further functionalities, a **simulator** and a **linefinder**, are under development and will be released soon.
 
 .. role:: python(code)
    :language: python
@@ -205,8 +205,8 @@ The complete list of the systems included in the package can also be obtained as
 
     PhotometricSystem.get_available_systems()
 
-Request photometric systems
----------------------------
+Photometric systems requests
+----------------------------
 Users can request the addition of other photometric systems by raising an `issue via GitHub <https://github.com/gaia-dpci/GaiaXPy/issues>`_.
 The main conditions for adding a new system are the following:
 
@@ -224,37 +224,12 @@ All the available options for this method can be found in :ref:`generate <genera
 
 Downloadable SVO systems
 ------------------------
-The Spanish Virtual Observatory (`SVO <https://svo.cab.inta-csic.es/main/index.php>`_) will shortly provide additional files that
+The Spanish Virtual Observatory (`SVO <https://svo.cab.inta-csic.es/main/index.php>`_) provides additional files that
 can be downloaded from their webpage and then loaded into GaiaXPy version 2.0.0 or later.
 
-These files will contain additional photometric systems from which synthetic photometry can be generated in the same way it is done with the built-in GaiaXPy systems.
+These files contain additional photometric systems from which synthetic photometry can be generated in the same way it is done with the built-in GaiaXPy systems.
 
-A tutorial on how to use this functionality will be available in the main GaiaXPy webpage.
-
-The relevant links will be available here.
-
--------
-Line Finder
--------
-
-The line finder provides three different functions: :python:`extremafinder`, :python:`fastfinder`, and :python:`linefinder`.
-
-- **Extrema finder**: This tool looks for all extrema in the internally calibrated mean spectra, and converts internally calibrated mean spectra from the continuous representation to an externally calibrated sampled form. The converted spectrum is used to provide basic properties of detected extrema. All found extrema and their properties are returned as a pandas DataFrame. For each detected line following properties are provided: line_name, wavelength [nm], flux [W/nm/m^2], depth [W/nm/m^2], width [nm], significance [for externally calibrated spectrum], significance [for internally calibrated spectrum].
-
-- **Fast finder**: This tool provides the list of extrema in the internally calibrated mean spectra. No evaluation of spectra in both sampled and continuous forms is performed. The fastfinder returns all found extrema as a pandas DataFrame. The DataFrame contains a list of pseudowavelengths for extrema in BP and RP for each source, respectively.
-
-- **Line finder**: This tool gets the input internally calibrated mean spectra from the continuous representation to a sampled form, and it looks for emission and absorption lines. The lines can be defined by user or chosen from internal library, the source redshift and type can be specified. All found lines and their properties are returned as a pandas DataFrame. For each detected line following properties are provided: line name, wavelength [nm], flux [W/nm/m^2], depth [W/nm/m^2], width [nm], significance [externally calibrated], significance [internally calibrated].
-
-The line finder functions come with an integrated plotting functionality which can be invoked via the parameters :python:`plot_spectra` and :python:`save_plots`. If :python:`plot_spectra` is set to :python:`True`, the function will show a plot with the found lines for each :python:`source_id` in the data, and if :python:`save_plots` is set to :python:`True`, the plots will be saved.
-
-.. code-block:: python
-
-    from gaiaxpy import extremafinder, fastfinder, linefinder
-
-    mean_spectrum_file = 'path/to/xp_continuous.csv'
-    extrema = extremafinder(mean_spectrum_file, save_file=False)
-    extrema_pwl = fastfinder(mean_spectrum_file, save_file=False)
-    lines = linefinder(mean_spectrum_file, save_file=False)
+A tutorial on how to use this functionality is available in the (`Tutorials section <https://gaia-dpci.github.io/GaiaXPy-website/tutorials.html>`_) of the main GaiaXPy webpage.
 
 -------
 Plotter

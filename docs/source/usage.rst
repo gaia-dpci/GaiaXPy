@@ -229,7 +229,7 @@ can be downloaded from their webpage and then loaded into GaiaXPy version 2.0.0 
 
 These files contain additional photometric systems from which synthetic photometry can be generated in the same way it is done with the built-in GaiaXPy systems.
 
-A tutorial on how to use this functionality is available in the (`Tutorials section <https://gaia-dpci.github.io/GaiaXPy-website/tutorials.html>`_) of the main GaiaXPy webpage.
+A tutorial on how to use this functionality is available in the `Tutorials section <https://gaia-dpci.github.io/GaiaXPy-website/tutorials.html>`_ of the main GaiaXPy webpage.
 
 -------
 Plotter

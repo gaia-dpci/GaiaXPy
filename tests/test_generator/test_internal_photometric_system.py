@@ -1,17 +1,9 @@
 import unittest
-from os.path import join
 
-import numpy as np
 import numpy.testing as npt
-import pandas as pd
 
 from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
-from tests.files.paths import files_path
-
-phot_systems_specs = pd.read_csv(join(files_path, 'PhotometricSystemSpecs.csv'),
-                                 converters={'bands': lambda x: x[1:-1].split(','),
-                                             'zero_points': lambda y: np.array(y[1:-1].split(',')).astype(float)},
-                                 float_precision='round_trip')
+from tests.test_generator.generator_paths import phot_systems_specs
 
 # An InternalPhotometricSystem is created from a label, not from a name (i.e. from GaiaDr3Ab, not from GAIA_DR3_AB)
 available_systems = list(phot_systems_specs['name'])

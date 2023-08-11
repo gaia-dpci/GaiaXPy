@@ -3,27 +3,11 @@ output_data.py
 ====================================
 Module to represent generic output data.
 """
-
 from ast import literal_eval
-from os.path import abspath, dirname, join
+from os.path import dirname, abspath, join
 
+from gaiaxpy.core.generic_functions import standardise_extension
 from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
-
-
-def _standardise_output_format(_format):
-    """
-    Standardise the output format provided by the user which can contain or not an initial dot, and can contain a
-        mixture of uppercase and lowercase letters.
-
-    Args:
-        _format (str): Output format for the file as provided by the user.
-
-    Returns:
-        str: The format in lowercase letters and with no initial dot (eg.: 'csv').
-    """
-    # Remove initial dot if present
-    _format = _format[1:] if _format[0] == '.' else _format
-    return _format.lower()
 
 
 def _load_header_dict():
@@ -98,7 +82,7 @@ class OutputData(object):
         Args:
             save_file (bool): Whether to save the file or not.
             output_path (str): Path where to save the file.
-            output_file (str): Name chosen for the output file.
+            output_file (str): Name of the output file.
             output_format (str): Format of the output file.
             extension (str): Format of the original input file.
         """
@@ -107,18 +91,21 @@ class OutputData(object):
                 raise ValueError('The parameter output_file cannot be None.')
             if output_format is None:
                 output_format = extension
-            output_format = _standardise_output_format(output_format)
+            print('Saving file...', end='\r')
+            output_format = standardise_extension(output_format)
             if output_format == 'avro':
-                return self._save_avro(output_path, output_file)
+                self._save_avro(output_path, output_file)
             elif output_format == 'csv':
-                return self._save_csv(output_path, output_file)
+                self._save_csv(output_path, output_file)
             elif output_format == 'ecsv':
-                return self._save_ecsv(output_path, output_file)
+                self._save_ecsv(output_path, output_file)
             elif output_format == 'fits':
-                return self._save_fits(output_path, output_file)
+                self._save_fits(output_path, output_file)
             elif output_format == 'xml':
-                return self._save_xml(output_path, output_file)
-            raise InvalidExtensionError()
+                self._save_xml(output_path, output_file)
+            else:
+                raise InvalidExtensionError()
+            print(f"Done! Output saved to path: {join(output_path, output_file + '.' + output_format)}", end='\r')
 
     def _save_avro(self, output_path, output_file):
         raise NotImplementedError()

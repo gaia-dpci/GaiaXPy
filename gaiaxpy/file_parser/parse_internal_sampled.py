@@ -5,6 +5,7 @@ Module to parse input files containing internally calibrated sampled spectra.
 """
 
 from .parse_generic import GenericParser
+from ..core.generic_functions import _warning
 
 
 class InternalSampledParser(GenericParser):
@@ -23,4 +24,4 @@ class InternalSampledParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
         """
-        return super()._parse_csv(csv_file, array_columns=['flux', 'error'])
+        return super()._parse_csv(csv_file, _array_columns=['flux', 'error'])

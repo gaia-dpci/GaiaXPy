@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Produced with astropy.io.votable version 5.2.2
+     http://www.astropy.org/ -->
+<VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.3 http://www.ivoa.net/xml/VOTable/VOTable-1.4.xsd">
+ <RESOURCE type="results">
+  <TABLE>
+   <FIELD ID="source_id" datatype="long" name="source_id"/>
+   <FIELD ID="line_name" arraysize="7" datatype="unicodeChar" name="line_name"/>
+   <FIELD ID="wavelength_nm" datatype="double" name="wavelength_nm"/>
+   <FIELD ID="line_flux" datatype="double" name="line_flux"/>
+   <FIELD ID="depth" datatype="double" name="depth"/>
+   <FIELD ID="width" datatype="double" name="width"/>
+   <FIELD ID="significance" datatype="double" name="significance"/>
+   <FIELD ID="sig_pwl" datatype="double" name="sig_pwl"/>
+   <DATA>
+    <TABLEDATA>
+     <TR>
+      <TD>5853498713190525696</TD>
+      <TD>He I_2</TD>
+      <TD>586.3104873060522</TD>
+      <TD>1.2366271018890184e-15</TD>
+      <TD>-5.690724186908628e-17</TD>
+      <TD>22.490756352191852</TD>
+      <TD>4.207830086135107</TD>
+      <TD>5.056023071297509</TD>
+     </TR>
+     <TR>
+      <TD>5853498713190525696</TD>
+      <TD>H_alpha</TD>
+      <TD>655.9680585898482</TD>
+      <TD>4.178223356266413e-15</TD>
+      <TD>1.8567997426028376e-15</TD>
+      <TD>14.492901019216788</TD>
+      <TD>29.068717479710955</TD>
+      <TD>58.355641592074086</TD>
+     </TR>
+     <TR>
+      <TD>5853498713190525696</TD>
+      <TD>He I_3</TD>
+      <TD>704.1567745896856</TD>
+      <TD>4.863446274247561e-15</TD>
+      <TD>1.879177204142608e-15</TD>
+      <TD>14.016892987186225</TD>
+      <TD>18.544342285092096</TD>
+      <TD>15.292537297437816</TD>
+     </TR>
+     <TR>
+      <TD>5762406957886626816</TD>
+      <TD>H_beta</TD>
+      <TD>484.42030192878036</TD>
+      <TD>2.409925130397576e-16</TD>
+      <TD>-7.70198702524693e-17</TD>
+      <TD>19.82983941676008</TD>
+      <TD>30.636189569882863</TD>
+      <TD>52.90634988142206</TD>
+     </TR>
+     <TR>
+      <TD>5762406957886626816</TD>
+      <TD>H_alpha</TD>
+      <TD>655.954918269737</TD>
+      <TD>8.142886061612337e-17</TD>
+      <TD>-2.1543091083837037e-17</TD>
+      <TD>14.190874754038873</TD>
+      <TD>19.5750129955163</TD>
+      <TD>34.20874291304556</TD>
+     </TR>
+     <TR>
+      <TD>5762406957886626816</TD>
+      <TD>He I_3</TD>
+      <TD>707.1655983375393</TD>
+      <TD>7.877543219234889e-17</TD>
+      <TD>1.357762405305551e-18</TD>
+      <TD>11.660292435282827</TD>
+      <TD>1.9819375697826564</TD>
+      <TD>2.918541684129957</TD>
+     </TR>
+    </TABLEDATA>
+   </DATA>
+  </TABLE>
+ </RESOURCE>
+</VOTABLE>

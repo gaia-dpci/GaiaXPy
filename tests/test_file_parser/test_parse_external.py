@@ -6,23 +6,16 @@ from numpy import ndarray, dtype
 
 from gaiaxpy.file_parser.parse_external import ExternalParser
 from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
-from tests.files.paths import files_path
-
-# Files to test parse
-mini_path = path.join(files_path, 'mini_files')
-csv_file = path.join(mini_path, 'SPSS_mini.csv')
-fits_file = path.join(mini_path, 'XP_SPECTRA_RAW_mini.fits')
-xml_file = path.join(mini_path, 'XP_SPECTRA_RAW_mini.xml')
-no_ext_file = path.join(files_path, 'no_extension_file')
+from tests.files.paths import mini_csv_file, no_ext_file
 
 parser = ExternalParser()
-parsed_csv_file = parser._parse_csv(csv_file)
+parsed_csv_file = parser._parse_csv(mini_csv_file)
 
 
 class TestExternalParserCSV(unittest.TestCase):
 
     def test_parse_no_extension(self):
-        self.assertRaises(InvalidExtensionError, parser.parse, no_ext_file)
+        self.assertRaises(InvalidExtensionError, parser._parse, no_ext_file)
 
     def test_parse_returns_dataframe(self):
         self.assertIsInstance(parsed_csv_file, pd.DataFrame)

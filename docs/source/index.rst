@@ -6,7 +6,7 @@ Index
 .. |License| image:: https://img.shields.io/badge/License-BSD_3--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
-GaiaXPy is a Python library to facilitate handling Gaia BP/RP spectra as distributed from the `Gaia archive <https://gea.esac.esa.int/archive/>`_.
+GaiaXPy is a Python library to facilitate handling Gaia BP/RP spectra as distributed from the `Gaia Archive <https://gea.esac.esa.int/archive/>`_.
 
 Package overview
 ================

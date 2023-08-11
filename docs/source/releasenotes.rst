@@ -1,6 +1,40 @@
 Release notes
 =============
 
+.. _releasenotes:
+
+Version 2.1.0
+-------------
+Released on 2023/08/10.
+
+* Python 3.6 no longer supported.
+* Output files modified to comply with standards, according to issues `#51 <https://github.com/gaia-dpci/GaiaXPy/issues/51>`_ and `#52 <https://github.com/gaia-dpci/GaiaXPy/issues/52>`_.
+* Speed improvements on the main tools of up to 9x. The main results are summarised in the table below.
+
+The table shows the processing time speed up factors (i.e. excluding input reading and output storing) according to input format and tool or function.
+
+The speed up factors were computed as ``old_time / new_time``. So, for example, a factor of ``2.00``, means that the code in
+the new version of the packages runs twice as fast as in the old version.
+
+.. table:: Speed up factor by format and function
+   :widths: 20 20 20 20 20
+
+   +-----------------+-----------+---------+---------------------------+--------------------------+
+   | Format/Function | Calibrate | Convert | Generate (w/o error_corr) | Generate (w/ error_corr) |
+   +=================+===========+=========+===========================+==========================+
+   | CSV             |      8.94 |    8.97 |                      2.28 |                     2.80 |
+   +-----------------+-----------+---------+---------------------------+--------------------------+
+   | ECSV            |      8.98 |    8.93 |                      2.39 |                     2.73 |
+   +-----------------+-----------+---------+---------------------------+--------------------------+
+   | FITS            |      8.74 |    9.08 |                      2.35 |                     2.73 |
+   +-----------------+-----------+---------+---------------------------+--------------------------+
+   | XML binary      |      9.41 |    9.13 |                      3.40 |                     2.88 |
+   +-----------------+-----------+---------+---------------------------+--------------------------+
+   | XML plain       |      9.23 |    8.99 |                      2.34 |                     2.82 |
+   +-----------------+-----------+---------+---------------------------+--------------------------+
+
+* More detailed speed improvements results can be found :ref:`here <improvements>`.
+
 Version 2.0.1
 -------------
 Released on 2023/01/24.

@@ -4,7 +4,7 @@ About the package
 General description
 -------------------
 
-GaiaXPy is a Python library to facilitate handling Gaia BP/RP spectra as distributed from the `Gaia archive <https://gea.esac.esa.int/archive/>`_.
+GaiaXPy is a Python library to facilitate handling Gaia BP/RP spectra as distributed from the `Gaia Archive <https://gea.esac.esa.int/archive/>`_.
 
 BP/RP (often shortened as XP) spectra became available for the first time in Gaia Data Release 3 (DR3).
 In their first release, only source **mean spectra** are available: these are spectra that have been generated from a number of single observations of the same object. **Epoch spectra**, i.e. spectra consisting of one single observation, will become available in future releases.
@@ -32,6 +32,7 @@ The GaiaXPy library will grow in time. For Gaia DR3 the following functionalitie
 - **Conversion** of mean spectra from a continuous representation to a sampled spectrum, optionally on a user-defined grid of positions. The output spectrum will be in the internal system (if an absolute spectrum is required, please use the Calibration functionality).
 - **Generation** of synthetic photometry in bands that are covered by the BP/RP wavelength range. Several sets of filters are included in the package.
 
-A further functionality is being developed and will be released soon:
+Two further functionalities are being developed and will be released soon:
 
+- **Detection** of lines and extrema in mean spectra.
 - **Simulation** of Gaia BP/RP internally calibrated spectra starting from an input Spectral Energy Distribution (SED) given the Gaia DR3 instrument model.

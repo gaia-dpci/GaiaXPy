@@ -5,10 +5,9 @@ Installation
 From PyPI
 ---------
 
-GaiaXPy was designed to work with Python 3.6 or later, and is available through PyPI.
+GaiaXPy was designed to work with Python 3.7 or later, and is available through PyPI. Previous versions of the package are compatible with Python 3.6.
 
-To install the package, first ensure that the version of pip you are using
-is the one associated with Python 3 in your machine.
+To install the package, first ensure that the version of pip you are using is the one associated with Python 3 on your machine.
 
 You can check this by running:
 

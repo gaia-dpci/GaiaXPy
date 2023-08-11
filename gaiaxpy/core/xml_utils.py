@@ -1,10 +1,10 @@
-import xml.etree.ElementTree as et
+from xml.etree import ElementTree
 
 import numpy as np
 
 
 def get_file_root(xml_file):
-    return et.parse(xml_file).getroot()
+    return ElementTree.parse(xml_file).getroot()
 
 
 def iterative_find(x_root, tag_list):

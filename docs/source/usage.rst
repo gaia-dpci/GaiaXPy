@@ -1,7 +1,7 @@
 Usage
 =====
 
-The package currently includes four different functionalities: a **calibrator**, a **converter**, a **synthetic photometry generator** and a **plotter**. A further functionality, a **simulator**, is under development and will be released soon.
+The package currently includes four different functionalities: a **calibrator**, a **converter**, a **synthetic photometry generator**, and a **plotter**. Two further functionalities, a **simulator** and a **linefinder**, are under development and will be released soon.
 
 .. role:: python(code)
    :language: python
@@ -17,21 +17,21 @@ The functions in GaiaXPy can receive different kinds of inputs. The ones current
 Files
 -----
 The functions accept input files with the extensions: :python:`csv`, :python:`ecsv`, :python:`fits`, and :python:`xml`.
-These are files that contain XP continuous raw data as extracted from the `Gaia archive <https://archives.esac.esa.int/gaia/>`_.
+These are files that contain XP continuous raw data as extracted from the `Gaia Archive <https://archives.esac.esa.int/gaia/>`_.
 
 Lists
 -----
 Lists are accepted only by :python:`calibrate`, :python:`convert`, and :python:`generate`. These lists have to correspond to a list of source IDs. Both lists of strings and lists of long are accepted.
 
-When a list is passed to one of the tools, the function will internally request the required data for the given sources from the Gaia archive.
+When a list is passed to one of the tools, the function will internally request the required data for the given sources from the Gaia Archive.
 
-Passing Cosmos credentials (username and password) is optional.
+Passing Cosmos credentials (:python:`username` and :python:`password`) is optional.
 
 ADQL queries
 ------------
 ADQL queries are accepted only by the :python:`calibrate`, :python:`convert`, and :python:`generate`. Queries need to be passed as strings (e.g.: :python:`"select TOP 100 source_id from gaiadr3.gaia_source where has_xp_continuous = 'True'"`).
 
-Cosmos credentials (username and password) are optional.
+Passing Cosmos credentials (:python:`username` and :python:`password`) is optional.
 
 DataFrames
 ----------
@@ -123,7 +123,7 @@ If the function accepts a sampling, it has to correspond to a NumPy array and be
 Note on TOPCAT
 --------------
 
-`TOPCAT <http://www.star.bris.ac.uk/~mbt/topcat/>`_ can read the FITS and XML output files of the calibrator and converter. It is possible to plot their contents using TOPCAT.
+`TOPCAT <http://www.star.bris.ac.uk/~mbt/topcat/>`_ can read the FITS and XML output files of the calibrator, converter, generator and line finder. It is possible to plot their contents using TOPCAT.
 
 The functionality that allows to generate these plots is the `XYArray Layer Control <http://www.star.bristol.ac.uk/~mbt/topcat/sun253/GangLayerControl_xyarray.html>`_.
 
@@ -141,9 +141,9 @@ The function :python:`calibrate` returns a DataFrame of calibrated spectra and a
    from gaiaxpy import calibrate
 
    mean_spectrum_file = 'path/to/mean_spectrum_with_correlation.csv'
-   calibrated_df, sampling = calibrate(mean_spectrum_file, sampling=numpy.linspace(0, 60, 600), save_file=False)
+   calibrated_df, sampling = calibrate(mean_spectrum_file, sampling=np.arange(336, 1021, 2), save_file=False)
 
-The default sampling is :python:`numpy.linspace(0, 60, 600)`; however, in order to improve the resolution at the blue end, the log-scale sampling :python:`numpy.geomspace(330, 1049.9999999999, 361)` is proposed as an alternative.
+The default sampling is :python:`np.arange(336, 1021, 2)`; however, in order to improve the resolution at the blue end, the log-scale sampling :python:`numpy.geomspace(330, 1049.9999999999, 361)` is proposed as an alternative.
 
 All the available options can be found in :ref:`calibrate <calibrate>`.
 
@@ -205,8 +205,8 @@ The complete list of the systems included in the package can also be obtained as
 
     PhotometricSystem.get_available_systems()
 
-Request photometric systems
----------------------------
+Photometric systems requests
+----------------------------
 Users can request the addition of other photometric systems by raising an `issue via GitHub <https://github.com/gaia-dpci/GaiaXPy/issues>`_.
 The main conditions for adding a new system are the following:
 
@@ -224,14 +224,12 @@ All the available options for this method can be found in :ref:`generate <genera
 
 Downloadable SVO systems
 ------------------------
-The Spanish Virtual Observatory (`SVO <https://svo.cab.inta-csic.es/main/index.php>`_) will shortly provide additional files that
+The Spanish Virtual Observatory (`SVO <https://svo.cab.inta-csic.es/main/index.php>`_) provides additional files that
 can be downloaded from their webpage and then loaded into GaiaXPy version 2.0.0 or later.
 
-These files will contain additional photometric systems from which synthetic photometry can be generated in the same way it is done with the built-in GaiaXPy systems.
+These files contain additional photometric systems from which synthetic photometry can be generated in the same way it is done with the built-in GaiaXPy systems.
 
-A tutorial on how to use this functionality will be available in the main GaiaXPy webpage.
-
-The relevant links will be available here.
+A tutorial on how to use this functionality is available in the `Tutorials section <https://gaia-dpci.github.io/GaiaXPy-website/tutorials.html>`_ of the main GaiaXPy webpage.
 
 -------
 Plotter

@@ -28,9 +28,8 @@ class DataFrameStringArrayReader(object):
         return df
 
     def _parse(self):
-        def __get_enclosing_element(df, _array_columns):
-            # Get enclosing symbol for string arrays, i.e. '(' or '['
-            for index, row in df.iterrows():
+        def __get_enclosing_element(_df, _array_columns):
+            for row in _df.to_dict('records'):
                 for column in _array_columns:
                     if isinstance(row[column], str):
                         if row[column][0] in ['(', '[']:

@@ -5,12 +5,9 @@ Module to hold some functions used by different subpackages.
 """
 
 import sys
-from collections.abc import Iterable
-from numbers import Number
+from ast import literal_eval
 from os.path import join
 from string import capwords
-from os.path import join
-from gaiaxpy.config.paths import config_path
 
 import numpy as np
 import pandas as pd
@@ -18,13 +15,14 @@ from numpy import ndarray
 
 from gaiaxpy.config.paths import filters_path, config_path
 from gaiaxpy.core.satellite import BANDS
+from gaiaxpy.core.custom_errors import InvalidBandError
 from gaiaxpy.generator.config import get_additional_filters_path
+from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 
 
 def _get_built_in_systems() -> list:
-    f = open(join(config_path, 'available_systems.txt'), 'r')
-    built_in_systems = f.read().splitlines()
-    return built_in_systems
+    av_sys = open(join(config_path, 'available_systems.txt'), 'r')
+    return av_sys.read().splitlines()
 
 
 def _is_built_in_system(system):
@@ -34,9 +32,9 @@ def _is_built_in_system(system):
 def cast_output(output):
     cast_dict = {'source_id': 'int64', 'solution_id': 'int64'}
     df = output if isinstance(output, pd.DataFrame) else output.data
-    for key, value in cast_dict.items():
+    for column in df.columns:
         try:
-            df[key] = df[key].astype(value)
+            df[column] = df[column].astype(cast_dict[column])
         except KeyError:
             continue
     return df
@@ -50,14 +48,30 @@ def parse_band(band):
     if band in BANDS:
         return band
     else:
-        raise ValueError(f"String {band} is not a valid band. Band must be either 'bp' or 'rp'.")
+        raise InvalidBandError(band)
+
+
+def str_to_matrix(str_matrix):
+    """
+    Convert a string of the form ((1,2,3),(4,5,6),(7,8,9)) to a NumPy matrix.
+    """
+    # Replace nan to None so the string can be evaluated
+    str_matrix = str_matrix.replace('nan', 'None')
+    evaluated = literal_eval(str_matrix)
+    evaluated = np.array(evaluated)
+    evaluated = np.where(evaluated is None, np.nan, evaluated)
+    return np.array(evaluated)
 
 
 def str_to_array(str_array):
-    if isinstance(str_array, str):
+    if isinstance(str_array, np.ndarray):
+        return str_array
+    if isinstance(str_array, str) and len(str_array) >= 2 and str_array[0] == '(' and str_array[1] == '(':
+        return str_to_matrix(str_array)
+    elif isinstance(str_array, str):
         try:
             return np.fromstring(str_array[1:-1], sep=',')
-        except:
+        except Exception:  # np.fromstring may not raise an error but only show a warning depending on the version
             raise ValueError('Input cannot be converted to array.')
     elif isinstance(str_array, float):
         return float('NaN')
@@ -65,7 +79,7 @@ def str_to_array(str_array):
         raise ValueError('Unhandled type.')
 
 
-def _validate_pwl_sampling(sampling):
+def validate_pwl_sampling(sampling):
     # Receives a NumPy array. Validates sampling in pwl.
     min_sampling_value = -10
     max_sampling_value = 70
@@ -86,7 +100,7 @@ def _validate_pwl_sampling(sampling):
                          f'{min_sampling_value} and the maximum is {max_sampling_value}.')
 
 
-def _validate_wl_sampling(sampling):
+def validate_wl_sampling(sampling):
     min_value = 330
     max_value = 1050
     # Check sampling
@@ -102,7 +116,7 @@ def _warning(message):
     print(f'UserWarning: {message}', file=sys.stderr)
 
 
-def _validate_arguments(default_output_file, given_output_file, save_file):
+def validate_arguments(default_output_file, given_output_file, save_file):
     if save_file and not isinstance(save_file, bool):
         raise ValueError("Parameter 'save_file' must contain a boolean value.")
     # If the user input a number different to the default value, but didn't set save_file to True
@@ -111,18 +125,20 @@ def _validate_arguments(default_output_file, given_output_file, save_file):
                  'output of the function.')
 
 
-def _get_spectra_type(spectra):
+def get_spectra_type(spectra):
     """
     Get the spectra type.
 
     Args:
-        spectra (object): A spectrum or a spectra iterable.
+        spectra (object): A spectrum or a spectra list.
 
     Returns:
         str: Spectrum type (e.g. AbsoluteSampledSpectrum).
     """
-    if isinstance(spectra, Iterable):
+    if isinstance(spectra, list):
         spectrum = spectra[0]
+    elif isinstance(spectra, dict):
+        spectrum = spectra[list(spectra.keys())[0]]
     else:
         spectrum = spectra
     return spectrum.__class__
@@ -167,25 +183,25 @@ def array_to_symmetric_matrix(array, array_size):
     def contains_diagonal(_array_size, _array):
         return not len(_array) == len(np.tril_indices(_array_size - 1)[0])
 
-    # Bad cases
-    if (not isinstance(array, np.ndarray) and np.isnan(array)) or isinstance(array_size, np.ma.core.MaskedConstant) \
-            or array.size == 0:
+    # Is NaN size or NaN array
+    if pd.isna(array_size) or (isinstance(array, float) and pd.isna(array)):
         return array
-    # Enforce array type, second check verifies that array is 1D.
-    if isinstance(array, np.ndarray) and isinstance(array[0], Number) and isinstance(array_size, Number):
-        array_size = int(array_size)
-        matrix = np.zeros((array_size, array_size))
-        np.fill_diagonal(matrix, 1.0)  # Add values in diagonal
-        k = 0 if contains_diagonal(array_size, array) else -1  # Diagonal offset (from Numpy documentation)
-        matrix[np.tril_indices(array_size, k=k)] = array
-        transpose = matrix.transpose()
-        transpose[np.tril_indices(array_size, -1)] = matrix[np.tril_indices(array_size, -1)]
-        return transpose
-    elif isinstance(array, np.ndarray) and isinstance(array[0], np.ndarray):
-        # Input array is already a matrix, we assume that it contains the required values.
-        return array
-    else:
-        raise TypeError('Wrong argument types. Must be np.ndarray and integer.')
+    if isinstance(array_size, float):  # If the missing band source is present, floats may be returned when parsing
+        array_size = int(array_size)  # TODO: This should raise an error if the decimal part is not .0
+    if isinstance(array, np.ndarray):
+        n_dim = array.ndim
+        if array.size == 0 or n_dim == 2:  # Either empty or already a matrix
+            return array
+        elif n_dim == 1:
+            array_size = int(array_size)
+            matrix = np.zeros((array_size, array_size))
+            np.fill_diagonal(matrix, 1.0)  # Add values in diagonal
+            k = 0 if contains_diagonal(array_size, array) else -1  # Diagonal offset (from Numpy documentation)
+            matrix[np.tril_indices(array_size, k=k)] = array
+            transpose = matrix.transpose()
+            transpose[np.tril_indices(array_size, -1)] = matrix[np.tril_indices(array_size, -1)]
+            return transpose
+    raise TypeError('Wrong argument types. Must be np.ndarray and integer or float.')
 
 
 def _extract_systems_from_data(data_columns, photometric_system=None):
@@ -204,6 +220,77 @@ def _extract_systems_from_data(data_columns, photometric_system=None):
         systems = list(dict.fromkeys(column_list))
     return systems
 
-def _get_built_in_systems() -> list:
-    f = open(join(config_path, 'available_systems.txt'), 'r')
-    return f.read().splitlines()
+
+def correlation_from_covariance(covariance):
+    v = np.sqrt(np.diag(covariance))
+    outer_v = np.outer(v, v)
+    correlation = covariance / outer_v
+    correlation[covariance == 0] = 0
+    return correlation
+
+
+def correlation_to_covariance(correlation: np.ndarray, error: np.ndarray, stdev: float) -> np.ndarray:
+    """
+    Compute the covariance matrix from the correlation values.
+
+    If the input correlation values are a 1D array, the values are assumed to be the lower triangle of a
+    symmetric matrix (excluding the diagonal). The array will be internally converted to a full correlation matrix.
+
+    Args:
+        correlation (ndarray): A 2D numpy array of shape (n, n) representing the correlation matrix.
+            Alternatively, a 1D numpy array of length n*(n-1)/2 representing the lower triangle of a
+            symmetric correlation matrix (excluding the diagonal).
+        error (ndarray): A 1D numpy array of length n containing the flux errors.
+        stdev (float): The scaling factor for the errors.
+
+    Returns:
+        ndarray: A 2D numpy array of shape (n, n) representing the covariance matrix.
+
+    Raises:
+        ValueError: If the dimensions of input correlation are not either 1 or 2.
+    """
+    if correlation.ndim == 1:
+        size = get_matrix_size_from_lower_triangle(correlation)
+        new_matrix = np.zeros((size, size))
+        new_matrix[np.tril_indices(size, k=-1)] = correlation
+        new_matrix += new_matrix.T
+        new_matrix += np.diag(np.ones(size), k=0)
+        correlation = new_matrix
+    if correlation.ndim == 2:
+        return _correlation_to_covariance_dr3int5(correlation, error, stdev)
+    else:
+        raise ValueError('Dimensions of input correlation must be either 1 or 2.')
+
+
+def get_matrix_size_from_lower_triangle(array):
+    """
+    Compute the size of a symmetric matrix from an array containing the values of its lower triangle, excluding the
+    diagonal.
+
+    Args:
+        array (ndarray): An array of length n*(n-1)/2 representing the lower triangle of an n x n symmetric matrix,
+            excluding the diagonal.
+
+    Returns:
+        int: The size n of the symmetric matrix.
+
+    Raises:
+        ValueError: If the length of array is not a valid input for a symmetric matrix lower triangle.
+    """
+    return int((np.sqrt(1 + 8 * len(array)) + 1) / 2)
+
+
+def standardise_extension(_extension):
+    """
+    Standardise the provided extension which can contain or not an initial dot, and can contain a mix of uppercase and
+    lowercase letters.
+
+    Args:
+        _extension (str): File extension which may or may not contain an initial dot.
+
+    Returns:
+        str: The extension in lowercase letters and with no initial dot (eg.: 'csv').
+    """
+    # Remove initial dot if present
+    _extension = _extension[1:] if _extension[0] == '.' else _extension
+    return _extension.lower()

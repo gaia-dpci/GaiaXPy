@@ -44,7 +44,6 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
         """
-        extension = 'csv'
         if _matrix_columns is None:
             _matrix_columns = matrix_columns
         if _array_columns is None:

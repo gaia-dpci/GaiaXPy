@@ -30,7 +30,7 @@ def _is_built_in_system(system):
 
 
 def cast_output(output):
-    cast_dict = {'source_id': 'int64', 'solution_id': 'int64', 'line_name': 'str', 'line_flux': 'float64'}
+    cast_dict = {'source_id': 'int64', 'solution_id': 'int64'}
     df = output if isinstance(output, pd.DataFrame) else output.data
     for column in df.columns:
         try:

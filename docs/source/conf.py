@@ -54,7 +54,7 @@ def setup(app):
 
 # -- Project information -----------------------------------------------------
 project = u'GaiaXPy'
-copyright = u'2022, DPAC, CU5, DPCI'
+copyright = u'2023, DPAC, CU5, DPCI'
 author = u'Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
 
 # The short X.Y version
@@ -140,7 +140,7 @@ html_theme_options = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_logo = "_static/images/gaiaLogo.png"
+html_logo = "_static/images/GaiaXPy.png"
 html_favicon = html_logo
 
 html_css_files = [

@@ -17,21 +17,21 @@ The functions in GaiaXPy can receive different kinds of inputs. The ones current
 Files
 -----
 The functions accept input files with the extensions: :python:`csv`, :python:`ecsv`, :python:`fits`, and :python:`xml`.
-These are files that contain XP continuous raw data as extracted from the `Gaia archive <https://archives.esac.esa.int/gaia/>`_.
+These are files that contain XP continuous raw data as extracted from the `Gaia Archive <https://archives.esac.esa.int/gaia/>`_.
 
 Lists
 -----
 Lists are accepted only by :python:`calibrate`, :python:`convert`, and :python:`generate`. These lists have to correspond to a list of source IDs. Both lists of strings and lists of long are accepted.
 
-When a list is passed to one of the tools, the function will internally request the required data for the given sources from the Gaia archive.
+When a list is passed to one of the tools, the function will internally request the required data for the given sources from the Gaia Archive.
 
-Passing Cosmos credentials (username and password) is optional.
+Passing Cosmos credentials (:python:`username` and :python:`password`) is optional.
 
 ADQL queries
 ------------
 ADQL queries are accepted only by the :python:`calibrate`, :python:`convert`, and :python:`generate`. Queries need to be passed as strings (e.g.: :python:`"select TOP 100 source_id from gaiadr3.gaia_source where has_xp_continuous = 'True'"`).
 
-Cosmos credentials (username and password) are optional.
+Passing Cosmos credentials (:python:`username` and :python:`password`) is optional.
 
 DataFrames
 ----------

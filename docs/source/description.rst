@@ -4,7 +4,7 @@ About the package
 General description
 -------------------
 
-GaiaXPy is a Python library to facilitate handling Gaia BP/RP spectra as distributed from the `Gaia archive <https://gea.esac.esa.int/archive/>`_.
+GaiaXPy is a Python library to facilitate handling Gaia BP/RP spectra as distributed from the `Gaia Archive <https://gea.esac.esa.int/archive/>`_.
 
 BP/RP (often shortened as XP) spectra became available for the first time in Gaia Data Release 3 (DR3).
 In their first release, only source **mean spectra** are available: these are spectra that have been generated from a number of single observations of the same object. **Epoch spectra**, i.e. spectra consisting of one single observation, will become available in future releases.

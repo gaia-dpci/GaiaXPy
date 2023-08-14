@@ -5,7 +5,7 @@ Release notes
 
 Version 2.1.0
 -------------
-Released on 2023/08/10.
+Released on 2023/08/11.
 
 * Python 3.6 no longer supported.
 * Output files modified to comply with standards, according to issues `#51 <https://github.com/gaia-dpci/GaiaXPy/issues/51>`_ and `#52 <https://github.com/gaia-dpci/GaiaXPy/issues/52>`_.

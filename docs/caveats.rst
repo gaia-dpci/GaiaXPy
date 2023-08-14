@@ -33,7 +33,7 @@ those defined in `Doi et al. 2010, AJ, 141, 47 <https://ui.adsabs.harvard.edu/ab
 Note that the standardised version (PhotometricSystem.SDSS_Std) was already based on Doi et al. 2010, AJ, 141, 47 and is
 therefore unchanged with respect to previous versions of GaiaXPy.
 
-**PanSTARRS1_Std**: Due to a bug in GaiaXPy, the synthetic photometry for the standardized PanSTARRS1 y band (contained
+**PanSTARRS1_Std**: Due to a bug in GaiaXPy, the synthetic photometry for the standardised PanSTARRS1 y band (contained
 in the fields y_ps1_flux, y_ps1_flux_error and y_ps1_mag) has been generated without applying the flux offset mitigating
 the systematic effect at the faint end due to background issues (also referred to as hockey-stick, see Section 2.2.1 and
 equation 13 in `Gaia Collaboration, Montegriffo, et al., 2022 <https://ui.adsabs.harvard.edu/abs/2022arXiv220606215G/abstract>`_).

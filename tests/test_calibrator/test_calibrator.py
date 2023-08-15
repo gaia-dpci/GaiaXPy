@@ -9,7 +9,7 @@ from gaiaxpy.calibrator.calibrator import _calibrate, _create_spectrum
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
-from gaiaxpy.input_reader.file_reader import MANDATORY_COLS
+from gaiaxpy.input_reader.mandatory_columns import MANDATORY_COLS
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from tests.files.paths import mean_spectrum_csv_file, mean_spectrum_avro_file, mean_spectrum_fits_file, \

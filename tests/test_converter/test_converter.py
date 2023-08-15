@@ -11,7 +11,7 @@ from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices, g
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
-from gaiaxpy.input_reader.file_reader import MANDATORY_COLS
+from gaiaxpy.input_reader.mandatory_columns import MANDATORY_COLS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from tests.files.paths import mean_spectrum_xml_plain_file, con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path,\

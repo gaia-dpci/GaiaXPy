@@ -7,7 +7,7 @@ from gaiaxpy.converter.config import load_config
 from gaiaxpy.converter.converter import get_design_matrices, get_unique_basis_ids
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
-from gaiaxpy.input_reader.file_reader import MANDATORY_COLS
+from gaiaxpy.input_reader.mandatory_columns import MANDATORY_COLS
 from gaiaxpy.spectrum.generic_spectrum import Spectrum
 from gaiaxpy.spectrum.sampled_spectrum import SampledSpectrum
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5

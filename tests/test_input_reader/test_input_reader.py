@@ -5,7 +5,7 @@ import pandas.testing as pdt
 
 from gaiaxpy import convert
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
-from gaiaxpy.input_reader.file_reader import MANDATORY_COLS
+from gaiaxpy.input_reader.mandatory_columns import MANDATORY_COLS
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import mean_spectrum_csv_file
 

@@ -139,10 +139,9 @@ class GenericParser(object):
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
         """
-        # Astropy won't automatically remove the columns that are not in _usecols but it speeds up the process a bit
+        # Astropy won't automatically remove the columns that are not in _usecols, but it speeds up the process a bit
         table = Table.read(xml_file, columns=_usecols)
-        # Parsing only the required columns would be ideal, but not necessarily issue due to some type issues
-        df = table.to_pandas()[_usecols]
+        df = table.to_pandas()[_usecols] # The table read by Astropy will still contain all the columns
         if _matrix_columns:
             for size_column, values_column in _matrix_columns:
                 df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column],

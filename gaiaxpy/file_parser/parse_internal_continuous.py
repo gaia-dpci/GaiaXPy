@@ -10,7 +10,6 @@ from fastavro import __version__ as fa_version
 from packaging import version
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
-from gaiaxpy.core.generic_variables import INTERNAL_CONT_COLS
 from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
@@ -28,6 +27,8 @@ class InternalContinuousParser(GenericParser):
     """
     Parser for internally calibrated continuous spectra.
     """
+    def __init__(self, mandatory_columns=None):
+        self.mandatory_columns = mandatory_columns
 
     def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
@@ -48,7 +49,7 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns = matrix_columns
         if _array_columns is None:
             _array_columns = array_columns
-        _usecols = _usecols if _usecols else INTERNAL_CONT_COLS
+        _usecols = _usecols if _usecols else self.mandatory_columns
         df = super()._parse_csv(csv_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
                                 _usecols=_usecols)
         for band in BANDS:
@@ -74,7 +75,7 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns = matrix_columns
         if _array_columns is None:
             _array_columns = array_columns
-        _usecols = _usecols if _usecols else INTERNAL_CONT_COLS
+        _usecols = _usecols if _usecols else self.mandatory_columns
         df = super()._parse_fits(fits_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
                                  _usecols=_usecols)
         for band in BANDS:
@@ -99,7 +100,7 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns = matrix_columns
         if _array_columns is None:
             _array_columns = array_columns
-        _usecols = _usecols if _usecols else INTERNAL_CONT_COLS
+        _usecols = _usecols if _usecols else self.mandatory_columns
         df = super()._parse_xml(xml_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
                                 _usecols=_usecols)
         for band in BANDS:

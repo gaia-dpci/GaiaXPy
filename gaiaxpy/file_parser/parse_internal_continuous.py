@@ -28,6 +28,7 @@ class InternalContinuousParser(GenericParser):
     Parser for internally calibrated continuous spectra.
     """
     def __init__(self, mandatory_columns=None):
+        super().__init__()
         self.mandatory_columns = mandatory_columns
 
     def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None):

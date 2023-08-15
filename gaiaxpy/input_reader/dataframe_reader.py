@@ -24,6 +24,7 @@ class DataFrameReader(object):
     def __init__(self, content, disable_info=False):
         self.content = content.copy()
         self.disable_info = disable_info
+        self.info_msg = 'Reading input DataFrame...'
 
     def __get_parseable_columns(self):
         str_columns, np_columns = [], []
@@ -40,7 +41,7 @@ class DataFrameReader(object):
 
     def read_df(self):
         if not self.disable_info:
-            print('Reading input DataFrame...', end='\r')
+            print(self.info_msg, end='\r')
         content = self.content
         str_array_columns, np_array_columns = self.__get_parseable_columns()
         if str_array_columns:
@@ -59,4 +60,6 @@ class DataFrameReader(object):
             if matrix_columns:
                 for band in BANDS:
                     data[f'{band}_covariance_matrix'] = data.apply(get_covariance_matrix, axis=1, args=(band,))
+        if not self.disable_info:
+            print(self.info_msg + ' Done!', end='\r')
         return data, None  # No extension returned for DataFrames

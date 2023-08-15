@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from .dataframe_reader import DataFrameReader
-from .file_reader import FileReader
+from .file_reader import FileSelector
 from .list_reader import ListReader
 from .query_reader import QueryReader
 
@@ -27,9 +27,9 @@ class InputReader(object):
         password = self.password
         disable_info = self.disable_info
         if isfile(content) or isabs(content):  # Check if content is file path
-            selector = FileReader(function, disable_info=disable_info)
-            parser = selector.select()  # Select type of parser required
-            parsed_input_data, extension = parser._parse(content)
+            selector = FileSelector(function)
+            file_parser = selector.select()  # Select type of file_parser required
+            parsed_input_data, extension = file_parser._parse(content, disable_info=disable_info)
         elif content.lower().startswith('select'):  # Query should start with select
             parsed_input_data, extension = QueryReader(content, function, user=user, password=password,
                                                        disable_info=disable_info).read()

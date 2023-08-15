@@ -5,12 +5,13 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.generator.photometric_system import PhotometricSystem
 from gaiaxpy.generator.synthetic_photometry_generator import _generate_synthetic_photometry
+from gaiaxpy.input_reader.file_reader import MANDATORY_COLS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.single_synthetic_photometry import SingleSyntheticPhotometry
 from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_xml_file, \
     mean_spectrum_xml_plain_file, mean_spectrum_fits_file, mean_spectrum_ecsv_file
 
-continuous_parser = InternalContinuousParser()
+continuous_parser = InternalContinuousParser(MANDATORY_COLS['generate'])
 
 # Parse files
 parsed_covariance, _ = continuous_parser._parse(mean_spectrum_avro_file)

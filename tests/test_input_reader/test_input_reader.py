@@ -4,13 +4,13 @@ import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import convert
-from gaiaxpy.core.generic_variables import INTERNAL_CONT_COLS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+from gaiaxpy.input_reader.file_reader import MANDATORY_COLS
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import mean_spectrum_csv_file
 
-dataframe_str = pd.read_csv(mean_spectrum_csv_file, float_precision='high', usecols=INTERNAL_CONT_COLS)
-parser = InternalContinuousParser()
+dataframe_str = pd.read_csv(mean_spectrum_csv_file, float_precision='high', usecols=MANDATORY_COLS['_calibrate'])
+parser = InternalContinuousParser(MANDATORY_COLS['calibrate'])
 dataframe_np, _ = parser._parse(mean_spectrum_csv_file)
 # Temporarily opt for removing cov matrices before comparing
 dataframe_np = dataframe_np.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])

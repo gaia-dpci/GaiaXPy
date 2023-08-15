@@ -1,5 +1,4 @@
 import unittest
-from os import path
 
 import numpy.testing as npt
 import pandas as pd
@@ -7,11 +6,12 @@ from numpy import ndarray, dtype
 
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+from gaiaxpy.input_reader.file_reader import MANDATORY_COLS
 from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_fits_file,\
     mean_spectrum_xml_file
 from tests.utils.utils import get_spectrum_with_source_id
 
-parser = InternalContinuousParser()
+parser = InternalContinuousParser(MANDATORY_COLS['calibrate'])
 parsed_avro_file, _ = parser._parse(mean_spectrum_avro_file)
 parsed_csv_file, _ = parser._parse(mean_spectrum_csv_file)
 parsed_fits_file, _ = parser._parse(mean_spectrum_fits_file)

@@ -5,7 +5,6 @@ Module to parse input files containing internally calibrated sampled spectra.
 """
 
 from .parse_generic import GenericParser
-from ..core.generic_functions import _warning
 
 
 class InternalSampledParser(GenericParser):

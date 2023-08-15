@@ -1,6 +1,6 @@
 from tqdm import tqdm
 
-from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.spectrum.multi_synthetic_photometry import MultiSyntheticPhotometry
 from .synthetic_photometry_generator import SyntheticPhotometryGenerator
 
@@ -17,6 +17,7 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
         self.rp_model = rp_model
 
     def generate(self, parsed_input_data, extension, output_file, output_format, save_file):
+        __FUNCTION_KEY = 'photometry'
         # Recover attributes
         systems = self.photometric_system
         internal_systems = [system.value for system in systems]
@@ -34,9 +35,9 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
                                     in zip(systems, sampled_basis_func_list, xp_merge_list)]
         # Now the first list contains the photometries in all systems for the first source_id, and so on.
         rearranged_photometry_list = [sublist for sublist in tqdm(zip(*photometry_list_of_lists),
-                                                                  desc='Generating photometry',
+                                                                  desc=pbar_message[__FUNCTION_KEY],
                                                                   total=len(parsed_input_data),
-                                                                  unit=pbar_units['photometry'], leave=False,
+                                                                  unit=pbar_units[__FUNCTION_KEY], leave=False,
                                                                   colour=pbar_colour)]
         multi_photometry_df = MultiSyntheticPhotometry(systems, rearranged_photometry_list)._generate_output_df()
         return multi_photometry_df

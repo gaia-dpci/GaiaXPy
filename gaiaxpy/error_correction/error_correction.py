@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 from gaiaxpy.config.paths import correction_tables_path
 from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, _warning
-from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 
@@ -114,6 +114,7 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
 def _apply_error_correction(input_multi_photometry, photometric_system=None, output_path='.',
                             output_file='output_corrected_photometry', output_format=None, save_file=True,
                             disable_info=False):
+    __FUNCTION_KEY = 'correction'
     gaia_system = 'GaiaDr3Vega'
     gaia_G_mag_column = f'{gaia_system}_mag_G'
     input_multi_photometry, extension = InputReader(input_multi_photometry, apply_error_correction,
@@ -133,7 +134,7 @@ def _apply_error_correction(input_multi_photometry, photometric_system=None, out
     for system in systems_to_skip:
         _warning(f'System {system} does not have a correction table. The program will not apply error correction over'
                  ' this system.')
-    for system in tqdm(systems, desc='Correcting systems', total=len(systems), unit=pbar_units['correction'],
+    for system in tqdm(systems, desc=pbar_message[__FUNCTION_KEY], total=len(systems), unit=pbar_units[__FUNCTION_KEY],
                        leave=False, colour=pbar_colour):
         system_df = input_multi_photometry[[column for column in input_multi_photometry.columns if
                                             (column.startswith(system) and f'{system}Std' not in column) or

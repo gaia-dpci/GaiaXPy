@@ -27,7 +27,7 @@ class DataFrameStringArrayReader(object):
             df[column] = df[column].map(np.array)
         return df
 
-    def _parse(self):
+    def read(self):
         def __get_enclosing_element(_df, _array_columns):
             for row in _df.to_dict('records'):
                 for column in _array_columns:

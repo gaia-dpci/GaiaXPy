@@ -46,14 +46,13 @@ class DataFrameReader(object):
         if not self.disable_info:
             print(self.info_msg, end='\r')
         content = self.content
-        # TODO: Avoid reading/parsing columns that won't be used
         mandatory_columns = MANDATORY_COLS[self.function_name]
         str_array_columns, np_array_columns = self.__get_parseable_columns(mandatory_columns)
         if str_array_columns:
-            data = DataFrameStringArrayReader(content, str_array_columns)._parse()  # Call string reader
+            data = DataFrameStringArrayReader(content, str_array_columns).read()  # Call string reader
             array_columns = str_array_columns
         elif np_array_columns:
-            data = DataFrameNumPyArrayReader(content, np_array_columns)._parse()
+            data = DataFrameNumPyArrayReader(content, np_array_columns).read()
             array_columns = np_array_columns
         else:
             data = content

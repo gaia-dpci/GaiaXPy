@@ -24,14 +24,13 @@ def _build_regular_header(columns):
     header_dict = _load_header_dict()
     header = _initialise_header()
     for column in columns:
+        current_column = header_dict[column]
         header.append('# -')
         header.append(f'#   name: {column}')
-        header.append(f'#   datatype: {header_dict[column]["datatype"]}')
-        try:
-            header.append(f'#   subtype: {header_dict[column]["subtype"]}')
-        except KeyError:
-            pass
-        header.append(f'#   description: {header_dict[column]["description"]}')
+        header.append(f'#   datatype: {current_column["datatype"]}')
+        if current_column.get('subtype'):
+            header.append(f'#   subtype: {current_column["subtype"]}')
+        header.append(f'#   description: {current_column["description"]}')
     return '\n'.join(header) + '\n'
 
 

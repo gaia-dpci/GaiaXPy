@@ -60,27 +60,25 @@ def _load_header_dict():
 
 
 def _build_ecsv_header(df, positions=None):
-    positions = str(list(positions)) if positions is not None else None
+    positions = None if positions is None else str(list(positions))
     columns = df.columns
     header_dict = _load_header_dict()
     header = _initialise_header()
     data_type = df.attrs['data_type']
     units_dict = data_type.get_units()
     for column in columns:
+        current_column = header_dict[column]
         header.append('# -')
         header.append(f'#   name: {column}')
-        header.append(f'#   datatype: {header_dict[column]["datatype"]}')
-        try:
-            header.append(
-                f'#   subtype: {header_dict[column]["subtype"].replace("null", str(len(df[column].iloc[0])))}')
-        except KeyError:
-            pass
-        header.append(f'#   description: {header_dict[column]["description"]}')
+        header.append(f'#   datatype: {current_column["datatype"]}')
+        if 'subtype' in current_column.keys():
+            header.append(f'#   subtype: {current_column["subtype"].replace("null", str(len(df[column].iloc[0])))}')
+        header.append(f'#   description: {current_column["description"]}')
         if units_dict.get(column, None):
             header.append(f'#   unit: {units_dict[column]}')
-        if header_dict[column].get('meta', None):
+        if current_column.get('meta', None):
             header.append('#   meta:')
-            header.append(f'#     ucd: {header_dict[column]["meta"]}')
+            header.append(f'#     ucd: {current_column["meta"]}')
     if positions:
         header.append('# meta:')
         header.append(f'#   sampling: {positions}')

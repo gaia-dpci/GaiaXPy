@@ -81,11 +81,8 @@ class SampledSpectraData(OutputData):
             # Spectrum fields to string
             for spectrum in _spectra_dicts:
                 for field, _type in field_to_type.items():
-                    if _type == 'string' and not field == 'xp':
-                        try:
-                            spectrum[field] = str(tuple(spectrum[field]))
-                        except KeyError:
-                            continue  # Key may not exist (e.g.: 'xp')
+                    if _type == 'string' and field in spectrum.keys() and not field == 'xp':
+                        spectrum[field] = str(tuple(spectrum[field]))
             # Validate that records match the schema
             validate_many(_spectra_dicts, schema)
             return parse_schema(schema), _spectra_dicts
@@ -148,15 +145,12 @@ class SampledSpectraData(OutputData):
         # Get length of flux (should be the same as length of error)
         flux_format = f'{len(positions)}D'  # D: double precision float
         flux_error_format = f'{len(positions)}E'  # E: single precision float
-        correlation_format = ''  # Correlation if requested
-        try:
-            correlation_format = f"{len(data['correlation'].iloc[0])}D"
-        except KeyError:
-            pass
+        aux_corr = data.get('correlation')
+        correlation_format = f'{len(aux_corr.iloc[0])}D' if aux_corr else ''
         # Define formats for each type according to FITS
         column_formats = {'source_id': 'K', 'xp': '2A', 'flux': flux_format, 'flux_error': flux_error_format,
                           'correlation': correlation_format, 'standard_deviation': 'E'}
-        # create a list of HDUs
+        # Create a list of HDUs
         hdu_list = list()
         # create a header to include the sampling
         hdr = fits.Header()

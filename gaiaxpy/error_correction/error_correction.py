@@ -6,7 +6,7 @@ Module that implements the error correction over a multi-photometry.
 
 from functools import lru_cache
 from os import listdir
-from os.path import join
+from os.path import join, isfile
 
 import numpy as np
 import pandas as pd
@@ -28,13 +28,12 @@ def _get_correctable_systems():
 
 
 def _read_system_table(system):
-    try:
-        correction_factors_path = join(correction_tables_path, f'DIDREQ-465-{system}-correction-factors.csv')
+    correction_factors_path = join(correction_tables_path, f'DIDREQ-465-{system}-correction-factors.csv')
+    if isfile(correction_factors_path):
         correction_table = pd.read_csv(correction_factors_path, float_precision='high')
-    except FileNotFoundError:
-        raise FileNotFoundError(f'No correction table found for system {system}.')
-    correction_table['bin_centre'] = (correction_table['min_Gmag_bin'] + correction_table['max_Gmag_bin']) / 2
-    return correction_table
+        correction_table['bin_centre'] = (correction_table['min_Gmag_bin'] + correction_table['max_Gmag_bin']) / 2
+        return correction_table
+    raise FileNotFoundError(f'No correction table found for system {system}.')
 
 
 def _get_correction_array(_mag_G_values, system):

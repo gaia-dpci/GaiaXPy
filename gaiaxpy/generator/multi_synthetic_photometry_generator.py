@@ -30,8 +30,9 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
         sampled_basis_func_list = [self._get_sampled_basis_functions(xp_sampling, xp_sampling_grid) for
                                    xp_sampling, xp_sampling_grid in zip(xp_sampling_list, xp_sampling_grid_list)]
         # One list per system
-        photometry_list_of_lists = [self._create_photometry_list(parsed_input_data, phot_system, sampled_basis_func,
-                                                                 xp_merge) for phot_system, sampled_basis_func, xp_merge
+        photometry_list_of_lists = [self._create_photometry_list(parsed_input_data, phot_system,
+                                                                 sampled_basis_func, xp_merge)
+                                    for phot_system, sampled_basis_func, xp_merge
                                     in zip(systems, sampled_basis_func_list, xp_merge_list)]
         # Now the first list contains the photometries in all systems for the first source_id, and so on.
         rearranged_photometry_list = [sublist for sublist in tqdm(zip(*photometry_list_of_lists),

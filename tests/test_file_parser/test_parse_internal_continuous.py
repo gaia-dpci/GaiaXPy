@@ -12,11 +12,11 @@ from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file, m
 from tests.utils.utils import get_spectrum_with_source_id
 
 parser = InternalContinuousParser(MANDATORY_COLS['calibrate'])
-parsed_avro_file, _ = parser._parse(mean_spectrum_avro_file)
-parsed_csv_file, _ = parser._parse(mean_spectrum_csv_file)
-parsed_fits_file, _ = parser._parse(mean_spectrum_fits_file)
-parsed_plain_xml_file, _ = parser._parse(mean_spectrum_xml_file)
-parsed_xml_file, _ = parser._parse(mean_spectrum_xml_file)
+parsed_avro_file, _ = parser.parse_file(mean_spectrum_avro_file)
+parsed_csv_file, _ = parser.parse_file(mean_spectrum_csv_file)
+parsed_fits_file, _ = parser.parse_file(mean_spectrum_fits_file)
+parsed_plain_xml_file, _ = parser.parse_file(mean_spectrum_xml_file)
+parsed_xml_file, _ = parser.parse_file(mean_spectrum_xml_file)
 
 type_map = {'source_id': dtype('int64'),
             'solution_id': dtype('int64'),

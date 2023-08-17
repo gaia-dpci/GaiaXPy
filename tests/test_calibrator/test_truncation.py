@@ -37,7 +37,7 @@ class TestCalibratorTruncation(unittest.TestCase):
 
     def test_create_spectrum(self):
         # Read mean Spectrum
-        parsed_spectrum_file, extension = parser._parse(mean_spectrum_csv_file)
+        parsed_spectrum_file, extension = parser.parse_file(mean_spectrum_csv_file)
         # Create sampled basis functions
         sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[band])
                               for band in BANDS}

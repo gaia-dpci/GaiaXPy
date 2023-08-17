@@ -14,12 +14,12 @@ from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file, m
 continuous_parser = InternalContinuousParser(MANDATORY_COLS['generate'])
 
 # Parse files
-parsed_covariance, _ = continuous_parser._parse(mean_spectrum_avro_file)
-parsed_correlation_csv, _ = continuous_parser._parse(mean_spectrum_csv_file)
-parsed_correlation_ecsv, _ = continuous_parser._parse(mean_spectrum_ecsv_file)
-parsed_correlation_fits, _ = continuous_parser._parse(mean_spectrum_fits_file)
-parsed_correlation_xml_plain, _ = continuous_parser._parse(mean_spectrum_xml_plain_file)
-parsed_correlation_xml, _ = continuous_parser._parse(mean_spectrum_xml_file)
+parsed_covariance, _ = continuous_parser.parse_file(mean_spectrum_avro_file)
+parsed_correlation_csv, _ = continuous_parser.parse_file(mean_spectrum_csv_file)
+parsed_correlation_ecsv, _ = continuous_parser.parse_file(mean_spectrum_ecsv_file)
+parsed_correlation_fits, _ = continuous_parser.parse_file(mean_spectrum_fits_file)
+parsed_correlation_xml_plain, _ = continuous_parser.parse_file(mean_spectrum_xml_plain_file)
+parsed_correlation_xml, _ = continuous_parser.parse_file(mean_spectrum_xml_file)
 
 phot_system_johnson = PhotometricSystem.JKC
 phot_system_sdss = PhotometricSystem.SDSS

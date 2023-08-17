@@ -10,7 +10,7 @@ from tests.files.paths import mean_spectrum_csv_file
 
 dataframe_str = pd.read_csv(mean_spectrum_csv_file, float_precision='high')
 parser = InternalContinuousParser()
-dataframe_np, _ = parser._parse(mean_spectrum_csv_file)
+dataframe_np, _ = parser.parse_file(mean_spectrum_csv_file)
 
 _rtol, _atol = 1e-24, 1e-24
 

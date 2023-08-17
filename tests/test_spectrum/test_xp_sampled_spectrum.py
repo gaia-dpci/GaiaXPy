@@ -17,7 +17,7 @@ from gaiaxpy.spectrum.xp_spectrum import XpSpectrum
 from tests.files.paths import mean_spectrum_csv_file
 
 parser = InternalContinuousParser(MANDATORY_COLS['convert'])
-correlation_parsed_file, _ = parser._parse(mean_spectrum_csv_file)
+correlation_parsed_file, _ = parser.parse_file(mean_spectrum_csv_file)
 
 parsed_config = load_config(optimised_bases_file)
 

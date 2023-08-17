@@ -15,7 +15,7 @@ parsed_csv_file = parser._parse_csv(mini_csv_file)
 class TestExternalParserCSV(unittest.TestCase):
 
     def test_parse_no_extension(self):
-        self.assertRaises(InvalidExtensionError, parser._parse, no_ext_file)
+        self.assertRaises(InvalidExtensionError, parser.parse_file, no_ext_file)
 
     def test_parse_returns_dataframe(self):
         self.assertIsInstance(parsed_csv_file, pd.DataFrame)

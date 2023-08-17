@@ -29,8 +29,8 @@ parser = InternalContinuousParser(MANDATORY_COLS['convert'])
 sampling = np.linspace(0, 60, 481)
 
 sampled_parser = InternalSampledParser()
-ref_sampled, _ = sampled_parser._parse(con_ref_sampled_csv_path)
-ref_sampled_truncated, _ = sampled_parser._parse(con_ref_sampled_truncated_csv_path)
+ref_sampled, _ = sampled_parser.parse_file(con_ref_sampled_csv_path)
+ref_sampled_truncated, _ = sampled_parser.parse_file(con_ref_sampled_truncated_csv_path)
 
 TOL = 4
 _rtol, _atol = 1e-6, 1e-6  # Precision varies with extension
@@ -41,7 +41,7 @@ class TestGetMethods(unittest.TestCase):
     def test_get_unique_basis_ids(self):
         instance = set
         for file in con_input_files:
-            parsed_input, _ = parser._parse(file)
+            parsed_input, _ = parser.parse_file(file)
             unique_bases_ids = get_unique_basis_ids(parsed_input)
             self.assertIsInstance(unique_bases_ids, instance, msg=is_instance_err_message(file, instance))
             self.assertEqual(unique_bases_ids, {56, 57})
@@ -49,7 +49,7 @@ class TestGetMethods(unittest.TestCase):
     def test_get_design_matrices(self):
         instance = SampledBasisFunctions
         for file in con_input_files:
-            parsed_input, _ = parser._parse(file)
+            parsed_input, _ = parser.parse_file(file)
             unique_bases_ids = get_unique_basis_ids(parsed_input)
             design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_bases_df)
             self.assertIsInstance(design_matrices, dict, msg=is_instance_err_message(file, dict))
@@ -66,7 +66,7 @@ class TestCreateSpectrum(unittest.TestCase):
         truncation = True
         instance = XpSampledSpectrum
         for file in con_input_files:
-            parsed_input, _ = parser._parse(file)
+            parsed_input, _ = parser.parse_file(file)
             parsed_input_dict = parsed_input.to_dict('records')
             unique_bases_ids = get_unique_basis_ids(parsed_input)
             design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_bases_df)

@@ -34,7 +34,7 @@ cal_input_files = [mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectru
 def generate_single_spectrum(mean_spectrum_path):
     # Read mean Spectrum
     parser = InternalContinuousParser(MANDATORY_COLS['calibrate'])
-    parsed_spectrum_file, extension = parser._parse(mean_spectrum_path)
+    parsed_spectrum_file, extension = parser.parse_file(mean_spectrum_path)
     # Create sampled basis functions
     sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[band])
                           for band in BANDS}

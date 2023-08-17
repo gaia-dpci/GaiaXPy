@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from .dataframe_reader import DataFrameReader
-from .file_reader import FileSelector
+from .file_reader import FileParserSelector, FileReader
 from .list_reader import ListReader
 from .query_reader import QueryReader
 
@@ -20,39 +20,22 @@ class InputReader(object):
         self.user = user
         self.password = password
 
-    def __string_reader(self):
-        content = self.content
-        function = self.function
-        user = self.user
-        password = self.password
-        disable_info = self.disable_info
-        if isfile(content) or isabs(content):  # Check if content is file path
-            selector = FileSelector(function)
-            file_parser = selector.select()  # Select type of file_parser required
-            parsed_input_data, extension = file_parser._parse(content, disable_info=disable_info)
-        elif content.lower().startswith('select'):  # Query should start with select
-            parsed_input_data, extension = QueryReader(content, function, user=user, password=password,
-                                                       disable_info=disable_info).read()
-        else:
-            raise ValueError('Input string does not correspond to an existing file and it is not an ADQL query.')
-        return parsed_input_data, extension
-
     def read(self):
         content = self.content
         function = self.function
         user = self.user
         password = self.password
+        disable_info = self.disable_info
         if isinstance(content, pd.DataFrame):
-            parsed_data, extension = DataFrameReader(content, function, disable_info=self.disable_info).read_df()
+            parsed_data, extension = DataFrameReader(content, function, disable_info=disable_info).read_df()
         elif isinstance(content, list):
-            parsed_data, extension = ListReader(content, function, user, password,
-                                                disable_info=self.disable_info).read()
-        # String can be either query or file path
-        elif isinstance(content, Path):
-            self.content = str(content)
-            parsed_data, extension = self.__string_reader()
-        elif isinstance(content, str):
-            parsed_data, extension = self.__string_reader()
+            parsed_data, extension = ListReader(content, function, user, password, disable_info=disable_info).read()
+        elif isinstance(content, Path) or (isinstance(content, str) and isfile(content)):
+            parser = FileParserSelector(function)
+            parsed_data, extension = FileReader(parser).read(content, disable_info=disable_info)
+        elif isinstance(content, str) and content.lower().startswith('select'):
+            parsed_data, extension = QueryReader(content, function, user=user, password=password,
+                                                 disable_info=disable_info).read()
         else:
             raise ValueError('The input provided does not match any of the expected input types.')
         extension = default_extension if extension is None else extension

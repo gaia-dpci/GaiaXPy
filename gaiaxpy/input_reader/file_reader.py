@@ -27,11 +27,18 @@ function_parser_dict = {'apply_colour_equation': raise_error,
                         'simulate_sampled': external}
 
 
-class FileSelector(object):
+class FileReader(object):
+
+    def __init__(self, file_parser_selector):
+        self.fps = file_parser_selector
+
+    def read(self, file, disable_info):
+        return self.fps.parser.parse_file(file, disable_info=disable_info)
+
+
+class FileParserSelector(object):
 
     def __init__(self, function):
         self.function = function.__name__
-
-    def select(self):
-        mandatory_columns = MANDATORY_COLS[self.function]
-        return function_parser_dict[self.function](mandatory_columns)
+        self.mandatory_columns = MANDATORY_COLS[self.function]
+        self.parser = function_parser_dict[self.function](self.mandatory_columns)

@@ -55,8 +55,6 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
         """
         return _gaia_system in _internal_photometric_system
 
-    # colour_equation should be always true as it is part of the definition of standardised systems.
-    colour_equation = True
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')
     validate_arguments(generate.__defaults__[1], output_file, save_file)
@@ -75,9 +73,8 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
         raise ValueError('Photometry generation not implemented for the input type.')
     photometry_df = generator.generate(parsed_input_data, extension, output_file=None, output_format=None,
                                        save_file=False)
-    if colour_equation:
-        photometry_df = _apply_colour_equation(photometry_df, photometric_system=internal_photometric_system,
-                                               save_file=False, disable_info=True)
+    photometry_df = _apply_colour_equation(photometry_df, photometric_system=internal_photometric_system,
+                                           save_file=False, disable_info=True)
     if error_correction:
         photometry_df = _apply_error_correction(photometry_df, photometric_system=photometric_system, save_file=False,
                                                 disable_info=True)

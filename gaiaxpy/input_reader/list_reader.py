@@ -20,6 +20,7 @@ class ListReader(ArchiveReader):
 
     def __init__(self, content, function, user, password, disable_info=False):
         super(ListReader, self).__init__(function, user, password)
+        self.info_msg = 'Running query...'
         if content:
             self.content = content
         else:
@@ -37,7 +38,7 @@ class ListReader(ArchiveReader):
         self._login(gaia)
         # ADQL query
         if not self.disable_info:
-            print('Running query...', end='\r')
+            print(self.info_msg, end='\r')
         result = gaia.load_data(ids=sources, format='csv', data_release=_data_release, data_structure='raw',
                                 retrieval_type='XP_CONTINUOUS', avoid_datatype_check=True)
         try:
@@ -45,4 +46,6 @@ class ListReader(ArchiveReader):
             data = result[continuous_key][0].to_pandas()
         except (KeyError, IndexError):
             raise ValueError('No continuous raw data found for the given sources.')
-        return DataFrameReader(data).read_df()
+        if not self.disable_info:
+            print(self.info_msg + ' Done!', end='\r')
+        return DataFrameReader(data, function_name).read_df()

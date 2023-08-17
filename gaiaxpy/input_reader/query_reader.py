@@ -33,4 +33,4 @@ class QueryReader(ArchiveReader):
             data = result[continuous_key][0].to_pandas()
         except KeyError:
             raise ValueError('No continuous raw data found for the requested query.')
-        return DataFrameReader(data).read_df()
+        return DataFrameReader(data, function_name).read_df()

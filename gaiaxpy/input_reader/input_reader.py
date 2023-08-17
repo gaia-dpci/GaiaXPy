@@ -43,15 +43,15 @@ class InputReader(object):
         user = self.user
         password = self.password
         if isinstance(content, pd.DataFrame):
-            parsed_data, extension = DataFrameReader(content, disable_info=self.disable_info).read_df()
+            parsed_data, extension = DataFrameReader(content, function, disable_info=self.disable_info).read_df()
         elif isinstance(content, list):
             parsed_data, extension = ListReader(content, function, user, password,
                                                 disable_info=self.disable_info).read()
         # String can be either query or file path
-        elif isinstance(content, str):
-            parsed_data, extension = self.__string_reader()
         elif isinstance(content, Path):
             self.content = str(content)
+            parsed_data, extension = self.__string_reader()
+        elif isinstance(content, str):
             parsed_data, extension = self.__string_reader()
         else:
             raise ValueError('The input provided does not match any of the expected input types.')

@@ -3,6 +3,7 @@ import numpy as np
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
 from .dataframe_numpy_array_reader import DataFrameNumPyArrayReader
 from .dataframe_string_array_reader import DataFrameStringArrayReader
+from .mandatory_columns import MANDATORY_COLS
 from ..core.satellite import BANDS
 from ..spectrum.utils import get_covariance_matrix
 
@@ -21,29 +22,33 @@ def needs_matrix_conversion(array_columns):
 
 class DataFrameReader(object):
 
-    def __init__(self, content, disable_info=False):
+    def __init__(self, content, function, disable_info=False):
         self.content = content.copy()
+        self.function_name = function if isinstance(function, str) else function.__name__
         self.disable_info = disable_info
         self.info_msg = 'Reading input DataFrame...'
 
-    def __get_parseable_columns(self):
+    def __get_parseable_columns(self, mandatory_columns):
         str_columns, np_columns = [], []
         content = self.content
         rows = content.iloc[0:2]
         rows_dict = rows.to_dict('records')
         for row in rows_dict:
             for column in content.columns:
-                if isinstance(row[column], str) and extremes_are_enclosing(row, column):
-                    str_columns.append(column)
-                if isinstance(row[column], np.ndarray):
-                    np_columns.append(column)
+                if column in mandatory_columns:
+                    if isinstance(row[column], str) and extremes_are_enclosing(row, column):
+                        str_columns.append(column)
+                    if isinstance(row[column], np.ndarray):
+                        np_columns.append(column)
         return list(set(str_columns)), list(set(np_columns))
 
     def read_df(self):
         if not self.disable_info:
             print(self.info_msg, end='\r')
         content = self.content
-        str_array_columns, np_array_columns = self.__get_parseable_columns()
+        # TODO: Avoid reading/parsing columns that won't be used
+        mandatory_columns = MANDATORY_COLS[self.function_name]
+        str_array_columns, np_array_columns = self.__get_parseable_columns(mandatory_columns)
         if str_array_columns:
             data = DataFrameStringArrayReader(content, str_array_columns)._parse()  # Call string reader
             array_columns = str_array_columns

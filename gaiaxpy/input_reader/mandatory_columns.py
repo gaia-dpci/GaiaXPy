@@ -16,7 +16,11 @@ __INV_MANDATORY_COLS = ['source_id', 'bp_n_parameters', 'bp_standard_deviation',
                          'bp_coefficient_correlations', 'rp_n_parameters', 'rp_standard_deviation',
                          'rp_coefficient_errors', 'rp_coefficient_correlations']
 
-MANDATORY_COLS = {'_calibrate': __CAL_MANDATORY_COLS, 'calibrate': __CAL_MANDATORY_COLS,
+# External apply functions (the ones not prefixed by "_") do not have mandatory columns as they receive photometries
+# In these cases, the columns depend on the systems in the photometry itself
+MANDATORY_COLS = {'apply_colour_equation': list(), 'apply_error_correction': list(),
+                  '_apply_colour_equation': __GEN_MANDATORY_COLS, '_apply_error_correction': __GEN_MANDATORY_COLS,
+                  '_calibrate': __CAL_MANDATORY_COLS, 'calibrate': __CAL_MANDATORY_COLS,
                   'convert': __CON_MANDATORY_COLS, 'generate': __GEN_MANDATORY_COLS,
                   'get_inverse_covariance_matrix': __INV_MANDATORY_COLS,
                   'get_inverse_square_root_covariance_matrix': __INV_MANDATORY_COLS}

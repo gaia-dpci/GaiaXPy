@@ -166,11 +166,8 @@ class InternalContinuousParser(GenericParser):
         to_matrix_columns = [('bp_n_parameters', 'bp_coefficient_covariances'),
                              ('rp_n_parameters', 'rp_coefficient_covariances')]
         for size_column, values_column in to_matrix_columns:
-            try:
-                df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column],
-                                                                                   row[size_column]), axis=1)
-            except TypeError:
-                continue  # Value can be NaN when a band is not present
+            df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column], row[size_column]),
+                                         axis=1)
         for band in BANDS:
             df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
         return _cast(df)

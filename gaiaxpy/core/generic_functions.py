@@ -31,12 +31,11 @@ def _is_built_in_system(system):
 
 def cast_output(output):
     cast_dict = {'source_id': 'int64', 'solution_id': 'int64'}
+    cast_dict_keys = cast_dict.keys()
     df = output if isinstance(output, pd.DataFrame) else output.data
     for column in df.columns:
-        try:
+        if column in cast_dict_keys:
             df[column] = df[column].astype(cast_dict[column])
-        except KeyError:
-            continue
     return df
 
 

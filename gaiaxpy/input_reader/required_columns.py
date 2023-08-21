@@ -17,7 +17,7 @@ CORRELATIONS_COLUMNS = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coeffici
 # External apply functions (the ones not prefixed by "_") do not have mandatory columns as they receive photometries
 # In these cases, the columns depend on the systems in the photometry itself
 MANDATORY_COLS = {'_apply_colour_equation': __GEN_MANDATORY_COLS, '_apply_error_correction': __GEN_MANDATORY_COLS,
-                  '_calibrate': __CAL_MANDATORY_COLS, 'calibrate': __CAL_MANDATORY_COLS,
-                  'convert': __CON_MANDATORY_COLS, 'generate': __GEN_MANDATORY_COLS,
+                  '_calibrate': __CAL_MANDATORY_COLS, '_generate': __GEN_MANDATORY_COLS,
+                  'calibrate': __CAL_MANDATORY_COLS, 'convert': __CON_MANDATORY_COLS, 'generate': __GEN_MANDATORY_COLS,
                   'get_inverse_covariance_matrix': __INV_MANDATORY_COLS,
                   'get_inverse_square_root_covariance_matrix': __INV_MANDATORY_COLS}

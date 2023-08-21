@@ -7,6 +7,7 @@ from .required_columns import MANDATORY_COLS, COVARIANCE_COLUMNS, CORRELATIONS_C
 from ..core.satellite import BANDS
 from ..spectrum.utils import get_covariance_matrix
 
+covariance_columns = ['bp_covariance_matrix', 'rp_covariance_matrix']
 matrix_columns = [('bp_n_parameters', 'bp_coefficient_correlations'),
                   ('rp_n_parameters', 'rp_coefficient_correlations')]
 
@@ -22,7 +23,8 @@ def needs_matrix_conversion(array_columns):
 
 class DataFrameReader(object):
 
-    def __init__(self, content, function, disable_info=False):
+    def __init__(self, content, function, additional_columns=None, disable_info=False):
+        additional_columns = [] if additional_columns is None else additional_columns
         self.function_name = function if isinstance(function, str) else function.__name__
         self.content = content.copy()
         self.columns = self.content.columns
@@ -32,6 +34,9 @@ class DataFrameReader(object):
             style_columns = COVARIANCE_COLUMNS if all([c in mandatory_columns for c in COVARIANCE_COLUMNS]) \
                 else CORRELATIONS_COLUMNS
         self.required_columns = mandatory_columns + style_columns
+        if additional_columns:
+            self.required_columns = self.required_columns + [c for c in additional_columns if c not in
+                                                             self.required_columns]
         self.disable_info = disable_info
         self.info_msg = 'Reading input DataFrame...'
 
@@ -69,6 +74,9 @@ class DataFrameReader(object):
             if matrix_columns:
                 for band in BANDS:
                     data[f'{band}_covariance_matrix'] = data.apply(get_covariance_matrix, axis=1, args=(band,))
+                self.required_columns = self.required_columns + covariance_columns
         if not self.disable_info:
             print(self.info_msg + ' Done!', end='\r')
-        return data, None  # No extension returned for DataFrames
+        data_to_return = data[self.required_columns] if self.required_columns else data
+        # No extension returned for DataFrames
+        return data_to_return, None

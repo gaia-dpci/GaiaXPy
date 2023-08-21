@@ -15,9 +15,12 @@ default_extension = 'csv'
 
 class InputReader(object):
 
-    def __init__(self, content, function, disable_info=False, user=None, password=None):
+    def __init__(self, content, function, additional_columns=None, disable_info=False, user=None, password=None):
+        if additional_columns is None:
+            additional_columns = []
         self.content = content
         self.function = function
+        self.additional_columns = additional_columns
         self.disable_info = disable_info
         self.user = user
         self.password = password
@@ -26,9 +29,11 @@ class InputReader(object):
         content = self.content
         function = self.function
         disable_info = self.disable_info
+        additional_columns = self.additional_columns
         # Input data directly provided by the user
         if isinstance(content, pd.DataFrame):
-            reader = DataFrameReader(content, function, disable_info=disable_info)
+            reader = DataFrameReader(content, function, additional_columns=additional_columns,
+                                     disable_info=disable_info)
         elif isinstance(content, Path) or (isinstance(content, str) and isfile(content)):
             parser = FileParserSelector(function)
             reader = FileReader(parser, content, disable_info=disable_info)

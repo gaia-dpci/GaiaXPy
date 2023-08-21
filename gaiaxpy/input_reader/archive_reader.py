@@ -1,12 +1,18 @@
+from gaiaxpy.input_reader.required_columns import CORRELATIONS_COLUMNS, MANDATORY_COLS
+
+
 class ArchiveReader(object):
 
     def __init__(self, function, user, password, disable_info=False):
-        self.function = function
+        self.function_name = function if isinstance(function, str) else function.__name__
         self.user = user
         self.password = password
         self.disable_info = disable_info
-        # Required columns doesn't really apply in Archive cases as the response will always contain the expected columns
-        self.required_columns = list()
+        mandatory_columns = MANDATORY_COLS.get(function, list())
+        required_columns = list()
+        if mandatory_columns:
+            required_columns = mandatory_columns + CORRELATIONS_COLUMNS  # The Archive will always use correlations
+        self.required_columns = required_columns
 
     def _login(self, gaia):
         user = self.user

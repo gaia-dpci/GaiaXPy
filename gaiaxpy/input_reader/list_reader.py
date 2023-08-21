@@ -48,4 +48,4 @@ class ListReader(ArchiveReader):
             raise ValueError('No continuous raw data found for the given sources.')
         if not self.disable_info:
             print(self.info_msg + ' Done!', end='\r')
-        return DataFrameReader(data, function_name).read_df()
+        return DataFrameReader(data, function_name).read()

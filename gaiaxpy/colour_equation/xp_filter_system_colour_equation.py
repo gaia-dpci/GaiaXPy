@@ -20,6 +20,7 @@ from gaiaxpy.config.paths import filters_path
 from gaiaxpy.core.generic_functions import cast_output, validate_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.generator.photometric_system import PhotometricSystem
+from gaiaxpy.input_reader.dataframe_reader import DataFrameReader
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 
@@ -245,8 +246,8 @@ def _apply_colour_equation(input_synthetic_photometry: pd.DataFrame,
                            save_file: bool = True, disable_info=False):
     function = apply_colour_equation
     validate_arguments(function.__defaults__[2], output_file, save_file)
-    input_synthetic_photometry, extension = InputReader(input_synthetic_photometry, function,
-                                                        disable_info=disable_info).read()
+    input_synthetic_photometry, extension = DataFrameReader(input_synthetic_photometry, function,
+                                                            disable_info=disable_info).read()
     systems_to_correct = __get_systems_to_correct(photometric_system)
     systems_details = __fill_systems_details(systems_to_correct)
     output_df = _generate_output_df(input_synthetic_photometry, systems_details, disable_info=disable_info)

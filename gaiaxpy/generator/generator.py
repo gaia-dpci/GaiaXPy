@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 import pandas as pd
 
@@ -15,7 +15,8 @@ from .photometric_system import PhotometricSystem
 def generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
              output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
              output_format: str = None, save_file: bool = True, error_correction: bool = False,
-             username: str = None, password: str = None) -> pd.DataFrame:
+             additional_columns: Optional[Union[list, str]] = None, username: str = None, password: str = None) \
+        -> pd.DataFrame:
     """
     Synthetic photometry utility: generates synthetic photometry in a set of available systems from the input
     internally-calibrated continuously-represented mean spectra.
@@ -34,13 +35,24 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
             be ignored.
         error_correction (bool): Whether to apply to the photometric errors the tabulated factors to mitigate
             underestimated errors (see Montegriffo et al., 2022, for more details).
+        additional_columns (str/list): List of additional columns to include in the output. The columns must be requested
+            columns must be available in the input (files, DataFrames) or in the Archive response (lists, queries).
         username (str): Cosmos username, only suggested when input_object is a list or ADQL query.
         password (str): Cosmos password, only suggested when input_object is a list or ADQL query.
 
     Returns:
         DataFrame: A DataFrame of all synthetic photometry results.
     """
+    return _generate(input_object=input_object, photometric_system=photometric_system, output_path=output_path,
+                     output_file=output_file, output_format=output_format, save_file=save_file,
+                     error_correction=error_correction, additional_columns=additional_columns, username=username,
+                     password=password)
 
+def _generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
+             output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
+             output_format: str = None, save_file: bool = True, error_correction: bool = False,
+              additional_columns: Optional[Union[list, str]] = None, username: str = None, password: str = None) \
+        -> pd.DataFrame:
     def is_gaia_initially_in_systems(_internal_photometric_system: list,
                                      _gaia_system: PhotometricSystem = PhotometricSystem.Gaia_DR3_Vega):
         """
@@ -58,7 +70,12 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')
     validate_arguments(generate.__defaults__[1], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, generate, user=username, password=password).read()
+    if additional_columns is None:
+        additional_columns = list()
+    additional_columns = [additional_columns] if isinstance(additional_columns, str) else additional_columns
+    parsed_input_data, extension = InputReader(input_object, generate, additional_columns=additional_columns,
+                                               user=username, password=password).read()
+    additional_data = parsed_input_data[additional_columns]
     # Prepare systems, keep track of original systems
     internal_photometric_system = photometric_system.copy() if isinstance(photometric_system, list) else \
         [photometric_system].copy()
@@ -83,6 +100,7 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
         gaia_label = gaia_system.get_system_label()
         gaia_columns = [column for column in photometry_df if column.startswith(gaia_label)]
         photometry_df = photometry_df.drop(columns=gaia_columns)
+    photometry_df = pd.concat([photometry_df, additional_data], axis=1)
     photometry_df = cast_output(photometry_df)
     output_data = PhotometryData(photometry_df)
     output_data.save(save_file, output_path, output_file, output_format, extension)

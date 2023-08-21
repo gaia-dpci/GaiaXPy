@@ -27,9 +27,9 @@ class InternalContinuousParser(GenericParser):
     """
     Parser for internally calibrated continuous spectra.
     """
-    def __init__(self, mandatory_columns=None):
+    def __init__(self, required_columns=None):
         super().__init__()
-        self.mandatory_columns = mandatory_columns
+        self.required_columns = required_columns
 
     def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
@@ -50,7 +50,7 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns = matrix_columns
         if _array_columns is None:
             _array_columns = array_columns
-        _usecols = _usecols if _usecols else self.mandatory_columns
+        _usecols = _usecols if _usecols else self.required_columns
         df = super()._parse_csv(csv_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
                                 _usecols=_usecols)
         for band in BANDS:
@@ -76,7 +76,7 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns = matrix_columns
         if _array_columns is None:
             _array_columns = array_columns
-        _usecols = _usecols if _usecols else self.mandatory_columns
+        _usecols = _usecols if _usecols else self.required_columns
         df = super()._parse_fits(fits_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
                                  _usecols=_usecols)
         for band in BANDS:
@@ -101,7 +101,7 @@ class InternalContinuousParser(GenericParser):
             _matrix_columns = matrix_columns
         if _array_columns is None:
             _array_columns = array_columns
-        _usecols = _usecols if _usecols else self.mandatory_columns
+        _usecols = _usecols if _usecols else self.required_columns
         df = super()._parse_xml(xml_file, _array_columns=_array_columns, _matrix_columns=_matrix_columns,
                                 _usecols=_usecols)
         for band in BANDS:

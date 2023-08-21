@@ -66,6 +66,7 @@ class GenericParser(object):
 
         Args:
             file_path (str): Path to a file.
+            disable_info (bool): Whether to disable the progress tracker or not.
 
         Returns:
             DataFrame: Pandas DataFrame representing the file.

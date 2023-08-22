@@ -1,6 +1,6 @@
 import numpy as np
 
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, format_additional_columns
 from .dataframe_numpy_array_reader import DataFrameNumPyArrayReader
 from .dataframe_string_array_reader import DataFrameStringArrayReader
 from .required_columns import MANDATORY_COLS, COVARIANCE_COLUMNS, CORRELATIONS_COLUMNS
@@ -34,6 +34,7 @@ class DataFrameReader(object):
             style_columns = COVARIANCE_COLUMNS if all([c in mandatory_columns for c in COVARIANCE_COLUMNS]) \
                 else CORRELATIONS_COLUMNS
         self.required_columns = mandatory_columns + style_columns
+        additional_columns = format_additional_columns(additional_columns)
         if additional_columns:
             self.required_columns = self.required_columns + [c for c in additional_columns if c not in
                                                              self.required_columns]

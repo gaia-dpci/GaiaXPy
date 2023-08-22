@@ -25,7 +25,7 @@ class TestSingleSyntheticPhotometryGenerator(unittest.TestCase):
         phot_systems = [phot_system_johnson, phot_system_johnson, phot_system_sdss, phot_system_sdss]
         output_columns = [jkc_columns, jkc_columns, sdss_columns, sdss_columns]
         for file, syst, cols in zip(input_files, phot_systems, output_columns):
-            synthetic_photometry = generate(file, photometric_system=syst, output_format='.csv', save_file=False)
+            synthetic_photometry = generate(file, photometric_system=syst, save_file=False)
             self.assertIsInstance(synthetic_photometry, pd.DataFrame)
             self.assertEqual(len(synthetic_photometry), 2)
             self.assertTrue(list(synthetic_photometry.columns) == cols)

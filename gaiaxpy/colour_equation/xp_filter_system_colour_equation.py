@@ -17,7 +17,8 @@ from numpy import poly1d
 from tqdm import tqdm
 
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.generic_functions import cast_output, validate_arguments
+from gaiaxpy.core.generic_functions import cast_output
+from gaiaxpy.core.input_validator import validate_save_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.generator.photometric_system import PhotometricSystem
 from gaiaxpy.input_reader.dataframe_reader import DataFrameReader
@@ -245,7 +246,7 @@ def _apply_colour_equation(input_synthetic_photometry: pd.DataFrame,
                            output_file: str = 'corrected_photometry', output_format: Optional[str] = None,
                            save_file: bool = True, disable_info=False):
     function = apply_colour_equation
-    validate_arguments(function.__defaults__[2], output_file, save_file)
+    validate_save_arguments(function.__defaults__[2], output_file, function.__defaults__[3], output_format, save_file)
     input_synthetic_photometry, extension = DataFrameReader(input_synthetic_photometry, function,
                                                             disable_info=disable_info).read()
     systems_to_correct = __get_systems_to_correct(photometric_system)

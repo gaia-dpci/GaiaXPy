@@ -15,8 +15,9 @@ from tqdm import tqdm
 
 from gaiaxpy.config.paths import config_path, config_ini_file
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
-from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_wl_sampling, \
+from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_wl_sampling, \
     parse_band
+from ..core.input_validator import validate_save_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -85,7 +86,7 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
         ValueError: If the sampling is out of the expected boundaries.
     """
     validate_wl_sampling(sampling)
-    validate_arguments(_calibrate.__defaults__[3], output_file, save_file)
+    validate_save_arguments(_calibrate.__defaults__[3], output_file, _calibrate.__defaults__[4], output_format, save_file)
     parsed_input_data, extension = InputReader(input_object, _calibrate, disable_info=disable_info, user=username,
                                                password=password).read()
     xp_design_matrices, xp_merge = __generate_xp_matrices_and_merge(__FUNCTION_KEY, sampling, bp_model, rp_model)

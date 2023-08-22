@@ -4,7 +4,8 @@ from typing import Union, Optional
 import pandas as pd
 
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import _apply_colour_equation
-from gaiaxpy.core.generic_functions import cast_output, validate_arguments
+from gaiaxpy.core.generic_functions import cast_output
+from ..core.input_validator import validate_save_arguments
 from gaiaxpy.error_correction.error_correction import _apply_error_correction
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
@@ -53,8 +54,8 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
              output_format: str = None, save_file: bool = True, error_correction: bool = False,
               additional_columns: Optional[Union[list, str]] = None, username: str = None, password: str = None) \
         -> pd.DataFrame:
-    def is_gaia_initially_in_systems(_internal_photometric_system: list,
-                                     _gaia_system: PhotometricSystem = PhotometricSystem.Gaia_DR3_Vega):
+    def __is_gaia_initially_in_systems(_internal_photometric_system: list,
+                                       _gaia_system: PhotometricSystem = PhotometricSystem.Gaia_DR3_Vega):
         """
         Check whether Gaia DR3 is originally in the input photometric systems.
 
@@ -66,12 +67,10 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
             bool: True if Gaia DR3 is in the list, False otherwise.
         """
         return _gaia_system in _internal_photometric_system
-
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')
-    validate_arguments(generate.__defaults__[1], output_file, save_file)
-    if additional_columns is None:
-        additional_columns = list()
+    validate_save_arguments(generate.__defaults__[1], output_file, generate.__defaults__[2], output_format, save_file)
+    additional_columns = list() if additional_columns is None else additional_columns
     additional_columns = [additional_columns] if isinstance(additional_columns, str) else additional_columns
     parsed_input_data, extension = InputReader(input_object, generate, additional_columns=additional_columns,
                                                user=username, password=password).read()
@@ -81,7 +80,7 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
         [photometric_system].copy()
     gaia_system = PhotometricSystem.Gaia_DR3_Vega
     # Create multi generator
-    gaia_initially_in_systems = is_gaia_initially_in_systems(internal_photometric_system)
+    gaia_initially_in_systems = __is_gaia_initially_in_systems(internal_photometric_system)
     if error_correction and not gaia_initially_in_systems:
         internal_photometric_system.append(gaia_system)
     if isinstance(internal_photometric_system, list):

@@ -12,7 +12,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_pwl_sampling
+from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_pwl_sampling
+from ..core.input_validator import validate_save_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -81,19 +82,17 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     Raises:
         ValueError: If the sampling is out of the expected boundaries.
     """
-    # Check sampling
+    function = convert
     validate_pwl_sampling(sampling)
-    validate_arguments(convert.__defaults__[4], output_file, save_file)
+    validate_save_arguments(function.__defaults__[4], output_file, function.__defaults__[5], output_format, save_file)
     parsed_input_data, extension = InputReader(input_object, convert, disable_info=disable_info, user=username,
                                                password=password).read()
     config_df = load_config(optimised_bases_file)
-    # Union of unique ids as sets
     unique_bases_ids = get_unique_basis_ids(parsed_input_data)
-    # Get design matrices
     design_matrices = get_design_matrices(unique_bases_ids, sampling, config_df)
     spectra_df, positions = _create_spectra(parsed_input_data, truncation, design_matrices,
                                             with_correlation=with_correlation, disable_info=disable_info)
-    # Save output
+    # Save output section
     output_data = SampledSpectraData(spectra_df, positions)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)

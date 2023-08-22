@@ -9,9 +9,9 @@ from gaiaxpy.input_reader.required_columns import MANDATORY_COLS, CORRELATIONS_C
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import mean_spectrum_csv_file
 
-colums_to_read = MANDATORY_COLS['convert'] + CORRELATIONS_COLUMNS
-dataframe_str = pd.read_csv(mean_spectrum_csv_file, float_precision='high', usecols=colums_to_read)
-parser = InternalContinuousParser(colums_to_read)
+columns_to_read = MANDATORY_COLS['convert'] + CORRELATIONS_COLUMNS
+dataframe_str = pd.read_csv(mean_spectrum_csv_file, float_precision='high', usecols=columns_to_read)
+parser = InternalContinuousParser(columns_to_read)
 dataframe_np, _ = parser.parse_file(mean_spectrum_csv_file)
 # Temporarily opt for removing cov matrices before comparing
 dataframe_np = dataframe_np.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])

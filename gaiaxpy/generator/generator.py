@@ -4,7 +4,7 @@ from typing import Union, Optional
 import pandas as pd
 
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import _apply_colour_equation
-from gaiaxpy.core.generic_functions import cast_output
+from gaiaxpy.core.generic_functions import cast_output, format_additional_columns, validate_photometric_system
 from ..core.input_validator import validate_save_arguments
 from gaiaxpy.error_correction.error_correction import _apply_error_correction
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -67,26 +67,24 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
             bool: True if Gaia DR3 is in the list, False otherwise.
         """
         return _gaia_system in _internal_photometric_system
-    if photometric_system in (None, [], ''):
-        raise ValueError('At least one photometric system is required as input.')
+    validate_photometric_system(photometric_system)
     validate_save_arguments(generate.__defaults__[1], output_file, generate.__defaults__[2], output_format, save_file)
-    additional_columns = list() if additional_columns is None else additional_columns
-    additional_columns = [additional_columns] if isinstance(additional_columns, str) else additional_columns
-    parsed_input_data, extension = InputReader(input_object, generate, additional_columns=additional_columns,
-                                               user=username, password=password).read()
-    additional_data = parsed_input_data[additional_columns]
+
     # Prepare systems, keep track of original systems
+    gaia_system = PhotometricSystem.Gaia_DR3_Vega
     internal_photometric_system = photometric_system.copy() if isinstance(photometric_system, list) else \
         [photometric_system].copy()
-    gaia_system = PhotometricSystem.Gaia_DR3_Vega
-    # Create multi generator
     gaia_initially_in_systems = __is_gaia_initially_in_systems(internal_photometric_system)
     if error_correction and not gaia_initially_in_systems:
         internal_photometric_system.append(gaia_system)
-    if isinstance(internal_photometric_system, list):
-        generator = MultiSyntheticPhotometryGenerator(internal_photometric_system, bp_model='v375wi', rp_model='v142r')
-    else:
-        raise ValueError('Photometry generation not implemented for the input type.')
+    # Create multi generator
+    generator = MultiSyntheticPhotometryGenerator(internal_photometric_system, bp_model='v375wi', rp_model='v142r')
+    # Read input data
+    additional_columns = format_additional_columns(additional_columns)
+    parsed_input_data, extension = InputReader(input_object, generate, additional_columns=additional_columns,
+                                               user=username, password=password).read()
+    additional_data = parsed_input_data[additional_columns]
+    # Generate photometry
     photometry_df = generator.generate(parsed_input_data, extension, output_file=None, output_format=None,
                                        save_file=False)
     photometry_df = _apply_colour_equation(photometry_df, photometric_system=internal_photometric_system,
@@ -99,8 +97,11 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
         gaia_label = gaia_system.get_system_label()
         gaia_columns = [column for column in photometry_df if column.startswith(gaia_label)]
         photometry_df = photometry_df.drop(columns=gaia_columns)
+    # Readd additional data (do not add columns already present)
+    additional_data = additional_data[[c for c in additional_data.columns if c not in photometry_df.columns]]
     photometry_df = pd.concat([photometry_df, additional_data], axis=1)
     photometry_df = cast_output(photometry_df)
+    # Save data
     output_data = PhotometryData(photometry_df)
     output_data.save(save_file, output_path, output_file, output_format, extension)
     return photometry_df

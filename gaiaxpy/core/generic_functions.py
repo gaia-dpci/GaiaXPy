@@ -284,3 +284,20 @@ def standardise_extension(_extension):
     # Remove initial dot if present
     _extension = _extension[1:] if _extension[0] == '.' else _extension
     return _extension.lower()
+
+
+def format_additional_columns(additional_columns):
+    """
+    Ensure additional columns are in the expected format.
+    """
+    if additional_columns is None:
+        additional_columns = list()
+    return [additional_columns] if isinstance(additional_columns, str) else additional_columns
+
+
+def validate_photometric_system(photometric_system):
+    """
+    Ensure photometric system input isn't empty.
+    """
+    if photometric_system in (None, [], ''):
+        raise ValueError('At least one photometric system is required as input.')

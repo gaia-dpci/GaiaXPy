@@ -3,6 +3,7 @@ input_validator.py
 ====================================
 Module to validate the input data columns, etc.
 """
+from gaiaxpy.core.generic_functions import _warning
 
 
 def validate_required_columns(content_columns, required_columns):
@@ -27,3 +28,26 @@ def validate_required_columns(content_columns, required_columns):
     elif not __are_required_columns_present(content_columns, required_columns):
         raise ValueError(f'Some required columns are not present. Please check your data. '
                          f'Missing columns are: {__get_missing_columns(content_columns, required_columns)}.')
+
+
+def validate_save_arguments(default_output_file, given_output_file, default_output_format, given_output_format,
+                            save_file):
+    """
+    Validate file saving input arguments.
+
+    Args:
+        default_output_file: Default output file name as shown in the function from which this function is being called.
+        given_output_file: Output file name provided by the user.
+        default_output_format: Default value for output format.
+        given_output_format: Output format provided by the user.
+        save_file: Argument passed to save_file parameter.
+    """
+    if save_file and not isinstance(save_file, bool):
+        raise ValueError("Parameter 'save_file' must contain a boolean value.")
+    # If the user input a number different to the default value, but didn't set save_file to True
+    if default_output_file != given_output_file and not save_file:
+        _warning("The argument 'output_file' was provided, but 'save_file' is set to False. Set 'save_file' to True to "
+                 "store the output of the function.")
+    if default_output_format != given_output_format and not save_file:
+        _warning("The argument 'output_format' was provided, but 'save_file' is set to False. Set 'save_file' to True "
+                 "to store the output of the function.")

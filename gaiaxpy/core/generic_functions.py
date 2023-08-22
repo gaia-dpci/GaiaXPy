@@ -115,15 +115,6 @@ def _warning(message):
     print(f'UserWarning: {message}', file=sys.stderr)
 
 
-def validate_arguments(default_output_file, given_output_file, save_file):
-    if save_file and not isinstance(save_file, bool):
-        raise ValueError("Parameter 'save_file' must contain a boolean value.")
-    # If the user input a number different to the default value, but didn't set save_file to True
-    if default_output_file != given_output_file and not save_file:
-        _warning('Argument output_file was given, but save_file is set to False. Set save_file to True to store the '
-                 'output of the function.')
-
-
 def get_spectra_type(spectra):
     """
     Get the spectra type.

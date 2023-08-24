@@ -86,7 +86,8 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
         ValueError: If the sampling is out of the expected boundaries.
     """
     validate_wl_sampling(sampling)
-    validate_save_arguments(_calibrate.__defaults__[3], output_file, _calibrate.__defaults__[4], output_format, save_file)
+    validate_save_arguments(_calibrate.__defaults__[3], output_file, _calibrate.__defaults__[4], output_format,
+                            save_file)
     parsed_input_data, extension = InputReader(input_object, _calibrate, disable_info=disable_info, user=username,
                                                password=password).read()
     xp_design_matrices, xp_merge = __generate_xp_matrices_and_merge(__FUNCTION_KEY, sampling, bp_model, rp_model)
@@ -165,8 +166,8 @@ def __generate_xp_matrices_and_merge(label: str, sampling: np.ndarray, bp_model:
         xp_merge = {xp: __create_merge(xp, sampling) for xp in BANDS}
         xp_design_matrices = {xp: SampledBasisFunctions.from_external_instrument_model(
             sampling, xp_merge[xp], ExternalInstrumentModel.from_config_csv(
-                __get_file_for_xp(xp, 'dispersion'), __get_file_for_xp(xp, 'response'), __get_file_for_xp(xp, 'bases')))
-            for xp in BANDS}
+                __get_file_for_xp(xp, 'dispersion'), __get_file_for_xp(xp, 'response'),
+                __get_file_for_xp(xp, 'bases'))) for xp in BANDS}
     return xp_design_matrices, xp_merge
 
 

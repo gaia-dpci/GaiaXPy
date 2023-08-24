@@ -5,11 +5,11 @@ import pandas.testing as pdt
 
 from gaiaxpy import convert
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
-from gaiaxpy.input_reader.required_columns import MANDATORY_COLS, CORRELATIONS_COLUMNS
+from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import mean_spectrum_csv_file
 
-columns_to_read = MANDATORY_COLS['convert'] + CORRELATIONS_COLUMNS
+columns_to_read = MANDATORY_INPUT_COLS['convert'] + CORR_INPUT_COLUMNS
 dataframe_str = pd.read_csv(mean_spectrum_csv_file, float_precision='high', usecols=columns_to_read)
 parser = InternalContinuousParser(columns_to_read)
 dataframe_np, _ = parser.parse_file(mean_spectrum_csv_file)

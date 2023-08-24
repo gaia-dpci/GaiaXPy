@@ -3,7 +3,7 @@ import numpy as np
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, format_additional_columns
 from .dataframe_numpy_array_reader import DataFrameNumPyArrayReader
 from .dataframe_string_array_reader import DataFrameStringArrayReader
-from .required_columns import MANDATORY_COLS, COVARIANCE_COLUMNS, CORRELATIONS_COLUMNS
+from .required_columns import MANDATORY_INPUT_COLS, COV_INPUT_COLUMNS, CORR_INPUT_COLUMNS
 from ..core.satellite import BANDS
 from ..spectrum.utils import get_covariance_matrix
 
@@ -28,11 +28,11 @@ class DataFrameReader(object):
         self.function_name = function if isinstance(function, str) else function.__name__
         self.content = content.copy()
         self.columns = self.content.columns
-        mandatory_columns = MANDATORY_COLS.get(self.function_name, list())
+        mandatory_columns = MANDATORY_INPUT_COLS.get(self.function_name, list())
         style_columns = list()
         if mandatory_columns:
-            style_columns = COVARIANCE_COLUMNS if all([c in mandatory_columns for c in COVARIANCE_COLUMNS]) \
-                else CORRELATIONS_COLUMNS
+            style_columns = COV_INPUT_COLUMNS if all([c in mandatory_columns for c in COV_INPUT_COLUMNS]) \
+                else CORR_INPUT_COLUMNS
         self.required_columns = mandatory_columns + style_columns
         additional_columns = format_additional_columns(additional_columns)
         if additional_columns:

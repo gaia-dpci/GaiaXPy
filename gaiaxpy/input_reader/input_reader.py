@@ -6,7 +6,7 @@ import pandas as pd
 from .dataframe_reader import DataFrameReader
 from .file_reader import FileParserSelector, FileReader
 from .list_reader import ListReader
-from .required_columns import MANDATORY_COLS, COVARIANCE_COLUMNS, CORRELATIONS_COLUMNS
+from .required_columns import MANDATORY_INPUT_COLS, COV_INPUT_COLUMNS, CORR_INPUT_COLUMNS
 from .query_reader import QueryReader
 from ..core.input_validator import validate_required_columns
 

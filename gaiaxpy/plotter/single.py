@@ -29,9 +29,12 @@ class SinglePlotter(Plotter):
             raise ValueError(
                 f'Spectra list is too long. This functionality can only show up to {self.max_spectra_on_single} '
                 f'single plots. Try saving the plots without showing them using the option output_path.')
-        for index, spectrum in enumerate(self.spectra.to_dict('records')):
+        records = self.spectra.to_dict('records')
+        is_len_1 = len(records) == 1
+        for index, spectrum in enumerate(records):
             self._plot_single(spectrum)
             if self.save_file:
+                index = index if not is_len_1 else None
                 self._save_figure(index=index)
             if self.show_plot:
                 plt.show()

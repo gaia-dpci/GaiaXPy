@@ -18,9 +18,11 @@ def extremes_are_enclosing(first_row, column):
 
 class ListReader(ArchiveReader):
 
-    def __init__(self, content, function, user, password, disable_info=False):
-        super(ListReader, self).__init__(function, user, password)
-        self.info_msg = 'Running query...'
+    def __init__(self, content, function, user, password, additional_columns=None, disable_info=False):
+        if additional_columns is None:
+            additional_columns = list()
+        super(ListReader, self).__init__(function, user, password, additional_columns=additional_columns,
+                                         disable_info=disable_info)
         if content:
             self.content = content
         else:
@@ -28,7 +30,6 @@ class ListReader(ArchiveReader):
         self.disable_info = disable_info
 
     def read(self, _data_release=data_release):
-        # TODO: list could contain elements that are not sourceIds
         sources = self.content
         function_name = self.function.__name__
         if function_name in not_supported_functions:
@@ -48,4 +49,5 @@ class ListReader(ArchiveReader):
             raise ValueError('No continuous raw data found for the given sources.')
         if not self.disable_info:
             print(self.info_msg + ' Done!', end='\r')
-        return DataFrameReader(data, function_name).read()
+        return DataFrameReader(data, function_name, additional_columns=self.additional_columns,
+                               disable_info=True).read()

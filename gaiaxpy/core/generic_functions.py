@@ -285,14 +285,14 @@ def standardise_extension(_extension):
         _extension (str): File extension which may or may not contain an initial dot.
 
     Returns:
-        str: The extension in lowercase letters and with no initial dot (eg.: 'csv').
+        str: The extension in lowercase letters and with no initial dot (e.g.: 'csv').
     """
-    # Remove initial dot if present
-    _extension = _extension[1:] if _extension[0] == '.' else _extension
+    _extension = _extension[1:] if _extension[0] == '.' else _extension  # Remove initial dot if present
     return _extension.lower()
 
 
 def validate_additional_columns(additional_columns, function, **kwargs):
+    systems = None
     additional_columns = format_additional_columns(additional_columns)
     function_name = function.__name__
     if function_name not in ALL_ADD_COLS_FUNCTIONS:

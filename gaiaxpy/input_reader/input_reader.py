@@ -36,12 +36,14 @@ class InputReader(object):
                                      disable_info=disable_info)
         elif isinstance(content, Path) or (isinstance(content, str) and isfile(content)):
             parser = FileParserSelector(function)
-            reader = FileReader(parser, content, disable_info=disable_info)
+            reader = FileReader(parser, content, additional_columns=additional_columns, disable_info=disable_info)
         # Actual input data got from the Archive
         elif isinstance(content, list):
-            reader = ListReader(content, function, self.user, self.password, disable_info=disable_info)
+            reader = ListReader(content, function, user=self.user, password=self.password,
+                                additional_columns=additional_columns, disable_info=disable_info)
         elif isinstance(content, str) and content.lower().startswith('select'):
-            reader = QueryReader(content, function, user=self.user, password=self.password, disable_info=disable_info)
+            reader = QueryReader(content, function, user=self.user, password=self.password,
+                                 additional_columns=additional_columns, disable_info=disable_info)
         else:
             raise ValueError('The input provided does not match any of the expected input types.')
         parsed_data, extension = reader.read()

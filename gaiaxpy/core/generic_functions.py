@@ -299,9 +299,6 @@ def validate_additional_columns(additional_columns, function, **kwargs):
         raise ValueError(f'Function {function_name} does not accept additional columns.')
     if function_name in PHOTOMETRY_FUNCTIONS:
         systems = kwargs['photometric_system']
-        # output_columns =
-    # recognised kwargs: with_correlation=None, systems=None, bands=None
-    print(kwargs)
     if systems and not function.__name__ in ['_generate', 'generate']:
         raise ValueError('Systems will only work with photometry-related functions.')
 

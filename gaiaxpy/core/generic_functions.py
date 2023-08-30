@@ -8,6 +8,7 @@ import sys
 from ast import literal_eval
 from os.path import join
 from string import capwords
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -19,6 +20,12 @@ from gaiaxpy.core.custom_errors import InvalidBandError
 from gaiaxpy.generator.config import get_additional_filters_path
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 
+
+# Verifying the function is valid first, will help when adding new functions
+PHOTOMETRY_FUNCTIONS = ['generate', '_generate']
+CHOLESKY_FUNCTIONS = ['get_inverse_covariance_matrix', 'get_inverse_square_root_covariance_matrix']
+OTHER_FUNCTIONS = ['calibrate', 'convert'] # The ones that accept truncation and with_correlation arguments
+ALL_ADD_COLS_FUNCTIONS = PHOTOMETRY_FUNCTIONS + CHOLESKY_FUNCTIONS + OTHER_FUNCTIONS
 
 def _get_built_in_systems() -> list:
     av_sys = open(join(config_path, 'available_systems.txt'), 'r')
@@ -169,7 +176,6 @@ def array_to_symmetric_matrix(array, array_size):
     Raises:
         TypeError: If array is not of type np.ndarray.
     """
-
     def contains_diagonal(_array_size, _array):
         return not len(_array) == len(np.tril_indices(_array_size - 1)[0])
 
@@ -286,14 +292,38 @@ def standardise_extension(_extension):
     return _extension.lower()
 
 
-def format_additional_columns(additional_columns):
+def validate_additional_columns(additional_columns, function, **kwargs):
+    additional_columns = format_additional_columns(additional_columns)
+    function_name = function.__name__
+    if function_name not in ALL_ADD_COLS_FUNCTIONS:
+        raise ValueError(f'Function {function_name} does not accept additional columns.')
+    if function_name in PHOTOMETRY_FUNCTIONS:
+        systems = kwargs['photometric_system']
+        # output_columns =
+    # recognised kwargs: with_correlation=None, systems=None, bands=None
+    print(kwargs)
+    if systems and not function.__name__ in ['_generate', 'generate']:
+        raise ValueError('Systems will only work with photometry-related functions.')
+
+def convert_values_to_lists(d):
+    for key, value in d.items():
+        if not isinstance(value, list):
+            d[key] = [value]
+    return d
+
+def format_additional_columns(additional_columns: Optional[Union[str, list, dict]]):
     """
-    Ensure additional columns are in the expected format.
+    Ensure additional columns are in the expected format. Output should be a dictionary, values in the dictionary
+    should become lists to work with nested AVRO keys.
     """
     if additional_columns is None:
-        additional_columns = list()
-    return [additional_columns] if isinstance(additional_columns, str) else additional_columns
-
+        return dict()
+    if isinstance(additional_columns, str):
+        return {additional_columns: [additional_columns]}
+    if isinstance(additional_columns, list):
+        return {v:[v] for v in additional_columns}
+    if isinstance(additional_columns, dict):
+        return convert_values_to_lists(additional_columns)
 
 def validate_photometric_system(photometric_system):
     """

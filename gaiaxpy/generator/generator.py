@@ -16,7 +16,7 @@ from .photometric_system import PhotometricSystem
 def generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
              output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
              output_format: str = None, save_file: bool = True, error_correction: bool = False,
-             additional_columns: Optional[Union[list, str]] = None, username: str = None, password: str = None) \
+             additional_columns: Optional[Union[dict, list, str]] = None, username: str = None, password: str = None) \
         -> pd.DataFrame:
     """
     Synthetic photometry utility: generates synthetic photometry in a set of available systems from the input
@@ -94,7 +94,7 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
             gaia_label = gaia_system.get_system_label()
             gaia_columns = [column for column in photometry_df if column.startswith(gaia_label)]
             photometry_df = photometry_df.drop(columns=gaia_columns)
-    # Readd additional data (do not add columns already present)
+    # Readd additional data (do not add columns already present) # TODO: should use suffix instead?
     additional_data = additional_data[[c for c in additional_data.columns if c not in photometry_df.columns]]
     photometry_df = pd.concat([photometry_df, additional_data], axis=1)
     photometry_df = cast_output(photometry_df)

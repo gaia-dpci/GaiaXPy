@@ -11,7 +11,7 @@ class QueryReader(ArchiveReader):
 
     def __init__(self, content, function, user=None, password=None, additional_columns=None, disable_info=False):
         if additional_columns is None:
-            additional_columns = list()
+            additional_columns = dict()
         self.content = content
         super(QueryReader, self).__init__(function, user, password, additional_columns=additional_columns,
                                           disable_info=disable_info)

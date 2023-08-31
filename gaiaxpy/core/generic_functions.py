@@ -291,6 +291,11 @@ def standardise_extension(_extension):
     return _extension.lower()
 
 
+def reverse_simple_add_col_dict(d):
+    def __reverse_error(v):
+        raise ValueError(f'List length should be one, but is {len(v)}.')
+    return {value[0]: key if len(value) == 1 else __reverse_error(value) for key, value in d.items()}
+
 def validate_additional_columns(additional_columns, function, **kwargs):
     systems = None
     additional_columns = format_additional_columns(additional_columns)
@@ -328,3 +333,6 @@ def validate_photometric_system(photometric_system):
     """
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')
+
+def rename_with_required(data, additional_columns):
+    return data.rename(columns=reverse_simple_add_col_dict(additional_columns))

@@ -1,9 +1,10 @@
 import numpy as np
 
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, format_additional_columns
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
 from .dataframe_numpy_array_reader import DataFrameNumPyArrayReader
 from .dataframe_string_array_reader import DataFrameStringArrayReader
 from .required_columns import MANDATORY_INPUT_COLS, COV_INPUT_COLUMNS, CORR_INPUT_COLUMNS
+from ..core.input_validator import check_column_overwrite
 from ..core.satellite import BANDS
 from ..spectrum.utils import get_covariance_matrix
 
@@ -24,9 +25,11 @@ def needs_matrix_conversion(array_columns):
 class DataFrameReader(object):
 
     def __init__(self, content, function, additional_columns=None, disable_info=False):
-        additional_columns = [] if additional_columns is None else additional_columns
-        self.function_name = function if isinstance(function, str) else function.__name__
+        self.additional_columns = dict() if additional_columns is None else additional_columns
         self.content = content.copy()
+        self.function_name = function if isinstance(function, str) else function.__name__
+        self.disable_info = disable_info
+        self.info_msg = 'Reading input DataFrame...'
         self.columns = self.content.columns
         mandatory_columns = MANDATORY_INPUT_COLS.get(self.function_name, list())
         style_columns = list()
@@ -34,12 +37,11 @@ class DataFrameReader(object):
             style_columns = COV_INPUT_COLUMNS if all([c in mandatory_columns for c in COV_INPUT_COLUMNS]) \
                 else CORR_INPUT_COLUMNS
         self.required_columns = mandatory_columns + style_columns
-        additional_columns = format_additional_columns(additional_columns)
-        if additional_columns:
-            self.required_columns = self.required_columns + [c for c in additional_columns if c not in
-                                                             self.required_columns]
-        self.disable_info = disable_info
-        self.info_msg = 'Reading input DataFrame...'
+        self.requested_columns = self.required_columns
+        if self.additional_columns:
+            check_column_overwrite(additional_columns, self.required_columns)
+            self.requested_columns = self.required_columns + [c for c in self.additional_columns.keys() if c not in
+                                                              self.required_columns]
 
     def __get_parseable_columns(self):
         str_columns, np_columns = [], []
@@ -75,9 +77,11 @@ class DataFrameReader(object):
             if matrix_columns:
                 for band in BANDS:
                     data[f'{band}_covariance_matrix'] = data.apply(get_covariance_matrix, axis=1, args=(band,))
-                self.required_columns = self.required_columns + covariance_columns
+                self.requested_columns = self.requested_columns + covariance_columns
         if not self.disable_info:
             print(self.info_msg + ' Done!', end='\r')
-        data_to_return = data[self.required_columns] if self.required_columns else data
+        if self.additional_columns:
+            data = rename_with_required(data, self.additional_columns)
+        data = data[self.requested_columns] if self.requested_columns else data
         # No extension returned for DataFrames
-        return data_to_return, None
+        return data, None

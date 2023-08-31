@@ -20,7 +20,7 @@ class ListReader(ArchiveReader):
 
     def __init__(self, content, function, user, password, additional_columns=None, disable_info=False):
         if additional_columns is None:
-            additional_columns = list()
+            additional_columns = dict()
         super(ListReader, self).__init__(function, user, password, additional_columns=additional_columns,
                                          disable_info=disable_info)
         if content:

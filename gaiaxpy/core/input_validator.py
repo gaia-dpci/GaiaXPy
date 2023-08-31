@@ -6,13 +6,13 @@ Module to validate the input data columns, etc.
 from gaiaxpy.core.generic_functions import _warning
 
 
-def validate_required_columns(content_columns, required_columns):
+def validate_required_columns(content_columns, requested_columns):
     """
     Validate whether all mandatory columns are present in the content_columns.
 
     Args:
         content_columns (list): List of columns in the content.
-        required_columns (list): List of mandatory columns.
+        requested_columns (list): List of requested columns.
 
     Raises:
         ValueError: If some required columns are not present.
@@ -23,11 +23,11 @@ def validate_required_columns(content_columns, required_columns):
         missing_cols = [col for col in _required_columns if col not in _content_columns]
         missing_cols_str = ', '.join(missing_cols)
         return missing_cols_str
-    if not required_columns:
+    if not requested_columns:
         return
-    elif not __are_required_columns_present(content_columns, required_columns):
+    elif not __are_required_columns_present(content_columns, requested_columns):
         raise ValueError(f'Some required columns are not present. Please check your data. '
-                         f'Missing columns are: {__get_missing_columns(content_columns, required_columns)}.')
+                         f'Missing columns are: {__get_missing_columns(content_columns, requested_columns)}.')
 
 
 def validate_save_arguments(default_output_file, given_output_file, default_output_format, given_output_format,
@@ -51,3 +51,21 @@ def validate_save_arguments(default_output_file, given_output_file, default_outp
     if default_output_format != given_output_format and not save_file:
         _warning("The argument 'output_format' was provided, but 'save_file' is set to False. Set 'save_file' to True "
                  "to store the output of the function.")
+
+
+def check_column_overwrite(additional_columns, required_columns):
+    common_names = []
+    for key, value in additional_columns.items():
+        if key in required_columns:
+            if not isinstance(additional_columns[key], list):
+                raise TypeError('Argument additional_columns seems to be malformed.')
+            if len(additional_columns[key]) == 1 and additional_columns[key][0] != key:
+                common_names.append(key)
+            elif len(additional_columns[key]) > 1:
+                common_names.append(key)
+        if isinstance(value, list) and len(value) == 1 and value[0] in required_columns and key != value[0]:
+            common_names.append(key)
+    if common_names:
+        raise ValueError('One or more elements in the additional columns input will be renamed to a column'
+                         ' required by GaiaXPy to compute the output. This is not permitted. The offending'
+                         f' elements are: {", ".join(common_names)}.')

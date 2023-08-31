@@ -1,6 +1,7 @@
 from os.path import splitext
 
-from gaiaxpy.core.generic_functions import standardise_extension, format_additional_columns
+from gaiaxpy.core.generic_functions import standardise_extension
+from gaiaxpy.core.input_validator import check_column_overwrite
 from gaiaxpy.file_parser.parse_external import ExternalParser
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS, COV_INPUT_COLUMNS
@@ -35,11 +36,10 @@ function_parser_dict = {'apply_colour_equation': raise_error,
 class FileReader(object):
 
     def __init__(self, file_parser_selector, file, additional_columns=None, disable_info=False):
-        if additional_columns is None:
-            additional_columns = list()
         self.fps = file_parser_selector
         self.file = file
         self.file_extension = standardise_extension(splitext(self.file)[1])
+        self.additional_columns = dict() if additional_columns is None else additional_columns
         self.disable_info = disable_info
         mandatory_columns = MANDATORY_INPUT_COLS.get(self.fps.function_name, list())
         style_columns = list()
@@ -47,14 +47,14 @@ class FileReader(object):
             # Files can contain covariances or correlations depending on the extension
             style_columns = COV_INPUT_COLUMNS if self.file_extension in covariance_extensions else CORR_INPUT_COLUMNS
         self.required_columns = mandatory_columns + style_columns
-        additional_columns = format_additional_columns(additional_columns)
-        if additional_columns:
-            self.required_columns = self.required_columns + [c for c in additional_columns if c not in
+        self.requested_columns = self.required_columns
+        if self.additional_columns:
+            check_column_overwrite(additional_columns, self.required_columns)
+            self.requested_columns = self.required_columns + [c for c in self.additional_columns.keys() if c not in
                                                              self.required_columns]
 
-
     def read(self):
-        return self.fps.parser(self.required_columns).parse_file(self.file, disable_info=self.disable_info)
+        return self.fps.parser(self.requested_columns).parse_file(self.file, disable_info=self.disable_info)
 
 
 class FileParserSelector(object):

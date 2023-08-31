@@ -11,8 +11,8 @@ def external():
     return ExternalParser()
 
 
-def internal_continuous(required_columns):
-    return InternalContinuousParser(required_columns=required_columns)
+def internal_continuous(requested_columns=None, additional_columns=None):
+    return InternalContinuousParser(requested_columns=requested_columns, additional_columns=additional_columns)
 
 
 def raise_error():
@@ -54,7 +54,10 @@ class FileReader(object):
                                                              self.required_columns]
 
     def read(self):
-        return self.fps.parser(self.requested_columns).parse_file(self.file, disable_info=self.disable_info)
+        # Propagate additional columns
+        return self.fps.parser(requested_columns=self.requested_columns,
+                               additional_columns=self.additional_columns).parse_file(
+            self.file, disable_info=self.disable_info)
 
 
 class FileParserSelector(object):

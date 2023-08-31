@@ -19,7 +19,7 @@ type_dict = {'bp_coefficients': np.float64, 'bp_coefficient_errors': np.float32,
     np.float32, 'rp_coefficient_errors': np.float32}
 
 
-def test_single_column_test():
+def test_single_column():
     additional_columns= format_additional_columns(['solution_id'])
     df = pd.read_csv(with_missing_bp_csv_file)
     read_input, _ = InputReader(with_missing_bp_csv_file, generate, additional_columns=additional_columns).read()

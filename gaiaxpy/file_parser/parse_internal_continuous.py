@@ -9,7 +9,7 @@ import pandas as pd
 from fastavro import __version__ as fa_version
 from packaging import version
 
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
 from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
@@ -27,11 +27,11 @@ class InternalContinuousParser(GenericParser):
     """
     Parser for internally calibrated continuous spectra.
     """
+
     def __init__(self, requested_columns=None, additional_columns=None):
         super().__init__()
-        self.additional_columns = additional_columns
+        self.additional_columns = dict() if additional_columns is None else additional_columns
         self.requested_columns = requested_columns
-
 
     def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
@@ -57,6 +57,7 @@ class InternalContinuousParser(GenericParser):
                                 _usecols=_usecols)
         for band in BANDS:
             df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
+        df = rename_with_required(df, self.additional_columns)
         return df
 
     def _parse_fits(self, fits_file, _array_columns=None, _matrix_columns=None, _usecols=None):
@@ -83,6 +84,7 @@ class InternalContinuousParser(GenericParser):
                                  _usecols=_usecols)
         for band in BANDS:
             df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
+        df = rename_with_required(df, self.additional_columns)
         return df
 
     def _parse_xml(self, xml_file, _array_columns=None, _matrix_columns=None, _usecols=None):
@@ -108,6 +110,7 @@ class InternalContinuousParser(GenericParser):
                                 _usecols=_usecols)
         for band in BANDS:
             df[f'{band}_covariance_matrix'] = df.apply(get_covariance_matrix, axis=1, args=(band,))
+        df = rename_with_required(df, self.additional_columns)
         return df
 
     @staticmethod

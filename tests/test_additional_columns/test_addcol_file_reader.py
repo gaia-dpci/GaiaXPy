@@ -8,7 +8,6 @@ from gaiaxpy.core.generic_functions import format_additional_columns
 from gaiaxpy.file_parser.cast import _cast
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
-
 from tests.files.paths import (with_missing_bp_csv_file, with_missing_bp_fits_file, with_missing_bp_xml_file,
                                with_missing_bp_ecsv_file)
 from tests.utils.utils import parse_dfs_for_test
@@ -20,11 +19,12 @@ type_dict = {'bp_coefficients': np.float64, 'bp_coefficient_errors': np.float32,
 
 
 def test_single_column():
-    additional_columns= format_additional_columns(['solution_id'])
+    additional_columns = format_additional_columns(['solution_id'])
     df = pd.read_csv(with_missing_bp_csv_file)
     read_input, _ = InputReader(with_missing_bp_csv_file, generate, additional_columns=additional_columns).read()
     expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     pdt.assert_frame_equal(expected_df, filtered_read_input, check_like=True, check_dtype=False)
+
 
 def test_multiple_columns():
     additional_columns = format_additional_columns(['solution_id', 'bp_n_relevant_bases'])

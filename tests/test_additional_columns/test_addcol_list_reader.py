@@ -10,7 +10,7 @@ from tests.files.paths import with_missing_bp_csv_file
 from tests.utils.utils import parse_dfs_for_test, missing_bp_source_id
 
 sources = [5853498713190525696, missing_bp_source_id, 5762406957886626816]
-expected_columns = MANDATORY_INPUT_COLS[generate.__name__] + CORR_INPUT_COLUMNS # Archive always uses correlations
+expected_columns = MANDATORY_INPUT_COLS[generate.__name__] + CORR_INPUT_COLUMNS  # Archive always uses correlations
 
 
 def test_single_column_test():

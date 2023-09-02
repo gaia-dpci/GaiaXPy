@@ -5,7 +5,6 @@ Module to parse input files containing externally calibrated sampled spectra.
 """
 
 from .parse_generic import GenericParser
-from ..core.generic_functions import _warning
 
 # Columns that contain arrays (as strings)
 array_columns = ['wl', 'flux', 'flux_error']

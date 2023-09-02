@@ -1,4 +1,3 @@
-
 # Mandatory input columns for each tool (TODO: technically, xp_n_relevant_bases are optional depending on "truncation")
 __CAL_MANDATORY_COLS = ['source_id', 'bp_n_parameters', 'bp_standard_deviation', 'bp_n_relevant_bases',
                         'rp_n_parameters', 'rp_standard_deviation', 'rp_n_relevant_bases']
@@ -12,7 +11,7 @@ __INV_MANDATORY_COLS = ['source_id', 'bp_n_parameters', 'rp_n_parameters', 'bp_s
 
 COV_INPUT_COLUMNS = ['bp_coefficient_covariances', 'rp_coefficient_covariances']
 CORR_INPUT_COLUMNS = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations',
-                        'rp_coefficients', 'rp_coefficient_errors', 'rp_coefficient_correlations']
+                      'rp_coefficients', 'rp_coefficient_errors', 'rp_coefficient_correlations']
 
 MANDATORY_INPUT_COLS = {'_apply_colour_equation': __GEN_MANDATORY_COLS, '_apply_error_correction': __GEN_MANDATORY_COLS,
                         '_calibrate': __CAL_MANDATORY_COLS, '_generate': __GEN_MANDATORY_COLS,

@@ -76,8 +76,8 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
     is_gaia_in_input = __is_gaia_initially_in_systems(internal_phot_system)
     if error_correction and not is_gaia_in_input:
         internal_phot_system.append(gaia_system)
-    # Read input data
     additional_columns = format_additional_columns(additional_columns)
+    # Read input data
     parsed_input_data, extension = InputReader(input_object, generate, additional_columns=additional_columns,
                                                user=username, password=password).read()
     additional_data = parsed_input_data[list(additional_columns.keys())]

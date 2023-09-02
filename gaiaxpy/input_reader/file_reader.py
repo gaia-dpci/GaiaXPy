@@ -50,14 +50,27 @@ class FileReader(object):
         self.requested_columns = self.required_columns
         if self.additional_columns:
             check_column_overwrite(additional_columns, self.required_columns)
-            self.requested_columns = self.required_columns + [c for c in self.additional_columns.keys() if c not in
-                                                             self.required_columns]
+            self.requested_columns = self.required_columns + self.get_extra_columns_from_extension()
 
     def read(self):
         # Propagate additional columns
         return self.fps.parser(requested_columns=self.requested_columns,
                                additional_columns=self.additional_columns).parse_file(
             self.file, disable_info=self.disable_info)
+
+    def get_extra_columns_from_extension(self):
+        if self.file_extension == 'avro':
+            return [c for c in self.additional_columns.keys() if c not in self.required_columns]
+        else:
+            # Verify columns
+            for value in self.additional_columns.values():
+                if not isinstance(value, list) or len(value) != 1:
+                    if not value[0]:
+                        raise ValueError('Empty values are not allowed in additional columns argument.')
+                    else:
+                        raise ValueError('Column lists longer than one are not allowed in non-nested formats.')
+            return [self.additional_columns[c][0] for c in self.additional_columns.keys() if c not in
+                    self.required_columns]
 
 
 class FileParserSelector(object):

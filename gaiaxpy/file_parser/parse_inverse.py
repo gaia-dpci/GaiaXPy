@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import Union
 
-from gaiaxpy.core.generic_functions import _warning
 from gaiaxpy.file_parser.parse_generic import GenericParser
 
 

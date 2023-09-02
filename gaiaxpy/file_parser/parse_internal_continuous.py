@@ -13,6 +13,7 @@ from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_wit
 from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
+from ..core.custom_errors import SelectorNotImplementedError
 from ..core.satellite import BANDS
 from ..spectrum.utils import get_covariance_matrix
 
@@ -28,10 +29,11 @@ class InternalContinuousParser(GenericParser):
     Parser for internally calibrated continuous spectra.
     """
 
-    def __init__(self, requested_columns=None, additional_columns=None):
+    def __init__(self, requested_columns=None, additional_columns=None, selector=None):
         super().__init__()
         self.additional_columns = dict() if additional_columns is None else additional_columns
         self.requested_columns = requested_columns
+        self.selector = selector
 
     def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
@@ -48,6 +50,8 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.
         """
+        if self.selector is not None:
+            raise SelectorNotImplementedError('E/CSV')
         if _matrix_columns is None:
             _matrix_columns = matrix_columns
         if _array_columns is None:
@@ -75,6 +79,8 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the FITS file.
         """
+        if self.selector is not None:
+            raise SelectorNotImplementedError('FITS')
         if _matrix_columns is None:
             _matrix_columns = matrix_columns
         if _array_columns is None:
@@ -101,6 +107,8 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
         """
+        if self.selector is not None:
+            raise SelectorNotImplementedError('XML')
         if _matrix_columns is None:
             _matrix_columns = matrix_columns
         if _array_columns is None:
@@ -127,10 +135,11 @@ class InternalContinuousParser(GenericParser):
         _get_from_dict(record, _avro_keys_map[key]) for key in _avro_keys_map.keys()}
 
     @staticmethod
-    def __get_records_up_to_1_4_7(avro_file, additional_columns):
+    def __get_records_up_to_1_4_7(avro_file, additional_columns, selector):
         from fastavro import reader
         f = open(avro_file, 'rb')
         avro_reader = reader(f)
+        avro_reader = avro_reader if selector is None else filter(selector, avro_reader)
         record = avro_reader.next()
         while record:
             try:
@@ -145,7 +154,7 @@ class InternalContinuousParser(GenericParser):
                 break
 
     @staticmethod
-    def __get_records_later_than_1_4_7(avro_file, additional_columns):
+    def __get_records_later_than_1_4_7(avro_file, additional_columns, selector):
         def __yield_records(_avro_file):
             from fastavro import block_reader
             with open(_avro_file, 'rb') as fo:
@@ -154,6 +163,7 @@ class InternalContinuousParser(GenericParser):
                         yield rec
 
         records = __yield_records(avro_file)
+        records = records if selector is None else filter(selector, records)
         for record in records:
             yield InternalContinuousParser.__process_avro_record(record, additional_columns)
 
@@ -173,7 +183,7 @@ class InternalContinuousParser(GenericParser):
             __get_records = InternalContinuousParser.__get_records_later_than_1_4_7
         else:
             raise ValueError(f'Fastavro version {fa_version} may not have been parsed properly.')
-        df = pd.DataFrame(__get_records(avro_file, self.additional_columns))
+        df = pd.DataFrame(__get_records(avro_file, self.additional_columns, self.selector))
         # Pairs of the form (matrix_size (N), values_to_put_in_matrix)
         to_matrix_columns = [('bp_n_parameters', 'bp_coefficient_covariances'),
                              ('rp_n_parameters', 'rp_coefficient_covariances')]

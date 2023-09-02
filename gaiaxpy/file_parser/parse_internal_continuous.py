@@ -111,20 +111,27 @@ class InternalContinuousParser(GenericParser):
         return df
 
     @staticmethod
-    def __process_avro_record(record):
-        return {key: np.array(_get_from_dict(record, _csv_to_avro_map[key])) if
-        isinstance(_get_from_dict(record, _csv_to_avro_map[key]), list) else
-        _get_from_dict(record, _csv_to_avro_map[key]) for key in _csv_to_avro_map.keys()}
+    def __process_avro_record(record, additional_columns=None):
+        _avro_keys_map = _csv_to_avro_map.copy()
+        intersection_keys = [key for key in _avro_keys_map.keys() if key in additional_columns.keys()]
+        if intersection_keys:
+            raise ValueError('Additional columns will overwrite an already existing key. This is not allowed.'
+                             f' Keys are: {",".join(intersection_keys)}')
+        if not additional_columns is None:
+            _avro_keys_map.update(additional_columns)
+        return {key: np.array(_get_from_dict(record, _avro_keys_map[key])) if
+        isinstance(_get_from_dict(record, _avro_keys_map[key]), list) else
+        _get_from_dict(record, _avro_keys_map[key]) for key in _avro_keys_map.keys()}
 
     @staticmethod
-    def __get_records_up_to_1_4_7(avro_file):
+    def __get_records_up_to_1_4_7(avro_file, additional_columns):
         from fastavro import reader
         f = open(avro_file, 'rb')
         avro_reader = reader(f)
         record = avro_reader.next()
         while record:
             try:
-                current_record = InternalContinuousParser.__process_avro_record(record)
+                current_record = InternalContinuousParser.__process_avro_record(record, additional_columns)
                 yield current_record
             except KeyError:
                 raise KeyError("Keys in the input file don't match the expected ones.")
@@ -135,7 +142,7 @@ class InternalContinuousParser(GenericParser):
                 break
 
     @staticmethod
-    def __get_records_later_than_1_4_7(avro_file):
+    def __get_records_later_than_1_4_7(avro_file, additional_columns):
         def __yield_records(_avro_file):
             from fastavro import block_reader
             with open(_avro_file, 'rb') as fo:
@@ -145,7 +152,7 @@ class InternalContinuousParser(GenericParser):
 
         records = __yield_records(avro_file)
         for record in records:
-            yield InternalContinuousParser.__process_avro_record(record)
+            yield InternalContinuousParser.__process_avro_record(record, additional_columns)
 
     def _parse_avro(self, avro_file):
         """
@@ -163,7 +170,7 @@ class InternalContinuousParser(GenericParser):
             __get_records = InternalContinuousParser.__get_records_later_than_1_4_7
         else:
             raise ValueError(f'Fastavro version {fa_version} may not have been parsed properly.')
-        df = pd.DataFrame(__get_records(avro_file))
+        df = pd.DataFrame(__get_records(avro_file, self.additional_columns))
         # Pairs of the form (matrix_size (N), values_to_put_in_matrix)
         to_matrix_columns = [('bp_n_parameters', 'bp_coefficient_covariances'),
                              ('rp_n_parameters', 'rp_coefficient_covariances')]

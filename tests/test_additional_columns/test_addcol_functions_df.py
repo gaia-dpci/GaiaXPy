@@ -24,7 +24,6 @@ class TestAddColDFGenerate(unittest.TestCase):
         pdt.assert_frame_equal(output_to_compare, solution)
 
     def test_more_than_one_non_required_additional_col_as_list(self):
-        #format_additional_columns(['solution_id', 'bp_degrees_of_freedom'])
         additional_columns = ['solution_id', 'bp_degrees_of_freedom']
         solution = pd.read_csv(no_correction_solution_path)
         solution = solution.drop(columns=[c for c in solution.columns if c != 'source_id' and 'Stromgren_' not in c])

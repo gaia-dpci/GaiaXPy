@@ -11,8 +11,9 @@ def external():
     return ExternalParser()
 
 
-def internal_continuous(requested_columns=None, additional_columns=None):
-    return InternalContinuousParser(requested_columns=requested_columns, additional_columns=additional_columns)
+def internal_continuous(requested_columns=None, additional_columns=None, selector=None):
+    return InternalContinuousParser(requested_columns=requested_columns, additional_columns=additional_columns,
+                                    selector=selector)
 
 
 def raise_error():
@@ -35,11 +36,12 @@ function_parser_dict = {'apply_colour_equation': raise_error,
 
 class FileReader(object):
 
-    def __init__(self, file_parser_selector, file, additional_columns=None, disable_info=False):
+    def __init__(self, file_parser_selector, file, additional_columns=None, selector=None, disable_info=False):
         self.fps = file_parser_selector
         self.file = file
         self.file_extension = standardise_extension(splitext(self.file)[1])
         self.additional_columns = dict() if additional_columns is None else additional_columns
+        self.selector = selector
         self.disable_info = disable_info
         mandatory_columns = MANDATORY_INPUT_COLS.get(self.fps.function_name, list())
         style_columns = list()
@@ -53,10 +55,8 @@ class FileReader(object):
             self.requested_columns = self.required_columns + self.get_extra_columns_from_extension()
 
     def read(self):
-        # Propagate additional columns
-        return self.fps.parser(requested_columns=self.requested_columns,
-                               additional_columns=self.additional_columns).parse_file(
-            self.file, disable_info=self.disable_info)
+        return self.fps.parser(requested_columns=self.requested_columns, additional_columns=self.additional_columns,
+                               selector=self.selector).parse_file(self.file, disable_info=self.disable_info)
 
     def get_extra_columns_from_extension(self):
         if self.file_extension == 'avro':

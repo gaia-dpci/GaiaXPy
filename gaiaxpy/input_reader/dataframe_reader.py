@@ -4,6 +4,7 @@ from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_wit
 from .dataframe_numpy_array_reader import DataFrameNumPyArrayReader
 from .dataframe_string_array_reader import DataFrameStringArrayReader
 from .required_columns import MANDATORY_INPUT_COLS, COV_INPUT_COLUMNS, CORR_INPUT_COLUMNS
+from ..core.custom_errors import SelectorNotImplementedError
 from ..core.input_validator import check_column_overwrite
 from ..core.satellite import BANDS
 from ..spectrum.utils import get_covariance_matrix
@@ -24,7 +25,9 @@ def needs_matrix_conversion(array_columns):
 
 class DataFrameReader(object):
 
-    def __init__(self, content, function, additional_columns=None, disable_info=False):
+    def __init__(self, content, function, additional_columns=None, selector=None, disable_info=False):
+        if selector is not None:
+            raise SelectorNotImplementedError('DataFrame')
         self.additional_columns = dict() if additional_columns is None else additional_columns
         self.content = content.copy()
         self.function_name = function if isinstance(function, str) else function.__name__

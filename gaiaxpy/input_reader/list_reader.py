@@ -3,6 +3,7 @@ from astroquery.gaia import GaiaClass
 from gaiaxpy.core.server import data_release, gaia_server
 from .archive_reader import ArchiveReader
 from .dataframe_reader import DataFrameReader
+from ..core.custom_errors import SelectorNotImplementedError
 
 not_supported_functions = ['apply_colour_equation', 'apply_error_correction', 'simulate_continuous', 'simulate_sampled']
 
@@ -18,7 +19,9 @@ def extremes_are_enclosing(first_row, column):
 
 class ListReader(ArchiveReader):
 
-    def __init__(self, content, function, user, password, additional_columns=None, disable_info=False):
+    def __init__(self, content, function, user, password, additional_columns=None, selector=None, disable_info=False):
+        if selector is not None:
+            raise SelectorNotImplementedError('List')
         if additional_columns is None:
             additional_columns = dict()
         super(ListReader, self).__init__(function, user, password, additional_columns=additional_columns,

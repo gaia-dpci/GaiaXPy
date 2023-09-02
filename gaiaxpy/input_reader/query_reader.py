@@ -3,15 +3,19 @@ from astroquery.gaia import GaiaClass
 from gaiaxpy.core.server import data_release, gaia_server
 from .archive_reader import ArchiveReader
 from .dataframe_reader import DataFrameReader
+from ..core.custom_errors import SelectorNotImplementedError
 
 not_supported_functions = ['apply_colour_equation', 'simulate_continuous', 'simulate_sampled']
 
 
 class QueryReader(ArchiveReader):
 
-    def __init__(self, content, function, user=None, password=None, additional_columns=None, disable_info=False):
+    def __init__(self, content, function, user=None, password=None, additional_columns=None, selector=None,
+                 disable_info=False):
         if additional_columns is None:
             additional_columns = dict()
+        if selector is not None:
+            raise SelectorNotImplementedError('Query')
         self.content = content
         super(QueryReader, self).__init__(function, user, password, additional_columns=additional_columns,
                                           disable_info=disable_info)

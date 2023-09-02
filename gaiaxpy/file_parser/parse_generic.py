@@ -67,6 +67,7 @@ class GenericParser(object):
 
         Args:
             file_path (str): Path to a file.
+            selector (function): Selector function to use. Only implemented for AVRO files.
             disable_info (bool): Whether to disable the progress tracker or not.
 
         Returns:

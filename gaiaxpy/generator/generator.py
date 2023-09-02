@@ -52,8 +52,17 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
 def _generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
              output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
              output_format: str = None, save_file: bool = True, error_correction: bool = False,
-              additional_columns: Optional[Union[list, str]] = None, username: str = None, password: str = None) \
-        -> pd.DataFrame:
+              additional_columns: Optional[Union[dict, list, str]] = None, selector=None, username: str = None,
+              password: str = None) -> pd.DataFrame:
+    """
+    For the rest of parameters, refer to function generate on this file.
+
+    Args:
+        selector (function): Function to filter AVRO records. The records returned will be the ones for which the
+        function returns True. The field names used in the selector function should match the ones in the AVRO schema
+        as the filter is run before any column renaming happens. If selector is not None and the input is not an AVRO
+        file, a SelectorNotImplementedError will be raised.
+    """
     def __is_gaia_initially_in_systems(_internal_photometric_system: list,
                                        _gaia_system: PhotometricSystem = PhotometricSystem.Gaia_DR3_Vega):
         """
@@ -70,8 +79,7 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
     validate_photometric_system(photometric_system)
     validate_save_arguments(generate.__defaults__[1], output_file, generate.__defaults__[2], output_format, save_file)
     # Prepare systems, keep track of original systems (especially required for error_correction)
-    internal_phot_system = photometric_system.copy() if isinstance(photometric_system, list) else\
-        [photometric_system].copy()
+    internal_phot_system = photometric_system.copy() if isinstance(photometric_system, list) else [photometric_system].copy()
     gaia_system = PhotometricSystem.Gaia_DR3_Vega
     is_gaia_in_input = __is_gaia_initially_in_systems(internal_phot_system)
     if error_correction and not is_gaia_in_input:
@@ -79,7 +87,7 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
     additional_columns = format_additional_columns(additional_columns)
     # Read input data
     parsed_input_data, extension = InputReader(input_object, generate, additional_columns=additional_columns,
-                                               user=username, password=password).read()
+                                               selector=selector, user=username, password=password).read()
     additional_data = parsed_input_data[list(additional_columns.keys())]
     # Generate photometry
     phot_generator = MultiSyntheticPhotometryGenerator(internal_phot_system, bp_model='v375wi', rp_model='v142r')

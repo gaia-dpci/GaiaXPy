@@ -72,7 +72,7 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
                bp_model: str = 'v375wi', rp_model: str = 'v142r', disable_info: bool = False) ->\
         (pd.DataFrame, np.ndarray):
     """
-    Internal method of the calibration utility. Refer to "calibrate".
+    Internal function of the calibration utility. Refer to "calibrate".
 
     Args:
         bp_model (str): The bp model.

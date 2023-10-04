@@ -53,15 +53,17 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
              output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
              output_format: str = None, save_file: bool = True, error_correction: bool = False,
               additional_columns: Optional[Union[dict, list, str]] = None, selector=None, username: str = None,
-              password: str = None) -> pd.DataFrame:
+              password: str = None, bp_model: str = 'v375wi', rp_model: str = 'v142r') -> pd.DataFrame:
     """
-    For the rest of parameters, refer to function generate on this file.
+    Internal function of the calibration utility. Refer to "generate".
 
     Args:
         selector (function): Function to filter AVRO records. The records returned will be the ones for which the
         function returns True. The field names used in the selector function should match the ones in the AVRO schema
         as the filter is run before any column renaming happens. If selector is not None and the input is not an AVRO
         file, a SelectorNotImplementedError will be raised.
+        bp_model (str): The bp model.
+        rp_model (str): The rp model.
     """
     def __is_gaia_initially_in_systems(_internal_photometric_system: list,
                                        _gaia_system: PhotometricSystem = PhotometricSystem.Gaia_DR3_Vega):
@@ -91,7 +93,7 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
                                                selector=selector, user=username, password=password).read()
     additional_data = parsed_input_data[list(additional_columns.keys())]
     # Generate photometry
-    phot_generator = MultiSyntheticPhotometryGenerator(internal_phot_system, bp_model='v375wi', rp_model='v142r')
+    phot_generator = MultiSyntheticPhotometryGenerator(internal_phot_system, bp_model=bp_model, rp_model=rp_model)
     photometry_df = phot_generator.generate(parsed_input_data, extension, output_file=None, output_format=None,
                                             save_file=False)
     photometry_df = _apply_colour_equation(photometry_df, photometric_system=internal_phot_system,

@@ -4,7 +4,8 @@ from pathlib import Path
 import pandas as pd
 
 from .dataframe_reader import DataFrameReader
-from .file_reader import FileParserSelector, FileReader
+from .file_reader import FileParserSelector, LocalFileReader
+from .hdfs_reader import HDFSReader
 from .list_reader import ListReader
 from .query_reader import QueryReader
 
@@ -37,10 +38,10 @@ class InputReader(object):
         if isinstance(content, pd.DataFrame):
             reader = DataFrameReader(content, function, additional_columns=additional_columns, selector=selector,
                                      disable_info=disable_info)
-        elif isinstance(content, Path) or (isinstance(content, str) and isfile(content)):
+        elif (isinstance(content, Path) or (isinstance(content, str)) and isfile(content)):
             parser = FileParserSelector(function)
-            reader = FileReader(parser, content, additional_columns=additional_columns, selector=selector,
-                                disable_info=disable_info)
+            reader = LocalFileReader(parser, content, additional_columns=additional_columns, selector=selector,
+                                     disable_info=disable_info)
         # Actual input data got from the Archive
         elif isinstance(content, list):
             reader = ListReader(content, function, user=self.user, password=self.password,
@@ -48,6 +49,10 @@ class InputReader(object):
         elif isinstance(content, str) and content.lower().startswith('select'):
             reader = QueryReader(content, function, user=self.user, password=self.password,
                                  additional_columns=additional_columns, selector=selector, disable_info=disable_info)
+        elif isinstance(content, str) and (content.lower().startswith('hdfs://') or
+                                           content.lower().startswith('http://')):
+            reader = HDFSReader(content, function, additional_columns=additional_columns, selector=selector,
+                                disable_info=disable_info)
         else:
             raise ValueError('The input provided does not match any of the expected input types.')
         parsed_data, extension = reader.read()

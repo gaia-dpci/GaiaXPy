@@ -34,7 +34,7 @@ function_parser_dict = {'apply_colour_equation': raise_error,
                         'simulate_sampled': external}
 
 
-class FileReader(object):
+class LocalFileReader(object):
 
     def __init__(self, file_parser_selector, file, additional_columns=None, selector=None, disable_info=False):
         self.fps = file_parser_selector

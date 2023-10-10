@@ -38,7 +38,8 @@ class FileReader:
 
     def __init__(self, file_parser_selector, file, additional_columns=None, selector=None, disable_info=False):
         self.fps = file_parser_selector
-        self.file_extension = standardise_extension(splitext(self.file)[1])
+        self.file = file
+        self.file_extension = standardise_extension(splitext(self.file_path)[1])
         self.additional_columns = dict() if additional_columns is None else additional_columns
         self.selector = selector
         self.disable_info = disable_info

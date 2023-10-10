@@ -50,8 +50,7 @@ class InputReader(object):
         elif isinstance(content, str) and content.lower().startswith('select'):
             reader = QueryReader(content, function, user=self.user, password=self.password,
                                  additional_columns=additional_columns, selector=selector, disable_info=disable_info)
-        elif isinstance(content, str) and (content.lower().startswith('hdfs://') or
-                                           content.lower().startswith('http://')):
+        elif isinstance(content, str) and content.lower().startswith('hdfs://'):
             parser = FileParserSelector(function)
             reader = HDFSReader(parser, content, additional_columns=additional_columns, selector=selector,
                                 disable_info=disable_info)

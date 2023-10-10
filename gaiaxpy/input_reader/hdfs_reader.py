@@ -3,7 +3,6 @@ import subprocess
 from hdfs import InsecureClient
 from hdfs.ext.avro import AvroReader
 
-from gaiaxpy.core.generic_functions import _warning
 from gaiaxpy.input_reader.file_reader import FileReader
 
 
@@ -35,8 +34,6 @@ class HDFSReader(FileReader):
             _address, _port = address_and_port[:split_index_port], address_and_port[split_index_port:]
             expected_port = get_namenode()
             if str(_port) != str(expected_port):
-                _warning(f'Input port {_port} is different from expected HTTP port {expected_port}. '
-                         f'The port will be replaced.')
                 _port = expected_port
             return _address, _port
 

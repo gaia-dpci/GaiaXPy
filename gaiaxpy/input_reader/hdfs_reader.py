@@ -25,10 +25,8 @@ class HDFSReader(FileReader):
                 raise Exception(f"Failed to execute command '{command}': {error}")
             return output.decode('utf-8').split(':')[1]
 
-        def verify_protocol(_given_protocol, _expected_protocol, _file_path):
+        def modify_protocol(_given_protocol, _expected_protocol, _file_path):
             if _given_protocol != _expected_protocol:
-                _warning(f'Input protocol {_given_protocol.upper()} is different from expected protocol '
-                         f'{_expected_protocol.upper()}. The protocol will be internally replaced.')
                 return _expected_protocol + _file_path[len(_given_protocol):]
 
         def process_address_and_port(_file_path, _protocol_split_index):
@@ -42,7 +40,7 @@ class HDFSReader(FileReader):
                 _port = expected_port
             return _address, _port
 
-        file_path = verify_protocol(file_path[:file_path.find(p_sep)], expected_protocol, file_path)
+        file_path = modify_protocol(file_path[:file_path.find(p_sep)], expected_protocol, file_path)
         protocol_split_index = file_path.find('/', len(f'{expected_protocol}{p_sep}'))
         if protocol_split_index == -1:
             raise ValueError('Input path has got a different format than expected.')

@@ -9,10 +9,11 @@ from gaiaxpy.input_reader.file_reader import FileReader
 class HDFSReader(FileReader):
 
     def __init__(self, file_parser_selector, file, additional_columns=None, selector=None, disable_info=False):
-        self.address, self.file_path, self.port = self.split_cluster_path(file)
+        self.address, file, self.port = self.split_cluster_path(file)
         client = InsecureClient(f'{self.address}:{self.port}')
-        with AvroReader(client, self.file_path) as reader:
-            super().__init__(file_parser_selector, (record for record in reader), additional_columns, selector,
+        with AvroReader(client, self.file) as reader:
+            self.file_content = (record for record in reader)
+            super().__init__(file_parser_selector, file, self.file_content, additional_columns, selector,
                              disable_info)
 
     def split_cluster_path(self, file_path, expected_protocol='http', p_sep='://'):

@@ -36,10 +36,12 @@ function_parser_dict = {'apply_colour_equation': raise_error,
 
 class FileReader:
 
-    def __init__(self, file_parser_selector, file, additional_columns=None, selector=None, disable_info=False):
+    def __init__(self, file_parser_selector, file, file_content, additional_columns=None, selector=None,
+                 disable_info=False):
         self.fps = file_parser_selector
         self.file = file
-        self.file_extension = standardise_extension(splitext(self.file_path)[1])
+        self.file_content = file_content
+        self.file_extension = standardise_extension(splitext(file)[1])
         self.additional_columns = dict() if additional_columns is None else additional_columns
         self.selector = selector
         self.disable_info = disable_info
@@ -70,7 +72,8 @@ class FileReader:
 
     def read(self):
         return self.fps.parser(requested_columns=self.requested_columns, additional_columns=self.additional_columns,
-                               selector=self.selector).parse_file(self.file, disable_info=self.disable_info)
+                               selector=self.selector).parse_file(self.file, disable_info=self.disable_info,
+                                                                  content=self.file_content)
 
 
 class FileParserSelector(object):

@@ -61,7 +61,7 @@ class GenericParser(object):
         else:
             raise InvalidExtensionError()
 
-    def parse_file(self, file_path, disable_info=False):
+    def parse_file(self, file_path, disable_info=False, content=None):
         """
         Parse the input file according to its extension.
 
@@ -78,7 +78,8 @@ class GenericParser(object):
             print(self.info_msg, end='\r')
         extension = _get_file_extension(file_path)
         parser = self.get_parser(extension)
-        parsed_data = _cast(parser(file_path))
+        content = file_path if not content else content
+        parsed_data = _cast(parser(content))
         if not disable_info:
             print(self.info_msg + ' Done!', end='\r')
         return parsed_data, extension

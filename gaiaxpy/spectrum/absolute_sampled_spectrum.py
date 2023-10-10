@@ -45,7 +45,7 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
             raise ValueError('At least one band must be present.')
         pos = sampled_bases[available_bands[0]].get_sampling_grid()
         SampledSpectrum.__init__(self, source_id, pos)
-        self.pos = pos  # TODO: may not be required
+        self.pos = pos
         split_spectrum = self.__generate_spectra(xp_spectra, sampled_bases, available_bands, truncation,
                                                  with_correlation=with_correlation)
         self.__merge_output(split_spectrum, merge, with_correlation=with_correlation)

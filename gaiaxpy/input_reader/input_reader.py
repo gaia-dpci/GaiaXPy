@@ -4,9 +4,10 @@ from pathlib import Path
 import pandas as pd
 
 from .dataframe_reader import DataFrameReader
-from .file_reader import FileParserSelector, LocalFileReader
+from .file_reader import FileParserSelector
 from .hdfs_reader import HDFSReader
 from .list_reader import ListReader
+from .local_file_reader import LocalFileReader
 from .query_reader import QueryReader
 
 default_extension = 'csv'
@@ -51,7 +52,8 @@ class InputReader(object):
                                  additional_columns=additional_columns, selector=selector, disable_info=disable_info)
         elif isinstance(content, str) and (content.lower().startswith('hdfs://') or
                                            content.lower().startswith('http://')):
-            reader = HDFSReader(content, function, additional_columns=additional_columns, selector=selector,
+            parser = FileParserSelector(function)
+            reader = HDFSReader(parser, content, additional_columns=additional_columns, selector=selector,
                                 disable_info=disable_info)
         else:
             raise ValueError('The input provided does not match any of the expected input types.')

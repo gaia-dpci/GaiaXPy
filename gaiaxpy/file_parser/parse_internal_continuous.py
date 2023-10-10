@@ -3,6 +3,7 @@ parse_internal_continuous.py
 ====================================
 Module to parse input files containing internally calibrated continuous spectra.
 """
+from os.path import isfile
 
 import numpy as np
 import pandas as pd
@@ -137,21 +138,26 @@ class InternalContinuousParser(GenericParser):
     @staticmethod
     def __get_records_up_to_1_4_7(avro_file, additional_columns, selector):
         from fastavro import reader
-        f = open(avro_file, 'rb')
-        avro_reader = reader(f)
-        avro_reader = avro_reader if selector is None else filter(selector, avro_reader)
-        record = avro_reader.next()
-        while record:
-            try:
-                current_record = InternalContinuousParser.__process_avro_record(record, additional_columns)
-                yield current_record
-            except KeyError:
-                raise KeyError("Keys in the input file don't match the expected ones.")
-            try:
-                record = avro_reader.next()
-            except StopIteration:
-                f.close()
-                break
+        is_local = isfile(avro_file)
+        if is_local:
+            f = open(avro_file, 'rb')
+            avro_reader = reader(f)
+            avro_reader = avro_reader if selector is None else filter(selector, avro_reader)
+            record = avro_reader.next()
+            while record:
+                try:
+                    current_record = InternalContinuousParser.__process_avro_record(record, additional_columns)
+                    yield current_record
+                except KeyError:
+                    raise KeyError("Keys in the input file don't match the expected ones.")
+                try:
+                    record = avro_reader.next()
+                except StopIteration:
+                    f.close()
+                    break
+        else:
+            for record in avro_file:
+                yield InternalContinuousParser.__process_avro_record(record, additional_columns)
 
     @staticmethod
     def __get_records_later_than_1_4_7(avro_file, additional_columns, selector):
@@ -162,7 +168,7 @@ class InternalContinuousParser(GenericParser):
                     for rec in block:
                         yield rec
 
-        records = __yield_records(avro_file)
+        records = __yield_records(avro_file) if isfile(avro_file) else avro_file
         records = records if selector is None else filter(selector, records)
         for record in records:
             yield InternalContinuousParser.__process_avro_record(record, additional_columns)

@@ -8,6 +8,7 @@ from os.path import isfile
 import numpy as np
 import pandas as pd
 from fastavro import __version__ as fa_version
+from hdfs.ext.avro import AvroReader
 from packaging import version
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
@@ -168,7 +169,7 @@ class InternalContinuousParser(GenericParser):
                     for rec in block:
                         yield rec
 
-        records = __yield_records(avro_file) if isfile(avro_file) else avro_file
+        records = avro_file if isinstance(avro_file, AvroReader) else __yield_records(avro_file)
         records = records if selector is None else filter(selector, records)
         for record in records:
             yield InternalContinuousParser.__process_avro_record(record, additional_columns)

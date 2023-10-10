@@ -12,7 +12,7 @@ class HDFSReader(FileReader):
         self.address, self.file, self.port = self.split_cluster_path(file)
         client = InsecureClient(f'{self.address}:{self.port}')
         with AvroReader(client, self.file) as reader:
-            self.file_content = (record for record in reader)
+            self.file_content = reader
             super().__init__(file_parser_selector, self.file, self.file_content, additional_columns, selector,
                              disable_info)
 

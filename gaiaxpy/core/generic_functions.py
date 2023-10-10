@@ -287,8 +287,11 @@ def standardise_extension(_extension):
     Returns:
         str: The extension in lowercase letters and with no initial dot (e.g.: 'csv').
     """
-    _extension = _extension[1:] if _extension[0] == '.' else _extension  # Remove initial dot if present
-    return _extension.lower()
+    try:
+        _extension = _extension[1:] if _extension[0] == '.' else _extension  # Remove initial dot if present
+        return _extension.lower()
+    except IndexError:
+        raise ValueError(f"Extension '{_extension}' could not be parsed appropriately.")
 
 
 def reverse_simple_add_col_dict(d):

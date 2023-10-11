@@ -54,8 +54,8 @@ class SampledBasisFunctions(object):
                  external_instrument_model.bases['normRangeMin'][0]) / \
                 (external_instrument_model.bases['pwlRangeMax'][0] -
                  external_instrument_model.bases['pwlRangeMin'][0])
-        offset = external_instrument_model.bases['normRangeMin'][0] -\
-            external_instrument_model.bases['pwlRangeMin'][0] * scale
+        offset = external_instrument_model.bases['normRangeMin'][0] - \
+                 external_instrument_model.bases['pwlRangeMin'][0] * scale
 
         sampling_pwl = external_instrument_model.wl_to_pwl(sampling)
         rescaled_pwl = (sampling_pwl * scale) + offset
@@ -63,8 +63,8 @@ class SampledBasisFunctions(object):
         bases_transformation = external_instrument_model.bases['transformationMatrix'][0]
         evaluated_hermite_bases = np.array([_evaluate_hermite_function(n_h, pos, weight) for pos, weight in zip(
             rescaled_pwl, weights) for n_h in np.arange(int(
-                external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
-                n_samples, int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))
+            external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
+            n_samples, int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))
         _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'][0] @ evaluated_hermite_bases.T
         transformed_design_matrix = bases_transformation @ _design_matrix
 
@@ -132,7 +132,7 @@ def populate_design_matrix(sampling_grid, config):
         ndarray: The resulting design matrix.
     """
     n_samples = len(sampling_grid)
-    scale = (config['normalizedRange'].iloc(0)[0][1] - config['normalizedRange'].iloc(0)[0][0]) /\
+    scale = (config['normalizedRange'].iloc(0)[0][1] - config['normalizedRange'].iloc(0)[0][0]) / \
             (config['range'].iloc(0)[0][1] - config['range'].iloc(0)[0][0])
     offset = config['normalizedRange'].iloc(0)[0][0] - config['range'].iloc(0)[0][0] * scale
     rescaled_pwl = (sampling_grid * scale) + offset

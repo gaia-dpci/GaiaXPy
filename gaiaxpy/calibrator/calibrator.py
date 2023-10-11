@@ -17,7 +17,6 @@ from gaiaxpy.config.paths import config_path, config_ini_file
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_wl_sampling, \
     parse_band
-from ..core.input_validator import validate_save_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -27,13 +26,14 @@ from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.utils import get_covariance_matrix
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from .external_instrument_model import ExternalInstrumentModel
+from ..core.input_validator import validate_save_arguments
 
 __FUNCTION_KEY = 'calibrator'
 
 
 def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None, truncation: bool = False,
               output_path: Union[Path, str] = '.', output_file: str = 'output_spectra', output_format: str = None,
-              save_file: bool = True, with_correlation: bool = False, username: str = None, password: str = None) ->\
+              save_file: bool = True, with_correlation: bool = False, username: str = None, password: str = None) -> \
         (pd.DataFrame, np.ndarray):
     """
     Calibration utility: calibrates the input internally-calibrated continuously-represented mean spectra to the
@@ -69,7 +69,7 @@ def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None,
 def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None, truncation: bool = False,
                output_path: Union[Path, str] = '.', output_file: str = 'output_spectra', output_format: str = None,
                save_file: bool = True, with_correlation: bool = False, username: str = None, password: str = None,
-               bp_model: str = 'v375wi', rp_model: str = 'v142r', disable_info: bool = False) ->\
+               bp_model: str = 'v375wi', rp_model: str = 'v142r', disable_info: bool = False) -> \
         (pd.DataFrame, np.ndarray):
     """
     Internal function of the calibration utility. Refer to "calibrate".

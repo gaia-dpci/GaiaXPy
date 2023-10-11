@@ -11,9 +11,9 @@ def external():
     return ExternalParser()
 
 
-def internal_continuous(requested_columns=None, additional_columns=None, selector=None):
+def internal_continuous(requested_columns=None, additional_columns=None, selector=None, **kwargs):
     return InternalContinuousParser(requested_columns=requested_columns, additional_columns=additional_columns,
-                                    selector=selector)
+                                    selector=selector, **kwargs)
 
 
 def raise_error():
@@ -36,11 +36,10 @@ function_parser_dict = {'apply_colour_equation': raise_error,
 
 class FileReader:
 
-    def __init__(self, file_parser_selector, file, file_content, additional_columns=None, selector=None,
-                 disable_info=False):
+    def __init__(self, file_parser_selector, file, additional_columns=None, selector=None, disable_info=False,
+                 **kwargs):
         self.fps = file_parser_selector
         self.file = file
-        self.file_content = file_content
         self.file_extension = standardise_extension(splitext(file)[1])
         self.additional_columns = dict() if additional_columns is None else additional_columns
         self.selector = selector
@@ -55,6 +54,9 @@ class FileReader:
         if self.additional_columns:
             check_column_overwrite(additional_columns, self.required_columns)
             self.requested_columns = self.required_columns + self.get_extra_columns_from_extension()
+        if kwargs:
+            self.address = kwargs.get('address', None)
+            self.port = kwargs.get('port', None)
 
     def get_extra_columns_from_extension(self):
         if self.file_extension == 'avro':
@@ -71,9 +73,15 @@ class FileReader:
                     self.required_columns]
 
     def read(self):
-        return self.fps.parser(requested_columns=self.requested_columns, additional_columns=self.additional_columns,
-                               selector=self.selector).parse_file(self.file, disable_info=self.disable_info,
-                                                                  content=self.file_content)
+        parser_arguments = {
+            'requested_columns': self.requested_columns,
+            'additional_columns': self.additional_columns,
+            'selector': self.selector
+        }
+        if hasattr(self, 'address') and hasattr(self, 'port'):
+            parser_arguments['address'] = self.address
+            parser_arguments['port'] = self.port
+        return self.fps.parser(**parser_arguments).parse_file(self.file, disable_info=self.disable_info)
 
 
 class FileParserSelector(object):

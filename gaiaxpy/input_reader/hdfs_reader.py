@@ -1,20 +1,14 @@
 import subprocess
 
-from hdfs import InsecureClient
-from hdfs.ext.avro import AvroReader
-
 from gaiaxpy.input_reader.file_reader import FileReader
 
 
 class HDFSReader(FileReader):
 
     def __init__(self, file_parser_selector, file, additional_columns=None, selector=None, disable_info=False):
-        self.address, self.file, self.port = self.split_cluster_path(file)
-        client = InsecureClient(f'{self.address}:{self.port}')
-        with AvroReader(client, self.file) as reader:
-            self.file_content = reader
-            super().__init__(file_parser_selector, self.file, self.file_content, additional_columns, selector,
-                             disable_info)
+        address, file_path, port = self.split_cluster_path(file)
+        super().__init__(file_parser_selector, file_path, additional_columns, selector, disable_info, address=address,
+                         port=port)
 
     def split_cluster_path(self, file_path, expected_protocol='http', p_sep='://'):
         def get_namenode():

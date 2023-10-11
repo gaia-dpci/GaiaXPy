@@ -31,11 +31,14 @@ class InternalContinuousParser(GenericParser):
     Parser for internally calibrated continuous spectra.
     """
 
-    def __init__(self, requested_columns=None, additional_columns=None, selector=None):
+    def __init__(self, requested_columns=None, additional_columns=None, selector=None, **kwargs):
         super().__init__()
         self.additional_columns = dict() if additional_columns is None else additional_columns
         self.requested_columns = requested_columns
         self.selector = selector
+        if kwargs:
+            self.address = kwargs.get('address', None)
+            self.port = kwargs.get('port', None)
 
     def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
@@ -139,26 +142,21 @@ class InternalContinuousParser(GenericParser):
     @staticmethod
     def __get_records_up_to_1_4_7(avro_file, additional_columns, selector):
         from fastavro import reader
-        is_local = isfile(avro_file)
-        if is_local:
-            f = open(avro_file, 'rb')
-            avro_reader = reader(f)
-            avro_reader = avro_reader if selector is None else filter(selector, avro_reader)
-            record = avro_reader.next()
-            while record:
-                try:
-                    current_record = InternalContinuousParser.__process_avro_record(record, additional_columns)
-                    yield current_record
-                except KeyError:
-                    raise KeyError("Keys in the input file don't match the expected ones.")
-                try:
-                    record = avro_reader.next()
-                except StopIteration:
-                    f.close()
-                    break
-        else:
-            for record in avro_file:
-                yield InternalContinuousParser.__process_avro_record(record, additional_columns)
+        f = open(avro_file, 'rb')
+        avro_reader = reader(f)
+        avro_reader = avro_reader if selector is None else filter(selector, avro_reader)
+        record = avro_reader.next()
+        while record:
+            try:
+                current_record = InternalContinuousParser.__process_avro_record(record, additional_columns)
+                yield current_record
+            except KeyError:
+                raise KeyError("Keys in the input file don't match the expected ones.")
+            try:
+                record = avro_reader.next()
+            except StopIteration:
+                f.close()
+                break
 
     @staticmethod
     def __get_records_later_than_1_4_7(avro_file, additional_columns, selector):
@@ -169,7 +167,7 @@ class InternalContinuousParser(GenericParser):
                     for rec in block:
                         yield rec
 
-        records = avro_file if isinstance(avro_file, AvroReader) else __yield_records(avro_file)
+        records = __yield_records(avro_file)
         records = records if selector is None else filter(selector, records)
         for record in records:
             yield InternalContinuousParser.__process_avro_record(record, additional_columns)

@@ -8,6 +8,7 @@ from os.path import isfile
 import numpy as np
 import pandas as pd
 from fastavro import __version__ as fa_version
+from hdfs import InsecureClient
 from hdfs.ext.avro import AvroReader
 from packaging import version
 
@@ -140,7 +141,10 @@ class InternalContinuousParser(GenericParser):
         _get_from_dict(record, _avro_keys_map[key]) for key in _avro_keys_map.keys()}
 
     @staticmethod
-    def __get_records_up_to_1_4_7(avro_file, additional_columns, selector):
+    def __get_records_up_to_1_4_7(avro_file, additional_columns, selector, **kwargs):
+        address = kwargs.get('address', None)
+        if address:
+            raise ValueError('HDFS access not implemented for fastavro versions older than 1.4.7.')
         from fastavro import reader
         f = open(avro_file, 'rb')
         avro_reader = reader(f)
@@ -159,15 +163,21 @@ class InternalContinuousParser(GenericParser):
                 break
 
     @staticmethod
-    def __get_records_later_than_1_4_7(avro_file, additional_columns, selector):
-        def __yield_records(_avro_file):
+    def __get_records_later_than_1_4_7(avro_file, additional_columns, selector, **kwargs):
+        def __yield_local_records(_avro_file):
             from fastavro import block_reader
             with open(_avro_file, 'rb') as fo:
                 for block in block_reader(fo):
                     for rec in block:
                         yield rec
-
-        records = __yield_records(avro_file)
+        def __yield_remote_records(_avro_file):
+            client = InsecureClient(f'{address}:{port}')
+            with AvroReader(client, _avro_file) as reader:
+                for record in reader:
+                    yield record
+        address = kwargs.get('address', None)
+        port = kwargs.get('port', None)
+        records = __yield_remote_records(avro_file) if address else __yield_local_records(avro_file)
         records = records if selector is None else filter(selector, records)
         for record in records:
             yield InternalContinuousParser.__process_avro_record(record, additional_columns)

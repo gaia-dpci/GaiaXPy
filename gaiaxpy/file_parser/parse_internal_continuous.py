@@ -199,7 +199,15 @@ class InternalContinuousParser(GenericParser):
             __get_records = InternalContinuousParser.__get_records_later_than_1_4_7
         else:
             raise ValueError(f'Fastavro version {fa_version} may not have been parsed properly.')
-        df = pd.DataFrame(__get_records(avro_file, self.additional_columns, self.selector))
+        records_arguments = {
+            'avro_file': avro_file,
+            'additional_columns': self.additional_columns,
+            'selector': self.selector
+        }
+        if hasattr(self, 'address') and hasattr(self, 'port'):
+            records_arguments['address'] = self.address
+            records_arguments['port'] = self.port
+        df = pd.DataFrame(__get_records(**records_arguments))
         # Pairs of the form (matrix_size (N), values_to_put_in_matrix)
         to_matrix_columns = [('bp_n_parameters', 'bp_coefficient_covariances'),
                              ('rp_n_parameters', 'rp_coefficient_covariances')]

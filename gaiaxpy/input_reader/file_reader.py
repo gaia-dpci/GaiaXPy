@@ -4,16 +4,16 @@ from gaiaxpy.core.generic_functions import standardise_extension
 from gaiaxpy.core.input_validator import check_column_overwrite
 from gaiaxpy.file_parser.parse_external import ExternalParser
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
-from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS, COV_INPUT_COLUMNS
+from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, COV_INPUT_COLUMNS, CORR_INPUT_COLUMNS
 
 
 def external():
     return ExternalParser()
 
 
-def internal_continuous(requested_columns=None, additional_columns=None, selector=None):
+def internal_continuous(requested_columns=None, additional_columns=None, selector=None, **kwargs):
     return InternalContinuousParser(requested_columns=requested_columns, additional_columns=additional_columns,
-                                    selector=selector)
+                                    selector=selector, **kwargs)
 
 
 def raise_error():
@@ -34,12 +34,13 @@ function_parser_dict = {'apply_colour_equation': raise_error,
                         'simulate_sampled': external}
 
 
-class FileReader(object):
+class FileReader:
 
-    def __init__(self, file_parser_selector, file, additional_columns=None, selector=None, disable_info=False):
+    def __init__(self, file_parser_selector, file, additional_columns=None, selector=None, disable_info=False,
+                 **kwargs):
         self.fps = file_parser_selector
         self.file = file
-        self.file_extension = standardise_extension(splitext(self.file)[1])
+        self.file_extension = standardise_extension(splitext(file)[1])
         self.additional_columns = dict() if additional_columns is None else additional_columns
         self.selector = selector
         self.disable_info = disable_info
@@ -53,10 +54,9 @@ class FileReader(object):
         if self.additional_columns:
             check_column_overwrite(additional_columns, self.required_columns)
             self.requested_columns = self.required_columns + self.get_extra_columns_from_extension()
-
-    def read(self):
-        return self.fps.parser(requested_columns=self.requested_columns, additional_columns=self.additional_columns,
-                               selector=self.selector).parse_file(self.file, disable_info=self.disable_info)
+        if kwargs:
+            self.address = kwargs.get('address', None)
+            self.port = kwargs.get('port', None)
 
     def get_extra_columns_from_extension(self):
         if self.file_extension == 'avro':
@@ -71,6 +71,17 @@ class FileReader(object):
                         raise ValueError('Column lists longer than one are not allowed in non-nested formats.')
             return [self.additional_columns[c][0] for c in self.additional_columns.keys() if c not in
                     self.required_columns]
+
+    def read(self):
+        parser_arguments = {
+            'requested_columns': self.requested_columns,
+            'additional_columns': self.additional_columns,
+            'selector': self.selector
+        }
+        if hasattr(self, 'address') and hasattr(self, 'port'):
+            parser_arguments['address'] = self.address
+            parser_arguments['port'] = self.port
+        return self.fps.parser(**parser_arguments).parse_file(self.file, disable_info=self.disable_info)
 
 
 class FileParserSelector(object):

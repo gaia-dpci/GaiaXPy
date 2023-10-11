@@ -7,6 +7,8 @@ Module to parse input files containing internally calibrated continuous spectra.
 import numpy as np
 import pandas as pd
 from fastavro import __version__ as fa_version
+from hdfs import InsecureClient
+from hdfs.ext.avro import AvroReader
 from packaging import version
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
@@ -29,11 +31,14 @@ class InternalContinuousParser(GenericParser):
     Parser for internally calibrated continuous spectra.
     """
 
-    def __init__(self, requested_columns=None, additional_columns=None, selector=None):
+    def __init__(self, requested_columns=None, additional_columns=None, selector=None, **kwargs):
         super().__init__()
         self.additional_columns = dict() if additional_columns is None else additional_columns
         self.requested_columns = requested_columns
         self.selector = selector
+        if kwargs:
+            self.address = kwargs.get('address', None)
+            self.port = kwargs.get('port', None)
 
     def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None, _usecols=None):
         """
@@ -135,7 +140,10 @@ class InternalContinuousParser(GenericParser):
         _get_from_dict(record, _avro_keys_map[key]) for key in _avro_keys_map.keys()}
 
     @staticmethod
-    def __get_records_up_to_1_4_7(avro_file, additional_columns, selector):
+    def __get_records_up_to_1_4_7(avro_file, additional_columns, selector, **kwargs):
+        address = kwargs.get('address', None)
+        if address:
+            raise ValueError('HDFS access not implemented for fastavro versions older than 1.4.7.')
         from fastavro import reader
         f = open(avro_file, 'rb')
         avro_reader = reader(f)
@@ -154,15 +162,23 @@ class InternalContinuousParser(GenericParser):
                 break
 
     @staticmethod
-    def __get_records_later_than_1_4_7(avro_file, additional_columns, selector):
-        def __yield_records(_avro_file):
+    def __get_records_later_than_1_4_7(avro_file, additional_columns, selector, **kwargs):
+        def __yield_local_records(_avro_file):
             from fastavro import block_reader
             with open(_avro_file, 'rb') as fo:
                 for block in block_reader(fo):
                     for rec in block:
                         yield rec
 
-        records = __yield_records(avro_file)
+        def __yield_remote_records(_avro_file):
+            client = InsecureClient(f'{address}:{port}')
+            with AvroReader(client, _avro_file) as reader:
+                for record in reader:
+                    yield record
+
+        address = kwargs.get('address', None)
+        port = kwargs.get('port', None)
+        records = __yield_remote_records(avro_file) if address else __yield_local_records(avro_file)
         records = records if selector is None else filter(selector, records)
         for record in records:
             yield InternalContinuousParser.__process_avro_record(record, additional_columns)
@@ -183,7 +199,15 @@ class InternalContinuousParser(GenericParser):
             __get_records = InternalContinuousParser.__get_records_later_than_1_4_7
         else:
             raise ValueError(f'Fastavro version {fa_version} may not have been parsed properly.')
-        df = pd.DataFrame(__get_records(avro_file, self.additional_columns, self.selector))
+        records_arguments = {
+            'avro_file': avro_file,
+            'additional_columns': self.additional_columns,
+            'selector': self.selector
+        }
+        if hasattr(self, 'address') and hasattr(self, 'port'):
+            records_arguments['address'] = self.address
+            records_arguments['port'] = self.port
+        df = pd.DataFrame(__get_records(**records_arguments))
         # Pairs of the form (matrix_size (N), values_to_put_in_matrix)
         to_matrix_columns = [('bp_n_parameters', 'bp_coefficient_covariances'),
                              ('rp_n_parameters', 'rp_coefficient_covariances')]

@@ -1,5 +1,8 @@
 import subprocess
+from os.path import splitext
 
+from gaiaxpy.core.custom_errors import ExtensionNotImplementedError
+from gaiaxpy.core.generic_functions import standardise_extension
 from gaiaxpy.input_reader.file_reader import FileReader
 
 
@@ -7,6 +10,9 @@ class HDFSReader(FileReader):
 
     def __init__(self, file_parser_selector, file, additional_columns=None, selector=None, disable_info=False):
         address, file_path, port = self.split_cluster_path(file)
+        extension = standardise_extension(splitext(file_path)[1]).lower()
+        if standardise_extension(splitext(file_path)[1]).lower() != 'avro':
+            raise ExtensionNotImplementedError(extension)
         super().__init__(file_parser_selector, file_path, additional_columns, selector, disable_info, address=address,
                          port=port)
 

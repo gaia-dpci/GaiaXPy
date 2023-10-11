@@ -61,13 +61,12 @@ class GenericParser(object):
         else:
             raise InvalidExtensionError()
 
-    def parse_file(self, file_path, disable_info=False, content=None):
+    def parse_file(self, file_path, disable_info=False):
         """
         Parse the input file according to its extension.
 
         Args:
             file_path (str): Path to a file.
-            selector (function): Selector function to use. Only implemented for AVRO files.
             disable_info (bool): Whether to disable the progress tracker or not.
 
         Returns:
@@ -78,8 +77,7 @@ class GenericParser(object):
             print(self.info_msg, end='\r')
         extension = _get_file_extension(file_path)
         parser = self.get_parser(extension)
-        content = file_path if not content else content
-        parsed_data = _cast(parser(content))
+        parsed_data = _cast(parser(file_path))
         if not disable_info:
             print(self.info_msg + ' Done!', end='\r')
         return parsed_data, extension

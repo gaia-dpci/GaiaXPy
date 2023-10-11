@@ -3,7 +3,6 @@ parse_internal_continuous.py
 ====================================
 Module to parse input files containing internally calibrated continuous spectra.
 """
-from os.path import isfile
 
 import numpy as np
 import pandas as pd
@@ -170,11 +169,13 @@ class InternalContinuousParser(GenericParser):
                 for block in block_reader(fo):
                     for rec in block:
                         yield rec
+
         def __yield_remote_records(_avro_file):
             client = InsecureClient(f'{address}:{port}')
             with AvroReader(client, _avro_file) as reader:
                 for record in reader:
                     yield record
+
         address = kwargs.get('address', None)
         port = kwargs.get('port', None)
         records = __yield_remote_records(avro_file) if address else __yield_local_records(avro_file)

@@ -10,12 +10,14 @@ from fastavro import __version__ as fa_version
 from hdfs import InsecureClient
 from hdfs.ext.avro import AvroReader
 from packaging import version
+from requests.exceptions import ConnectionError
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
 from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
 from ..core.custom_errors import SelectorNotImplementedError
+from ..core.generic_variables import MAX_CONN_RETRIES
 from ..core.satellite import BANDS
 from ..spectrum.utils import get_covariance_matrix
 
@@ -207,7 +209,15 @@ class InternalContinuousParser(GenericParser):
         if hasattr(self, 'address') and hasattr(self, 'port'):
             records_arguments['address'] = self.address
             records_arguments['port'] = self.port
-        df = pd.DataFrame(__get_records(**records_arguments))
+        retries = 0
+        while retries < MAX_CONN_RETRIES:
+            try:
+                df = pd.DataFrame(__get_records(**records_arguments))
+                break
+            except ConnectionError:
+                retries += 1
+        else:
+            raise ConnectionError('Failed to connect to HDFS.')
         # Pairs of the form (matrix_size (N), values_to_put_in_matrix)
         to_matrix_columns = [('bp_n_parameters', 'bp_coefficient_covariances'),
                              ('rp_n_parameters', 'rp_coefficient_covariances')]

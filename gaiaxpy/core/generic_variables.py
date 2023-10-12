@@ -3,3 +3,4 @@ pbar_message = {'calibrator': 'Calibrating data', 'colour_eq': 'Applying colour 
                 'correction': 'Correcting systems', 'photometry': 'Generating photometry'}
 pbar_units = {'calibrator': 'spec', 'colour_eq': 'syst', 'converter': 'spec', 'correction': 'syst', 'photometry': 'spec'}
 
+MAX_CONN_RETRIES = 10

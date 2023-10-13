@@ -10,6 +10,7 @@ from fastavro import __version__ as fa_version
 from hdfs import InsecureClient
 from hdfs.ext.avro import AvroReader
 from packaging import version
+from requests.exceptions import ConnectionError
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
 from .cast import _cast
@@ -193,6 +194,17 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the AVRO file.
         """
+        def __records_to_df(max_conn_retries=10, **_records_arguments):
+            retries = 0
+            while retries < max_conn_retries:
+                try:
+                    _df = pd.DataFrame(__get_records(**_records_arguments))
+                    break
+                except ConnectionError:
+                    retries += 1
+            else:
+                raise ConnectionError('Failed to connect to HDFS.')
+            return _df
         if version.parse(fa_version) <= version.parse("1.4.7"):
             __get_records = InternalContinuousParser.__get_records_up_to_1_4_7
         elif version.parse(fa_version) > version.parse("1.4.7"):
@@ -207,7 +219,7 @@ class InternalContinuousParser(GenericParser):
         if hasattr(self, 'address') and hasattr(self, 'port'):
             records_arguments['address'] = self.address
             records_arguments['port'] = self.port
-        df = pd.DataFrame(__get_records(**records_arguments))
+        df = __records_to_df(**records_arguments)
         # Pairs of the form (matrix_size (N), values_to_put_in_matrix)
         to_matrix_columns = [('bp_n_parameters', 'bp_coefficient_covariances'),
                              ('rp_n_parameters', 'rp_coefficient_covariances')]

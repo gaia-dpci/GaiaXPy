@@ -17,7 +17,7 @@ class HDFSReader(FileReader):
                          port=port)
 
     def split_cluster_path(self, file_path, expected_protocol='http', p_sep='://'):
-        def get_namenode():
+        def get_http_port():
             command = ['hdfs', 'getconf', '-confKey', 'dfs.namenode.http-address']
             process = subprocess.Popen(command, stdout=subprocess.PIPE)
             output, error = process.communicate()
@@ -26,18 +26,21 @@ class HDFSReader(FileReader):
                 raise Exception(f"Failed to execute command '{command}': {error}")
             return output.decode('utf-8').split(':')[1]
 
+        def process_address_and_port(_file_path, _protocol_split_index):
+            expected_port = get_http_port()
+            address_and_port = _file_path[:_protocol_split_index]
+            split_index_port = address_and_port.find(':', len(f'{expected_protocol}{p_sep}'))
+            if split_index_port != -1:
+                _address, _port = address_and_port[:split_index_port], address_and_port[split_index_port:]
+                if str(_port) != str(expected_port):
+                    _port = expected_port
+                return _address, _port
+            else:
+                return address_and_port, expected_port
+
         def modify_protocol(_given_protocol, _expected_protocol, _file_path):
             if _given_protocol != _expected_protocol:
                 return _expected_protocol + _file_path[len(_given_protocol):]
-
-        def process_address_and_port(_file_path, _protocol_split_index):
-            address_and_port = _file_path[:_protocol_split_index]
-            split_index_port = address_and_port.find(':', len(f'{expected_protocol}{p_sep}'))
-            _address, _port = address_and_port[:split_index_port], address_and_port[split_index_port:]
-            expected_port = get_namenode()
-            if str(_port) != str(expected_port):
-                _port = expected_port
-            return _address, _port
 
         file_path = modify_protocol(file_path[:file_path.find(p_sep)], expected_protocol, file_path)
         protocol_split_index = file_path.find('/', len(f'{expected_protocol}{p_sep}'))

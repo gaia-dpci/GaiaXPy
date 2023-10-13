@@ -17,7 +17,6 @@ from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict
 from ..core.custom_errors import SelectorNotImplementedError
-from ..core.generic_variables import MAX_CONN_RETRIES
 from ..core.satellite import BANDS
 from ..spectrum.utils import get_covariance_matrix
 
@@ -195,6 +194,17 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the AVRO file.
         """
+        def __records_to_df(max_conn_retries=10, **_records_arguments):
+            retries = 0
+            while retries < max_conn_retries:
+                try:
+                    _df = pd.DataFrame(__get_records(**_records_arguments))
+                    break
+                except ConnectionError:
+                    retries += 1
+            else:
+                raise ConnectionError('Failed to connect to HDFS.')
+            return _df
         if version.parse(fa_version) <= version.parse("1.4.7"):
             __get_records = InternalContinuousParser.__get_records_up_to_1_4_7
         elif version.parse(fa_version) > version.parse("1.4.7"):
@@ -209,15 +219,7 @@ class InternalContinuousParser(GenericParser):
         if hasattr(self, 'address') and hasattr(self, 'port'):
             records_arguments['address'] = self.address
             records_arguments['port'] = self.port
-        retries = 0
-        while retries < MAX_CONN_RETRIES:
-            try:
-                df = pd.DataFrame(__get_records(**records_arguments))
-                break
-            except ConnectionError:
-                retries += 1
-        else:
-            raise ConnectionError('Failed to connect to HDFS.')
+        df = __records_to_df(**records_arguments)
         # Pairs of the form (matrix_size (N), values_to_put_in_matrix)
         to_matrix_columns = [('bp_n_parameters', 'bp_coefficient_covariances'),
                              ('rp_n_parameters', 'rp_coefficient_covariances')]

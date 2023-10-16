@@ -14,9 +14,9 @@ from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-from tests.files.paths import mean_spectrum_xml_plain_file, con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path,\
-    mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,\
-    mean_spectrum_xml_file
+from tests.files.paths import (con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path, mean_spectrum_avro_file,
+                               mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,
+                               mean_spectrum_xml_file, mean_spectrum_xml_plain_file)
 from tests.test_converter.converter_paths import optimised_bases_df, converter_csv_solution_0_60_481_df
 from tests.utils.utils import get_spectrum_with_source_id_and_xp, npt_array_err_message, is_instance_err_message
 

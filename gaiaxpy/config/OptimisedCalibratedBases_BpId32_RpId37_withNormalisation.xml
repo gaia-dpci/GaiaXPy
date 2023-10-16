@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config:basisConfiguration xmlns:config="urn:gaia.dpac.dpci/photpipe/du15spec/MeanSpectrumBasis"> 
-<hermiteFunction> 
+<config:basisConfiguration xmlns:config="urn:gaia.dpac.dpci/photpipe/du15spec/MeanSpectrumBasis">
+<hermiteFunction>
 <bpConfig>
 <dimension>55</dimension>
 <range from="0.0" to="59.0"/>
@@ -129,5 +129,5 @@
 <value>1.6903749618208758E-4</value><value>6.292049741622823E-4</value><value>-5.834886917975152E-4</value><value>1.2273842389358828E-4</value><value>-7.33199788760332E-5</value><value>2.61283684430917E-4</value><value>1.4449338525747646E-4</value><value>-5.9766608598454236E-5</value><value>-1.561375261764267E-4</value><value>-3.257350910397799E-4</value><value>4.2291792098551135E-4</value><value>2.249823820701508E-5</value><value>-3.6276948362908435E-4</value><value>4.8707342493937425E-4</value><value>2.933515300304712E-4</value><value>-0.0015001880461107731</value><value>-3.530135199615525E-4</value><value>5.585906011708521E-4</value><value>-0.0010346168918955506</value><value>2.658301258750721E-4</value><value>0.0010393205028933854</value><value>4.419916458232854E-4</value><value>-0.0014958679175951272</value><value>8.751625532212721E-4</value><value>-9.126488767355992E-4</value><value>-6.957300161178159E-4</value><value>3.530863307584518E-4</value><value>-0.0016152262464226145</value><value>0.00354869694777056</value><value>-0.0010472757086207164</value><value>0.007313535110332632</value><value>-0.0027662180887918415</value><value>0.013067436391253026</value><value>-0.021451572498290397</value><value>0.015910814789936962</value><value>-0.04438881606129516</value><value>0.016380392492803767</value><value>-0.06563635852183272</value><value>-0.0037679717287976903</value><value>-0.030416336495923697</value><value>0.03500766880775083</value><value>0.1100438930449629</value><value>0.05220544599493736</value><value>0.1830390553188299</value><value>0.13657845154549605</value><value>0.26565414768012624</value><value>-0.00545156078010253</value><value>-0.29976838927133714</value><value>-0.28864324408165476</value><value>-0.24122500949907102</value><value>-0.28308166749193897</value><value>-0.5639920820474881</value><value>-0.3152641101689865</value><value>0.004006598807530716</value><value>0.35174760264208477</value>
 </transformationMatrix>
 </rpConfig>
-</hermiteFunction> 
+</hermiteFunction>
  </config:basisConfiguration>

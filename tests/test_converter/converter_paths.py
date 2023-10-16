@@ -2,9 +2,9 @@ import pandas as pd
 
 from gaiaxpy.config.paths import optimised_bases_file
 from gaiaxpy.converter.config import load_config as load_con_config
-from tests.files.paths import con_sol_avro_0_60_481_path, con_sol_csv_0_60_481_path, con_sol_with_missing_sampling_path,\
-    con_sol_with_cov_missing_sampling_path, con_sol_with_missing_path, con_sol_mean_spectrum_csv_with_cov_path,\
-    con_converters, con_cov_converters
+from tests.files.paths import (con_converters, con_cov_converters, con_sol_avro_0_60_481_path, con_sol_csv_0_60_481_path,
+                               con_sol_mean_spectrum_csv_with_cov_path, con_sol_with_cov_missing_sampling_path,
+                               con_sol_with_missing_path, con_sol_with_missing_sampling_path)
 from tests.utils.utils import pos_file_to_array, missing_bp_source_id
 
 """

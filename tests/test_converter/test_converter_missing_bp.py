@@ -20,6 +20,7 @@ con_with_missing_input_files = [with_missing_bp_csv_file, with_missing_bp_ecsv_f
 con_isolated_missing_input_files = [missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,
                                     missing_bp_xml_plain_file]
 
+
 class TestConverterMissingBPFileInput(unittest.TestCase):
 
     def test_with_missing_bp_file(self):

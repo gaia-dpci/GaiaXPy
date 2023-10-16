@@ -7,7 +7,7 @@ Module to handle the calibrator and generator configuration files.
 from configparser import ConfigParser
 from os.path import join
 
-from gaiaxpy.config.paths import config_path, filters_path, config_ini_file
+from gaiaxpy.config.paths import filters_path, config_ini_file
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.xml_utils import get_file_root, get_array_text, get_xp_merge, get_xp_sampling_matrix
 

@@ -17,12 +17,15 @@ def validate_required_columns(content_columns, requested_columns):
     Raises:
         ValueError: If some required columns are not present.
     """
+
     def __are_required_columns_present(_content_columns, _mandatory_columns):
         return all(column in _content_columns for column in _mandatory_columns)
+
     def __get_missing_columns(_content_columns, _required_columns):
         missing_cols = [col for col in _required_columns if col not in _content_columns]
         missing_cols_str = ', '.join(missing_cols)
         return missing_cols_str
+
     if not requested_columns:
         return
     elif not __are_required_columns_present(content_columns, requested_columns):
@@ -66,6 +69,6 @@ def check_column_overwrite(additional_columns, required_columns):
         if isinstance(value, list) and len(value) == 1 and value[0] in required_columns and key != value[0]:
             common_names.append(key)
     if common_names:
-        raise ValueError('One or more elements in the additional columns input will be renamed to a column'
-                         ' required by GaiaXPy to compute the output. This is not permitted. The offending'
-                         f' elements are: {", ".join(common_names)}.')
+        raise ValueError("The additional columns input contains one or more elements that either have names matching "
+                         "the required columns for GaiaXPy's output or will be renamed to match them. This is not "
+                         f"allowed. The elements causing this issue are: {', '.join(common_names)}.")

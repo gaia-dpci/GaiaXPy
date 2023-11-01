@@ -193,9 +193,9 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the AVRO file.
         """
-        if version.parse(fa_version) <= version.parse("1.4.7"):
+        if version.parse(fa_version) <= version.parse('1.4.7'):
             __get_records = InternalContinuousParser.__get_records_up_to_1_4_7
-        elif version.parse(fa_version) > version.parse("1.4.7"):
+        elif version.parse(fa_version) > version.parse('1.4.7'):
             __get_records = InternalContinuousParser.__get_records_later_than_1_4_7
         else:
             raise ValueError(f'Fastavro version {fa_version} may not have been parsed properly.')

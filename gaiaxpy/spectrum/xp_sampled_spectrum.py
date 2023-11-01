@@ -11,7 +11,7 @@ import numpy as np
 from .sampled_spectrum import SampledSpectrum
 from .utils import _list_to_array
 from .xp_spectrum import XpSpectrum
-from ..core.generic_functions import correlation_from_covariance
+from ..core.generic_functions import correlation_from_covariance, array_is_empty
 
 
 class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
@@ -75,21 +75,23 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
         if continuous_spectrum and sampled_basis_functions:
             coefficients = continuous_spectrum.get_coefficients()
             design_matrix = sampled_basis_functions.get_design_matrix()
+            if array_is_empty(coefficients):
+                return None
+            else:
+                covariance = continuous_spectrum.get_covariance()
+                if isinstance(truncation, Number) and truncation > 0:
+                    coefficients = coefficients[:truncation]
+                    covariance = covariance[:truncation, :truncation]
+                    design_matrix = design_matrix[:truncation][:]
+                stdev = continuous_spectrum.get_standard_deviation()
+                pos = sampled_basis_functions.get_sampling_grid()
+                flux = SampledSpectrum._sample_flux(coefficients, design_matrix)
+                flux_error = SampledSpectrum._sample_error(covariance, design_matrix, stdev)
+                cov = SampledSpectrum._sample_covariance(covariance, design_matrix) if with_correlation else None
+                return cls(continuous_spectrum.get_source_id(), continuous_spectrum.get_xp(), pos, flux, flux_error,
+                           cov, stdev)
         else:
             return None
-        covariance = continuous_spectrum.get_covariance()
-
-        if isinstance(truncation, Number) and truncation > 0:
-            coefficients = coefficients[:truncation]
-            covariance = covariance[:truncation, :truncation]
-            design_matrix = design_matrix[:truncation][:]
-
-        stdev = continuous_spectrum.get_standard_deviation()
-        pos = sampled_basis_functions.get_sampling_grid()
-        flux = SampledSpectrum._sample_flux(coefficients, design_matrix)
-        flux_error = SampledSpectrum._sample_error(covariance, design_matrix, stdev)
-        cov = SampledSpectrum._sample_covariance(covariance, design_matrix) if with_correlation else None
-        return cls(continuous_spectrum.get_source_id(), continuous_spectrum.get_xp(), pos, flux, flux_error, cov, stdev)
 
     def spectrum_to_dict(self):
         """

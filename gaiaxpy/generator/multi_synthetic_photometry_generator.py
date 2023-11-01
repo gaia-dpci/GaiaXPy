@@ -40,5 +40,4 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
                                                                   total=len(parsed_input_data),
                                                                   unit=pbar_units[__FUNCTION_KEY], leave=False,
                                                                   colour=pbar_colour)]
-        multi_photometry_df = MultiSyntheticPhotometry(systems, rearranged_photometry_list)._generate_output_df()
-        return multi_photometry_df
+        return MultiSyntheticPhotometry(systems, rearranged_photometry_list)._generate_output_df()

@@ -39,7 +39,7 @@ class InputReader(object):
         if isinstance(content, pd.DataFrame):
             reader = DataFrameReader(content, function, additional_columns=additional_columns, selector=selector,
                                      disable_info=disable_info)
-        elif (isinstance(content, Path) or (isinstance(content, str)) and isfile(content)):
+        elif (isinstance(content, Path) or isinstance(content, str)) and isfile(content):
             parser = FileParserSelector(function)
             reader = LocalFileReader(parser, content, additional_columns=additional_columns, selector=selector,
                                      disable_info=disable_info)

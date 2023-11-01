@@ -82,7 +82,8 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
     validate_photometric_system(photometric_system)
     validate_save_arguments(generate.__defaults__[1], output_file, generate.__defaults__[2], output_format, save_file)
     # Prepare systems, keep track of original systems (especially required for error_correction)
-    internal_phot_system = photometric_system.copy() if isinstance(photometric_system, list) else [photometric_system].copy()
+    internal_phot_system = photometric_system.copy() if isinstance(photometric_system, list) else (
+        [photometric_system].copy())
     gaia_system = PhotometricSystem.Gaia_DR3_Vega
     is_gaia_in_input = __is_gaia_initially_in_systems(internal_phot_system)
     if error_correction and not is_gaia_in_input:

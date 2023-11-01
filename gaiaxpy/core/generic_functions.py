@@ -339,3 +339,7 @@ def validate_photometric_system(photometric_system):
 
 def rename_with_required(data, additional_columns):
     return data.rename(columns=reverse_simple_add_col_dict(additional_columns))
+
+
+def array_is_empty(array):
+    return array is None or (not isinstance(array, np.ndarray) and pd.isna(array))

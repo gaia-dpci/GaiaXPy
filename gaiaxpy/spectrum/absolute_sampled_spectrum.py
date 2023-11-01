@@ -11,6 +11,7 @@ import numpy as np
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from .sampled_spectrum import SampledSpectrum
 from .utils import _list_to_array
+from ..core.custom_errors import NoBandsAvailableError
 from ..core.generic_functions import correlation_from_covariance
 
 
@@ -39,16 +40,21 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
             with_correlation (bool): Whether correlation information should be computed.
         """
         truncation = dict() if truncation is None else truncation
-        # Bands available
-        available_bands = [band for band in xp_spectra.keys() if xp_spectra[band].covariance is not None]
+        available_bands = self.get_available_bands(xp_spectra)
         if not available_bands:
-            raise ValueError('At least one band must be present.')
+            raise NoBandsAvailableError()
         pos = sampled_bases[available_bands[0]].get_sampling_grid()
         SampledSpectrum.__init__(self, source_id, pos)
         self.pos = pos
         split_spectrum = self.__generate_spectra(xp_spectra, sampled_bases, available_bands, truncation,
                                                  with_correlation=with_correlation)
         self.__merge_output(split_spectrum, merge, with_correlation=with_correlation)
+
+    @staticmethod
+    def get_available_bands(xp_spectra):
+        def __is_available_band(_xp_spectra, band):
+            return isinstance(_xp_spectra[band].covariance, np.ndarray)
+        return [band for band in xp_spectra.keys() if __is_available_band(xp_spectra, band)]
 
     def __generate_spectra(self, xp_spectra, sampled_bases, available_bands, truncation, with_correlation):
         split_spectrum = {band: dict() for band in available_bands}
@@ -88,7 +94,7 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
             self.error = spectrum['error']
             if with_correlation:
                 self.covariance = spectrum['cov']
-            # Patch values if there's a band missing
+            # Patch values if a band is missing
             masked_pos = self.pos.copy()
             masked_pos = masked_pos.astype(float)
             if existing_band == BANDS.rp:

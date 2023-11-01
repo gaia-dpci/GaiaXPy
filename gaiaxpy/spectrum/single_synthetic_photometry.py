@@ -52,11 +52,10 @@ class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
         AbsoluteSampledSpectrum.__init__(self, source_id, xp_spectra, sampled_bases, merge)
         self.photometric_system = photometric_system.value
         # Correct flux if necessary (regular Photometric systems return the original value)
-        flux = self.flux
-        self.flux = self.photometric_system._correct_flux(flux)
+        aux_flux = self.flux
+        self.flux = self.photometric_system._correct_flux(aux_flux)
         # Correct the errors
-        error = self.error
-        self.error = self.photometric_system._correct_error(flux, error)
+        self.error = self.photometric_system._correct_error(aux_flux, self.error)
         # Magnitude is computed from self.flux which is the corrected flux
         self.mag = [flux_to_mag(flux, zero_point) for flux, zero_point in
                     zip(self.flux, self.photometric_system.get_zero_points())]

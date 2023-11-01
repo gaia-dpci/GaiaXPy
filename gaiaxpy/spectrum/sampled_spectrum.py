@@ -107,6 +107,9 @@ class SampledSpectrum(Spectrum):
         Returns:
             ndarray: 1D array containing the flux values for all samples.
         """
+        if coefficients.shape[0] != design_matrix.shape[0]:
+            raise ValueError("Coefficients length doesn't match the design matrix dimension. Please make sure you're"
+                             "using the correct input files and configuration.")
         if isinstance(coefficients, ndarray) and coefficients.size > 0:
             return coefficients @ design_matrix
         return nan
@@ -128,9 +131,12 @@ class SampledSpectrum(Spectrum):
         Returns:
             ndarray: 1D array containing the errors in flux for all samples.
         """
-        if len(covariance) == 0:
-            return covariance
-        return np.sqrt(np.sum(np.multiply(design_matrix.T @ covariance, design_matrix.T), axis=1)) * standard_deviation
+        if isinstance(covariance, ndarray):
+            return np.sqrt(np.sum(np.multiply(design_matrix.T @ covariance, design_matrix.T), axis=1)) * standard_deviation
+        elif np.isnan(covariance):
+            return float('NaN')
+        else:
+            raise TypeError('Covariance must be either a NumPy array or nan.')
 
     @staticmethod
     def _sample_covariance(covariance, design_matrix):

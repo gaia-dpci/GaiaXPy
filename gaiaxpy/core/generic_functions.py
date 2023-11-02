@@ -342,4 +342,5 @@ def rename_with_required(data, additional_columns):
 
 
 def array_is_empty(array):
-    return array is None or (not isinstance(array, np.ndarray) and pd.isna(array))
+    return array is None or (not isinstance(array, np.ndarray) and pd.isna(array)) or (isinstance(array, np.ndarray)
+                                                                                       and len(array) == 0)

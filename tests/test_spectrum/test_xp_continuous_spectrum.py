@@ -4,8 +4,8 @@ from os import path
 
 import numpy as np
 
-from gaiaxpy.config.paths import optimised_bases_file
-from gaiaxpy.converter.config import load_config
+from gaiaxpy.config.paths import hermite_bases_file
+from gaiaxpy.converter.config import parse_config
 from gaiaxpy.converter.converter import get_design_matrices, get_unique_basis_ids
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
@@ -18,7 +18,7 @@ from tests.files.paths import mean_spectrum_csv_file
 parser = InternalContinuousParser()
 correlation_parsed_file, _ = parser.parse_file(mean_spectrum_csv_file)
 
-parsed_config = load_config(optimised_bases_file)
+parsed_config = parse_config(hermite_bases_file)
 
 # Sampling grid
 n_samples = 481

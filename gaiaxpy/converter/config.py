@@ -49,6 +49,18 @@ def __is_empty_string(string: str):
     return True
 
 
+def __parse_text_number(text):
+    try:
+        integer_value = int(text)
+        return integer_value
+    except ValueError:
+        try:
+            float_value = float(text)
+            return float_value
+        except ValueError:
+            return text
+
+
 def __add_element_to_dict(element: et.Element, output_dict: dict):
     """
     Add an element to a dictionary based on its tag and attributes.
@@ -120,7 +132,7 @@ def __generate_iterative_output(x_root, outer_tags):
         found_elements = __iterative_find(x_root, [tag])
         _output[tag] = dict()
         if len(found_elements) == 0 and not found_elements.attrib:
-            _output[tag] = found_elements.text
+            _output[tag] = __parse_text_number(found_elements.text)
         elif len(found_elements) == 0 and found_elements.attrib:
             _output[tag] = __range_to_output(found_elements.attrib)
         elif is_matrix_or_knots(found_elements.tag):

@@ -91,7 +91,7 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
                 return cls(continuous_spectrum.get_source_id(), continuous_spectrum.get_xp(), pos, flux, flux_error,
                            cov, stdev)
         else:
-            return None
+            raise ValueError('Either the continuous spectrum or the sampled basis functions argument is empty.')
 
     def spectrum_to_dict(self):
         """

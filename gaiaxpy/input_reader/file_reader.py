@@ -81,8 +81,6 @@ class FileReader:
         if hasattr(self, 'address') and hasattr(self, 'port'):
             parser_arguments['address'] = self.address
             parser_arguments['port'] = self.port
-        print('self.fps.parser')
-        print(self.fps.parser)
         return self.fps.parser(**parser_arguments).parse_file(self.file, disable_info=self.disable_info)
 
 

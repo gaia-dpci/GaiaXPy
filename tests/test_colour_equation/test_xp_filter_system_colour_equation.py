@@ -5,6 +5,7 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
+import pytest
 
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
@@ -203,4 +204,5 @@ class TestSingleColourEquation(unittest.TestCase):
             self.assertTrue(math.isnan(corrected_data[column].iloc[0]))
 
     def test_wrong_input_type(self):
-        output = apply_colour_equation(colour_eq_csv_file)
+        with pytest.raises(ValueError):
+            _ = apply_colour_equation(colour_eq_csv_file)

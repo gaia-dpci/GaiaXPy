@@ -5,12 +5,12 @@ import pandas as pd
 
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import _apply_colour_equation
 from gaiaxpy.core.generic_functions import cast_output, format_additional_columns, validate_photometric_system
-from ..core.input_validator import validate_save_arguments
 from gaiaxpy.error_correction.error_correction import _apply_error_correction
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
 from .photometric_system import PhotometricSystem
+from ..core.input_validator import validate_save_arguments
 
 
 def generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
@@ -49,9 +49,10 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
                      error_correction=error_correction, additional_columns=additional_columns, username=username,
                      password=password)
 
+
 def _generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
-             output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
-             output_format: str = None, save_file: bool = True, error_correction: bool = False,
+              output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
+              output_format: str = None, save_file: bool = True, error_correction: bool = False,
               additional_columns: Optional[Union[dict, list, str]] = None, selector=None, username: str = None,
               password: str = None, bp_model: str = 'v375wi', rp_model: str = 'v142r') -> pd.DataFrame:
     """
@@ -65,6 +66,7 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
         bp_model (str): The bp model.
         rp_model (str): The rp model.
     """
+
     def __is_gaia_initially_in_systems(_internal_photometric_system: list,
                                        _gaia_system: PhotometricSystem = PhotometricSystem.Gaia_DR3_Vega):
         """
@@ -79,6 +81,7 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
         """
         gaia_system_name = _gaia_system.get_system_name()
         return any([item.get_system_name() == gaia_system_name for item in _internal_photometric_system])
+
     validate_photometric_system(photometric_system)
     validate_save_arguments(generate.__defaults__[1], output_file, generate.__defaults__[2], output_format, save_file)
     # Prepare systems, keep track of original systems (especially required for error_correction)
@@ -102,7 +105,7 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
     if error_correction:
         photometry_df = _apply_error_correction(photometry_df, photometric_system=photometric_system, save_file=False,
                                                 disable_info=True)
-        if not is_gaia_in_input: # Remove Gaia_DR3_Vega system from the final result
+        if not is_gaia_in_input:  # Remove Gaia_DR3_Vega system from the final result
             gaia_label = gaia_system.get_system_label()
             gaia_columns = [column for column in photometry_df if column.startswith(gaia_label)]
             photometry_df = photometry_df.drop(columns=gaia_columns)

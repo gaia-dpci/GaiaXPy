@@ -132,7 +132,8 @@ class SampledSpectrum(Spectrum):
             ndarray: 1D array containing the errors in flux for all samples.
         """
         if isinstance(covariance, ndarray):
-            return np.sqrt(np.sum(np.multiply(design_matrix.T @ covariance, design_matrix.T), axis=1)) * standard_deviation
+            return np.sqrt(
+                np.sum(np.multiply(design_matrix.T @ covariance, design_matrix.T), axis=1)) * standard_deviation
         elif np.isnan(covariance):
             return float('NaN')
         else:

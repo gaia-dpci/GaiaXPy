@@ -50,6 +50,7 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
     def get_available_bands(xp_spectra):
         def __is_available_band(_xp_spectra, band):
             return isinstance(_xp_spectra[band].covariance, np.ndarray)
+
         return [band for band in xp_spectra.keys() if __is_available_band(xp_spectra, band)]
 
     def generate_spectra(self, xp_spectra, sampled_bases, with_correlation):

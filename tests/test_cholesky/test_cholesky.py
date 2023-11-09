@@ -1,5 +1,4 @@
 import unittest
-from os.path import join
 
 import numpy as np
 import numpy.testing as npt
@@ -14,9 +13,8 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_xml_file, \
     mean_spectrum_csv_file
-from tests.test_cholesky.cholesky_solutions import cholesky_solution, cholesky_sol_path, \
-    inv_sqrt_cov_matrix_sol_df_no_missing_df, inv_sqrt_cov_matrix_sol_with_missing_df
-from tests.utils.utils import parse_matrices
+from tests.test_cholesky.cholesky_solutions import cholesky_solution, inv_sqrt_cov_matrix_sol_df_no_missing_df, \
+    inv_sqrt_cov_matrix_sol_with_missing_df
 
 _rtol = 1e-05
 _atol = 1e-05

@@ -3,7 +3,7 @@ import unittest
 import pandas.testing as pdt
 
 from gaiaxpy.cholesky.cholesky import get_inverse_square_root_covariance_matrix
-from tests.test_cholesky.cholesky_solutions import inv_sqrt_cov_matrix_sol_with_missing_df,\
+from tests.test_cholesky.cholesky_solutions import inv_sqrt_cov_matrix_sol_with_missing_df, \
     inv_sqrt_cov_matrix_sol_df_no_missing_df
 from tests.utils.utils import missing_bp_source_id
 

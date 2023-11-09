@@ -27,6 +27,7 @@ from gaiaxpy.spectrum.utils import get_covariance_matrix
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from .external_instrument_model import ExternalInstrumentModel
 from ..core.input_validator import validate_save_arguments
+from ..spectrum.calibration_absolute_sampled_spectrum import CalibrationAbsoluteSampledSpectrum
 
 __FUNCTION_KEY = 'calibrator'
 
@@ -220,12 +221,12 @@ def _create_spectrum(row, truncation, design_matrix, merge, with_correlation=Fal
             and define the contributions from BP and RP to the joined absolute spectrum.
 
     Returns:
-        AbsoluteSampledSpectrum: The absolute sampled spectrum.
+        CalibrationAbsoluteSampledSpectrum: The absolute sampled spectrum with calibration behaviour.
     """
     source_id = row['source_id']
     continuous_dict = {band: XpContinuousSpectrum(source_id, band, row[f'{band}_coefficients'],
                                                   get_covariance_matrix(row, band), row[f'{band}_standard_deviation'])
                        for band in BANDS}
     recommended_truncation = {band: row[f'{band}_n_relevant_bases'] for band in BANDS} if truncation else dict()
-    return AbsoluteSampledSpectrum(source_id, continuous_dict, design_matrix, merge, truncation=recommended_truncation,
-                                   with_correlation=with_correlation)
+    return CalibrationAbsoluteSampledSpectrum(source_id, continuous_dict, design_matrix, merge,
+                                              truncation=recommended_truncation, with_correlation=with_correlation)

@@ -111,7 +111,7 @@ class TestSaveContRaw(unittest.TestCase):
 
     def test_save_output_fits_multi(self):
         self.run_output_test(generate, 'photometry_multi', 'fits', phot_systems=[PhotometricSystem.Gaia_DR3_Vega,
-                                                                            PhotometricSystem.HST_HUGS_Std])
+                                                                                 PhotometricSystem.HST_HUGS_Std])
 
     def test_save_output_xml_pristine(self):
         self.run_output_test(generate, 'photometry_pristine', 'xml', phot_systems=[PhotometricSystem.Pristine])

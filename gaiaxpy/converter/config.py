@@ -127,6 +127,7 @@ def __iterative_find(x_root: et.Element, tag_list: List[str]) -> Optional[et.Ele
 def __generate_iterative_output(x_root, outer_tags):
     def is_matrix_or_knots(_tag):
         return 'matrix' in _tag.lower() or 'knots' == _tag.lower()
+
     _output = {}
     for tag in outer_tags:
         found_elements = __iterative_find(x_root, [tag])
@@ -164,6 +165,7 @@ def __create_namedtuple(label: str, data: dict) -> namedtuple:
     :return: A named tuple with the given label and data.
     :rtype: namedtuple
     """
+
     def __add_matrix_to_config(_data, _xp):
         config_str = f'{_xp}Config'
         hermite_function = _data.get('basisDefinition', {}).get('hermiteFunction', {})

@@ -17,7 +17,8 @@ _rtol, _atol = 1e-7, 1e-7
 
 con_with_missing_input_files = [with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file,
                                 with_missing_bp_xml_file, with_missing_bp_xml_plain_file]
-con_isolated_missing_input_files = [missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,
+con_isolated_missing_input_files = [missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file,
+                                    missing_bp_xml_file,
                                     missing_bp_xml_plain_file]
 
 

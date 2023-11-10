@@ -31,6 +31,7 @@ _atol = 1e-10
 cal_input_files = [mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,
                    mean_spectrum_xml_file, mean_spectrum_xml_plain_file]
 
+
 def generate_single_spectrum(mean_spectrum_path):
     # Read mean Spectrum
     parser = InternalContinuousParser(MANDATORY_INPUT_COLS['calibrate'] + CORR_INPUT_COLUMNS)

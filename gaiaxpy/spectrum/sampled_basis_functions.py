@@ -140,12 +140,14 @@ def populate_design_matrix(sampling_grid, bases_config):
     if 'transformedSetDimension' in bases_config.columns:
         # Hermite part
         n_samples = len(sampling_grid)
-        scale = (bases_config['normalizedRange'].iloc(0)[0][1] - bases_config['normalizedRange'].iloc(0)[0][0]) /\
+        scale = (bases_config['normalizedRange'].iloc(0)[0][1] - bases_config['normalizedRange'].iloc(0)[0][0]) / \
                 (bases_config['range'].iloc(0)[0][1] - bases_config['range'].iloc(0)[0][0])
         offset = bases_config['normalizedRange'].iloc(0)[0][0] - bases_config['range'].iloc(0)[0][0] * scale
         rescaled_pwl = (sampling_grid * scale) + offset
-        def psi(n, x): return 1.0 / np.sqrt(math.pow(2, n) * gamma(n + 1) *
-                                            np.sqrt(np.pi)) * np.exp(-x ** 2 / 2.0) * eval_hermite(n, x)
+
+        def psi(n, x):
+            return 1.0 / np.sqrt(math.pow(2, n) * gamma(n + 1) *
+                                 np.sqrt(np.pi)) * np.exp(-x ** 2 / 2.0) * eval_hermite(n, x)
 
         dimension = int(bases_config['dimension'].iloc[0])
         transformed_set_dimension = int(bases_config['transformedSetDimension'].iloc[0])
@@ -166,7 +168,7 @@ def populate_design_matrix(sampling_grid, bases_config):
         n_samples = len(sampling_grid)
         if 'transformationMatrix' in bases_config.__dir__():
             bases_transformation = bases_config.transformationMatrix.reshape(bases_config.transformedSetDimension,
-                                                                                 n_bases)
+                                                                             n_bases)
         else:
             bases_transformation = np.identity(n_bases)
         design_matrix = np.zeros((n_bases, n_samples))

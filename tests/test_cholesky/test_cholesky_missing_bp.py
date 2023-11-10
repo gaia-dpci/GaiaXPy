@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 import numpy.testing as npt
-import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import get_chi2, get_inverse_covariance_matrix

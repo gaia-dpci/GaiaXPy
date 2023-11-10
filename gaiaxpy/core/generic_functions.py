@@ -15,17 +15,17 @@ import pandas as pd
 from numpy import ndarray
 
 from gaiaxpy.config.paths import filters_path, config_path
-from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.custom_errors import InvalidBandError
+from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.generator.config import get_additional_filters_path
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
-
 
 # Verifying the function is valid first, will help when adding new functions
 PHOTOMETRY_FUNCTIONS = ['generate', '_generate']
 CHOLESKY_FUNCTIONS = ['get_inverse_covariance_matrix', 'get_inverse_square_root_covariance_matrix']
-OTHER_FUNCTIONS = ['calibrate', 'convert'] # The ones that accept truncation and with_correlation arguments
+OTHER_FUNCTIONS = ['calibrate', 'convert']  # The ones that accept truncation and with_correlation arguments
 ALL_ADD_COLS_FUNCTIONS = PHOTOMETRY_FUNCTIONS + CHOLESKY_FUNCTIONS + OTHER_FUNCTIONS
+
 
 def _get_built_in_systems() -> list:
     av_sys = open(join(config_path, 'available_systems.txt'), 'r')
@@ -176,6 +176,7 @@ def array_to_symmetric_matrix(array, array_size):
     Raises:
         TypeError: If array is not of type np.ndarray.
     """
+
     def contains_diagonal(_array_size, _array):
         return not len(_array) == len(np.tril_indices(_array_size - 1)[0])
 
@@ -297,24 +298,16 @@ def standardise_extension(_extension):
 def reverse_simple_add_col_dict(d):
     def __reverse_error(v):
         raise ValueError(f'List length should be one, but is {len(v)}.')
+
     return {value[0]: key if len(value) == 1 else __reverse_error(value) for key, value in d.items()}
 
-def validate_additional_columns(additional_columns, function, **kwargs):
-    systems = None
-    additional_columns = format_additional_columns(additional_columns)
-    function_name = function.__name__
-    if function_name not in ALL_ADD_COLS_FUNCTIONS:
-        raise ValueError(f'Function {function_name} does not accept additional columns.')
-    if function_name in PHOTOMETRY_FUNCTIONS:
-        systems = kwargs['photometric_system']
-    if systems and not function.__name__ in ['_generate', 'generate']:
-        raise ValueError('Systems will only work with photometry-related functions.')
 
 def convert_values_to_lists(d):
     for key, value in d.items():
         if not isinstance(value, list):
             d[key] = [value]
     return d
+
 
 def format_additional_columns(additional_columns: Optional[Union[str, list, dict]]):
     """
@@ -326,9 +319,10 @@ def format_additional_columns(additional_columns: Optional[Union[str, list, dict
     if isinstance(additional_columns, str):
         return {additional_columns: [additional_columns]}
     if isinstance(additional_columns, list):
-        return {v:[v] for v in additional_columns}
+        return {v: [v] for v in additional_columns}
     if isinstance(additional_columns, dict):
         return convert_values_to_lists(additional_columns)
+
 
 def validate_photometric_system(photometric_system):
     """
@@ -336,6 +330,7 @@ def validate_photometric_system(photometric_system):
     """
     if photometric_system in (None, [], ''):
         raise ValueError('At least one photometric system is required as input.')
+
 
 def rename_with_required(data, additional_columns):
     return data.rename(columns=reverse_simple_add_col_dict(additional_columns))

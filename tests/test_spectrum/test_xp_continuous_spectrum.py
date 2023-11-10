@@ -1,6 +1,4 @@
 import unittest
-from configparser import ConfigParser
-from os import path
 
 import numpy as np
 

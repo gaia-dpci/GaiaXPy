@@ -17,12 +17,15 @@ def validate_required_columns(content_columns, requested_columns):
     Raises:
         ValueError: If some required columns are not present.
     """
+
     def __are_required_columns_present(_content_columns, _mandatory_columns):
         return all(column in _content_columns for column in _mandatory_columns)
+
     def __get_missing_columns(_content_columns, _required_columns):
         missing_cols = [col for col in _required_columns if col not in _content_columns]
         missing_cols_str = ', '.join(missing_cols)
         return missing_cols_str
+
     if not requested_columns:
         return
     elif not __are_required_columns_present(content_columns, requested_columns):

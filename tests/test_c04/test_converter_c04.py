@@ -18,3 +18,14 @@ def test_missing_band_source():
                                                                                'flux_error': lambda x: str_to_array(x)})
     output_df, _ = _convert(input_file, save_file=False, config_file=spline_bases_file)
     pdt.assert_frame_equal(output_df, solution_df)
+
+def test_missing_band_source_with_correlation():
+    test_files_path = join(files_path, 'xp_continuous_c04')
+    input_file = join(test_files_path, 'regular_single_source.avro')
+    output_file = join(test_files_path, 'regular_single_source_converter_c04_with_corr.csv')
+    solution_df = pd.read_csv(output_file, float_precision='high', converters={key: lambda x: str_to_array(x) for key in
+                                                                               ['correlation', 'flux', 'flux_error']})
+    output_df, _ = _convert(input_file, sampling=np.linspace(0.0, 60.0, 18), save_file=False,
+                                   config_file=spline_bases_file, with_correlation=True)
+    pdt.assert_frame_equal(output_df, solution_df)
+    

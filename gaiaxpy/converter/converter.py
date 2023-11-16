@@ -122,10 +122,9 @@ def _create_spectrum(row: pd.Series, truncation: bool, design_matrices: dict, ba
         key = 56
     if band == 'rp':
         key = 57
-    covariance_matrix = row[f'{band}_covariance_matrix']
     recommended_truncation = row[f'{band}_n_relevant_bases'] if truncation else -1
     continuous_spectrum = XpContinuousSpectrum(row['source_id'], band, row[f'{band}_coefficients'],
-                                               covariance_matrix, row[f'{band}_standard_deviation'])
+                                               row[f'{band}_covariance_matrix'], row[f'{band}_standard_deviation'])
     return XpSampledSpectrum.from_continuous(continuous_spectrum, design_matrices.get(key),
                                              truncation=recommended_truncation, with_correlation=with_correlation)
 
@@ -162,12 +161,8 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
         Returns:
             list: A list of spectra for the given row of parsed input data containing one element per band available.
         """
-        spectra_list = []
-        for band in BANDS:
-            spectrum_xp = _create_spectrum(row, _truncation, _design_matrices, band, with_correlation=_with_correlation)
-            if spectrum_xp:
-                spectra_list.append(spectrum_xp)
-        return spectra_list
+        return [_create_spectrum(row, _truncation, _design_matrices, band, with_correlation=_with_correlation)
+                for band in BANDS]
 
     parsed_input_data_dict = parsed_input_data.to_dict('records')
     spectra_series = pd.Series([create_xp_spectra(row, truncation, design_matrices, with_correlation)
@@ -194,7 +189,6 @@ def get_unique_basis_ids(parsed_input_data: pd.DataFrame) -> set:
     Returns:
         set: A set containing all the required unique basis function IDs.
     """
-
     # Keep only non-NaN values (in Python, nan != nan)
     def remove_nans(_set):
         return {int(element) for element in _set if element == element}

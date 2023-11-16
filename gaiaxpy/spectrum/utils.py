@@ -80,8 +80,8 @@ def _list_to_array(lst):
     """
     List to NumPy array.
     """
-    if isinstance(lst, float) and pd.isna(lst):
-        return np.nan
+    if lst is None or (isinstance(lst, float) and pd.isna(lst)):
+        return None
     if isinstance(lst, np.ndarray):
         return lst
     elif isinstance(lst, list):

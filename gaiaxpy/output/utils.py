@@ -23,6 +23,8 @@ def _array_to_standard(array, extension='csv'):
     Returns:
         tuple: The array converted to a tuple.
     """
+    if array is None:
+        return array
     if not isinstance(array, ndarray):
         raise ValueError('Input must be a NumPy array.')
 
@@ -59,6 +61,15 @@ def _load_header_dict():
     return header_dict
 
 
+def _get_col_subtype_len(_df, _column):
+    for index in range(0, len(_df)):
+        try:
+            return len(_df[_column].iloc[index])
+        except TypeError:
+            pass
+    raise ValueError('All arrays in the data seem to be empty. This should never happen.')
+
+
 def _build_ecsv_header(df, positions=None):
     positions = None if positions is None else str(list(positions))
     columns = df.columns
@@ -72,7 +83,7 @@ def _build_ecsv_header(df, positions=None):
         header.append(f'#   name: {column}')
         header.append(f'#   datatype: {current_column["datatype"]}')
         if 'subtype' in current_column.keys():
-            header.append(f'#   subtype: {current_column["subtype"].replace("null", str(len(df[column].iloc[0])))}')
+            header.append(f'#   subtype: {current_column["subtype"].replace("null", str(_get_col_subtype_len(df, column)))}')
         header.append(f'#   description: {current_column["description"]}')
         if units_dict.get(column, None):
             header.append(f'#   unit: {units_dict[column]}')

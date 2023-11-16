@@ -8,7 +8,6 @@ import warnings
 from os.path import join
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 from astropy.io import fits
 from astropy.io.votable.tree import Field, Param, Resource, Table, VOTableFile
@@ -19,7 +18,7 @@ from numpy import ndarray
 
 from .output_data import OutputData
 from .utils import _add_ecsv_header, _array_to_standard, _build_ecsv_header, _generate_fits_header, \
-    _get_sampling_dict, _load_header_dict
+    _get_sampling_dict, _load_header_dict, _get_col_subtype_len
 
 warnings.filterwarnings('ignore', category=UnitsWarning)
 
@@ -140,16 +139,12 @@ class SampledSpectraData(OutputData):
             output_path (str): Path where to save the file.
             output_file (str): Name of the output file.
         """
+
+        def _flux_contains_none(arrays):
+            return any(arr is None for arr in arrays['flux'])
+
         data = self.data
         positions = self.positions
-        # Get length of flux (should be the same as length of error)
-        flux_format = f'{len(positions)}D'  # D: double precision float
-        flux_error_format = f'{len(positions)}E'  # E: single precision float
-        aux_corr = data.get('correlation')
-        correlation_format = f'{len(aux_corr.iloc[0])}D' if aux_corr else ''
-        # Define formats for each type according to FITS
-        column_formats = {'source_id': 'K', 'xp': '2A', 'flux': flux_format, 'flux_error': flux_error_format,
-                          'correlation': correlation_format, 'standard_deviation': 'E'}
         # Create a list of HDUs
         hdu_list = list()
         # create a header to include the sampling
@@ -163,8 +158,22 @@ class SampledSpectraData(OutputData):
         spectra_keys = output_by_column_dict.keys()
         data_type = data.attrs['data_type']
         units_dict = data_type.get_units()
-        columns = [fits.Column(name=key, array=np.array(output_by_column_dict[key]), format=column_formats[key],
-                               unit=units_dict.get(key, '')) for key in spectra_keys]
+        pos_len = len(positions)
+        contains_none = _flux_contains_none(output_by_column_dict)
+        # D: double precision float
+        flux_format = 'PD()' if contains_none else f'{pos_len}D'
+        # E: single precision float
+        flux_error_format = 'PE()' if contains_none else f'{pos_len}E'
+        aux_corr = data.get('correlation')
+        correlation_format = ''
+        if aux_corr is not None:
+            correlation_format = 'PD()' if contains_none else f"{_get_col_subtype_len(data, 'correlation')}D"
+        # Define formats for each type according to FITS
+        column_formats = {'source_id': 'K', 'xp': '2A', 'flux': flux_format, 'flux_error': flux_error_format,
+                          'correlation': correlation_format, 'standard_deviation': 'E'}
+        columns = [
+            fits.Column(name=key, array=[value if value is not None else [] for value in output_by_column_dict[key]],
+                        format=column_formats[key], unit=units_dict.get(key, '')) for key in spectra_keys]
         header = _generate_fits_header(data, column_formats)
         header['Sampling'] = str(tuple(positions))
         hdu = fits.BinTableHDU.from_columns(columns, header=header)
@@ -192,10 +201,12 @@ class SampledSpectraData(OutputData):
                           unit=unit, value=list(sampling))]
 
         def _create_fields(_votable, _spectra_df):
-            len_flux = str(len(_spectra_df['flux'].iloc[0]))
-            len_error = str(len(_spectra_df['flux_error'].iloc[0]))
-            len_correlation = str(len(_spectra_df['correlation'].iloc[0])) \
-                if 'correlation' in _spectra_df.columns else ''
+            _spectra_flux_len = _get_col_subtype_len(_spectra_df, 'flux')
+            _spectra_flux_error_len = _get_col_subtype_len(_spectra_df, 'flux_error')
+            len_flux = str(_spectra_flux_len)
+            len_error = str(_spectra_flux_error_len)
+            len_correlation = str(
+                len(_spectra_df['correlation'].iloc[0])) if 'correlation' in _spectra_df.columns else ''
             fields_datatypes = {'source_id': 'long', 'xp': 'char', 'flux': 'double', 'flux_error': 'float',
                                 'correlation': 'double', 'standard_deviation': 'float'}
             fields_array_size = {'source_id': '', 'xp': '2', 'flux': len_flux, 'flux_error': len_error,

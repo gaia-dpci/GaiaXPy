@@ -20,7 +20,7 @@ from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-from .config import parse_config, get_unique_id
+from .config import parse_config, get_bands_config
 from ..config.paths import hermite_bases_file
 from ..core.input_validator import validate_save_arguments
 
@@ -204,14 +204,7 @@ def get_design_matrices(sampling: np.ndarray, bases_config: pd.DataFrame) -> dic
     Returns:
         dict: The design matrices for the input list of bases.
     """
-    bases_config_name = type(bases_config).__name__
-
-    if bases_config_name == 'FluxAndLsfCalConfig':
-        bands_config = bases_config.basisDefinition.spline
-    elif bases_config_name == 'basisConfiguration':
-        bands_config = bases_config.hermiteFunction
-    else:
-        raise ValueError(f'Configuration type {bases_config_name} not implemented.')
+    bands_config = get_bands_config(bases_config)
     bp_config = bands_config.bpConfig
     rp_config = bands_config.rpConfig
     bp_config_dict = {field: getattr(bp_config, field) for field in bp_config._fields}

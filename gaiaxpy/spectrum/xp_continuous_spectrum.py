@@ -35,7 +35,6 @@ class XpContinuousSpectrum(XpSpectrum):
         self.coefficients = coefficients
         self.covariance = covariance
         self.standard_deviation = standard_deviation
-        self.basis_function_id = {BANDS.bp: 56, BANDS.rp: 57}
 
     @classmethod
     def from_data_frame(cls, df, band):
@@ -104,8 +103,7 @@ class XpContinuousSpectrum(XpSpectrum):
             'coefficients': _list_to_array(self.coefficients),
             'coefficient_correlations': _list_to_array(_extract_lower_triangle(correlation_matrix)),
             'coefficient_errors': _list_to_array(diagonal),
-            'n_parameters': len(self.coefficients),
-            'basis_function_id': self.basis_function_id[self.xp]
+            'n_parameters': len(self.coefficients)
         }
 
 

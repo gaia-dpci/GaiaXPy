@@ -102,7 +102,7 @@
                     <value>59.000</value>
                     <value>59.000</value>
              </knots>
-                <uniqueId>56</uniqueId>
+                <uniqueId>0</uniqueId>
             </bpConfig>
             <rpConfig>
                 <order>4</order>
@@ -156,7 +156,7 @@
                     <value>59.000</value>
                     <value>59.000</value>
                 </knots>
-                <uniqueId>57</uniqueId>
+                <uniqueId>0</uniqueId>
             </rpConfig>
         </spline>
 

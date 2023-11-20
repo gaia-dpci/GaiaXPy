@@ -89,8 +89,7 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     parsed_input_data, extension = InputReader(input_object, convert, disable_info=disable_info, user=username,
                                                password=password).read()
     bases_config = parse_config(config_file)
-    unique_bases_ids = get_unique_basis_ids(parsed_input_data)
-    design_matrices = get_design_matrices(unique_bases_ids, sampling, bases_config)
+    design_matrices = get_design_matrices(sampling, bases_config)
     spectra_df, positions = _create_spectra(parsed_input_data, truncation, design_matrices,
                                             with_correlation=with_correlation, disable_info=disable_info)
     # Save output section
@@ -118,14 +117,10 @@ def _create_spectrum(row: pd.Series, truncation: bool, design_matrices: dict, ba
     Returns:
         XpSampledSpectrum: The sampled spectrum.
     """
-    if band == 'bp':
-        key = 56
-    if band == 'rp':
-        key = 57
     recommended_truncation = row[f'{band}_n_relevant_bases'] if truncation else -1
     continuous_spectrum = XpContinuousSpectrum(row['source_id'], band, row[f'{band}_coefficients'],
                                                row[f'{band}_covariance_matrix'], row[f'{band}_standard_deviation'])
-    return XpSampledSpectrum.from_continuous(continuous_spectrum, design_matrices.get(key),
+    return XpSampledSpectrum.from_continuous(continuous_spectrum, design_matrices.get(band),
                                              truncation=recommended_truncation, with_correlation=with_correlation)
 
 
@@ -198,19 +193,17 @@ def get_unique_basis_ids(parsed_input_data: pd.DataFrame) -> set:
     return remove_nans(set_bp).union(remove_nans(set_rp))
 
 
-def get_design_matrices(unique_bases_ids: set, sampling: np.ndarray, bases_config: pd.DataFrame) -> dict:
+def get_design_matrices(sampling: np.ndarray, bases_config: pd.DataFrame) -> dict:
     """
     Get the design matrices corresponding to the input bases.
 
     Args:
-        unique_bases_ids (set): A set containing the basis function IDs for which the design matrix is required.
         sampling (ndarray): 1D array containing the sampling grid.
         bases_config (NamedTuple): An object containing the configuration for all sets of basis functions.
 
     Returns:
         dict: The design matrices for the input list of bases.
     """
-    unique_bases_ids = {56, 57}
     bases_config_name = type(bases_config).__name__
 
     if bases_config_name == 'FluxAndLsfCalConfig':
@@ -223,6 +216,6 @@ def get_design_matrices(unique_bases_ids: set, sampling: np.ndarray, bases_confi
     rp_config = bands_config.rpConfig
     bp_config_dict = {field: getattr(bp_config, field) for field in bp_config._fields}
     rp_config_dict = {field: getattr(rp_config, field) for field in rp_config._fields}
-    config_df = pd.DataFrame([bp_config_dict, rp_config_dict])
-    return {_id: SampledBasisFunctions.from_config(sampling, get_unique_id(config_df, _id)) for band, _id in
-            zip(BANDS, unique_bases_ids)}
+    bands_config = {key: value for key, value in zip(BANDS, [bp_config_dict, rp_config_dict])}
+    config_df = pd.DataFrame.from_dict(bands_config, orient='index')
+    return {band: SampledBasisFunctions.from_config(sampling, config_df.loc[[band]]) for band in BANDS}

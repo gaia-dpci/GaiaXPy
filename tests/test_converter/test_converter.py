@@ -50,13 +50,12 @@ class TestGetMethods(unittest.TestCase):
         instance = SampledBasisFunctions
         for file in con_input_files:
             parsed_input, _ = parser.parse_file(file)
-            unique_bases_ids = get_unique_basis_ids(parsed_input)
-            design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_bases_df)
+            design_matrices = get_design_matrices(sampling, optimised_bases_df)
             self.assertIsInstance(design_matrices, dict, msg=is_instance_err_message(file, dict))
             self.assertEqual(len(design_matrices), 2)
-            self.assertEqual(list(design_matrices.keys()), [56, 57])
-            self.assertIsInstance(design_matrices[56], instance, msg=is_instance_err_message(file, instance))
-            self.assertIsInstance(design_matrices[57], instance, msg=is_instance_err_message(file, instance))
+            self.assertEqual(list(design_matrices.keys()), ['bp', 'rp'])
+            self.assertIsInstance(design_matrices['bp'], instance, msg=is_instance_err_message(file, instance))
+            self.assertIsInstance(design_matrices['rp'], instance, msg=is_instance_err_message(file, instance))
 
 
 class TestCreateSpectrum(unittest.TestCase):
@@ -68,8 +67,7 @@ class TestCreateSpectrum(unittest.TestCase):
         for file in con_input_files:
             parsed_input, _ = parser.parse_file(file)
             parsed_input_dict = parsed_input.to_dict('records')
-            unique_bases_ids = get_unique_basis_ids(parsed_input)
-            design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_bases_df)
+            design_matrices = get_design_matrices(sampling, optimised_bases_df)
             for row in islice(parsed_input_dict, 1):  # Just the first row
                 for band in BANDS:
                     spectrum[band] = _create_spectrum(row, truncation, design_matrices, band)

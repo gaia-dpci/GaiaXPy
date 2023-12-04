@@ -1,5 +1,4 @@
 import unittest
-from ast import literal_eval
 from itertools import islice
 
 import numpy as np
@@ -12,11 +11,12 @@ from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices, g
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
+from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-from tests.files.paths import mean_spectrum_xml_plain_file, con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path,\
-    mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,\
-    mean_spectrum_xml_file
+from tests.files.paths import (con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path, mean_spectrum_avro_file,
+                               mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,
+                               mean_spectrum_xml_file, mean_spectrum_xml_plain_file)
 from tests.test_converter.converter_paths import optimised_bases_df, converter_csv_solution_0_60_481_df
 from tests.utils.utils import get_spectrum_with_source_id_and_xp, npt_array_err_message, is_instance_err_message
 
@@ -24,13 +24,13 @@ con_input_files = [mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectru
                    mean_spectrum_xml_file, mean_spectrum_xml_plain_file]
 
 # Parsers
-parser = InternalContinuousParser()
+parser = InternalContinuousParser(MANDATORY_INPUT_COLS['convert'] + CORR_INPUT_COLUMNS)
 
 sampling = np.linspace(0, 60, 481)
 
 sampled_parser = InternalSampledParser()
-ref_sampled, _ = sampled_parser._parse(con_ref_sampled_csv_path)
-ref_sampled_truncated, _ = sampled_parser._parse(con_ref_sampled_truncated_csv_path)
+ref_sampled, _ = sampled_parser.parse_file(con_ref_sampled_csv_path)
+ref_sampled_truncated, _ = sampled_parser.parse_file(con_ref_sampled_truncated_csv_path)
 
 TOL = 4
 _rtol, _atol = 1e-6, 1e-6  # Precision varies with extension
@@ -41,7 +41,7 @@ class TestGetMethods(unittest.TestCase):
     def test_get_unique_basis_ids(self):
         instance = set
         for file in con_input_files:
-            parsed_input, _ = parser._parse(file)
+            parsed_input, _ = parser.parse_file(file)
             unique_bases_ids = get_unique_basis_ids(parsed_input)
             self.assertIsInstance(unique_bases_ids, instance, msg=is_instance_err_message(file, instance))
             self.assertEqual(unique_bases_ids, {56, 57})
@@ -49,14 +49,13 @@ class TestGetMethods(unittest.TestCase):
     def test_get_design_matrices(self):
         instance = SampledBasisFunctions
         for file in con_input_files:
-            parsed_input, _ = parser._parse(file)
-            unique_bases_ids = get_unique_basis_ids(parsed_input)
-            design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_bases_df)
+            parsed_input, _ = parser.parse_file(file)
+            design_matrices = get_design_matrices(sampling, optimised_bases_df)
             self.assertIsInstance(design_matrices, dict, msg=is_instance_err_message(file, dict))
             self.assertEqual(len(design_matrices), 2)
-            self.assertEqual(list(design_matrices.keys()), [56, 57])
-            self.assertIsInstance(design_matrices[56], instance, msg=is_instance_err_message(file, instance))
-            self.assertIsInstance(design_matrices[57], instance, msg=is_instance_err_message(file, instance))
+            self.assertEqual(list(design_matrices.keys()), ['bp', 'rp'])
+            self.assertIsInstance(design_matrices['bp'], instance, msg=is_instance_err_message(file, instance))
+            self.assertIsInstance(design_matrices['rp'], instance, msg=is_instance_err_message(file, instance))
 
 
 class TestCreateSpectrum(unittest.TestCase):
@@ -66,10 +65,9 @@ class TestCreateSpectrum(unittest.TestCase):
         truncation = True
         instance = XpSampledSpectrum
         for file in con_input_files:
-            parsed_input, _ = parser._parse(file)
+            parsed_input, _ = parser.parse_file(file)
             parsed_input_dict = parsed_input.to_dict('records')
-            unique_bases_ids = get_unique_basis_ids(parsed_input)
-            design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_bases_df)
+            design_matrices = get_design_matrices(sampling, optimised_bases_df)
             for row in islice(parsed_input_dict, 1):  # Just the first row
                 for band in BANDS:
                     spectrum[band] = _create_spectrum(row, truncation, design_matrices, band)

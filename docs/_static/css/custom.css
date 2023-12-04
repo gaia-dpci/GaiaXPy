@@ -1,0 +1,19 @@
+th p {
+    margin-bottom: 0;
+}
+
+.section #basic-2-flip-flop-synchronizer{
+     text-align:justify;
+}
+
+table td:nth-child(1) {
+    background-color: #FFD700;  /* Yellow */
+}
+
+table td:nth-child(2) {
+    background-color: #87CEEB;  /* Sky Blue */
+}
+
+table td:nth-child(3) {
+    background-color: #90EE90;  /* Light Green */
+}

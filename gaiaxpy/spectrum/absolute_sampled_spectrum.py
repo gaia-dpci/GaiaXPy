@@ -8,9 +8,9 @@ from numbers import Number
 
 import numpy as np
 
-from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from .sampled_spectrum import SampledSpectrum
 from .utils import _list_to_array
+from ..core.custom_errors import NoBandsAvailableError
 from ..core.generic_functions import correlation_from_covariance
 
 
@@ -38,22 +38,25 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
                 will be applied, i.e. all bases will be used.
             with_correlation (bool): Whether correlation information should be computed.
         """
-        truncation = dict() if truncation is None else truncation
-        # Bands available
-        available_bands = [band for band in xp_spectra.keys() if xp_spectra[band].covariance is not None]
-        if not available_bands:
-            raise ValueError('At least one band must be present.')
-        pos = sampled_bases[available_bands[0]].get_sampling_grid()
+        self.truncation = dict() if truncation is None else truncation
+        self.available_bands = self.get_available_bands(xp_spectra)
+        if not self.available_bands:
+            raise NoBandsAvailableError()
+        pos = sampled_bases[self.available_bands[0]].get_sampling_grid()
         SampledSpectrum.__init__(self, source_id, pos)
-        self.pos = pos  # TODO: may not be required
-        split_spectrum = self.__generate_spectra(xp_spectra, sampled_bases, available_bands, truncation,
-                                                 with_correlation=with_correlation)
-        self.__merge_output(split_spectrum, merge, with_correlation=with_correlation)
+        self.pos = pos
 
-    def __generate_spectra(self, xp_spectra, sampled_bases, available_bands, truncation, with_correlation):
-        split_spectrum = {band: dict() for band in available_bands}
-        for band in available_bands:
-            band_truncation = truncation.get(band)
+    @staticmethod
+    def get_available_bands(xp_spectra):
+        def __is_available_band(_xp_spectra, band):
+            return isinstance(_xp_spectra[band].covariance, np.ndarray)
+
+        return [band for band in xp_spectra.keys() if __is_available_band(xp_spectra, band)]
+
+    def generate_spectra(self, xp_spectra, sampled_bases, with_correlation):
+        split_spectrum = {band: dict() for band in self.available_bands}
+        for band in self.available_bands:
+            band_truncation = self.truncation.get(band)
             split_spectrum[band]['xp_spectra'] = xp_spectra[band]
             stdev = split_spectrum[band]['xp_spectra'].get_standard_deviation()
             design_matrix = sampled_bases[band].get_design_matrix()
@@ -71,38 +74,7 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
         return split_spectrum
 
     def __merge_output(self, split_spectrum, merge, with_correlation):
-        n_bands = len(split_spectrum.keys())
-        # If both bands are present
-        if n_bands == 2:
-            self.flux = np.add(np.multiply(split_spectrum[BANDS.bp]['flux'], merge[BANDS.bp]),
-                               np.multiply(split_spectrum[BANDS.rp]['flux'], merge[BANDS.rp]))
-            self.error = np.sqrt(np.add(np.multiply(split_spectrum[BANDS.bp]['error'] ** 2, merge[BANDS.bp] ** 2),
-                                        np.multiply(split_spectrum[BANDS.rp]['error'] ** 2, merge[BANDS.rp] ** 2)))
-            if with_correlation:
-                self.covariance = np.add(np.multiply(split_spectrum[BANDS.bp]['cov'], merge[BANDS.bp]),
-                                         np.multiply(split_spectrum[BANDS.rp]['cov'], merge[BANDS.rp]))
-        # If only one is
-        elif n_bands == 1:
-            existing_band, spectrum = list(split_spectrum.items())[0]
-            self.flux = spectrum['flux']
-            self.error = spectrum['error']
-            if with_correlation:
-                self.covariance = spectrum['cov']
-            # Patch values if there's a band missing
-            masked_pos = self.pos.copy()
-            masked_pos = masked_pos.astype(float)
-            if existing_band == BANDS.rp:
-                masked_pos[masked_pos <= RP_WL.low] = np.nan
-            elif existing_band == BANDS.bp:
-                masked_pos[masked_pos >= BP_WL.high] = np.nan
-            else:
-                raise ValueError(f'Band {existing_band} is not a valid band.')
-            # Get the indices of all the values in pos that are smaller than the lowest RP range value
-            self.flux[np.argwhere(np.isnan(masked_pos))] = np.nan
-            self.error[np.argwhere(np.isnan(masked_pos))] = np.nan
-            if with_correlation:
-                self.covariance[:, np.argwhere(np.isnan(masked_pos))] = np.nan
-                self.covariance[np.argwhere(np.isnan(masked_pos)), :] = np.nan
+        raise NotImplementedError('Method not implemented for base class.')
 
     def _get_fluxes(self):
         return self.flux

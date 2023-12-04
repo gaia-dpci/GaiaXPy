@@ -4,6 +4,6 @@ class DataFrameNumPyArrayReader(object):
         self.content = content
         self.array_columns = array_columns
 
-    def _parse(self):
+    def read(self):
         df = self.content
         return df

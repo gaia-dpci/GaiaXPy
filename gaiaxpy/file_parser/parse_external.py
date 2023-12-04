@@ -23,6 +23,7 @@ class ExternalParser(GenericParser):
         Args:
             csv_file (str): Path to a CSV file.
             _array_columns (list): List of columns in the file that contain arrays as strings.
+            _matrix_columns (list): Parameter required in the parser hierarchy. Not used in this function.
 
         Returns:
             DataFrame: Pandas DataFrame representing the CSV file.

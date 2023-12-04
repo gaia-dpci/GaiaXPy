@@ -9,7 +9,7 @@ import pandas.testing as pdt
 from astropy.io.votable import parse_single_table
 from astropy.table import Table
 
-from gaiaxpy import calibrate, convert, generate, PhotometricSystem, find_fast, find_extrema, find_lines
+from gaiaxpy import calibrate, convert, generate, PhotometricSystem
 from gaiaxpy.file_parser.parse_generic import GenericParser
 from tests.files.paths import output_sol_path, mean_spectrum_csv_file
 
@@ -111,18 +111,7 @@ class TestSaveContRaw(unittest.TestCase):
 
     def test_save_output_fits_multi(self):
         self.run_output_test(generate, 'photometry_multi', 'fits', phot_systems=[PhotometricSystem.Gaia_DR3_Vega,
-                                                                            PhotometricSystem.HST_HUGS_Std])
+                                                                                 PhotometricSystem.HST_HUGS_Std])
 
     def test_save_output_xml_pristine(self):
         self.run_output_test(generate, 'photometry_pristine', 'xml', phot_systems=[PhotometricSystem.Pristine])
-
-    def test_save_fastfinder(self):
-        for extension in ['csv', 'ecsv', 'fits', 'xml']:
-            self.run_output_test(find_fast, 'fastfinder', extension)
-
-    def test_save_extremafinder(self):
-        for extension in ['csv', 'ecsv', 'fits', 'xml']:
-            self.run_output_test(find_extrema, 'extremafinder', extension)
-    def test_save_linefinder(self):
-        for extension in ['csv', 'ecsv', 'fits', 'xml']:
-            self.run_output_test(find_lines, 'linefinder', extension)

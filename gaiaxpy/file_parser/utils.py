@@ -12,7 +12,9 @@ def _get_from_dict(dictionary, _map):
     try:
         return reduce(operator.getitem, _map, dictionary)
     except TypeError:
-        return None
+        return float('NaN')
+    except KeyError:
+        raise KeyError(f'Element {_map} not found in AVRO dictionary. Is it an actual field in the input file?')
 
 
 # This dictionary contains the mapping from the usual CSV fields to the AVRO fields.

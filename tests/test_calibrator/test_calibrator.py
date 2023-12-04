@@ -9,6 +9,7 @@ from gaiaxpy.calibrator.calibrator import _calibrate, _create_spectrum
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
+from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from tests.files.paths import mean_spectrum_csv_file, mean_spectrum_avro_file, mean_spectrum_fits_file, \
@@ -30,10 +31,11 @@ _atol = 1e-10
 cal_input_files = [mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,
                    mean_spectrum_xml_file, mean_spectrum_xml_plain_file]
 
+
 def generate_single_spectrum(mean_spectrum_path):
     # Read mean Spectrum
-    parser = InternalContinuousParser()
-    parsed_spectrum_file, extension = parser._parse(mean_spectrum_path)
+    parser = InternalContinuousParser(MANDATORY_INPUT_COLS['calibrate'] + CORR_INPUT_COLUMNS)
+    parsed_spectrum_file, extension = parser.parse_file(mean_spectrum_path)
     # Create sampled basis functions
     sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[band])
                           for band in BANDS}

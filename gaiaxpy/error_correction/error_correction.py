@@ -5,8 +5,8 @@ Module that implements the error correction over a multi-photometry.
 """
 
 from functools import lru_cache
-from math import isnan, floor
-from os import path, listdir
+from os import listdir
+from os.path import join, isfile
 
 import numpy as np
 import pandas as pd
@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 from gaiaxpy.config.paths import correction_tables_path
 from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, _warning
-from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 
@@ -28,13 +28,12 @@ def _get_correctable_systems():
 
 
 def _read_system_table(system):
-    try:
-        correction_factors_path = path.join(correction_tables_path, f'DIDREQ-465-{system}-correction-factors.csv')
+    correction_factors_path = join(correction_tables_path, f'DIDREQ-465-{system}-correction-factors.csv')
+    if isfile(correction_factors_path):
         correction_table = pd.read_csv(correction_factors_path, float_precision='high')
-    except FileNotFoundError:
-        raise FileNotFoundError(f'No correction table found for system {system}.')
-    correction_table['bin_centre'] = (correction_table['min_Gmag_bin'] + correction_table['max_Gmag_bin']) / 2
-    return correction_table
+        correction_table['bin_centre'] = (correction_table['min_Gmag_bin'] + correction_table['max_Gmag_bin']) / 2
+        return correction_table
+    raise FileNotFoundError(f'No correction table found for system {system}.')
 
 
 def _get_correction_array(_mag_G_values, system):
@@ -43,7 +42,7 @@ def _get_correction_array(_mag_G_values, system):
     floor_mag_dict = correction_table.set_index('min_Gmag_bin').T.to_dict()
     factor_columns = [col for col in correction_table.columns if 'factor_' in col]
     _mag_G_values = _mag_G_values.to_frame(name='mag_G')
-    _mag_G_values['row'] = _mag_G_values['mag_G'].map(lambda x: floor_mag_dict.get(float(floor(x))))
+    _mag_G_values['row'] = _mag_G_values['mag_G'].map(lambda x: floor_mag_dict.get(float(np.floor(x))))
     return _mag_G_values.apply(_get_correction_factor, args=(correction_table, factor_columns,
                                                              min_value, max_value,), axis=1)
 
@@ -51,7 +50,7 @@ def _get_correction_array(_mag_G_values, system):
 def _get_correction_factor(mag_row, correction_table, factor_columns, min_value, max_value):
     mag = mag_row['mag_G']
     row = mag_row['row']
-    if (mag > max_value) or isnan(mag):
+    if (mag > max_value) or pd.isna(mag):
         return correction_table[factor_columns].iloc[-1].values
     elif mag < min_value:
         return correction_table[factor_columns].iloc[0].values
@@ -114,6 +113,7 @@ def apply_error_correction(input_multi_photometry, photometric_system=None, outp
 def _apply_error_correction(input_multi_photometry, photometric_system=None, output_path='.',
                             output_file='output_corrected_photometry', output_format=None, save_file=True,
                             disable_info=False):
+    __FUNCTION_KEY = 'correction'
     gaia_system = 'GaiaDr3Vega'
     gaia_G_mag_column = f'{gaia_system}_mag_G'
     input_multi_photometry, extension = InputReader(input_multi_photometry, apply_error_correction,
@@ -133,7 +133,7 @@ def _apply_error_correction(input_multi_photometry, photometric_system=None, out
     for system in systems_to_skip:
         _warning(f'System {system} does not have a correction table. The program will not apply error correction over'
                  ' this system.')
-    for system in tqdm(systems, desc='Correcting systems', total=len(systems), unit=pbar_units['correction'],
+    for system in tqdm(systems, desc=pbar_message[__FUNCTION_KEY], total=len(systems), unit=pbar_units[__FUNCTION_KEY],
                        leave=False, colour=pbar_colour):
         system_df = input_multi_photometry[[column for column in input_multi_photometry.columns if
                                             (column.startswith(system) and f'{system}Std' not in column) or

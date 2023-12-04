@@ -8,16 +8,23 @@ import sys
 from ast import literal_eval
 from os.path import join
 from string import capwords
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
 from numpy import ndarray
 
 from gaiaxpy.config.paths import filters_path, config_path
-from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.custom_errors import InvalidBandError
+from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.generator.config import get_additional_filters_path
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
+
+# Verifying the function is valid first, will help when adding new functions
+PHOTOMETRY_FUNCTIONS = ['generate', '_generate']
+CHOLESKY_FUNCTIONS = ['get_inverse_covariance_matrix', 'get_inverse_square_root_covariance_matrix']
+OTHER_FUNCTIONS = ['calibrate', 'convert']  # The ones that accept truncation and with_correlation arguments
+ALL_ADD_COLS_FUNCTIONS = PHOTOMETRY_FUNCTIONS + CHOLESKY_FUNCTIONS + OTHER_FUNCTIONS
 
 
 def _get_built_in_systems() -> list:
@@ -30,13 +37,12 @@ def _is_built_in_system(system):
 
 
 def cast_output(output):
-    cast_dict = {'source_id': 'int64', 'solution_id': 'int64', 'line_name': 'str', 'line_flux': 'float64'}
+    cast_dict = {'source_id': 'int64', 'solution_id': 'int64'}
+    cast_dict_keys = cast_dict.keys()
     df = output if isinstance(output, pd.DataFrame) else output.data
     for column in df.columns:
-        try:
+        if column in cast_dict_keys:
             df[column] = df[column].astype(cast_dict[column])
-        except KeyError:
-            continue
     return df
 
 
@@ -114,15 +120,6 @@ def validate_wl_sampling(sampling):
 
 def _warning(message):
     print(f'UserWarning: {message}', file=sys.stderr)
-
-
-def validate_arguments(default_output_file, given_output_file, save_file):
-    if save_file and not isinstance(save_file, bool):
-        raise ValueError("Parameter 'save_file' must contain a boolean value.")
-    # If the user input a number different to the default value, but didn't set save_file to True
-    if default_output_file != given_output_file and not save_file:
-        _warning('Argument output_file was given, but save_file is set to False. Set save_file to True to store the '
-                 'output of the function.')
 
 
 def get_spectra_type(spectra):
@@ -249,6 +246,8 @@ def correlation_to_covariance(correlation: np.ndarray, error: np.ndarray, stdev:
     Raises:
         ValueError: If the dimensions of input correlation are not either 1 or 2.
     """
+    if isinstance(correlation, float) and pd.isna(correlation):
+        return None
     if correlation.ndim == 1:
         size = get_matrix_size_from_lower_triangle(correlation)
         new_matrix = np.zeros((size, size))
@@ -278,3 +277,70 @@ def get_matrix_size_from_lower_triangle(array):
         ValueError: If the length of array is not a valid input for a symmetric matrix lower triangle.
     """
     return int((np.sqrt(1 + 8 * len(array)) + 1) / 2)
+
+
+def standardise_extension(_extension):
+    """
+    Standardise the provided extension which can contain or not an initial dot, and can contain a mix of uppercase and
+    lowercase letters.
+
+    Args:
+        _extension (str): File extension which may or may not contain an initial dot.
+
+    Returns:
+        str: The extension in lowercase letters and with no initial dot (e.g.: 'csv').
+    """
+    try:
+        _extension = _extension[1:] if _extension[0] == '.' else _extension  # Remove initial dot if present
+        return _extension.lower()
+    except IndexError:
+        raise ValueError(f"Extension '{_extension}' could not be parsed appropriately.")
+
+
+def reverse_simple_add_col_dict(d):
+    def __reverse_error(v):
+        raise ValueError(f'List length should be one, but is {len(v)}.')
+
+    return {value[0]: key if len(value) == 1 else __reverse_error(value) for key, value in d.items()}
+
+
+def convert_values_to_lists(d):
+    for key, value in d.items():
+        if not isinstance(value, list):
+            d[key] = [value]
+    return d
+
+
+def format_additional_columns(additional_columns: Optional[Union[str, list, dict]]):
+    """
+    Ensure additional columns are in the expected format. Output should be a dictionary, values in the dictionary
+    should become lists to work with nested AVRO keys.
+    """
+    if additional_columns is None:
+        return dict()
+    if isinstance(additional_columns, str):
+        return {additional_columns: [additional_columns]}
+    if isinstance(additional_columns, list):
+        return {v: [v] for v in additional_columns}
+    if isinstance(additional_columns, dict):
+        return convert_values_to_lists(additional_columns)
+
+
+def validate_photometric_system(photometric_system):
+    """
+    Ensure photometric system input isn't empty.
+    """
+    if photometric_system in (None, [], ''):
+        raise ValueError('At least one photometric system is required as input.')
+
+
+def rename_with_required(data, additional_columns):
+    return data.rename(columns=reverse_simple_add_col_dict(additional_columns))
+
+
+def is_array_empty(array):
+    return array is None or (not isinstance(array, np.ndarray) and pd.isna(array)) or (isinstance(array, np.ndarray)
+                                                                                       and len(array) == 0)
+
+def is_variable_empty(var):
+    return var is None or pd.isna(var)

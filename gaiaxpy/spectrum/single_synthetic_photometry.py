@@ -8,30 +8,13 @@ import warnings
 
 import numpy as np
 
-from .absolute_sampled_spectrum import AbsoluteSampledSpectrum
+from .photometric_absolute_sampled_spectrum import PhotometricAbsoluteSampledSpectrum
 
 # Ignore negative flux, handled in the code.
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 
 
-def flux_to_mag(flux, zero_point):
-    """
-    Convert flux to magnitude.
-
-    Args:
-        flux (float): Flux value.
-        zero_point (float): Photometric zero-point.
-
-    Returns:
-        float: The magnitude.
-    """
-    if flux <= 0:
-        return np.nan
-    result = -2.5 * np.log10(flux) + zero_point
-    return result
-
-
-class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
+class SingleSyntheticPhotometry(PhotometricAbsoluteSampledSpectrum):
     """
     Synthetic photometry derived from Gaia spectra in one photometric system.
     """
@@ -49,17 +32,15 @@ class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
                 sampled spectrum.
             photometric_system (PhotometricSystem): The photometric system of the synthetic photometry.
         """
-        AbsoluteSampledSpectrum.__init__(self, source_id, xp_spectra, sampled_bases, merge)
+        PhotometricAbsoluteSampledSpectrum.__init__(self, source_id, xp_spectra, sampled_bases, merge)
         self.photometric_system = photometric_system.value
         # Correct flux if necessary (regular Photometric systems return the original value)
-        flux = self.flux
-        self.flux = self.photometric_system._correct_flux(flux)
+        aux_flux = self.flux
+        self.flux = self.photometric_system._correct_flux(aux_flux)
         # Correct the errors
-        error = self.error
-        self.error = self.photometric_system._correct_error(flux, error)
+        self.error = self.photometric_system._correct_error(aux_flux, self.error)
         # Magnitude is computed from self.flux which is the corrected flux
-        self.mag = [flux_to_mag(flux, zero_point) for flux, zero_point in
-                    zip(self.flux, self.photometric_system.get_zero_points())]
+        self.mag = self._compute_mag()
 
     def _photometry_to_dict(self):
         """
@@ -84,3 +65,23 @@ class SingleSyntheticPhotometry(AbsoluteSampledSpectrum):
         bands = self.photometric_system.get_bands()
         values = field
         return {f'{name}_{band}': values[i] for i, band in enumerate(bands)}
+
+    def _compute_mag(self):
+        def flux_to_mag(flux, zero_point):
+            """
+            Convert flux to magnitude.
+
+            Args:
+                flux (float): Flux value.
+                zero_point (float): Photometric zero-point.
+
+            Returns:
+                float: The magnitude.
+            """
+            if flux <= 0:
+                return np.nan
+            result = -2.5 * np.log10(flux) + zero_point
+            return result
+
+        return [flux_to_mag(flux, zero_point) for flux, zero_point in
+                zip(self.flux, self.photometric_system.get_zero_points())]

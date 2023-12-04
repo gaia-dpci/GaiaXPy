@@ -1,10 +1,27 @@
+from gaiaxpy.core.input_validator import check_column_overwrite
+from gaiaxpy.input_reader.required_columns import CORR_INPUT_COLUMNS, MANDATORY_INPUT_COLS
+
+
 class ArchiveReader(object):
 
-    def __init__(self, function, user, password, disable_info=False):
+    def __init__(self, function, user, password, additional_columns=None, disable_info=False):
         self.function = function
         self.user = user
         self.password = password
         self.disable_info = disable_info
+        self.info_msg = 'Running query...'
+        # Columns
+        self.additional_columns = dict() if additional_columns is None else additional_columns
+        mandatory_columns = MANDATORY_INPUT_COLS.get(function.__name__, list())
+        self.style_columns = CORR_INPUT_COLUMNS  # The Archive will always use correlations
+        self.required_columns = list()
+        if mandatory_columns:
+            self.required_columns = mandatory_columns + self.style_columns
+        self.requested_columns = self.required_columns
+        if self.additional_columns:
+            check_column_overwrite(additional_columns, self.required_columns)
+            self.requested_columns = self.required_columns + [c for c in self.additional_columns.keys() if c not in
+                                                              self.required_columns]
 
     def _login(self, gaia):
         user = self.user

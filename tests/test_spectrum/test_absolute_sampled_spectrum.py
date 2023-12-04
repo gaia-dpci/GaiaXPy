@@ -20,7 +20,7 @@ xp_sampling_grid, xp_merge = load_xpmerge_from_xml()
 xp_design_matrices = load_xpsampling_from_xml()
 
 parser = InternalContinuousParser()
-parsed_correlation, _ = parser._parse(mean_spectrum_csv_file)
+parsed_correlation, _ = parser.parse_file(mean_spectrum_csv_file)
 
 # Create sampled basis functions
 sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[band])

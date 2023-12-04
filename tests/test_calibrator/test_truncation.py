@@ -10,7 +10,7 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from tests.files.paths import mean_spectrum_fits_file, mean_spectrum_csv_file, mean_spectrum_xml_file,\
+from tests.files.paths import mean_spectrum_fits_file, mean_spectrum_csv_file, mean_spectrum_xml_file, \
     mean_spectrum_xml_plain_file
 from tests.test_calibrator.calibrator_solutions import sol_default_sampling_array, truncation_default_solution_df
 
@@ -29,7 +29,6 @@ spectra_df_fits, _ = calibrate(mean_spectrum_fits_file, save_file=False, truncat
 spectra_df_xml, _ = calibrate(mean_spectrum_xml_file, save_file=False, truncation=True)
 spectra_df_xml_plain, _ = calibrate(mean_spectrum_xml_plain_file, save_file=False, truncation=True)
 
-
 _rtol, _atol = 1e-22, 1e-22
 
 
@@ -37,7 +36,7 @@ class TestCalibratorTruncation(unittest.TestCase):
 
     def test_create_spectrum(self):
         # Read mean Spectrum
-        parsed_spectrum_file, extension = parser._parse(mean_spectrum_csv_file)
+        parsed_spectrum_file, extension = parser.parse_file(mean_spectrum_csv_file)
         # Create sampled basis functions
         sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[band])
                               for band in BANDS}

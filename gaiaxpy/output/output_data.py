@@ -6,8 +6,8 @@ Module to represent generic output data.
 from ast import literal_eval
 from os.path import dirname, abspath, join
 
+from gaiaxpy.core.generic_functions import standardise_extension
 from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
-from .utils import _standardise_output_format
 
 
 def _load_header_dict():
@@ -24,30 +24,18 @@ def _build_regular_header(columns):
     header_dict = _load_header_dict()
     header = _initialise_header()
     for column in columns:
+        current_column = header_dict[column]
         header.append('# -')
         header.append(f'#   name: {column}')
-        header.append(f'#   datatype: {header_dict[column]["datatype"]}')
-        try:
-            header.append(f'#   subtype: {header_dict[column]["subtype"]}')
-        except KeyError:
-            pass
-        header.append(f'#   description: {header_dict[column]["description"]}')
+        header.append(f'#   datatype: {current_column["datatype"]}')
+        if current_column.get('subtype'):
+            header.append(f'#   subtype: {current_column["subtype"]}')
+        header.append(f'#   description: {current_column["description"]}')
     return '\n'.join(header) + '\n'
 
 
 def _initialise_header():
     return ["# %ECSV 1.0", "# ---", "# delimiter: ','", "# datatype:"]
-
-
-def _build_line_header(columns):
-    header_dict = _load_header_dict()
-    header = _initialise_header()
-    for column in columns:
-        header.append('# -')
-        header.append(f'#   name: {column}')
-        header.append(f'#   datatype: {header_dict[column]["datatype"]}')
-        header.append(f'#   description: {header_dict[column]["description"]}')
-    return '\n'.join(header) + '\n'
 
 
 def _build_photometry_header(columns):
@@ -103,7 +91,7 @@ class OutputData(object):
             if output_format is None:
                 output_format = extension
             print('Saving file...', end='\r')
-            output_format = _standardise_output_format(output_format)
+            output_format = standardise_extension(output_format)
             if output_format == 'avro':
                 self._save_avro(output_path, output_file)
             elif output_format == 'csv':

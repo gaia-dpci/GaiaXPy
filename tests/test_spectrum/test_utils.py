@@ -10,8 +10,8 @@ from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file
 # Parsers
 parser = InternalContinuousParser()
 # Parsed files
-parsed_correlation, _ = parser._parse(mean_spectrum_csv_file)
-parsed_covariance, _ = parser._parse(mean_spectrum_avro_file)
+parsed_correlation, _ = parser.parse_file(mean_spectrum_csv_file)
+parsed_covariance, _ = parser.parse_file(mean_spectrum_avro_file)
 
 # Tolerances
 abs_tol = 1.e-3

@@ -51,8 +51,7 @@ def __output_list_to_df(parsed_input_data: pd.DataFrame, bands_output: list, out
     return pd.DataFrame(zip(*output_list), columns=output_columns)
 
 
-def get_inverse_square_root_covariance_matrix(input_object: Union[list, Path, str],
-                                              band: Optional[Union[list, str]] = None):
+def get_inverse_square_root_covariance_matrix(input_object: Union[list, Path, str], band: Optional[str] = None):
     """
     Compute the inverse square root covariance matrix.
 
@@ -117,7 +116,7 @@ def _get_inverse_square_root_covariance_matrix_aux(xp_errors: np.ndarray, xp_cor
         return None
 
 
-def get_inverse_covariance_matrix(input_object: Union[list, Path, str], band: str = None):
+def get_inverse_covariance_matrix(input_object: Union[list, Path, str], band: Optional[str] = None):
     """
     Compute the inverse covariance matrix.
 
@@ -169,7 +168,7 @@ def get_chi2(_L_inv: np.ndarray, residuals: np.ndarray) -> np.ndarray:
     Returns:
         float: Chi-squared value.
     """
-    if _L_inv is None or residuals is None:  # Cannot be checked with 'not' as the truth value of an array is ambiguous.
+    if _L_inv is None or residuals is None:
         raise ValueError('Input parameters cannot be None.')
     if _L_inv.shape != (55, 55):
         raise ValueError('Inverse covariance matrix shape must be (55, 55).')

@@ -1,5 +1,4 @@
 import unittest
-from os import path
 
 import numpy.testing as npt
 import pandas as pd
@@ -7,16 +6,17 @@ from numpy import ndarray, dtype
 
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
-from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_fits_file,\
+from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
+from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_fits_file, \
     mean_spectrum_xml_file
 from tests.utils.utils import get_spectrum_with_source_id
 
-parser = InternalContinuousParser()
-parsed_avro_file, _ = parser._parse(mean_spectrum_avro_file)
-parsed_csv_file, _ = parser._parse(mean_spectrum_csv_file)
-parsed_fits_file, _ = parser._parse(mean_spectrum_fits_file)
-parsed_plain_xml_file, _ = parser._parse(mean_spectrum_xml_file)
-parsed_xml_file, _ = parser._parse(mean_spectrum_xml_file)
+parser = InternalContinuousParser(MANDATORY_INPUT_COLS['calibrate'] + CORR_INPUT_COLUMNS)
+parsed_avro_file, _ = parser.parse_file(mean_spectrum_avro_file)
+parsed_csv_file, _ = parser.parse_file(mean_spectrum_csv_file)
+parsed_fits_file, _ = parser.parse_file(mean_spectrum_fits_file)
+parsed_plain_xml_file, _ = parser.parse_file(mean_spectrum_xml_file)
+parsed_xml_file, _ = parser.parse_file(mean_spectrum_xml_file)
 
 type_map = {'source_id': dtype('int64'),
             'solution_id': dtype('int64'),

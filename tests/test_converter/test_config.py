@@ -2,16 +2,23 @@ import unittest
 
 import pandas as pd
 
-from gaiaxpy.config.paths import optimised_bases_file
-from gaiaxpy.converter import config
+from gaiaxpy.config.paths import hermite_bases_file
+from gaiaxpy.converter.config import get_unique_id, parse_config
 
-columns = ['uniqueId', 'dimension', 'range', 'normalizedRange', 'transformedSetDimension', 'transformationMatrix']
+columns = ['dimension', 'range', 'normalizedRange', 'uniqueId', 'transformedSetDimension', 'transformationMatrix']
 
-parsed_config = config.parse_configuration_file(optimised_bases_file, columns)
-loaded_config = config.load_config(optimised_bases_file)  # id 7 not in the config file
+bases_config = parse_config(hermite_bases_file)  # id 7 not in the config file
+bands_config = bases_config.hermiteFunction
 
-not_empty_df = config.get_config(parsed_config, 57)  # id 57 in the config file
-empty_df = config.get_config(parsed_config, 7)
+bp_config = bands_config.bpConfig
+rp_config = bands_config.rpConfig
+bp_config_dict = {field: getattr(bp_config, field) for field in bp_config._fields}
+rp_config_dict = {field: getattr(rp_config, field) for field in rp_config._fields}
+
+parsed_config = pd.DataFrame([bp_config_dict, rp_config_dict])
+
+not_empty_df = get_unique_id(parsed_config, 57)  # id 57 in the config file
+empty_df = get_unique_id(parsed_config, 7)
 
 
 class TestParseConfigurationFile(unittest.TestCase):
@@ -29,13 +36,10 @@ class TestParseConfigurationFile(unittest.TestCase):
 class TestLoadConfig(unittest.TestCase):
 
     def test_load_config_type(self):
-        self.assertIsInstance(loaded_config, pd.DataFrame)
+        self.assertIsInstance(parsed_config, pd.DataFrame)
 
     def test_load_config_dimensions(self):
-        self.assertEqual(loaded_config.shape, parsed_config.shape)
-
-    def test_load_config_columns(self):
-        self.assertEqual(loaded_config.columns.all(), parsed_config.columns.all())
+        self.assertEqual(parsed_config.shape, parsed_config.shape)
 
 
 class TestGetConfig(unittest.TestCase):

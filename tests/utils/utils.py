@@ -99,10 +99,12 @@ def reconstruct_covariance(array):
     size = get_matrix_size(array)
     return array_to_symmetric_matrix(array, size)
 
+
 def npt_array_err_message(_input):
-    msg = f'Array not equal for input file {basename(_input)}.' if isfile(_input)\
+    msg = f'Array not equal for input file {basename(_input)}.' if isfile(_input) \
         else f'Array not equal for input {_input}.'
     return msg
+
 
 def is_instance_err_message(_input, instance, band=None):
     instance = instance if isinstance(instance, str) else instance.__name__
@@ -112,5 +114,22 @@ def is_instance_err_message(_input, instance, band=None):
     msg += f' is not an instance of {instance}.'
     return msg
 
+
 def assert_band_err(band):
     return f'Assertion failed for band {band}.'
+
+
+def parse_dfs_for_test(from_file_df, read_input, additional_columns, expected_columns):
+    def __parse_df(_df):
+        str_cols = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations',
+                    'rp_coefficients', 'rp_coefficient_errors', 'rp_coefficient_correlations']
+        for col in str_cols:
+            _df[col] = _df[col].apply(str_to_array)
+        for col in ['bp_coefficient_correlations', 'rp_coefficient_correlations']:
+            _df[col] = _df[col].apply(lambda x: array_to_symmetric_matrix(x, 55))
+        return _df
+
+    df = __parse_df(from_file_df)
+    expected_df = df[expected_columns + [c for c in additional_columns if c not in expected_columns]]
+    filtered_read_input = read_input.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
+    return expected_df, filtered_read_input

@@ -7,7 +7,7 @@ Module to handle the calibrator and generator configuration files.
 from configparser import ConfigParser
 from os.path import join
 
-from gaiaxpy.config.paths import config_path, filters_path, config_ini_file
+from gaiaxpy.config.paths import filters_path, config_ini_file
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.xml_utils import get_file_root, get_array_text, get_xp_merge, get_xp_sampling_matrix
 
@@ -77,6 +77,7 @@ def load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r', config_f
         system (str): Name of the photometric system if it corresponds.
         bp_model (str): BP model.
         rp_model (str): RP model.
+        config_file (str): Path to configuration file.
 
     Returns:
         ndarray: Array containing the sampling grid values.
@@ -98,6 +99,7 @@ def load_xpsampling_from_xml(system=None, bp_model=None, rp_model='v142r', confi
         system (str): Photometric system name, can be None in which case the generic configuration is loaded.
         bp_model (str): BP model.
         rp_model (str): RP model.
+        config_file (str): Path to configuration file.
 
     Returns:
         dict: A dictionary containing the XpSampling table with one entry for BP and one for RP.

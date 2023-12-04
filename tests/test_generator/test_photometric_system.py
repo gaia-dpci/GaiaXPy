@@ -1,10 +1,7 @@
 import unittest
-from os import path
 from os.path import join
 
-import numpy as np
 import numpy.testing as npt
-import pandas as pd
 from numpy import ndarray
 
 from gaiaxpy import generate
@@ -17,7 +14,9 @@ from tests.test_generator.test_internal_photometric_system import phot_systems_s
 def get_system_by_name(lst, name):
     return [item[1] for item in lst if item[0] == name][0]
 
+
 available_systems = list(phot_systems_specs['name'])
+
 
 # TODO: Extend for new systems
 

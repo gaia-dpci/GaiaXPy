@@ -7,10 +7,10 @@ import pandas.testing as pdt
 from gaiaxpy import calibrate
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.input_reader.input_reader import InputReader
-from tests.files.paths import missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,\
-    missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file,\
+from tests.files.paths import missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file, \
+    missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file, \
     with_missing_bp_xml_file, with_missing_bp_xml_plain_file
-from tests.test_calibrator.calibrator_solutions import sol_with_missing_sampling_array, with_missing_solution_df,\
+from tests.test_calibrator.calibrator_solutions import sol_with_missing_sampling_array, with_missing_solution_df, \
     missing_solution_df
 from tests.utils.utils import npt_array_err_message
 
@@ -19,7 +19,8 @@ _rtol = 1e-10
 
 cal_with_missing_input_files = [with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file,
                                 with_missing_bp_xml_file, with_missing_bp_xml_plain_file]
-cal_isolated_missing_input_files = [missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,
+cal_isolated_missing_input_files = [missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file,
+                                    missing_bp_xml_file,
                                     missing_bp_xml_plain_file]
 
 

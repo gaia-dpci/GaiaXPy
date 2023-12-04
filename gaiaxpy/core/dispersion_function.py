@@ -15,6 +15,7 @@ from scipy import interpolate
 from gaiaxpy.config.paths import config_path, config_ini_file
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 
+
 @lru_cache(maxsize=None)
 def read_config_file():
     config_parser = ConfigParser()

@@ -15,17 +15,18 @@ from tqdm import tqdm
 
 from gaiaxpy.config.paths import config_path, config_ini_file
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
-from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_wl_sampling, \
+from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_wl_sampling, \
     parse_band
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
-from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.utils import get_covariance_matrix
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from .external_instrument_model import ExternalInstrumentModel
+from ..core.input_validator import validate_save_arguments
+from ..spectrum.calibration_absolute_sampled_spectrum import CalibrationAbsoluteSampledSpectrum
 
 __FUNCTION_KEY = 'calibrator'
 
@@ -71,7 +72,7 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
                bp_model: str = 'v375wi', rp_model: str = 'v142r', disable_info: bool = False) -> \
         (pd.DataFrame, np.ndarray):
     """
-    Internal method of the calibration utility. Refer to "calibrate".
+    Internal function of the calibration utility. Refer to "calibrate".
 
     Args:
         bp_model (str): The bp model.
@@ -85,17 +86,17 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
         ValueError: If the sampling is out of the expected boundaries.
     """
     validate_wl_sampling(sampling)
-    validate_arguments(_calibrate.__defaults__[3], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, _calibrate, username, password,
-                                               disable_info=disable_info).read()
+    validate_save_arguments(_calibrate.__defaults__[3], output_file, _calibrate.__defaults__[4], output_format,
+                            save_file)
+    parsed_input_data, extension = InputReader(input_object, _calibrate, disable_info=disable_info, user=username,
+                                               password=password).read()
     xp_design_matrices, xp_merge = __generate_xp_matrices_and_merge(__FUNCTION_KEY, sampling, bp_model, rp_model)
     spectra_df, positions = __create_spectra(parsed_input_data, truncation, xp_design_matrices, xp_merge,
                                              with_correlation=with_correlation, disable_info=disable_info)
+    spectra_df = cast_output(spectra_df)
     output_data = SampledSpectraData(spectra_df, positions)
-    output_data.data = cast_output(output_data)
-    # Save output
     output_data.save(save_file, output_path, output_file, output_format, extension)
-    return output_data.data, positions
+    return spectra_df, positions
 
 
 def __create_merge(xp: str, sampling: np.ndarray) -> np.ndarray:
@@ -165,18 +166,18 @@ def __generate_xp_matrices_and_merge(label: str, sampling: np.ndarray, bp_model:
         xp_merge = {xp: __create_merge(xp, sampling) for xp in BANDS}
         xp_design_matrices = {xp: SampledBasisFunctions.from_external_instrument_model(
             sampling, xp_merge[xp], ExternalInstrumentModel.from_config_csv(
-                __get_file_for_xp(xp, 'dispersion'), __get_file_for_xp(xp, 'response'), __get_file_for_xp(xp, 'bases')))
-            for xp in BANDS}
+                __get_file_for_xp(xp, 'dispersion'), __get_file_for_xp(xp, 'response'),
+                __get_file_for_xp(xp, 'bases'))) for xp in BANDS}
     return xp_design_matrices, xp_merge
 
 
-def __create_spectra(parsed_spectrum_file: pd.DataFrame, truncation: bool, design_matrices: dict, merge: dict,
-                     with_correlation: bool = False, disable_info: bool = False):
+def __create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_matrices: dict,
+                     merge: dict, with_correlation: bool = False, disable_info: bool = False):
     """
      Create a DataFrame of absolute sampled spectra for each source in the parsed mean spectra file.
 
      Args:
-         parsed_spectrum_file (DataFrame): DataFrame containing information for each source in the mean spectra file.
+         parsed_input_data (DataFrame): DataFrame containing information for each source in the mean spectra file.
              This includes columns for both bands (although one band could be missing).
          truncation (bool): If True, the set of bases is truncated.
          design_matrices (dict): Dictionary containing 2D arrays of basis functions sampled on the pseudo-wavelength
@@ -192,12 +193,11 @@ def __create_spectra(parsed_spectrum_file: pd.DataFrame, truncation: bool, desig
                  attributes 'data_type' indicating the type of spectra and 'positions' indicating the sample positions.
              positions (ndarray): 1D array of the sample positions.
      """
-    parsed_spectrum_file_dict = parsed_spectrum_file.to_dict('records')
+    parsed_spectrum_file_dict = parsed_input_data.to_dict('records')
     spectra_series = pd.Series([_create_spectrum(row, truncation, design_matrices, merge,
-                                                 with_correlation=with_correlation)
-                                for row in tqdm(parsed_spectrum_file_dict, desc=pbar_message[__FUNCTION_KEY],
-                                                unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour,
-                                                disable=disable_info)])
+                                                 with_correlation=with_correlation) for row in tqdm(
+        parsed_spectrum_file_dict, desc=pbar_message[__FUNCTION_KEY], unit=pbar_units[__FUNCTION_KEY], leave=False,
+        colour=pbar_colour, disable=disable_info)])
     positions = spectra_series.iloc[0].get_positions()
     spectra_type = get_spectra_type(spectra_series.iloc[0])
     spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict())
@@ -220,12 +220,12 @@ def _create_spectrum(row, truncation, design_matrix, merge, with_correlation=Fal
             and define the contributions from BP and RP to the joined absolute spectrum.
 
     Returns:
-        AbsoluteSampledSpectrum: The absolute sampled spectrum.
+        CalibrationAbsoluteSampledSpectrum: The absolute sampled spectrum with calibration behaviour.
     """
     source_id = row['source_id']
     continuous_dict = {band: XpContinuousSpectrum(source_id, band, row[f'{band}_coefficients'],
                                                   get_covariance_matrix(row, band), row[f'{band}_standard_deviation'])
                        for band in BANDS}
     recommended_truncation = {band: row[f'{band}_n_relevant_bases'] for band in BANDS} if truncation else dict()
-    return AbsoluteSampledSpectrum(source_id, continuous_dict, design_matrix, merge, truncation=recommended_truncation,
-                                   with_correlation=with_correlation)
+    return CalibrationAbsoluteSampledSpectrum(source_id, continuous_dict, design_matrix, merge,
+                                              truncation=recommended_truncation, with_correlation=with_correlation)

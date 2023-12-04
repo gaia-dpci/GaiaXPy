@@ -46,8 +46,7 @@ calibrator_sol_path = join(files_path, 'calibrator_solution')
 colour_eq_sol_path = join(files_path, 'colour_equation')
 converter_sol_path = join(files_path, 'converter_solution')
 generator_sol_path = join(files_path, 'generator_solution')
-linefinder_sol_path = join(files_path, 'linefinder_solution')
-corrected_errors_solution_path = join(files_path, 'error_correction_solution', 'corrected_errors_solution.csv')
+corrected_error_sol_path = join(files_path, 'error_correction_solution')
 
 """
 ========================================
@@ -129,25 +128,6 @@ phot_system_specs_converters = {'bands': lambda x: x[1:-1].split(','),
 phot_system_specs_path = join(files_path, 'PhotometricSystemSpecs.csv')
 
 """
-==============================
-  Linefinder solutions paths
-==============================
-"""
-found_extrema_real_path = join(linefinder_sol_path, 'extremafinder_output.csv')
-found_extrema_trunc_real_path = join(linefinder_sol_path, 'extremafinder_trunc_output.csv')
-found_extrema_no_bp_real_path = join(linefinder_sol_path, 'extremafinder_no_bp_output.csv')
-
-found_fast_real_path = join(linefinder_sol_path, 'fastfinder_output.csv')
-found_fast_trunc_real_path = join(linefinder_sol_path, 'fastfinder_trunc_output.csv')
-found_fast_no_bp_real_path = join(linefinder_sol_path, 'fastfinder_no_bp_output.csv')
-
-found_lines_real_path = join(linefinder_sol_path, 'linefinder_output.csv')
-found_lines_trunc_real_path = join(linefinder_sol_path, 'linefinder_trunc_output.csv')
-found_lines_no_bp_real_path = join(linefinder_sol_path, 'linefinder_no_bp_output.csv')
-
-file_lines_example_path = join(linefinder_sol_path, 'lines_example.txt')
-
-"""
 ================================
   Mini files (first test files)
 =================================
@@ -157,3 +137,10 @@ mini_csv_file = join(mini_path, 'SPSS_mini.csv')
 mini_fits_file = join(mini_path, 'XP_SPECTRA_RAW_mini.fits')
 mini_xml_file = join(mini_path, 'XP_SPECTRA_RAW_mini.xml')
 no_ext_file = join(files_path, 'no_extension_file')
+
+"""
+=====================
+  Other input paths
+=====================
+"""
+phot_with_nan_path = join(files_path, 'phot_with_nan.csv')

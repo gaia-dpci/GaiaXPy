@@ -1,7 +1,7 @@
 """
 Setup module for GaiaXPy.
 
-Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres - 2022
+Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres - 2023
 
 Based on:
 https://packaging.python.org/tutorials/packaging-projects
@@ -29,6 +29,7 @@ INSTALL_REQUIRES = ['aenum',
                     'astropy',
                     'astroquery',
                     'fastavro',
+                    'hdfs',
                     'matplotlib',
                     'numpy>1.13',
                     'packaging',

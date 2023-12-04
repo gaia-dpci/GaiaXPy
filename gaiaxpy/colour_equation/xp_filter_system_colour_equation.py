@@ -17,10 +17,11 @@ from numpy import poly1d
 from tqdm import tqdm
 
 from gaiaxpy.config.paths import filters_path
-from gaiaxpy.core.generic_functions import cast_output, validate_arguments
-from gaiaxpy.core.generic_variables import pbar_colour, pbar_units
+from gaiaxpy.core.generic_functions import cast_output
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
+from gaiaxpy.core.input_validator import validate_save_arguments
 from gaiaxpy.generator.photometric_system import PhotometricSystem
-from gaiaxpy.input_reader.input_reader import InputReader
+from gaiaxpy.input_reader.dataframe_reader import DataFrameReader
 from gaiaxpy.output.photometry_data import PhotometryData
 
 colour_eq_dir = Path(filters_path, '..', 'colour_eq_files')
@@ -96,12 +97,13 @@ def __create_rows(single_system_df, system, colour_band_0, colour_band_1, system
 
 
 def _generate_output_df(input_synthetic_photometry, systems_details, disable_info=False):
+    __FUNCTION_KEY = 'colour_eq'
     synth_phot_df = input_synthetic_photometry.copy()
     column_names = synth_phot_df.columns
     # Extract columns corresponding to one system
     system_keys = systems_details.keys()
-    for label in tqdm(system_keys, desc='Applying colour equation', total=len(system_keys),
-                      unit=pbar_units['colour_eq'], colour=pbar_colour, leave=False, disable=disable_info):
+    for label in tqdm(system_keys, desc=pbar_message[__FUNCTION_KEY], total=len(system_keys),
+                      unit=pbar_units[__FUNCTION_KEY], colour=pbar_colour, leave=False, disable=disable_info):
         filter_to_correct = systems_details[label]['filter']
         colour_band_0, colour_band_1 = _get_colour_bands(systems_details[label]['colour_index'])
         system_columns_with_colour = [column for column in column_names if column.startswith(f'{label}_') and
@@ -243,9 +245,9 @@ def _apply_colour_equation(input_synthetic_photometry: pd.DataFrame,
                            output_file: str = 'corrected_photometry', output_format: Optional[str] = None,
                            save_file: bool = True, disable_info=False):
     function = apply_colour_equation
-    validate_arguments(function.__defaults__[2], output_file, save_file)
-    input_synthetic_photometry, extension = InputReader(input_synthetic_photometry, function,
-                                                        disable_info=disable_info).read()
+    validate_save_arguments(function.__defaults__[2], output_file, function.__defaults__[3], output_format, save_file)
+    input_synthetic_photometry, extension = DataFrameReader(input_synthetic_photometry, function,
+                                                            disable_info=disable_info).read()
     systems_to_correct = __get_systems_to_correct(photometric_system)
     systems_details = __fill_systems_details(systems_to_correct)
     output_df = _generate_output_df(input_synthetic_photometry, systems_details, disable_info=disable_info)

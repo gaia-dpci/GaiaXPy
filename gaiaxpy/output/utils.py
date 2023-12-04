@@ -23,6 +23,8 @@ def _array_to_standard(array, extension='csv'):
     Returns:
         tuple: The array converted to a tuple.
     """
+    if array is None:
+        return array
     if not isinstance(array, ndarray):
         raise ValueError('Input must be a NumPy array.')
 
@@ -49,22 +51,6 @@ def _get_sampling_dict(positions):
     return {'pos': _array_to_standard(positions)}
 
 
-def _standardise_output_format(_format):
-    """
-    Standardise the output format provided by the user which can contain or not an initial dot, and can contain a
-        mixture of uppercase and lowercase letters.
-
-    Args:
-        _format (str): Output format for the file as provided by the user.
-
-    Returns:
-        str: The format in lowercase letters and with no initial dot (eg.: 'csv').
-    """
-    # Remove initial dot if present
-    _format = _format[1:] if _format[0] == '.' else _format
-    return _format.lower()
-
-
 def _load_header_dict():
     current_path = dirname(abspath(__file__))
     header_dictionary_path = join(current_path, 'ecsv_headers', 'headers_dict.txt')
@@ -75,28 +61,35 @@ def _load_header_dict():
     return header_dict
 
 
+def _get_col_subtype_len(_df, _column):
+    for index in range(0, len(_df)):
+        try:
+            return len(_df[_column].iloc[index])
+        except TypeError:
+            pass
+    raise ValueError('All arrays in the data seem to be empty. This should never happen.')
+
+
 def _build_ecsv_header(df, positions=None):
-    positions = str(list(positions)) if positions is not None else None
+    positions = None if positions is None else str(list(positions))
     columns = df.columns
     header_dict = _load_header_dict()
     header = _initialise_header()
     data_type = df.attrs['data_type']
     units_dict = data_type.get_units()
     for column in columns:
+        current_column = header_dict[column]
         header.append('# -')
         header.append(f'#   name: {column}')
-        header.append(f'#   datatype: {header_dict[column]["datatype"]}')
-        try:
-            header.append(
-                f'#   subtype: {header_dict[column]["subtype"].replace("null", str(len(df[column].iloc[0])))}')
-        except KeyError:
-            pass
-        header.append(f'#   description: {header_dict[column]["description"]}')
+        header.append(f'#   datatype: {current_column["datatype"]}')
+        if 'subtype' in current_column.keys():
+            header.append(f'#   subtype: {current_column["subtype"].replace("null", str(_get_col_subtype_len(df, column)))}')
+        header.append(f'#   description: {current_column["description"]}')
         if units_dict.get(column, None):
             header.append(f'#   unit: {units_dict[column]}')
-        if header_dict[column].get('meta', None):
+        if current_column.get('meta', None):
             header.append('#   meta:')
-            header.append(f'#     ucd: {header_dict[column]["meta"]}')
+            header.append(f'#     ucd: {current_column["meta"]}')
     if positions:
         header.append('# meta:')
         header.append(f'#   sampling: {positions}')

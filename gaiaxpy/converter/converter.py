@@ -4,9 +4,7 @@ converter.py
 Module for the converter functionality.
 """
 
-from configparser import ConfigParser
 from numbers import Number
-from os import path
 from pathlib import Path
 from typing import Union, Optional
 
@@ -14,7 +12,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_arguments, validate_pwl_sampling
+from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_pwl_sampling
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -22,8 +20,9 @@ from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-from .config import get_config, load_config
-from ..config.paths import optimised_bases_file
+from .config import parse_config, get_bands_config
+from ..config.paths import hermite_bases_file
+from ..core.input_validator import validate_save_arguments
 
 __FUNCTION_KEY = 'converter'
 
@@ -62,21 +61,20 @@ def convert(input_object: Union[list, Path, str], sampling: Optional[np.ndarray]
         ValueError: If the sampling is out of the expected boundaries.
     """
     return _convert(input_object=input_object, sampling=sampling, truncation=truncation,
-                    with_correlation=with_correlation,
-                    output_path=output_path, output_file=output_file, output_format=output_format, save_file=save_file,
-                    username=username, password=password)
+                    with_correlation=with_correlation, output_path=output_path, output_file=output_file,
+                    output_format=output_format, save_file=save_file, username=username, password=password)
 
 
 def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.linspace(0, 60, 600),
              truncation: bool = False, with_correlation: bool = False, output_path: Union[Path, str] = '.',
              output_file: str = 'output_spectra', output_format: str = None, save_file: bool = True,
-             username: str = None, password: str = None, disable_info: bool = False) -> (pd.DataFrame, np.ndarray):
+             username: str = None, password: str = None, disable_info: bool = False, config_file=hermite_bases_file) \
+        -> (pd.DataFrame, np.ndarray):
     """
     Internal method of the calibration utility. Refer to "convert".
 
     Args:
-        disable_tqdm (bool): Whether to disable the progress tracker. Required to suppress the progress bar
-        of functions run internally in the linefinder module.
+        disable_info (bool): Whether to disable the progress tracker.
 
     Returns:
         DataFrame: A list of all sampled absolute spectra.
@@ -85,19 +83,16 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     Raises:
         ValueError: If the sampling is out of the expected boundaries.
     """
-    # Check sampling
+    function = convert
     validate_pwl_sampling(sampling)
-    validate_arguments(convert.__defaults__[4], output_file, save_file)
-    parsed_input_data, extension = InputReader(input_object, convert, username, password,
-                                               disable_info=disable_info).read()
-    config_df = load_config(optimised_bases_file)
-    # Union of unique ids as sets
-    unique_bases_ids = get_unique_basis_ids(parsed_input_data)
-    # Get design matrices
-    design_matrices = get_design_matrices(unique_bases_ids, sampling, config_df)
+    validate_save_arguments(function.__defaults__[4], output_file, function.__defaults__[5], output_format, save_file)
+    parsed_input_data, extension = InputReader(input_object, convert, disable_info=disable_info, user=username,
+                                               password=password).read()
+    bases_config = parse_config(config_file)
+    design_matrices = get_design_matrices(sampling, bases_config)
     spectra_df, positions = _create_spectra(parsed_input_data, truncation, design_matrices,
                                             with_correlation=with_correlation, disable_info=disable_info)
-    # Save output
+    # Save output section
     output_data = SampledSpectraData(spectra_df, positions)
     output_data.data = cast_output(output_data)
     output_data.save(save_file, output_path, output_file, output_format, extension)
@@ -122,11 +117,10 @@ def _create_spectrum(row: pd.Series, truncation: bool, design_matrices: dict, ba
     Returns:
         XpSampledSpectrum: The sampled spectrum.
     """
-    covariance_matrix = row[f'{band}_covariance_matrix']
     recommended_truncation = row[f'{band}_n_relevant_bases'] if truncation else -1
     continuous_spectrum = XpContinuousSpectrum(row['source_id'], band, row[f'{band}_coefficients'],
-                                               covariance_matrix, row[f'{band}_standard_deviation'])
-    return XpSampledSpectrum.from_continuous(continuous_spectrum, design_matrices.get(row[f'{band}_basis_function_id']),
+                                               row[f'{band}_covariance_matrix'], row[f'{band}_standard_deviation'])
+    return XpSampledSpectrum.from_continuous(continuous_spectrum, design_matrices.get(band),
                                              truncation=recommended_truncation, with_correlation=with_correlation)
 
 
@@ -162,12 +156,8 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
         Returns:
             list: A list of spectra for the given row of parsed input data containing one element per band available.
         """
-        spectra_list = []
-        for band in BANDS:
-            spectrum_xp = _create_spectrum(row, _truncation, _design_matrices, band, with_correlation=_with_correlation)
-            if spectrum_xp:
-                spectra_list.append(spectrum_xp)
-        return spectra_list
+        return [_create_spectrum(row, _truncation, _design_matrices, band, with_correlation=_with_correlation)
+                for band in BANDS]
 
     parsed_input_data_dict = parsed_input_data.to_dict('records')
     spectra_series = pd.Series([create_xp_spectra(row, truncation, design_matrices, with_correlation)
@@ -194,7 +184,6 @@ def get_unique_basis_ids(parsed_input_data: pd.DataFrame) -> set:
     Returns:
         set: A set containing all the required unique basis function IDs.
     """
-
     # Keep only non-NaN values (in Python, nan != nan)
     def remove_nans(_set):
         return {int(element) for element in _set if element == element}
@@ -204,16 +193,22 @@ def get_unique_basis_ids(parsed_input_data: pd.DataFrame) -> set:
     return remove_nans(set_bp).union(remove_nans(set_rp))
 
 
-def get_design_matrices(unique_bases_ids: set, sampling: np.ndarray, config_df: pd.DataFrame) -> dict:
+def get_design_matrices(sampling: np.ndarray, bases_config: pd.DataFrame) -> dict:
     """
     Get the design matrices corresponding to the input bases.
 
     Args:
-        unique_bases_ids (set): A set containing the basis function IDs for which the design matrix is required.
         sampling (ndarray): 1D array containing the sampling grid.
-        config_df (DataFrame): A DataFrame containing the configuration for all sets of basis functions.
+        bases_config (NamedTuple): An object containing the configuration for all sets of basis functions.
 
     Returns:
         dict: The design matrices for the input list of bases.
     """
-    return {_id: SampledBasisFunctions.from_config(sampling, get_config(config_df, _id)) for _id in unique_bases_ids}
+    bands_config = get_bands_config(bases_config)
+    bp_config = bands_config.bpConfig
+    rp_config = bands_config.rpConfig
+    bp_config_dict = {field: getattr(bp_config, field) for field in bp_config._fields}
+    rp_config_dict = {field: getattr(rp_config, field) for field in rp_config._fields}
+    bands_config = {key: value for key, value in zip(BANDS, [bp_config_dict, rp_config_dict])}
+    config_df = pd.DataFrame.from_dict(bands_config, orient='index')
+    return {band: SampledBasisFunctions.from_config(sampling, config_df.loc[[band]]) for band in BANDS}

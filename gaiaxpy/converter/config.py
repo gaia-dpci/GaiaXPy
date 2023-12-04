@@ -232,6 +232,15 @@ def parse_config(xml_file: Union[Path, str]) -> namedtuple:
     return __parse_config(x_root, outer_title=outer_title)
 
 
+def get_bands_config(bases_config):
+    if hasattr(bases_config, 'hermiteFunction'):
+        return bases_config.hermiteFunction
+    elif hasattr(bases_config, 'basisDefinition'):
+        return bases_config.basisDefinition.spline
+    else:
+        raise ValueError(f'Bases configuration type not implemented.')
+
+
 def get_unique_id(config: pd.DataFrame, _id: int) -> pd.DataFrame:
     """
     Access the group of rows in the configuration for the given ID.

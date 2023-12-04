@@ -137,36 +137,32 @@ def _hermite_function(n, x):
 
 
 def populate_design_matrix(sampling_grid, bases_config):
-    if 'transformedSetDimension' in bases_config.columns:
+    if 'transformedSetDimension' in bases_config._fields:
         # Hermite part
         n_samples = len(sampling_grid)
-        scale = (bases_config['normalizedRange'].iloc(0)[0][1] - bases_config['normalizedRange'].iloc(0)[0][0]) / \
-                (bases_config['range'].iloc(0)[0][1] - bases_config['range'].iloc(0)[0][0])
-        offset = bases_config['normalizedRange'].iloc(0)[0][0] - bases_config['range'].iloc(0)[0][0] * scale
+        scale = (bases_config.normalizedRange[1] - bases_config.normalizedRange[0]) / (bases_config.range[1] -
+                                                                                       bases_config.range[0])
+        offset = bases_config.normalizedRange[0] - bases_config.range[0] * scale
         rescaled_pwl = (sampling_grid * scale) + offset
 
         def psi(n, x):
             return 1.0 / np.sqrt(math.pow(2, n) * gamma(n + 1) *
                                  np.sqrt(np.pi)) * np.exp(-x ** 2 / 2.0) * eval_hermite(n, x)
 
-        dimension = int(bases_config['dimension'].iloc[0])
-        transformed_set_dimension = int(bases_config['transformedSetDimension'].iloc[0])
-        bases_transformation = bases_config['transformationMatrix'].iloc(0)[0].reshape(dimension,
-                                                                                       transformed_set_dimension)
+        dimension = int(bases_config.dimension)
+        transformed_set_dimension = int(bases_config.transformedSetDimension)
+        bases_transformation = bases_config.transformationMatrix.reshape(dimension, transformed_set_dimension)
         design_matrix = np.array([psi(n_h, pos) for pos in rescaled_pwl for n_h in np.arange(dimension)]).reshape(
             n_samples, dimension)
         return bases_transformation @ design_matrix.T
-    elif 'knots' in bases_config.columns:
-        # Spline part
-        if len(bases_config) != 1:
-            raise ValueError('Only one row should be accepted at a time.')
-        knots = bases_config['knots'].iloc[0]
+    elif 'knots' in bases_config._fields:
+        knots = bases_config.knots
         n_knots = len(knots)
-        order = bases_config['order'].iloc[0]
+        order = bases_config.order
         degree = order - 1
         n_bases = n_knots - order
         n_samples = len(sampling_grid)
-        if 'transformationMatrix' in bases_config.__dir__():
+        if 'transformationMatrix' in bases_config._fields:
             bases_transformation = bases_config.transformationMatrix.reshape(bases_config.transformedSetDimension,
                                                                              n_bases)
         else:

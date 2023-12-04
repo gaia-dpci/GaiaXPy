@@ -3,8 +3,8 @@ import unittest
 import numpy as np
 
 from gaiaxpy.config.paths import hermite_bases_file
-from gaiaxpy.converter.config import parse_config
-from gaiaxpy.converter.converter import get_design_matrices, get_unique_basis_ids
+from gaiaxpy.core.generic_functions import parse_config
+from gaiaxpy.converter.converter import get_design_matrices
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.generic_spectrum import Spectrum

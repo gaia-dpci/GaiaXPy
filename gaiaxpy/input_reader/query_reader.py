@@ -5,19 +5,19 @@ from .archive_reader import ArchiveReader
 from .dataframe_reader import DataFrameReader
 from ..core.custom_errors import SelectorNotImplementedError
 
-not_supported_functions = ['apply_colour_equation', 'simulate_continuous', 'simulate_sampled']
+not_supported_functions = ['apply_colour_equation']
 
 
 class QueryReader(ArchiveReader):
 
-    def __init__(self, content, function, user=None, password=None, additional_columns=None, selector=None,
+    def __init__(self, content, function, truncation, user=None, password=None, additional_columns=None, selector=None,
                  disable_info=False):
         if additional_columns is None:
             additional_columns = dict()
         if selector is not None:
             raise SelectorNotImplementedError('Query')
         self.content = content
-        super(QueryReader, self).__init__(function, user, password, additional_columns=additional_columns,
+        super(QueryReader, self).__init__(function, truncation, user, password, additional_columns=additional_columns,
                                           disable_info=disable_info)
 
     def read(self, _data_release=data_release):
@@ -42,5 +42,5 @@ class QueryReader(ArchiveReader):
             raise ValueError('No continuous raw data found for the requested query.')
         if not self.disable_info:
             print(self.info_msg + ' Done!', end='\r')
-        return DataFrameReader(data, function_name, additional_columns=self.additional_columns,
+        return DataFrameReader(data, function_name, self.truncation, additional_columns=self.additional_columns,
                                disable_info=True).read()

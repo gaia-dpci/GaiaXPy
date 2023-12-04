@@ -70,7 +70,7 @@ class TestCalibratorMissingBPDataFrameInput(unittest.TestCase):
     def test_missing_bp_parsed_dataframe(self):
         # Test completely parsed (arrays + matrices) dataframe
         file = with_missing_bp_csv_file
-        df, _ = InputReader(file, calibrate).read()
+        df, _ = InputReader(file, calibrate, None).read()
         output_df, sampling = calibrate(df, save_file=False)
         npt.assert_array_equal(sampling, sol_with_missing_sampling_array, err_msg=npt_array_err_message(file))
         pdt.assert_frame_equal(output_df, with_missing_solution_df, atol=_atol, rtol=_rtol)
@@ -78,7 +78,7 @@ class TestCalibratorMissingBPDataFrameInput(unittest.TestCase):
     def test_missing_bp_parsed_dataframe_isolated(self):
         # Test fully parsed (arrays + matrices) dataframe
         file = missing_bp_csv_file
-        df, _ = InputReader(file, calibrate).read()
+        df, _ = InputReader(file, calibrate, None).read()
         output_df, sampling = calibrate(df, save_file=False)
         npt.assert_array_equal(sampling, sol_with_missing_sampling_array, err_msg=file)
         pdt.assert_frame_equal(output_df, missing_solution_df, atol=_atol, rtol=_rtol)

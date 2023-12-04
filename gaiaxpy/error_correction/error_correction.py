@@ -116,7 +116,7 @@ def _apply_error_correction(input_multi_photometry, photometric_system=None, out
     __FUNCTION_KEY = 'correction'
     gaia_system = 'GaiaDr3Vega'
     gaia_G_mag_column = f'{gaia_system}_mag_G'
-    input_multi_photometry, extension = InputReader(input_multi_photometry, apply_error_correction,
+    input_multi_photometry, extension = InputReader(input_multi_photometry, apply_error_correction, None,
                                                     disable_info=disable_info).read()
     # Validate that it is a multi-photometry, but how? First try below:
     if gaia_G_mag_column not in input_multi_photometry.columns:

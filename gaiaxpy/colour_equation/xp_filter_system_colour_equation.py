@@ -246,7 +246,7 @@ def _apply_colour_equation(input_synthetic_photometry: pd.DataFrame,
                            save_file: bool = True, disable_info=False):
     function = apply_colour_equation
     validate_save_arguments(function.__defaults__[2], output_file, function.__defaults__[3], output_format, save_file)
-    input_synthetic_photometry, extension = DataFrameReader(input_synthetic_photometry, function,
+    input_synthetic_photometry, extension = DataFrameReader(input_synthetic_photometry, function, None,
                                                             disable_info=disable_info).read()
     systems_to_correct = __get_systems_to_correct(photometric_system)
     systems_details = __fill_systems_details(systems_to_correct)

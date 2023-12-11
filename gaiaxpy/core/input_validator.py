@@ -69,6 +69,7 @@ def check_column_overwrite(additional_columns, required_columns):
         if isinstance(value, list) and len(value) == 1 and value[0] in required_columns and key != value[0]:
             common_names.append(key)
     if common_names:
-        raise ValueError("The additional columns input contains one or more elements that either have names matching "
-                         "the required columns for GaiaXPy's output or will be renamed to match them. This is not "
-                         f"allowed. The elements causing this issue are: {', '.join(common_names)}.")
+        raise ValueError('One or more elements in the additional columns input will be renamed to a column'
+                         ' required by GaiaXPy to compute the output. This is not permitted. The offending'
+                         f' elements are: {", ".join(common_names)}.')
+        

@@ -203,11 +203,12 @@ class InternalContinuousParser(GenericParser):
                 except ConnectionError:
                     retries += 1
             else:
-                raise ConnectionError('Failed to connect to HDFS.')
+                raise ConnectionError(f'Failed to connect to HDFS after {max_conn_retries} attempts.')
             return _df
-        if version.parse(fa_version) <= version.parse("1.4.7"):
+
+        if version.parse(fa_version) <= version.parse('1.4.7'):
             __get_records = InternalContinuousParser.__get_records_up_to_1_4_7
-        elif version.parse(fa_version) > version.parse("1.4.7"):
+        elif version.parse(fa_version) > version.parse('1.4.7'):
             __get_records = InternalContinuousParser.__get_records_later_than_1_4_7
         else:
             raise ValueError(f'Fastavro version {fa_version} may not have been parsed properly.')

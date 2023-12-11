@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
 from .dataframe_numpy_array_reader import DataFrameNumPyArrayReader
@@ -26,6 +27,8 @@ def needs_matrix_conversion(array_columns):
 class DataFrameReader(object):
 
     def __init__(self, content, function, additional_columns=None, selector=None, disable_info=False):
+        if not isinstance(content, pd.DataFrame):
+            raise ValueError('Input to read must be a DataFrame.')
         if selector is not None:
             raise SelectorNotImplementedError('DataFrame')
         self.additional_columns = dict() if additional_columns is None else additional_columns

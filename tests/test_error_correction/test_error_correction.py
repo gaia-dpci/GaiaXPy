@@ -1,5 +1,4 @@
 import unittest
-from os.path import join
 
 import pandas as pd
 import pandas.testing as pdt
@@ -73,4 +72,3 @@ class TestErrorCorrection(unittest.TestCase):
         output = apply_error_correction(phot_with_nan_df, save_file=False)
         solution = pd.read_csv(phot_with_nan_corrected_sol_path)
         pdt.assert_frame_equal(output, solution)
-

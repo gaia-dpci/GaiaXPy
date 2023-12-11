@@ -18,11 +18,10 @@ from tqdm import tqdm
 
 from gaiaxpy.config.paths import filters_path
 from gaiaxpy.core.generic_functions import cast_output
-from gaiaxpy.core.input_validator import validate_save_arguments
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
+from gaiaxpy.core.input_validator import validate_save_arguments
 from gaiaxpy.generator.photometric_system import PhotometricSystem
 from gaiaxpy.input_reader.dataframe_reader import DataFrameReader
-from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
 
 colour_eq_dir = Path(filters_path, '..', 'colour_eq_files')

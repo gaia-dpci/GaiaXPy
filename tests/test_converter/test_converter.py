@@ -14,9 +14,9 @@ from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-from tests.files.paths import mean_spectrum_xml_plain_file, con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path,\
-    mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,\
-    mean_spectrum_xml_file
+from tests.files.paths import (con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path, mean_spectrum_avro_file,
+                               mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,
+                               mean_spectrum_xml_file, mean_spectrum_xml_plain_file)
 from tests.test_converter.converter_paths import optimised_bases_df, converter_csv_solution_0_60_481_df
 from tests.utils.utils import get_spectrum_with_source_id_and_xp, npt_array_err_message, is_instance_err_message
 
@@ -50,13 +50,12 @@ class TestGetMethods(unittest.TestCase):
         instance = SampledBasisFunctions
         for file in con_input_files:
             parsed_input, _ = parser.parse_file(file)
-            unique_bases_ids = get_unique_basis_ids(parsed_input)
-            design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_bases_df)
+            design_matrices = get_design_matrices(sampling, optimised_bases_df)
             self.assertIsInstance(design_matrices, dict, msg=is_instance_err_message(file, dict))
             self.assertEqual(len(design_matrices), 2)
-            self.assertEqual(list(design_matrices.keys()), [56, 57])
-            self.assertIsInstance(design_matrices[56], instance, msg=is_instance_err_message(file, instance))
-            self.assertIsInstance(design_matrices[57], instance, msg=is_instance_err_message(file, instance))
+            self.assertEqual(list(design_matrices.keys()), ['bp', 'rp'])
+            self.assertIsInstance(design_matrices['bp'], instance, msg=is_instance_err_message(file, instance))
+            self.assertIsInstance(design_matrices['rp'], instance, msg=is_instance_err_message(file, instance))
 
 
 class TestCreateSpectrum(unittest.TestCase):
@@ -68,8 +67,7 @@ class TestCreateSpectrum(unittest.TestCase):
         for file in con_input_files:
             parsed_input, _ = parser.parse_file(file)
             parsed_input_dict = parsed_input.to_dict('records')
-            unique_bases_ids = get_unique_basis_ids(parsed_input)
-            design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_bases_df)
+            design_matrices = get_design_matrices(sampling, optimised_bases_df)
             for row in islice(parsed_input_dict, 1):  # Just the first row
                 for band in BANDS:
                     spectrum[band] = _create_spectrum(row, truncation, design_matrices, band)

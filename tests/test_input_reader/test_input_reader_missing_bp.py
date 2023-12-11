@@ -6,9 +6,9 @@ import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import convert
-from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.input_reader.input_reader import InputReader
-from tests.files.paths import with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file,\
+from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
+from tests.files.paths import with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file, \
     with_missing_bp_xml_file, with_missing_bp_xml_plain_file, input_reader_solution_path
 from tests.utils.utils import parse_matrices
 
@@ -62,7 +62,8 @@ class TestInputReaderMissingBPFile(unittest.TestCase):
         solution_df = solution_df.drop(columns=columns_to_drop)
         # Temporarily opt for removing cov matrices before comparing
         parsed_data_file = parsed_data_file.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
-        pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False, check_like=True)
+        pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False,
+                               check_like=True)
 
     def test_xml_file_missing_bp(self):
         solution_df = pd.read_csv(input_reader_solution_path, converters=ir_array_converters, usecols=CON_COLS)
@@ -74,4 +75,5 @@ class TestInputReaderMissingBPFile(unittest.TestCase):
         # Temporarily opt for removing cov matrices before comparing
         parsed_data_file = parsed_data_file.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
         solution_df = solution_df.drop(columns=columns_to_drop)
-        pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False, check_like=True)
+        pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False,
+                               check_like=True)

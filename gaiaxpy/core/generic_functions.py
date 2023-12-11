@@ -246,6 +246,8 @@ def correlation_to_covariance(correlation: np.ndarray, error: np.ndarray, stdev:
     Raises:
         ValueError: If the dimensions of input correlation are not either 1 or 2.
     """
+    if isinstance(correlation, float) and pd.isna(correlation):
+        return None
     if correlation.ndim == 1:
         size = get_matrix_size_from_lower_triangle(correlation)
         new_matrix = np.zeros((size, size))
@@ -346,3 +348,11 @@ def validate_photometric_system(photometric_system):
 
 def rename_with_required(data, additional_columns):
     return data.rename(columns=reverse_simple_add_col_dict(additional_columns))
+
+
+def is_array_empty(array):
+    return array is None or (not isinstance(array, np.ndarray) and pd.isna(array)) or (isinstance(array, np.ndarray)
+                                                                                       and len(array) == 0)
+
+def is_variable_empty(var):
+    return var is None or pd.isna(var)

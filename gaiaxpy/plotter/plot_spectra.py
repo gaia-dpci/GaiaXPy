@@ -18,7 +18,7 @@ from .single import SinglePlotter
 def __plot_multi(spectra_type: str, spectra: pd.DataFrame, sampling: ndarray, show_plot: bool,
                  output_path: Optional[Union[Path, str]], output_file: Optional[str], format: str, legend: bool,
                  save_file: bool):
-    if spectra_type == 'AbsoluteSampledSpectrum':
+    if 'AbsoluteSampledSpectrum' in spectra_type:
         plotter = MultiAbsolutePlotter(spectra, sampling, show_plot, output_path, output_file, format,
                                        legend, save_file)
     elif spectra_type == 'XpSampledSpectrum':

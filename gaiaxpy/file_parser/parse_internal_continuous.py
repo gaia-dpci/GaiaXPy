@@ -194,7 +194,6 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the AVRO file.
         """
-
         def __records_to_df(max_conn_retries=10, **_records_arguments):
             retries = 0
             while retries < max_conn_retries:

@@ -43,7 +43,8 @@ def replace_file_name(_config_file, label, key, bp_model, rp_model, system):
         file_name = _config_parser.get(label, key).replace('version', version)
         system = system.replace(f'{ADDITIONAL_SYSTEM_PREFIX}_', '')
     else:
-        file_name = _config_parser.get(label, key).format(label, key).replace('model', f'{bp_model}{rp_model}')
+        file_name = _config_parser.get(label, key).format(label, key).replace('model',
+                                                                              f'{bp_model}{rp_model}')
     file_name = file_name.replace('system', system) if system else file_name.replace('system_', '')
     return file_name
 

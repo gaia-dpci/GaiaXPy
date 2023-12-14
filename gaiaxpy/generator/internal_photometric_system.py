@@ -3,19 +3,20 @@ internal_photometric_system.py
 ====================================
 Module for the parent class of the standardised and regular photometric systems.
 """
+import re
 from configparser import ConfigParser
 from glob import glob
 from os import remove
-from os.path import exists
+from os.path import exists, split, join
 
 from gaiaxpy.config.paths import config_ini_file
-from gaiaxpy.core.config import get_filter_version_from_config, replace_file_name, get_file_path, \
-    ADDITIONAL_SYSTEM_PREFIX
+from gaiaxpy.core.config import (get_filter_version_from_config, replace_file_name, get_file_path,
+                                 ADDITIONAL_SYSTEM_PREFIX)
 from gaiaxpy.core.generic_functions import _get_system_label
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.version import __version__
 from gaiaxpy.core.xml_utils import get_file_root, parse_array, get_array_text, get_xp_sampling_matrix, get_xp_merge
-from .config import _CFG_FILE_PATH
+from .config import _CFG_FILE_PATH, _ADDITIONAL_SYSTEM_FILES_REGEX
 
 
 class InternalPhotometricSystem(object):
@@ -113,10 +114,18 @@ class InternalPhotometricSystem(object):
         Returns:
             str: Path of a file.
         """
+        def _validate_additional_system_file(_actual_path):
+            file_names = [split(p)[1] for p in _actual_path]
+            pattern = re.compile(_ADDITIONAL_SYSTEM_FILES_REGEX, re.IGNORECASE)
+            if all(f.startswith('XpFilter') for f in file_names):
+                return _actual_path
+            return [join(file_path, s) for s in file_names if pattern.match(s) and not s.startswith('XpFilter')]
         file_name = replace_file_name(self.config_file, 'filter', 'filter', bp_model, rp_model, self.label)
+        system_name = file_name.split('.')[0]
         file_path = get_file_path(self.config_file)
         # Search file in file path to obtain the actual path
-        actual_path = glob(file_path + f"/**/{file_name}", recursive=True)
+        actual_path = glob(file_path + f"/**/{system_name}*.xml", recursive=True)
+        actual_path = _validate_additional_system_file(actual_path)
         if len(actual_path) == 0:
             raise ValueError('Filter file not found in given path.')
         elif len(actual_path) > 1:

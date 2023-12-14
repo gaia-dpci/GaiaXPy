@@ -8,7 +8,7 @@ from re import match
 from gaiaxpy.core.config import ADDITIONAL_SYSTEM_PREFIX
 
 _CFG_FILE_PATH = join(tempfile.gettempdir(), urandom(24).hex())
-
+_ADDITIONAL_SYSTEM_FILES_REGEX = '[a-zA-Z0-9-_]+\.gaiaxpy_dr[34]_[a-zA-Z0-9-]+\.xml'
 
 class GenCfg:
 
@@ -33,6 +33,8 @@ def __get_file_names_recursively(dir_path: str, show_warning: bool = False) -> l
     Raises:
         ValueError: If no compliant files are found in the given directory.
     """
+    if not isdir(dir_path):
+        raise ValueError(f'Input path is not a valid directory.')
     all_files = [f for _, _, fn in walk(dir_path) for f in fn]
     compliant_files = [f for f in all_files if __file_name_is_compliant(f)]
     if len(compliant_files) == 0:
@@ -53,8 +55,7 @@ def __file_name_is_compliant(file_name: str) -> bool:
     Returns:
         bool: True if the file name is compliant, False otherwise.
     """
-    regex = '[a-zA-Z0-9-_]+\.gaiaXPy_dr3_[a-zA-Z0-9-]+\.xml'
-    return match(regex, file_name) is not None
+    return match(_ADDITIONAL_SYSTEM_FILES_REGEX, file_name.lower()) is not None
 
 
 def create_config(systems_path: str = None, config_file: str = None):

@@ -307,6 +307,18 @@ def reverse_simple_add_col_dict(d):
     return {value[0]: key if len(value) == 1 else __reverse_error(value) for key, value in d.items()}
 
 
+def validate_additional_columns(additional_columns, function, **kwargs):
+    systems = None
+    additional_columns = format_additional_columns(additional_columns)
+    function_name = function.__name__
+    if function_name not in ALL_ADD_COLS_FUNCTIONS:
+        raise ValueError(f'Function {function_name} does not accept additional columns.')
+    if function_name in PHOTOMETRY_FUNCTIONS:
+        systems = kwargs['photometric_system']
+    if systems and not function.__name__ in ['_generate', 'generate']:
+        raise ValueError('Systems will only work with photometry-related functions.')
+
+
 def convert_values_to_lists(d):
     for key, value in d.items():
         if not isinstance(value, list):

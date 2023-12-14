@@ -5,7 +5,7 @@ from .archive_reader import ArchiveReader
 from .dataframe_reader import DataFrameReader
 from ..core.custom_errors import SelectorNotImplementedError
 
-not_supported_functions = ['apply_colour_equation', 'apply_error_correction', 'simulate_continuous', 'simulate_sampled']
+not_supported_functions = ['apply_colour_equation', 'apply_error_correction']
 
 
 def extremes_are_enclosing(first_row, column):
@@ -19,12 +19,13 @@ def extremes_are_enclosing(first_row, column):
 
 class ListReader(ArchiveReader):
 
-    def __init__(self, content, function, user, password, additional_columns=None, selector=None, disable_info=False):
+    def __init__(self, content, function, truncation, user, password, additional_columns=None, selector=None,
+                 disable_info=False):
         if selector is not None:
             raise SelectorNotImplementedError('List')
         if additional_columns is None:
             additional_columns = dict()
-        super(ListReader, self).__init__(function, user, password, additional_columns=additional_columns,
+        super(ListReader, self).__init__(function, truncation, user, password, additional_columns=additional_columns,
                                          disable_info=disable_info)
         if content:
             self.content = content
@@ -52,5 +53,5 @@ class ListReader(ArchiveReader):
             raise ValueError('No continuous raw data found for the given sources.')
         if not self.disable_info:
             print(self.info_msg + ' Done!', end='\r')
-        return DataFrameReader(data, function_name, additional_columns=self.additional_columns,
+        return DataFrameReader(data, function_name, self.truncation, additional_columns=self.additional_columns,
                                disable_info=True).read()

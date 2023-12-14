@@ -8,13 +8,14 @@ from gaiaxpy.input_reader.file_reader import FileReader
 
 class HDFSReader(FileReader):
 
-    def __init__(self, file_parser_selector, file, additional_columns=None, selector=None, disable_info=False):
+    def __init__(self, file_parser_selector, file, truncation, additional_columns=None, selector=None,
+                 disable_info=False):
         address, file_path, port = self.split_cluster_path(file)
         extension = standardise_extension(splitext(file_path)[1]).lower()
         if standardise_extension(splitext(file_path)[1]).lower() != 'avro':
             raise ExtensionNotImplementedError(extension)
-        super().__init__(file_parser_selector, file_path, additional_columns, selector, disable_info, address=address,
-                         port=port)
+        super().__init__(file_parser_selector, file_path, truncation, additional_columns, selector, disable_info,
+                         address=address, port=port)
 
     def split_cluster_path(self, file_path, expected_protocol='http', p_sep='://'):
         def get_http_port():

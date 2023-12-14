@@ -44,7 +44,7 @@ class TestCholesky(unittest.TestCase):
 
     def test_inverse_covariance_matrix_file_from_df_numpy_matrix(self):
         # Test completely parsed (arrays + matrices) dataframe
-        df, _ = InputReader(with_missing_bp_csv_file, get_inverse_covariance_matrix).read()
+        df, _ = InputReader(with_missing_bp_csv_file, get_inverse_covariance_matrix, False).read()
         inverse_df = get_inverse_covariance_matrix(df)
         pdt.assert_frame_equal(inverse_df, cholesky_solution, rtol=_rtol, atol=_atol)
 
@@ -71,8 +71,8 @@ class TestCholesky(unittest.TestCase):
 class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
 
     def test_internal_inverse_square_root_covariance_matrix_no_missing_bands(self):
-        parsed_input_data, extension = InputReader(mean_spectrum_csv_file,
-                                                   get_inverse_square_root_covariance_matrix).read()
+        parsed_input_data, extension = InputReader(mean_spectrum_csv_file, get_inverse_square_root_covariance_matrix,
+                                                   False).read()
         output_columns = ['source_id', 'bp_inverse_square_root_covariance_matrix',
                           'rp_inverse_square_root_covariance_matrix']
         bands_output = []
@@ -88,8 +88,8 @@ class TestInverseSquareRootCovarianceMatrix(unittest.TestCase):
         pdt.assert_frame_equal(output_df, inv_sqrt_cov_matrix_sol_df_no_missing_df)
 
     def test_internal_inverse_square_root_covariance_matrix_with_missing_bands(self):
-        parsed_input_data, extension = InputReader(with_missing_bp_csv_file,
-                                                   get_inverse_square_root_covariance_matrix).read()
+        parsed_input_data, extension = InputReader(with_missing_bp_csv_file, get_inverse_square_root_covariance_matrix,
+                                                   False).read()
         output_columns = ['source_id', 'bp_inverse_square_root_covariance_matrix',
                           'rp_inverse_square_root_covariance_matrix']
         bands_output = []

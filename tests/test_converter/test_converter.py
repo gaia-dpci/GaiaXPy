@@ -7,10 +7,11 @@ import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import convert
-from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices, get_unique_basis_ids
+from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
+from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
@@ -38,14 +39,6 @@ _rtol, _atol = 1e-6, 1e-6  # Precision varies with extension
 
 class TestGetMethods(unittest.TestCase):
 
-    def test_get_unique_basis_ids(self):
-        instance = set
-        for file in con_input_files:
-            parsed_input, _ = parser.parse_file(file)
-            unique_bases_ids = get_unique_basis_ids(parsed_input)
-            self.assertIsInstance(unique_bases_ids, instance, msg=is_instance_err_message(file, instance))
-            self.assertEqual(unique_bases_ids, {56, 57})
-
     def test_get_design_matrices(self):
         instance = SampledBasisFunctions
         for file in con_input_files:
@@ -65,7 +58,7 @@ class TestCreateSpectrum(unittest.TestCase):
         truncation = True
         instance = XpSampledSpectrum
         for file in con_input_files:
-            parsed_input, _ = parser.parse_file(file)
+            parsed_input, _ = InputReader(file, convert, truncation).read()
             parsed_input_dict = parsed_input.to_dict('records')
             design_matrices = get_design_matrices(sampling, optimised_bases_df)
             for row in islice(parsed_input_dict, 1):  # Just the first row

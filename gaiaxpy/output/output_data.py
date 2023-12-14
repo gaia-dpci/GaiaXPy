@@ -10,6 +10,10 @@ from gaiaxpy.core.generic_functions import standardise_extension
 from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
 
 
+def _initialise_header():
+    return ["# %ECSV 1.0", "# ---", "# delimiter: ','", "# datatype:"]
+
+
 def _load_header_dict():
     current_path = dirname(abspath(__file__))
     header_dictionary_path = join(current_path, 'ecsv_headers', 'headers_dict.txt')
@@ -32,40 +36,6 @@ def _build_regular_header(columns):
             header.append(f'#   subtype: {current_column["subtype"]}')
         header.append(f'#   description: {current_column["description"]}')
     return '\n'.join(header) + '\n'
-
-
-def _initialise_header():
-    return ["# %ECSV 1.0", "# ---", "# delimiter: ','", "# datatype:"]
-
-
-def _build_photometry_header(columns):
-    header_dict = _load_header_dict()
-    header = _initialise_header()
-    for column in columns:
-        header.append('# -')
-        header.append(f'#   name: {column}')
-        if column != 'source_id':
-            if '_flux_error_' in column:
-                parameter = '_flux_error_'
-            elif '_flux_' in column:
-                parameter = '_flux_'
-            elif '_mag_' in column:
-                parameter = '_mag_'
-            system, band = column.split(parameter)
-            parameter = f'phot{parameter}'[:-1]
-            header.append(f'#   datatype: {header_dict[parameter]["datatype"]}')
-            header.append(f'#   description: {header_dict[parameter]["description"]} {band} band')
-        else:
-            header.append(f'#   datatype: {header_dict[column]["datatype"]}')
-            header.append(f'#   description: {header_dict[column]["description"]}')
-    return '\n'.join(header) + '\n'
-
-
-def _add_header(header, output_path, output_file):
-    with open(join(output_path, f'{output_file}.ecsv'), "r+") as f:
-        s = f.read()
-        f.seek(0)
-        f.write(header + s)
 
 
 class OutputData(object):

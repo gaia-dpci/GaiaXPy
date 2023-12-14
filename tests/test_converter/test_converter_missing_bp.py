@@ -71,7 +71,7 @@ class TestConverterMissingBPDataFrameInput(unittest.TestCase):
         inputs = [with_missing_bp_csv_file, missing_bp_csv_file]
         solutions = [with_missing_solution_df, missing_solution_df]
         for _input, solution in zip(inputs, solutions):
-            df, _ = InputReader(_input, convert).read()
+            df, _ = InputReader(_input, convert, False).read()
             output_df, sampling = convert(df, save_file=False)
             pdt.assert_frame_equal(output_df, solution, rtol=_rtol, atol=_atol)
             npt.assert_array_equal(sampling, with_missing_solution_sampling)

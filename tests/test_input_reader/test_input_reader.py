@@ -22,10 +22,10 @@ _rtol, _atol = 1e-24, 1e-24
 class TestGetMethods(unittest.TestCase):
 
     def test_dfs(self):
-        parsed_df_str, _ = InputReader(dataframe_str, convert).read()
-        parsed_df_np, _ = InputReader(dataframe_np, convert).read()
+        parsed_df_str, _ = InputReader(dataframe_str, convert, False).read()
+        parsed_df_np, _ = InputReader(dataframe_np, convert, False).read()
         pdt.assert_frame_equal(parsed_df_str, parsed_df_np, rtol=_rtol, atol=_atol)
 
     def test_empty_list(self):
         with self.assertRaises(ValueError):
-            input_reader, _ = InputReader([], convert).read()
+            input_reader, _ = InputReader([], convert, False).read()

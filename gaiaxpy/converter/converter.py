@@ -6,6 +6,7 @@ Module for the converter functionality.
 
 from numbers import Number
 from pathlib import Path
+from sys import stdout
 from typing import Union, Optional
 
 import numpy as np
@@ -163,7 +164,7 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
     spectra_series = pd.Series([create_xp_spectra(row, truncation, design_matrices, with_correlation)
                                 for row in tqdm(parsed_input_data_dict, desc=pbar_message[__FUNCTION_KEY],
                                                 unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour,
-                                                disable=disable_info)])
+                                                disable=disable_info, file=stdout)])
     spectra_series = spectra_series.explode()
     positions = spectra_series.iloc[0].get_positions()
     spectra_type = get_spectra_type(spectra_series.iloc[0])

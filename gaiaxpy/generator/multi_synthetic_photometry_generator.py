@@ -1,3 +1,5 @@
+from sys import stdout
+
 from tqdm import tqdm
 
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
@@ -39,5 +41,5 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
                                                                   desc=pbar_message[__FUNCTION_KEY],
                                                                   total=len(parsed_input_data),
                                                                   unit=pbar_units[__FUNCTION_KEY], leave=False,
-                                                                  colour=pbar_colour)]
+                                                                  colour=pbar_colour, file=stdout)]
         return MultiSyntheticPhotometry(systems, rearranged_photometry_list)._generate_output_df()

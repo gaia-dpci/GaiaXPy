@@ -9,6 +9,7 @@ from ast import literal_eval
 from configparser import ConfigParser
 from os import listdir
 from pathlib import Path
+from sys import stdout
 from typing import Union, Optional
 
 import numpy as np
@@ -103,7 +104,8 @@ def _generate_output_df(input_synthetic_photometry, systems_details, disable_inf
     # Extract columns corresponding to one system
     system_keys = systems_details.keys()
     for label in tqdm(system_keys, desc=pbar_message[__FUNCTION_KEY], total=len(system_keys),
-                      unit=pbar_units[__FUNCTION_KEY], colour=pbar_colour, leave=False, disable=disable_info):
+                      unit=pbar_units[__FUNCTION_KEY], colour=pbar_colour, leave=False, disable=disable_info,
+                      file=stdout):
         filter_to_correct = systems_details[label]['filter']
         colour_band_0, colour_band_1 = _get_colour_bands(systems_details[label]['colour_index'])
         system_columns_with_colour = [column for column in column_names if column.startswith(f'{label}_') and

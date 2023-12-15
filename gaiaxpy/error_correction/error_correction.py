@@ -7,6 +7,7 @@ Module that implements the error correction over a multi-photometry.
 from functools import lru_cache
 from os import listdir
 from os.path import join, isfile
+from sys import stdout
 
 import numpy as np
 import pandas as pd
@@ -134,7 +135,7 @@ def _apply_error_correction(input_multi_photometry, photometric_system=None, out
         _warning(f'System {system} does not have a correction table. The program will not apply error correction over'
                  ' this system.')
     for system in tqdm(systems, desc=pbar_message[__FUNCTION_KEY], total=len(systems), unit=pbar_units[__FUNCTION_KEY],
-                       leave=False, colour=pbar_colour):
+                       leave=False, colour=pbar_colour, file=stdout):
         system_df = input_multi_photometry[[column for column in input_multi_photometry.columns if
                                             (column.startswith(system) and f'{system}Std' not in column) or
                                             column == gaia_G_mag_column]]

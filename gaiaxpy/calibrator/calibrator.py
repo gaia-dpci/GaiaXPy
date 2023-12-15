@@ -7,6 +7,7 @@ Module for the calibrator functionality.
 from configparser import ConfigParser
 from os.path import join
 from pathlib import Path
+from sys import stdout
 from typing import Union
 
 import numpy as np
@@ -197,7 +198,7 @@ def __create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_m
     spectra_series = pd.Series([_create_spectrum(row, truncation, design_matrices, merge,
                                                  with_correlation=with_correlation) for row in tqdm(
         parsed_spectrum_file_dict, desc=pbar_message[__FUNCTION_KEY], unit=pbar_units[__FUNCTION_KEY], leave=False,
-        colour=pbar_colour, disable=disable_info)])
+        colour=pbar_colour, disable=disable_info, file=stdout)])
     positions = spectra_series.iloc[0].get_positions()
     spectra_type = get_spectra_type(spectra_series.iloc[0])
     spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict())

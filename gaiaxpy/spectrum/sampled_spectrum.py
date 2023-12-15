@@ -108,7 +108,7 @@ class SampledSpectrum(Spectrum):
             ndarray: 1D array containing the flux values for all samples.
         """
         if coefficients.shape[0] != 0 and coefficients.shape[0] != design_matrix.shape[0]:
-            raise ValueError("Coefficients length doesn't match the design matrix dimension. Please make sure you're"
+            raise ValueError("Coefficients length doesn't match the design matrix dimension. Please make sure you're "
                              "using the correct input files and configuration.")
         if isinstance(coefficients, ndarray) and coefficients.size > 0:
             return coefficients @ design_matrix

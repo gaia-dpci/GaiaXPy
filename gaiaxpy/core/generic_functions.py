@@ -15,6 +15,7 @@ import pandas as pd
 from numpy import ndarray
 
 from gaiaxpy.config.paths import filters_path, config_path
+from gaiaxpy.core.config import ADDITIONAL_SYSTEM_PREFIX
 from gaiaxpy.core.custom_errors import InvalidBandError
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.generator.config import get_additional_filters_path
@@ -336,6 +337,12 @@ def format_additional_columns(additional_columns: Optional[Union[str, list, dict
         return {v: [v] for v in additional_columns}
     if isinstance(additional_columns, dict):
         return convert_values_to_lists(additional_columns)
+
+
+def validate_error_correction(phot_system, error_correction):
+    if any(system.name.startswith(ADDITIONAL_SYSTEM_PREFIX) for system in phot_system) and error_correction:
+        raise ValueError('Photometry is requested for a non-built-in system, but error_correction is set to True. '
+                         'Error correction is only implemented for built-in systems.')
 
 
 def validate_photometric_system(photometric_system):

@@ -8,7 +8,7 @@ from re import match
 from gaiaxpy.core.config import ADDITIONAL_SYSTEM_PREFIX
 
 _CFG_FILE_PATH = join(tempfile.gettempdir(), urandom(24).hex())
-_ADDITIONAL_SYSTEM_FILES_REGEX = '[a-zA-Z0-9-_]+\.gaiaxpy_dr[34]_[a-zA-Z0-9-]+\.xml'
+_ADDITIONAL_SYSTEM_FILES_REGEX = '[a-zA-Z0-9-_]+\.gaiaxpy_dr3_[a-zA-Z0-9-]+\.xml'
 
 class GenCfg:
 

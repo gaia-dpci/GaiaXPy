@@ -113,7 +113,9 @@ def load_additional_systems(_systems_path=None):
 
 def __load_additional_systems(_filters_path=None, config_file=None):
     """
-    Load additional photometric systems. These name of these additional systems will start with the prefix USER.
+    Load additional photometric systems. The names of these additional systems will start with the prefix 'USER.'
+    For example, if a system is named 'X' in the loaded file, the corresponding photometric system will be referenced
+    in GaiaXPy as 'USER_X' and should be called using 'PhotometricSystem.USER_X'.
 
     Args:
         _filters_path (str): Path to directory containing the additional filter files.

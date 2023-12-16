@@ -203,7 +203,7 @@ class InternalContinuousParser(GenericParser):
                 except ConnectionError:
                     retries += 1
             else:
-                raise ConnectionError(f'Failed to connect to HDFS after {max_conn_retries} attempts.')
+                raise ConnectionError(f'Failed to connect to HDFS after {max_conn_retries} attempts for file {avro_file}.')
             return _df
 
         if version.parse(fa_version) <= version.parse('1.4.7'):

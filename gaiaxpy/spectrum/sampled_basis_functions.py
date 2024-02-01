@@ -137,27 +137,26 @@ def _hermite_function(n, x):
 
 
 def populate_design_matrix(sampling_grid, bases_config):
-    if 'transformedSetDimension' in bases_config.columns:
-        # Hermite part
-        n_samples = len(sampling_grid)
-        scale = (bases_config['normalizedRange'].iloc(0)[0][1] - bases_config['normalizedRange'].iloc(0)[0][0]) / \
-                (bases_config['range'].iloc(0)[0][1] - bases_config['range'].iloc(0)[0][0])
-        offset = bases_config['normalizedRange'].iloc(0)[0][0] - bases_config['range'].iloc(0)[0][0] * scale
+    def __psi(n, x):
+        return (1.0 / np.sqrt(math.pow(2, n) * gamma(n + 1) * np.sqrt(np.pi)) * np.exp(-x ** 2 / 2.0) *
+                eval_hermite(n, x))
+
+    n_samples = len(sampling_grid)
+    bc_columns = bases_config.columns
+    if not 'knots' in bc_columns and 'transformedSetDimension' in bc_columns:  # Hermite
+        normalised_range_lower, normalised_range_upper = bases_config['normalizedRange'].iloc(0)[0]
+        range_lower, range_upper = bases_config['range'].iloc(0)[0]
+        scale = (normalised_range_upper - normalised_range_lower) / (range_upper - range_lower)
+        offset = normalised_range_lower - range_lower * scale
         rescaled_pwl = (sampling_grid * scale) + offset
-
-        def psi(n, x):
-            return 1.0 / np.sqrt(math.pow(2, n) * gamma(n + 1) *
-                                 np.sqrt(np.pi)) * np.exp(-x ** 2 / 2.0) * eval_hermite(n, x)
-
         dimension = int(bases_config['dimension'].iloc[0])
         transformed_set_dimension = int(bases_config['transformedSetDimension'].iloc[0])
         bases_transformation = bases_config['transformationMatrix'].iloc(0)[0].reshape(dimension,
                                                                                        transformed_set_dimension)
-        design_matrix = np.array([psi(n_h, pos) for pos in rescaled_pwl for n_h in np.arange(dimension)]).reshape(
+        design_matrix = np.array([__psi(n_h, pos) for pos in rescaled_pwl for n_h in np.arange(dimension)]).reshape(
             n_samples, dimension)
         return bases_transformation @ design_matrix.T
-    elif 'knots' in bases_config.columns:
-        # Spline part
+    elif 'knots' in bc_columns:  # Spline
         if len(bases_config) != 1:
             raise ValueError('Only one row should be accepted at a time.')
         knots = bases_config['knots'].iloc[0]
@@ -165,14 +164,15 @@ def populate_design_matrix(sampling_grid, bases_config):
         order = bases_config['order'].iloc[0]
         degree = order - 1
         n_bases = n_knots - order
-        n_samples = len(sampling_grid)
         if 'transformationMatrix' in bases_config.__dir__():
-            bases_transformation = bases_config.transformationMatrix.reshape(bases_config.transformedSetDimension,
-                                                                             n_bases)
+            transformation_matrix = np.array(bases_config.transformationMatrix.values[0])
+            ts_dim = bases_config.transformedSetDimension.values[0]
+            bases_transformation = transformation_matrix.reshape(ts_dim, n_bases)
         else:
             bases_transformation = np.identity(n_bases)
         design_matrix = np.zeros((n_bases, n_samples))
-        for basis_id in np.arange(n_bases):
+
+        for basis_id in np.arange(n_bases):  # Evaluate
             c = np.zeros(n_knots)
             c[basis_id] = 1.0
             basis = BSpline(knots, c, degree)

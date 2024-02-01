@@ -46,19 +46,16 @@ for xp in satellite.BANDS:
                                                                                                      instr_model)
 
 
-class TestExternalInstrument(unittest.TestCase):
+def test_band_design_matrix_from_instrument_model():
+    instance = ndarray
+    for band in BANDS:
+        assert isinstance(design_matrices_from_instrument_model[band].design_matrix, instance), assert_band_err(band)
+        assert isinstance(design_matrices_from_csv[band], instance), assert_band_err(band)
+        assert np.allclose(design_matrices_from_instrument_model[band].design_matrix, design_matrices_from_csv[band],
+                           rtol=rtol, atol=atol), assert_band_err(band)
 
-    def test_band_design_matrix_from_instrument_model(self):
-        instance = ndarray
-        for band in BANDS:
-            self.assertIsInstance(design_matrices_from_instrument_model[band].design_matrix, instance,
-                                  msg=assert_band_err(band))
-            self.assertIsInstance(design_matrices_from_csv[band], instance, msg=assert_band_err(band))
-            self.assertTrue(np.allclose(design_matrices_from_instrument_model[band].design_matrix,
-                                        design_matrices_from_csv[band], rtol=rtol, atol=atol),
-                            msg=assert_band_err(band))
 
-    def test_band_merge(self):
-        for band in BANDS:
-            self.assertTrue(np.allclose(xp_merge_from_instrument_model[band], xp_merge[band], rtol=rtol, atol=atol),
-                            msg=assert_band_err(band))
+def test_band_merge():
+    for band in BANDS:
+        assert np.allclose(xp_merge_from_instrument_model[band], xp_merge[band], rtol=rtol, atol=atol),(
+            assert_band_err(band))

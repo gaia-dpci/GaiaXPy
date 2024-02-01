@@ -30,8 +30,10 @@ sol_with_covariance_sampling_array = pos_file_to_array(cal_sol_with_covariance_s
 =====================
 """
 # Default model
-solution_default_df = pd.read_csv(cal_sol_default_path, float_precision='round_trip', converters=calibrator_sol_converters)
-solution_custom_df = pd.read_csv(cal_sol_custom_path, float_precision='round_trip', converters=calibrator_sol_converters)
+solution_default_df = pd.read_csv(cal_sol_default_path, float_precision='round_trip',
+                                  converters=calibrator_sol_converters)
+solution_custom_df = pd.read_csv(cal_sol_custom_path, float_precision='round_trip',
+                                 converters=calibrator_sol_converters)
 # v211w model
 solution_v211w_default_df = pd.read_csv(cal_sol_v211w_default_path, float_precision='round_trip',
                                         converters=calibrator_sol_converters)

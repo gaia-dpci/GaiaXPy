@@ -21,7 +21,7 @@ class TestCalibratorWithCovariance(unittest.TestCase):
         # Load spectra
         _converters = {key: (lambda x: str_to_array(x)) for key in ['flux', 'flux_error', 'covariance']}
         solution = join(files_path, 'calibrator_solution', 'calibrate_with_covariance_solution.csv')
-        solution_df = pd.read_csv(solution, float_precision='high', converters=_converters)
+        solution_df = pd.read_csv(solution, float_precision='round_trip', converters=_converters)
         stdev_pairs = [(1.1224667, 1.3151282), 1.0339215, (1.0479343, 1.0767492)]
 
         def scale_error(error_array, stdev):

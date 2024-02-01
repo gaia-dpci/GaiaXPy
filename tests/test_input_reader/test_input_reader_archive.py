@@ -8,7 +8,7 @@ from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousPars
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import mean_spectrum_csv_file
 
-dataframe_str = pd.read_csv(mean_spectrum_csv_file, float_precision='high')
+dataframe_str = pd.read_csv(mean_spectrum_csv_file, float_precision='round_trip')
 parser = InternalContinuousParser()
 dataframe_np, _ = parser.parse_file(mean_spectrum_csv_file)
 

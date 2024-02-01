@@ -68,7 +68,7 @@ def get_spectrum_with_source_id_and_xp(source_id, xp, spectra):
 
 
 def pos_file_to_array(pos_file):
-    df = pd.read_csv(pos_file, float_precision='high', converters={'pos': (lambda x: str_to_array(x))})
+    df = pd.read_csv(pos_file, float_precision='round_trip', converters={'pos': (lambda x: str_to_array(x))})
     return df['pos'].iloc[0]
 
 

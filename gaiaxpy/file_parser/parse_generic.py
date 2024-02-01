@@ -99,7 +99,7 @@ class GenericParser(object):
         Returns:
             DataFrame: A pandas DataFrame representing the CSV file.
         """
-        df = pd.read_csv(csv_file, comment='#', float_precision='high', usecols=_usecols)
+        df = pd.read_csv(csv_file, comment='#', float_precision='round_trip', usecols=_usecols)
         if _array_columns:  # Pandas converters seemed slower
             for column in _array_columns:
                 if column in df.columns:

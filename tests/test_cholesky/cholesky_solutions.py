@@ -16,7 +16,7 @@ cholesky_sol_path = join(files_path, 'cholesky_solution')
 """
 cholesky_converters = dict([(column, lambda x: parse_matrices(x)) for column in ['bp_inverse_covariance',
                                                                                  'rp_inverse_covariance']])
-cholesky_solution = pd.read_csv(join(cholesky_sol_path, 'test_cholesky_solution.csv'), float_precision='high',
+cholesky_solution = pd.read_csv(join(cholesky_sol_path, 'test_cholesky_solution.csv'), float_precision='round_trip',
                                 converters=cholesky_converters)
 
 solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]

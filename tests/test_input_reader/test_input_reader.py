@@ -1,7 +1,6 @@
-import unittest
-
 import pandas as pd
 import pandas.testing as pdt
+import pytest
 
 from gaiaxpy import convert
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
@@ -19,13 +18,12 @@ dataframe_np = dataframe_np.drop(columns=['bp_covariance_matrix', 'rp_covariance
 _rtol, _atol = 1e-24, 1e-24
 
 
-class TestGetMethods(unittest.TestCase):
+def test_dfs():
+    parsed_df_str, _ = InputReader(dataframe_str, convert).read()
+    parsed_df_np, _ = InputReader(dataframe_np, convert).read()
+    pdt.assert_frame_equal(parsed_df_str, parsed_df_np, rtol=_rtol, atol=_atol)
 
-    def test_dfs(self):
-        parsed_df_str, _ = InputReader(dataframe_str, convert).read()
-        parsed_df_np, _ = InputReader(dataframe_np, convert).read()
-        pdt.assert_frame_equal(parsed_df_str, parsed_df_np, rtol=_rtol, atol=_atol)
 
-    def test_empty_list(self):
-        with self.assertRaises(ValueError):
-            input_reader, _ = InputReader([], convert).read()
+def test_empty_list():
+    with pytest.raises(ValueError):
+        input_reader, _ = InputReader([], convert).read()

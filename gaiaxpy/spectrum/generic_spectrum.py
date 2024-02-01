@@ -3,6 +3,7 @@ generic_spectrum.py
 ====================================
 Module to represent a generic spectrum.
 """
+from typing import Union
 
 
 class Spectrum(object):
@@ -10,7 +11,7 @@ class Spectrum(object):
     Base spectrum. Contain only the source ID.
     """
 
-    def __init__(self, source_id):
+    def __init__(self, source_id: Union[str, int]):
         """
         Initialise a spectrum.
 

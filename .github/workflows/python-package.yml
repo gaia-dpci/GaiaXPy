@@ -39,7 +39,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        if [[ "${{ matrix.python-version }}" > "3.7" ]]; then
+        if [[ "${{ matrix.python-version }}" != "3.7" ]]; then
           pip install pandas==2.0.2
         fi
         pytest -m "not plotter" -s

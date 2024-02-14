@@ -24,6 +24,8 @@ def test_single_column_test(setup_data):
     read_input, _ = InputReader(sources, generate, additional_columns=additional_columns).read()
     expected_df, filtered_read_input = parse_dfs_for_test(setup_data['df'], read_input, additional_columns,
                                                           expected_columns)
+    print(expected_df.dtypes)
+    print(filtered_read_input.dtypes)
     pdt.assert_frame_equal(expected_df, filtered_read_input, check_like=True, check_dtype=False)
 
 

@@ -60,4 +60,6 @@ class InputReader(object):
         extension = default_extension if extension is None else extension
         # Deal with some differences in output formats (TODO: move casting to readers)
         parsed_data['source_id'] = parsed_data['source_id'].astype('int64')
+        if 'solution_id' in parsed_data.columns:
+            parsed_data['solution_id'] = parsed_data['solution_id'].astype('int64')
         return parsed_data, extension

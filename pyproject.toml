@@ -1,3 +1,41 @@
 [build-system]
-requires = ["setuptools", "setuptools_scm", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ['setuptools', 'setuptools_scm', 'wheel']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'GaiaXPy'
+dependencies = [
+  'aenum',
+  'astropy',
+  'astroquery',
+  'fastavro',
+  'hdfs',
+  'matplotlib',
+  'numpy>1.13',
+  'packaging',
+  'pandas>=1.0.0',
+  'scipy',
+  'tqdm>=4.64.0'
+]
+dynamic = [
+  'authors',
+  'classifiers',
+  'description',
+  'maintainers',
+  'optional-dependencies',
+  'readme',
+  'requires-python',
+  'version'
+]
+
+[project.urls]
+homepage = 'https://gaia-dpci.github.io/GaiaXPy-website/'
+documentation = 'https://gaiaxpy.readthedocs.io/en/latest/'
+
+[tool.setuptools]
+packages = ['gaiaxpy']
+package-dir = {'' = 'src'}
+
+[tool.setuptools_scm]
+version_scheme = 'post-release'
+write_to = 'src/gaiaxpy/_version.py'

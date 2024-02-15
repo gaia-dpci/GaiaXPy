@@ -63,8 +63,8 @@ class SampledBasisFunctions(object):
 
         bases_transformation = external_instrument_model.bases['transformationMatrix'][0]
         evaluated_hermite_bases = np.array([_evaluate_hermite_function(n_h, pos, weight) for pos, weight in
-                                            zip(rescaled_pwl, weights) for n_h in np.arange(int(
-                external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
+                                            zip(rescaled_pwl, weights) for n_h in np.arange(
+                int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
             n_samples, int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))
         _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'][0] @ evaluated_hermite_bases.T
         transformed_design_matrix = bases_transformation @ _design_matrix

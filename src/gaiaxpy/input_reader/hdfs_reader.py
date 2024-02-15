@@ -7,6 +7,7 @@ from gaiaxpy.input_reader.file_reader import FileReader
 
 
 def split_cluster_path(file_path, expected_protocol='http', p_sep='://'):
+    # flake8: noqa
     def __process_address_and_port(_file_path, _protocol_split_index):
         def __get_http_port():
             command = ['hdfs', 'getconf', '-confKey', 'dfs.namenode.http-address']

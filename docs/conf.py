@@ -54,8 +54,8 @@ def setup(app):
 
 # -- Project information -----------------------------------------------------
 project = u'GaiaXPy'
-copyright = u'2023, DPAC, CU5, DPCI'
-author = u'Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
+copyright = u'2024, DPAC, CU5, DPCI'
+author = u'Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
 
 # The short X.Y version
 version = f'{__version__} (latest)'

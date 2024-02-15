@@ -14,13 +14,14 @@ from tests.utils.utils import parse_dfs_for_test
 
 expected_columns = MANDATORY_INPUT_COLS[generate.__name__] + CORR_INPUT_COLUMNS
 
-type_dict = {'bp_coefficients': np.float64, 'bp_coefficient_errors': np.float32, 'bp_coefficient_correlations':
-    np.float32, 'rp_coefficient_errors': np.float32}
+type_dict = {'bp_coefficients': np.float64, 'bp_coefficient_errors': np.float32,
+             'bp_coefficient_correlations': np.float32, 'rp_coefficient_errors': np.float32}
 
 
 @pytest.fixture
 def setup_data():
     yield {'df': pd.read_csv(with_missing_bp_csv_file)}
+
 
 def test_single_column(setup_data):
     additional_columns = format_additional_columns(['solution_id'])

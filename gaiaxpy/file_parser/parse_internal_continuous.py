@@ -134,11 +134,11 @@ class InternalContinuousParser(GenericParser):
         if intersection_keys:
             raise ValueError('Additional columns will overwrite an already existing key. This is not allowed.'
                              f' Keys are: {",".join(intersection_keys)}')
-        if not additional_columns is None:
+        if additional_columns is not None:
             _avro_keys_map.update(additional_columns)
-        return {key: np.array(_get_from_dict(record, _avro_keys_map[key])) if
-        isinstance(_get_from_dict(record, _avro_keys_map[key]), list) else
-        _get_from_dict(record, _avro_keys_map[key]) for key in _avro_keys_map.keys()}
+        return {key: np.array(_get_from_dict(record, _avro_keys_map[key])) if isinstance(
+            _get_from_dict(record, _avro_keys_map[key]), list) else _get_from_dict(
+            record, _avro_keys_map[key]) for key in _avro_keys_map.keys()}
 
     @staticmethod
     def __get_records_up_to_1_4_7(avro_file, additional_columns, selector, **kwargs):
@@ -194,6 +194,7 @@ class InternalContinuousParser(GenericParser):
         Returns:
             DataFrame: Pandas DataFrame representing the AVRO file.
         """
+
         def __records_to_df(max_conn_retries=10, **_records_arguments):
             retries = 0
             while retries < max_conn_retries:
@@ -203,7 +204,8 @@ class InternalContinuousParser(GenericParser):
                 except ConnectionError:
                     retries += 1
             else:
-                raise ConnectionError(f'Failed to connect to HDFS after {max_conn_retries} attempts for file {avro_file}.')
+                raise ConnectionError(
+                    f'Failed to connect to HDFS after {max_conn_retries} attempts for file {avro_file}.')
             return _df
 
         if version.parse(fa_version) <= version.parse('1.4.7'):

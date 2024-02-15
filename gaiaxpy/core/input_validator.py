@@ -72,4 +72,3 @@ def check_column_overwrite(additional_columns, required_columns):
         raise ValueError('One or more elements in the additional columns input will be renamed to a column'
                          ' required by GaiaXPy to compute the output. This is not permitted. The offending'
                          f' elements are: {", ".join(common_names)}.')
-        

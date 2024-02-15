@@ -1,4 +1,3 @@
-import unittest
 from configparser import ConfigParser
 from os.path import join
 
@@ -57,5 +56,5 @@ def test_band_design_matrix_from_instrument_model():
 
 def test_band_merge():
     for band in BANDS:
-        assert np.allclose(xp_merge_from_instrument_model[band], xp_merge[band], rtol=rtol, atol=atol),(
+        assert np.allclose(xp_merge_from_instrument_model[band], xp_merge[band], rtol=rtol, atol=atol), (
             assert_band_err(band))

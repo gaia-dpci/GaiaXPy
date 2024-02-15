@@ -26,12 +26,13 @@ __CAL_OUTPUT_COLS = ['source_id', 'flux', 'flux_error']
 CON_CORR_OUTPUT_COLS = ['correlation', 'standard_deviation']
 __CON_OUTPUT_COLS = ['source_id', 'xp', 'flux', 'flux_error']
 
-# Generator columns are not fixed but variable, depending on the systems involved; no correlation columns either.
+# Generator columns are not fixed but variable, depending on the systems involved,
+# no correlation columns either.
 
 # Whether all columns are present depends on the band(s) being requested
 __INV_OUTPUT_COLS = ['source_id', 'bp_inverse_covariance', 'rp_inverse_covariance']
 __INV_SQRT_OUTPUT_COLS = ['source_id', 'bp_inverse_square_root_covariance_matrix',
                           'rp_inverse_square_root_covariance_matrix']
 
-# apply_error_correction should output the same columns that were received in the input, and will not accept the
-# additional_columns argument
+# apply_error_correction should output the same columns that were received in
+# the input, and will not accept the additional_columns argument

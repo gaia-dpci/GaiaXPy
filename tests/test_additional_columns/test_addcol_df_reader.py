@@ -16,6 +16,7 @@ expected_columns = MANDATORY_INPUT_COLS[generate.__name__] + CORR_INPUT_COLUMNS
 def setup_data():
     yield {'df': pd.read_csv(with_missing_bp_csv_file)}
 
+
 def test_single_column_test(setup_data):
     df = setup_data['df']
     additional_columns = format_additional_columns(['solution_id'])

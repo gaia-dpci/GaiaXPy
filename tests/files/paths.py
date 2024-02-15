@@ -104,8 +104,8 @@ con_sol_with_cov_missing_sampling_path = join(converter_sol_path,
 Converter regular solutions paths
 ===================================
 """
-con_converters=dict([(column, lambda x: str_to_array(x)) for column in ['flux', 'flux_error']])
-con_cov_converters={key: (lambda x: str_to_array(x)) for key in ['flux', 'flux_error', 'covariance']}
+con_converters = dict([(column, lambda x: str_to_array(x)) for column in ['flux', 'flux_error']])
+con_cov_converters = {key: (lambda x: str_to_array(x)) for key in ['flux', 'flux_error', 'covariance']}
 # Files to compare the sampled spectrum with value by value without/with truncation applied
 con_ref_sampled_csv_path = join(converter_sol_path, 'SampledMeanSpectrum.csv')
 con_ref_sampled_truncated_csv_path = join(converter_sol_path, 'SampledMeanSpectrum_truncated.csv')

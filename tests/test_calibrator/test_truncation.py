@@ -40,6 +40,7 @@ def test_create_spectrum():
     spectrum = _create_spectrum(first_row, truncation=True, design_matrix=sampled_basis_func, merge=xp_merge)
     assert isinstance(spectrum, AbsoluteSampledSpectrum)
 
+
 def test_calibrate_both_bands_default_calibration_model_csv():
     # Default sampling and default calibration sampling
     spectra_df_csv, positions = calibrate(mean_spectrum_csv_file, truncation=True, save_file=False)

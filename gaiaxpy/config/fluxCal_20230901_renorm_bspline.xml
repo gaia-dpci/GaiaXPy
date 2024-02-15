@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config:FluxAndLsfCalConfig xmlns:config="urn:gaia.dpac.dpci/photpipe/du15spec/FluxAndLsfCalibration">
     <wcDefinition>
-	<bpWcPwlRange from="1.0" to="58.0"/>
-	<rpWcPwlRange from="1.0" to="58.0"/>
-	<bpColDeg>1</bpColDeg>
+        <bpWcPwlRange from="1.0" to="58.0"/>
+        <rpWcPwlRange from="1.0" to="58.0"/>
+        <bpColDeg>1</bpColDeg>
         <rpColDeg>1</rpColDeg>
-	<wcMagLimit>15</wcMagLimit>
+        <wcMagLimit>15</wcMagLimit>
     </wcDefinition>
 
     <imDefinition>
         <bpIndexRange from="0" to="59"/>
         <rpIndexRange from="0" to="59"/>
-        
-	<bpImPwlRange from="0" to="59"/>
-	<rpImPwlRange from="0" to="59"/>
-	<imErrorStrategy>TotalFluxError</imErrorStrategy>
-	
-	<bpSuPwlRange from="0" to="59"/>
+
+        <bpImPwlRange from="0" to="59"/>
+        <rpImPwlRange from="0" to="59"/>
+        <imErrorStrategy>TotalFluxError</imErrorStrategy>
+
+        <bpSuPwlRange from="0" to="59"/>
         <rpSuPwlRange from="0" to="59"/>
-	<suErrorStrategy>RenormalisedFluxError</suErrorStrategy>
-        
-	<numberOfNeighbours>2</numberOfNeighbours>
+        <suErrorStrategy>RenormalisedFluxError</suErrorStrategy>
+
+        <numberOfNeighbours>2</numberOfNeighbours>
         <neighboursStep>1</neighboursStep>
         <neighbourStepStrategy>SampleIndex</neighbourStepStrategy>
 
@@ -44,7 +44,7 @@
 
 
     <basisDefinition>
-    <spline>
+        <spline>
             <type>BSpline</type>
             <bpConfig>
                 <order>4</order>,
@@ -101,7 +101,7 @@
                     <value>59.000</value>
                     <value>59.000</value>
                     <value>59.000</value>
-             </knots>
+                </knots>
                 <uniqueId>0</uniqueId>
             </bpConfig>
             <rpConfig>

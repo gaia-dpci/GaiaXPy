@@ -49,6 +49,7 @@ def _cast(df):
     Args:
         df (DataFrame): a DataFrame with parsed data from input files.
     """
+    # flake8: noqa
     for column in ['bp_n_parameters', 'bp_basis_function_id']:
         if column in df.columns:
             df[column] = df[column].apply(lambda row: __replace_masked_constant(row))

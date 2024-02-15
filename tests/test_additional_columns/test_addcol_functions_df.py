@@ -10,6 +10,8 @@ from tests.files.paths import with_missing_bp_csv_file, no_correction_solution_p
 @pytest.fixture
 def setup_data():
     yield {'df': pd.read_csv(with_missing_bp_csv_file)}
+
+
 def test_one_non_required_additional_col_as_list(setup_data):
     df = setup_data['df']
     additional_columns = ['solution_id']
@@ -21,6 +23,7 @@ def test_one_non_required_additional_col_as_list(setup_data):
     pdt.assert_frame_equal(output[additional_columns], df[additional_columns])
     output_to_compare = output.drop(columns=additional_columns)
     pdt.assert_frame_equal(output_to_compare, solution)
+
 
 def test_more_than_one_non_required_additional_col_as_list(setup_data):
     df = setup_data['df']
@@ -34,6 +37,7 @@ def test_more_than_one_non_required_additional_col_as_list(setup_data):
     output_to_compare = output.drop(columns=additional_columns)
     pdt.assert_frame_equal(output_to_compare, solution)
 
+
 def test_one_required_additional_col_as_list(setup_data):
     df = setup_data['df']
     additional_columns = ['source_id']
@@ -45,6 +49,7 @@ def test_one_required_additional_col_as_list(setup_data):
     pdt.assert_frame_equal(output[additional_columns], df[additional_columns])
     output_to_compare = output  # Column is already in the output, it shouldn't be dropped before the comparison
     pdt.assert_frame_equal(output_to_compare, solution)
+
 
 def test_one_non_required_additional_col_as_dict(setup_data):
     df = setup_data['df']
@@ -58,6 +63,7 @@ def test_one_non_required_additional_col_as_dict(setup_data):
     pdt.assert_frame_equal(output[additional_columns_values], df[additional_columns_values])
     output_to_compare = output.drop(columns=additional_columns_values)
     pdt.assert_frame_equal(output_to_compare, solution)
+
 
 def test_more_than_one_non_required_additional_col_as_dict(setup_data):
     df = setup_data['df']
@@ -75,6 +81,7 @@ def test_more_than_one_non_required_additional_col_as_dict(setup_data):
     pdt.assert_frame_equal(output[additional_columns_keys], df.rename(columns=rename_dict)[additional_columns_keys])
     output_to_compare = output.drop(columns=additional_columns_keys)
     pdt.assert_frame_equal(output_to_compare, solution)
+
 
 def test_rename_mandatory_columns(setup_data):
     additional_columns = {'bp_n_relevant_bases': 'source_id'}

@@ -7,7 +7,6 @@ Module to represent a BP/RP continuous spectrum.
 import numpy as np
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
-from gaiaxpy.core.satellite import BANDS
 from .utils import _list_to_array, get_covariance_matrix
 from .xp_spectrum import XpSpectrum
 

@@ -83,7 +83,8 @@ def _build_ecsv_header(df, positions=None):
         header.append(f'#   name: {column}')
         header.append(f'#   datatype: {current_column["datatype"]}')
         if 'subtype' in current_column.keys():
-            header.append(f'#   subtype: {current_column["subtype"].replace("null", str(_get_col_subtype_len(df, column)))}')
+            header.append(
+                f'#   subtype: {current_column["subtype"].replace("null", str(_get_col_subtype_len(df, column)))}')
         header.append(f'#   description: {current_column["description"]}')
         if units_dict.get(column, None):
             header.append(f'#   unit: {units_dict[column]}')

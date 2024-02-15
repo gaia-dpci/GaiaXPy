@@ -238,7 +238,7 @@ def get_bands_config(bases_config):
     elif hasattr(bases_config, 'basisDefinition'):
         return bases_config.basisDefinition.spline
     else:
-        raise ValueError(f'Bases configuration type not implemented.')
+        raise ValueError('Bases configuration type not implemented.')
 
 
 def get_unique_id(config: pd.DataFrame, _id: int) -> pd.DataFrame:

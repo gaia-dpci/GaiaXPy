@@ -95,7 +95,7 @@ def validate_pwl_sampling(sampling):
     if len(sampling) == 0:
         raise ValueError('Sampling must contain at least one point.')
     # Must be a numpy array
-    if type(sampling) != ndarray:
+    if not isinstance(sampling, ndarray):
         raise TypeError('Sampling must be a NumPy array.')
     # Array must be sorted in ascending order
     if not np.array_equal(sampling, np.sort(sampling)):
@@ -313,7 +313,7 @@ def validate_additional_columns(additional_columns, function, **kwargs):
         raise ValueError(f'Function {function_name} does not accept additional columns.')
     if function_name in PHOTOMETRY_FUNCTIONS:
         systems = kwargs['photometric_system']
-    if systems and not function.__name__ in ['_generate', 'generate']:
+    if systems and function.__name__ not in ['_generate', 'generate']:
         raise ValueError('Systems will only work with photometry-related functions.')
 
 
@@ -360,6 +360,7 @@ def rename_with_required(data, additional_columns):
 def is_array_empty(array):
     return array is None or (not isinstance(array, np.ndarray) and pd.isna(array)) or (isinstance(array, np.ndarray)
                                                                                        and len(array) == 0)
+
 
 def is_variable_empty(var):
     return var is None or pd.isna(var)

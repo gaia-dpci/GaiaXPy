@@ -82,6 +82,7 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
         """
         gaia_system_name = _gaia_system.get_system_name()
         return any([item.get_system_name() == gaia_system_name for item in _internal_photometric_system])
+
     validate_photometric_system(photometric_system)
     validate_save_arguments(generate.__defaults__[1], output_file, generate.__defaults__[2], output_format, save_file)
     # Prepare systems, keep track of original systems (especially required for error_correction)

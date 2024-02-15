@@ -47,6 +47,7 @@ def test_file_missing_bp():
         pdt.assert_frame_equal(parsed_data_file, input_reader_solution_df, rtol=_rtol, atol=_atol, check_dtype=False,
                                check_like=True)
 
+
 def test_fits_file_missing_bp():
     solution_df = pd.read_csv(input_reader_solution_path, converters=ir_array_converters, usecols=CON_COLS)
     parsed_data_file, _ = InputReader(with_missing_bp_fits_file, convert).read()
@@ -57,6 +58,7 @@ def test_fits_file_missing_bp():
     # Temporarily opt for removing cov matrices before comparing
     parsed_data_file = parsed_data_file.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
     pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False, check_like=True)
+
 
 def test_xml_file_missing_bp():
     solution_df = pd.read_csv(input_reader_solution_path, converters=ir_array_converters, usecols=CON_COLS)

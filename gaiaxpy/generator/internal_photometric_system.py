@@ -114,12 +114,14 @@ class InternalPhotometricSystem(object):
         Returns:
             str: Path of a file.
         """
+
         def _validate_additional_system_file(_actual_path):
             file_names = [split(p)[1] for p in _actual_path]
             pattern = re.compile(_ADDITIONAL_SYSTEM_FILES_REGEX, re.IGNORECASE)
             if all(f.startswith('XpFilter') for f in file_names):
                 return _actual_path
             return [join(file_path, s) for s in file_names if pattern.match(s) and not s.startswith('XpFilter')]
+
         file_name = replace_file_name(self.config_file, 'filter', 'filter', bp_model, rp_model, self.label)
         system_name = file_name.split('.')[0]
         file_path = get_file_path(self.config_file)

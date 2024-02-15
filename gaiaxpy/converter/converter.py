@@ -185,6 +185,7 @@ def get_unique_basis_ids(parsed_input_data: pd.DataFrame) -> set:
     Returns:
         set: A set containing all the required unique basis function IDs.
     """
+
     # Keep only non-NaN values (in Python, nan != nan)
     def remove_nans(_set):
         return {int(element) for element in _set if element == element}

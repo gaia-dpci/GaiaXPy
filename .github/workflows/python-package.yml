@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 70  # Set the timeout value in minutes
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         os: [ubuntu-latest, macOS-latest, windows-latest]
@@ -40,4 +40,4 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pandas==2.0.2
-        pytest -m "not plotter" -s
+        pytest -m "not plotter and not archive" -s

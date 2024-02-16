@@ -39,7 +39,6 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        # attempt second upgrade as suggested by CI before installation
-        pip install --upgrade pip
-        pip install pandas==2.0.2
+        # fallback to older version (free from pandas testing bug)
+        pip install pandas==1.3.5
         ./run_tests.sh --no-plotter

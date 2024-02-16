@@ -51,6 +51,8 @@ To install GaiaXPy from source:
 
     # Clone the repository
     git clone https://github.com/gaia-dpci/GaiaXPy
+    # Or, optionally, you can clone just a specific branch in the repo
+    git clone --branch my-branch https://github.com/gaia-dpci/GaiaXPy
     # Navigate to the GaiaXPy directory
     cd GaiaXPy
     # Create a virtual environment

@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
@@ -25,6 +27,14 @@ for column in ir_masked_constant_columns:
 _rtol, _atol = 1e-7, 1e-7
 
 
+def _convert_to_nan(arr):
+    return np.nan if isinstance(arr, np.ndarray) and arr.size == 0 else arr
+
+
+def __parse_matrices_custom(string):
+    return np.nan if len(string) == 0 else np.array(json.loads(string))
+
+
 def check_special_columns(columns, data, solution):
     for column in columns:
         for i in range(len(data)):
@@ -42,6 +52,8 @@ def test_file_missing_bp():
     input_files = [with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_xml_plain_file]
     for file in input_files:
         parsed_data_file, _ = InputReader(file, convert).read()
+        for column in ir_solution_array_columns:
+            parsed_data_file[column] = parsed_data_file[column].apply(lambda x: _convert_to_nan(x))
         # Temporarily opt for removing cov matrices before comparing
         parsed_data_file = parsed_data_file.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
         pdt.assert_frame_equal(parsed_data_file, input_reader_solution_df, rtol=_rtol, atol=_atol, check_dtype=False,
@@ -53,6 +65,8 @@ def test_fits_file_missing_bp():
     parsed_data_file, _ = InputReader(with_missing_bp_fits_file, convert).read()
     columns_to_drop = ['bp_coefficient_errors', 'bp_coefficient_correlations', 'rp_coefficient_errors']
     check_special_columns(columns_to_drop, parsed_data_file, solution_df)
+    for column in ir_solution_array_columns:
+        parsed_data_file[column] = parsed_data_file[column].apply(lambda x: _convert_to_nan(x))
     parsed_data_file = parsed_data_file.drop(columns=columns_to_drop)
     solution_df = solution_df.drop(columns=columns_to_drop)
     # Temporarily opt for removing cov matrices before comparing

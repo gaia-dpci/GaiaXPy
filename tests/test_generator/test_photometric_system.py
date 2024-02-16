@@ -1,16 +1,12 @@
 import unittest
-from os import path
-from os.path import join
-
-import numpy as np
 import numpy.testing as npt
-import pandas as pd
 from numpy import ndarray
 
 from gaiaxpy import generate
 from gaiaxpy.core.generic_functions import _get_built_in_systems
 from gaiaxpy.generator.photometric_system import PhotometricSystem, load_additional_systems, remove_additional_systems
 from tests.files.paths import files_path, with_missing_bp_ecsv_file
+from tests.test_generator.generator_paths import additional_filters_dir
 from tests.test_generator.test_internal_photometric_system import phot_systems_specs
 
 
@@ -90,7 +86,7 @@ class TestAdditionalSystems(unittest.TestCase):
         phot_system_list = [s for s in PhotometricSystem.get_available_systems().split(', ')]
         built_in_systems = _get_built_in_systems()
         self.assertEqual(set(phot_system_list), set(built_in_systems))
-        _PhotometricSystem = load_additional_systems(join(files_path, 'additional_filters'))
+        _PhotometricSystem = load_additional_systems(additional_filters_dir)
         new_phot_systems = [s for s in _PhotometricSystem.get_available_systems().split(', ')]
         self.assertEqual(len(phot_system_list) + 3, len(new_phot_systems))
         ps = [_PhotometricSystem[s] for s in ['Pristine', 'SDSS', 'PanSTARRS1_Std', 'USER_Panstarrs1Std', 'USER_Sdss',

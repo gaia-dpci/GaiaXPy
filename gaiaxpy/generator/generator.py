@@ -53,7 +53,8 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
         Returns:
             bool: True if Gaia DR3 is in the list, False otherwise.
         """
-        return _gaia_system in _internal_photometric_system
+        gaia_system_name = _gaia_system.get_system_name()
+        return any([item.get_system_name() == gaia_system_name for item in _internal_photometric_system])
 
     # colour_equation should be always true as it is part of the definition of standardised systems.
     colour_equation = True

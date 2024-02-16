@@ -1,3 +1,4 @@
+import importlib
 import unittest
 import numpy.testing as npt
 from numpy import ndarray
@@ -5,7 +6,7 @@ from numpy import ndarray
 from gaiaxpy import generate
 from gaiaxpy.core.generic_functions import _get_built_in_systems
 from gaiaxpy.generator.photometric_system import PhotometricSystem, load_additional_systems, remove_additional_systems
-from tests.files.paths import files_path, with_missing_bp_ecsv_file
+from tests.files.paths import with_missing_bp_ecsv_file
 from tests.test_generator.generator_paths import additional_filters_dir
 from tests.test_generator.test_internal_photometric_system import phot_systems_specs
 
@@ -24,6 +25,7 @@ class TestSystemIsStandard(unittest.TestCase):
         Check class assigned to each photometric system. Will raise an error if a system is missing in the solution
         dictionary.
         """
+        PhotometricSystem = remove_additional_systems()  # Ensure only built-in systems are present
         all_phot_systems = [PhotometricSystem[s] for s in PhotometricSystem.get_available_systems().split(', ')]
         regular_systems = ["DECam", "Els_Custom_W09_S2", "Euclid_VIS", "Gaia_2", "Gaia_DR3_Vega", "Halpha_Custom_AB",
                            "H_Custom", "Hipparcos_Tycho", "HST_ACSWFC", "HST_WFC3UVIS", "HST_WFPC2", "IPHAS", "JKC",
@@ -82,20 +84,22 @@ class TestPhotometricSystem(unittest.TestCase):
 
 class TestAdditionalSystems(unittest.TestCase):
 
+
     def test_user_interaction(self):
+        PhotometricSystem = remove_additional_systems()  # Ensure only built-in systems are present
         phot_system_list = [s for s in PhotometricSystem.get_available_systems().split(', ')]
         built_in_systems = _get_built_in_systems()
         self.assertEqual(set(phot_system_list), set(built_in_systems))
-        _PhotometricSystem = load_additional_systems(additional_filters_dir)
-        new_phot_systems = [s for s in _PhotometricSystem.get_available_systems().split(', ')]
+        __PhotometricSystem = load_additional_systems(additional_filters_dir)
+        new_phot_systems = [s for s in __PhotometricSystem.get_available_systems().split(', ')]
         self.assertEqual(len(phot_system_list) + 3, len(new_phot_systems))
-        ps = [_PhotometricSystem[s] for s in ['Pristine', 'SDSS', 'PanSTARRS1_Std', 'USER_Panstarrs1Std', 'USER_Sdss',
+        ps = [__PhotometricSystem[s] for s in ['Pristine', 'SDSS', 'PanSTARRS1_Std', 'USER_Panstarrs1Std', 'USER_Sdss',
                                               'USER_Pristine']]
         output = generate(with_missing_bp_ecsv_file, photometric_system=ps, save_file=False)
         built_in_columns = [c for c in output.columns if not c.startswith('USER')]
         built_in_columns.remove('source_id')
         for column in built_in_columns:
             npt.assert_array_equal(output[column].values, output[f'USER_{column}'].values)
-        _PhotometricSystem = remove_additional_systems()
-        phot_system_list = [s for s in _PhotometricSystem.get_available_systems().split(', ')]
+        __PhotometricSystem = remove_additional_systems()
+        phot_system_list = [s for s in __PhotometricSystem.get_available_systems().split(', ')]
         self.assertEqual(set(phot_system_list), set(built_in_systems))

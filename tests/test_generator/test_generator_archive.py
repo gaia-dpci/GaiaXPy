@@ -10,8 +10,8 @@ from tests.utils.utils import missing_bp_source_id
 _rtol, _atol = 1e-7, 1e-7
 
 # Load solution
-with_missing_solution_df_no_corr = pd.read_csv(no_correction_solution_path, float_precision='high')
-with_missing_solution_df_with_corr = pd.read_csv(correction_solution_path, float_precision='high')
+with_missing_solution_df_no_corr = pd.read_csv(no_correction_solution_path, float_precision='round_trip')
+with_missing_solution_df_with_corr = pd.read_csv(correction_solution_path, float_precision='round_trip')
 
 missing_solution_df_no_corr = with_missing_solution_df_no_corr[with_missing_solution_df_no_corr['source_id']
                                                                == missing_bp_source_id].reset_index(drop=True)

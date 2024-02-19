@@ -24,7 +24,7 @@ class TestGenerator(unittest.TestCase):
                    PhotometricSystem.Stromgren, PhotometricSystem.Stromgren_Std, PhotometricSystem.WFIRST]
         generated_photometry = generate(missing_bp_csv_file, photometric_system=systems, save_file=False)
         # Load solution
-        solution_df = pd.read_csv(gen_missing_band_sol_path, float_precision='high')
+        solution_df = pd.read_csv(gen_missing_band_sol_path, float_precision='round_trip')
         error_columns = [column for column in solution_df.columns if 'error' in column]
         other_columns = [column for column in solution_df.columns if 'error' not in column]
         pdt.assert_frame_equal(generated_photometry[error_columns], solution_df[error_columns], rtol=_ertol,

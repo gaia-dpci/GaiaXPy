@@ -2,6 +2,8 @@ import shutil
 import tempfile
 import unittest
 
+import pytest
+
 from gaiaxpy import convert, plot_spectra
 from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file
 
@@ -14,6 +16,7 @@ class TestMultiXp(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.temp_dir)
 
+    @pytest.mark.plotter
     def test_multi_xp_plotter_convert(self):
         mean_spectra, sampling = convert(mean_spectrum_avro_file, save_file=False)
         plot_spectra(mean_spectra, sampling, multi=True, show_plot=True, output_path=self.temp_dir,
@@ -21,6 +24,7 @@ class TestMultiXp(unittest.TestCase):
         plot_spectra(mean_spectra, sampling, multi=True, show_plot=True, output_path=self.temp_dir,
                      output_file='multi_xp_without_legend', format='pdf', legend=False)
 
+    @pytest.mark.plotter
     def test_multi_xp_single_element_convert(self):
         mean_spectra, sampling = convert(mean_spectrum_csv_file, save_file=False)
         plot_spectra(mean_spectra.iloc[[0]], sampling, multi=True, show_plot=True, output_path=self.temp_dir,

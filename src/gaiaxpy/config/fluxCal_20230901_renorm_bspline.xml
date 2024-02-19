@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config:FluxAndLsfCalConfig xmlns:config="urn:gaia.dpac.dpci/photpipe/du15spec/FluxAndLsfCalibration">
+    <wcDefinition>
+        <bpWcPwlRange from="1.0" to="58.0"/>
+        <rpWcPwlRange from="1.0" to="58.0"/>
+        <bpColDeg>1</bpColDeg>
+        <rpColDeg>1</rpColDeg>
+        <wcMagLimit>15</wcMagLimit>
+    </wcDefinition>
+
+    <imDefinition>
+        <bpIndexRange from="0" to="59"/>
+        <rpIndexRange from="0" to="59"/>
+
+        <bpImPwlRange from="0" to="59"/>
+        <rpImPwlRange from="0" to="59"/>
+        <imErrorStrategy>TotalFluxError</imErrorStrategy>
+
+        <bpSuPwlRange from="0" to="59"/>
+        <rpSuPwlRange from="0" to="59"/>
+        <suErrorStrategy>RenormalisedFluxError</suErrorStrategy>
+
+        <numberOfNeighbours>2</numberOfNeighbours>
+        <neighboursStep>1</neighboursStep>
+        <neighbourStepStrategy>SampleIndex</neighbourStepStrategy>
+
+        <alPolynomialDegree>2</alPolynomialDegree>
+        <acPolynomialDegree>3</acPolynomialDegree>
+
+        <!-- Flux loss term configuration -->
+        <acFluxLossCePolynomialDegree>2</acFluxLossCePolynomialDegree>
+        <bpAcCeClamping from="-4.0" to="4.0"/>
+        <rpAcCeClamping from="-4.0" to="4.0"/>
+        <acFluxLossAcRatePolynomialDegree>0</acFluxLossAcRatePolynomialDegree>
+        <alFluxLossCePolynomialDegree>0</alFluxLossCePolynomialDegree>
+
+        <referenceSampleIndex>30</referenceSampleIndex>
+        <!-- The following is computed as: (GaiaConstants.TELEMETRY_AC_RANGE.getMin() + GaiaConstants.TELEMETRY_AC_RANGE.getMax()) / 2 -->
+        <referenceAcCoordinate>1056</referenceAcCoordinate>
+
+        <outsideRangeStrategy>IdentityCalibration</outsideRangeStrategy>
+
+    </imDefinition>
+
+
+    <basisDefinition>
+        <spline>
+            <type>BSpline</type>
+            <bpConfig>
+                <order>4</order>,
+                <knots>
+                    <value>0.000</value>
+                    <value>0.000</value>
+                    <value>0.000</value>
+                    <value>0.000</value>
+                    <value>5.341</value>
+                    <value>8.782</value>
+                    <value>12.217</value>
+                    <value>13.450</value>
+                    <value>14.658</value>
+                    <value>15.838</value>
+                    <value>16.995</value>
+                    <value>18.133</value>
+                    <value>19.256</value>
+                    <value>20.366</value>
+                    <value>21.464</value>
+                    <value>22.553</value>
+                    <value>23.633</value>
+                    <value>24.706</value>
+                    <value>25.773</value>
+                    <value>26.833</value>
+                    <value>27.889</value>
+                    <value>28.939</value>
+                    <value>29.986</value>
+                    <value>31.028</value>
+                    <value>32.068</value>
+                    <value>33.104</value>
+                    <value>34.137</value>
+                    <value>35.167</value>
+                    <value>36.195</value>
+                    <value>37.220</value>
+                    <value>38.244</value>
+                    <value>39.265</value>
+                    <value>40.285</value>
+                    <value>41.303</value>
+                    <value>42.320</value>
+                    <value>43.334</value>
+                    <value>44.348</value>
+                    <value>45.360</value>
+                    <value>46.371</value>
+                    <value>47.381</value>
+                    <value>48.390</value>
+                    <value>49.398</value>
+                    <value>50.404</value>
+                    <value>51.410</value>
+                    <value>52.495</value>
+                    <value>53.871</value>
+                    <value>55.247</value>
+                    <value>56.624</value>
+                    <value>59.000</value>
+                    <value>59.000</value>
+                    <value>59.000</value>
+                    <value>59.000</value>
+                </knots>
+                <uniqueId>0</uniqueId>
+            </bpConfig>
+            <rpConfig>
+                <order>4</order>
+                <knots>
+                    <value>0.000</value>
+                    <value>0.000</value>
+                    <value>0.000</value>
+                    <value>0.000</value>
+                    <value>3.813</value>
+                    <value>5.727</value>
+                    <value>7.640</value>
+                    <value>9.440</value>
+                    <value>10.520</value>
+                    <value>11.603</value>
+                    <value>12.691</value>
+                    <value>13.784</value>
+                    <value>14.883</value>
+                    <value>15.989</value>
+                    <value>17.101</value>
+                    <value>18.220</value>
+                    <value>19.346</value>
+                    <value>20.479</value>
+                    <value>21.621</value>
+                    <value>22.771</value>
+                    <value>23.930</value>
+                    <value>25.098</value>
+                    <value>26.276</value>
+                    <value>27.465</value>
+                    <value>28.665</value>
+                    <value>29.877</value>
+                    <value>31.101</value>
+                    <value>32.339</value>
+                    <value>33.591</value>
+                    <value>34.858</value>
+                    <value>36.141</value>
+                    <value>37.441</value>
+                    <value>38.760</value>
+                    <value>40.100</value>
+                    <value>41.461</value>
+                    <value>42.847</value>
+                    <value>44.258</value>
+                    <value>45.698</value>
+                    <value>47.171</value>
+                    <value>48.679</value>
+                    <value>50.229</value>
+                    <value>51.824</value>
+                    <value>53.791</value>
+                    <value>55.895</value>
+                    <value>59.000</value>
+                    <value>59.000</value>
+                    <value>59.000</value>
+                    <value>59.000</value>
+                </knots>
+                <uniqueId>0</uniqueId>
+            </rpConfig>
+        </spline>
+
+
+    </basisDefinition>
+
+</config:FluxAndLsfCalConfig>
+

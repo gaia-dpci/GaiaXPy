@@ -35,13 +35,13 @@ for col in ['flux', 'flux_error']:
     with_missing_solution_df[col] = with_missing_solution_df[col].apply(replace_empty_array_with_none)
 missing_solution_df = with_missing_solution_df[with_missing_solution_df['source_id'] ==
                                                missing_bp_source_id].reset_index(drop=True)
-mean_spectrum_csv_with_cov_sol_df = pd.read_csv(con_sol_mean_spectrum_csv_with_cov_path, float_precision='high',
+mean_spectrum_csv_with_cov_sol_df = pd.read_csv(con_sol_mean_spectrum_csv_with_cov_path, float_precision='round_trip',
                                                 converters=con_cov_converters)
 for col in ['flux', 'flux_error', 'covariance']:
     mean_spectrum_csv_with_cov_sol_df[col] = mean_spectrum_csv_with_cov_sol_df[col].apply(replace_empty_array_with_none)
-converter_avro_solution_0_60_481_df = pd.read_csv(con_sol_avro_0_60_481_path, float_precision='high',
+converter_avro_solution_0_60_481_df = pd.read_csv(con_sol_avro_0_60_481_path, float_precision='round_trip',
                                                   converters=con_converters)
-converter_csv_solution_0_60_481_df = pd.read_csv(con_sol_csv_0_60_481_path, float_precision='high',
+converter_csv_solution_0_60_481_df = pd.read_csv(con_sol_csv_0_60_481_path, float_precision='round_trip',
                                                  converters=con_converters)
 
 """

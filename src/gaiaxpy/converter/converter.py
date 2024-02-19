@@ -87,8 +87,8 @@ def _convert(input_object: Union[list, Path, str], sampling: np.ndarray = np.lin
     function = convert
     validate_pwl_sampling(sampling)
     validate_save_arguments(function.__defaults__[4], output_file, function.__defaults__[5], output_format, save_file)
-    parsed_input_data, extension = InputReader(input_object, convert, disable_info=disable_info, user=username,
-                                               password=password).read()
+    parsed_input_data, extension = InputReader(input_object, convert, truncation=truncation, disable_info=disable_info,
+                                               user=username, password=password).read()
     bases_config = parse_config(config_file)
     design_matrices = get_design_matrices(sampling, bases_config)
     spectra_df, positions = _create_spectra(parsed_input_data, truncation, design_matrices,

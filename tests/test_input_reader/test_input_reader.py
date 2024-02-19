@@ -19,11 +19,11 @@ _rtol, _atol = 1e-24, 1e-24
 
 
 def test_dfs():
-    parsed_df_str, _ = InputReader(dataframe_str, convert).read()
-    parsed_df_np, _ = InputReader(dataframe_np, convert).read()
+    parsed_df_str, _ = InputReader(dataframe_str, convert, False).read()
+    parsed_df_np, _ = InputReader(dataframe_np, convert, False).read()
     pdt.assert_frame_equal(parsed_df_str, parsed_df_np, rtol=_rtol, atol=_atol)
 
 
 def test_empty_list():
     with pytest.raises(ValueError):
-        input_reader, _ = InputReader([], convert).read()
+        input_reader, _ = InputReader([], convert, False).read()

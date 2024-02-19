@@ -89,8 +89,8 @@ def _calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None
     validate_wl_sampling(sampling)
     validate_save_arguments(_calibrate.__defaults__[3], output_file, _calibrate.__defaults__[4], output_format,
                             save_file)
-    parsed_input_data, extension = InputReader(input_object, _calibrate, disable_info=disable_info, user=username,
-                                               password=password).read()
+    parsed_input_data, extension = InputReader(input_object, _calibrate, truncation=truncation,
+                                               disable_info=disable_info, user=username, password=password).read()
     xp_design_matrices, xp_merge = __generate_xp_matrices_and_merge(__FUNCTION_KEY, sampling, bp_model, rp_model)
     spectra_df, positions = __create_spectra(parsed_input_data, truncation, xp_design_matrices, xp_merge,
                                              with_correlation=with_correlation, disable_info=disable_info)

@@ -71,7 +71,7 @@ def get_inverse_square_root_covariance_matrix(input_object: Union[list, Path, st
     """
     if band is not None:
         band = parse_band(band)
-    parsed_input_data, extension = InputReader(input_object, get_inverse_square_root_covariance_matrix).read()
+    parsed_input_data, extension = InputReader(input_object, get_inverse_square_root_covariance_matrix, False).read()
     if band is None:
         bands_to_process = BANDS
         output_columns = ['source_id', 'bp_inverse_square_root_covariance_matrix',
@@ -133,7 +133,7 @@ def get_inverse_covariance_matrix(input_object: Union[list, Path, str], band: Op
             and a single band is selected.
     """
     band = band if band is None else parse_band(band)
-    parsed_input_data, extension = InputReader(input_object, get_inverse_covariance_matrix).read()
+    parsed_input_data, extension = InputReader(input_object, get_inverse_covariance_matrix, False).read()
     bands_output = []
     if band is None:
         bands_to_process = BANDS

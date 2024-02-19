@@ -116,12 +116,12 @@ class TestGeneratorMissingBPDataFrameInput(unittest.TestCase):
 
     def test_missing_bp_parsed_dataframe(self):
         # Test completely parsed (arrays + matrices) dataframe
-        df, _ = InputReader(with_missing_bp_csv_file, generate).read()
+        df, _ = InputReader(with_missing_bp_csv_file, generate, False).read()
         output_df = generate(df, photometric_system=phot_systems, save_file=False)
         pdt.assert_frame_equal(output_df, with_missing_solution_df_no_corr, atol=_atol, rtol=_rtol)
 
     def test_missing_bp_parsed_dataframe_isolated(self):
         # Test completely parsed (arrays + matrices) dataframe
-        df, _ = InputReader(missing_bp_csv_file, generate).read()
+        df, _ = InputReader(missing_bp_csv_file, generate, False).read()
         output_df = generate(df, photometric_system=phot_systems, save_file=False)
         pdt.assert_frame_equal(output_df, missing_solution_df_no_corr, atol=_atol, rtol=_rtol)

@@ -16,7 +16,7 @@ CON_COLS = MANDATORY_INPUT_COLS['convert'] + CORR_INPUT_COLUMNS
 
 ir_solution_array_columns = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations',
                              'rp_coefficients', 'rp_coefficient_errors', 'rp_coefficient_correlations']
-ir_masked_constant_columns = ['bp_basis_function_id', 'bp_n_parameters', 'bp_n_relevant_bases']
+ir_masked_constant_columns = ['bp_n_parameters']
 ir_array_converters = dict([(column, lambda x: parse_matrices(x)) for column in ir_solution_array_columns])
 
 input_reader_solution_df = pd.read_csv(input_reader_solution_path, converters=ir_array_converters, usecols=CON_COLS)
@@ -51,7 +51,7 @@ def check_special_columns(columns, data, solution):
 def test_file_missing_bp():
     input_files = [with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_xml_plain_file]
     for file in input_files:
-        parsed_data_file, _ = InputReader(file, convert).read()
+        parsed_data_file, _ = InputReader(file, convert, False).read()
         for column in ir_solution_array_columns:
             parsed_data_file[column] = parsed_data_file[column].apply(lambda x: _convert_to_nan(x))
         # Temporarily opt for removing cov matrices before comparing
@@ -62,7 +62,7 @@ def test_file_missing_bp():
 
 def test_fits_file_missing_bp():
     solution_df = pd.read_csv(input_reader_solution_path, converters=ir_array_converters, usecols=CON_COLS)
-    parsed_data_file, _ = InputReader(with_missing_bp_fits_file, convert).read()
+    parsed_data_file, _ = InputReader(with_missing_bp_fits_file, convert, False).read()
     columns_to_drop = ['bp_coefficient_errors', 'bp_coefficient_correlations', 'rp_coefficient_errors']
     check_special_columns(columns_to_drop, parsed_data_file, solution_df)
     for column in ir_solution_array_columns:
@@ -76,7 +76,7 @@ def test_fits_file_missing_bp():
 
 def test_xml_file_missing_bp():
     solution_df = pd.read_csv(input_reader_solution_path, converters=ir_array_converters, usecols=CON_COLS)
-    parsed_data_file, _ = InputReader(with_missing_bp_xml_file, convert).read()
+    parsed_data_file, _ = InputReader(with_missing_bp_xml_file, convert, False).read()
     columns_to_drop = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations',
                        'rp_coefficient_errors']
     check_special_columns(columns_to_drop, parsed_data_file, solution_df)

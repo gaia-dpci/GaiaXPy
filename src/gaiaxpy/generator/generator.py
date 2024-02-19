@@ -95,7 +95,7 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
         internal_phot_system.append(gaia_system)
     additional_columns = format_additional_columns(additional_columns)
     # Read input data
-    parsed_input_data, extension = InputReader(input_object, generate, additional_columns=additional_columns,
+    parsed_input_data, extension = InputReader(input_object, generate, False, additional_columns=additional_columns,
                                                selector=selector, user=username, password=password).read()
     additional_data = parsed_input_data[list(additional_columns.keys())]
     # Generate photometry

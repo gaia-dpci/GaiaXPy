@@ -29,6 +29,7 @@ setup(
     url='https://gaia-dpci.github.io/GaiaXPy-website/',
     python_requires='>=3.8',
     packages=find_packages('src'),
+    tests_require=['pytest', 'pytest-mock'],
     include_package_data=True,
     classifiers=CLASSIFIERS
 )

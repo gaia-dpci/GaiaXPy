@@ -46,6 +46,7 @@ calibrator_sol_path = join(files_path, 'calibrator_solution')
 colour_eq_sol_path = join(files_path, 'colour_equation')
 converter_sol_path = join(files_path, 'converter_solution')
 generator_sol_path = join(files_path, 'generator_solution')
+linefinder_sol_path = join(files_path, 'linefinder_solution')
 corrected_error_sol_path = join(files_path, 'error_correction_solution')
 
 """
@@ -126,6 +127,25 @@ correction_solution_path = join(generator_sol_path, 'generator_solution_with_mis
 phot_system_specs_converters = {'bands': lambda x: x[1:-1].split(','),
                                 'zero_points': lambda y: np.array(y[1:-1].split(',')).astype(float)}
 phot_system_specs_path = join(files_path, 'PhotometricSystemSpecs.csv')
+
+"""
+==============================
+  Linefinder solutions paths
+==============================
+"""
+found_extrema_real_path = join(linefinder_sol_path, 'extremafinder_output.csv')
+found_extrema_trunc_real_path = join(linefinder_sol_path, 'extremafinder_trunc_output.csv')
+found_extrema_no_bp_real_path = join(linefinder_sol_path, 'extremafinder_no_bp_output.csv')
+
+found_fast_real_path = join(linefinder_sol_path, 'fastfinder_output.csv')
+found_fast_trunc_real_path = join(linefinder_sol_path, 'fastfinder_trunc_output.csv')
+found_fast_no_bp_real_path = join(linefinder_sol_path, 'fastfinder_no_bp_output.csv')
+
+found_lines_real_path = join(linefinder_sol_path, 'linefinder_output.csv')
+found_lines_trunc_real_path = join(linefinder_sol_path, 'linefinder_trunc_output.csv')
+found_lines_no_bp_real_path = join(linefinder_sol_path, 'linefinder_no_bp_output.csv')
+
+file_lines_example_path = join(linefinder_sol_path, 'lines_example.txt')
 
 """
 ================================

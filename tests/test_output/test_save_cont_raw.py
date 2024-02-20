@@ -95,7 +95,8 @@ class TestSaveContRaw(unittest.TestCase):
             self.run_output_test(convert, 'converter', extension)
 
     def test_save_output_csv_custom_0_40_350(self):
-        self.run_output_test(convert, 'converter_custom_0_40_350', 'csv', sampling=np.linspace(0, 40, 350))
+        self.run_output_test(convert, 'converter_custom_0_40_350', 'csv',
+                             sampling=np.linspace(0, 40, 350))
 
     def test_save_output_fits_custom_0_45_400(self):
         self.run_output_test(convert, 'converter_custom_0_45_400', 'fits')
@@ -104,14 +105,17 @@ class TestSaveContRaw(unittest.TestCase):
         self.run_output_test(convert, 'converter_custom_0_30_300', 'xml')
 
     def test_save_output_csv_gaia_2(self):
-        self.run_output_test(generate, 'photometry_gaia_2', 'csv', phot_systems=PhotometricSystem.Gaia_2)
+        self.run_output_test(generate, 'photometry_gaia_2', 'csv',
+                             phot_systems=PhotometricSystem.Gaia_2)
 
     def test_save_output_ecsv_sdss_std(self):
-        self.run_output_test(generate, 'photometry_sdss_std', 'ecsv', phot_systems=PhotometricSystem.SDSS_Std)
+        self.run_output_test(generate, 'photometry_sdss_std', 'ecsv',
+                             phot_systems=PhotometricSystem.SDSS_Std)
 
     def test_save_output_fits_multi(self):
-        self.run_output_test(generate, 'photometry_multi', 'fits', phot_systems=[PhotometricSystem.Gaia_DR3_Vega,
-                                                                                 PhotometricSystem.HST_HUGS_Std])
+        self.run_output_test(generate, 'photometry_multi', 'fits',
+                             phot_systems=[PhotometricSystem.Gaia_DR3_Vega, PhotometricSystem.HST_HUGS_Std])
 
     def test_save_output_xml_pristine(self):
-        self.run_output_test(generate, 'photometry_pristine', 'xml', phot_systems=[PhotometricSystem.Pristine])
+        self.run_output_test(generate, 'photometry_pristine', 'xml',
+                             phot_systems=[PhotometricSystem.Pristine])

@@ -15,6 +15,16 @@ class ExternalParser(GenericParser):
     Parser for externally calibrated sampled spectra.
     """
 
+    def __init__(self, requested_columns=None, additional_columns=None, selector=None, **kwargs):
+        super().__init__()
+        self.additional_columns = dict() if additional_columns is None else additional_columns
+        self.requested_columns = requested_columns
+        self.selector = selector
+        if kwargs:
+            self.address = kwargs.get('address', None)
+            self.port = kwargs.get('port', None)
+
+
     def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None):
         """
         Parse the input CSV file and store the result in a pandas DataFrame if it contains externally calibrated sampled

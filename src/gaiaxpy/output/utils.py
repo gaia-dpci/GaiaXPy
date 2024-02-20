@@ -144,3 +144,14 @@ def _generate_fits_header(_data, _column_formats):
         cards.append((f'TUNIT{index + 1}', units_dict.get(column, '')))
     header = fits.Header(cards=cards)
     return header
+
+
+def _build_line_header(columns):
+    header_dict = _load_header_dict()
+    header = _initialise_header()
+    for column in columns:
+        header.append('# -')
+        header.append(f'#   name: {column}')
+        header.append(f'#   datatype: {header_dict[column]["datatype"]}')
+        header.append(f'#   description: {header_dict[column]["description"]}')
+    return '\n'.join(header) + '\n'

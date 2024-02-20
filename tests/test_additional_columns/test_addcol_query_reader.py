@@ -14,59 +14,49 @@ query = ("SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('576240695788662
 expected_columns = MANDATORY_INPUT_COLS[generate.__name__] + CORR_INPUT_COLUMNS  # Archive always uses correlations
 
 
-@pytest.fixture
-def setup_data():
-    yield {'df': pd.read_csv(with_missing_bp_csv_file)}
-
-
-@pytest.mark.archive
-def test_single_column_test(setup_data):
+def test_single_column_test():
     additional_columns = format_additional_columns(['solution_id'])
-    read_input, _ = InputReader(query, generate, False, additional_columns=additional_columns).read()
-    expected_df, filtered_read_input = parse_dfs_for_test(setup_data['df'], read_input, additional_columns,
-                                                          expected_columns)
+    df = pd.read_csv(with_missing_bp_csv_file)
+    read_input, _ = InputReader(query, generate, None, additional_columns=additional_columns).read()
+    expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     expected_df = expected_df.sort_values(by=['source_id'], ignore_index=True)
     filtered_read_input = filtered_read_input.sort_values(by=['source_id'], ignore_index=True)
     pdt.assert_frame_equal(expected_df, filtered_read_input, check_like=True, check_dtype=False)
 
 
-@pytest.mark.archive
-def test_multiple_columns(setup_data):
+def test_multiple_columns():
     additional_columns = format_additional_columns(['solution_id', 'bp_n_relevant_bases'])
-    read_input, _ = InputReader(query, generate, False, additional_columns=additional_columns).read()
-    expected_df, filtered_read_input = parse_dfs_for_test(setup_data['df'], read_input, additional_columns,
-                                                          expected_columns)
+    df = pd.read_csv(with_missing_bp_csv_file)
+    read_input, _ = InputReader(query, generate, None, additional_columns=additional_columns).read()
+    expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     expected_df = expected_df.sort_values(by=['source_id'], ignore_index=True)
     filtered_read_input = filtered_read_input.sort_values(by=['source_id'], ignore_index=True)
     pdt.assert_frame_equal(expected_df, filtered_read_input, check_like=True, check_dtype=False)
 
 
-@pytest.mark.archive
-def test_column_already_in_output(setup_data):
+def test_column_already_in_output():
     additional_columns = format_additional_columns(['source_id'])
-    read_input, _ = InputReader(query, generate, False, additional_columns=additional_columns).read()
-    expected_df, filtered_read_input = parse_dfs_for_test(setup_data['df'], read_input, additional_columns,
-                                                          expected_columns)
+    df = pd.read_csv(with_missing_bp_csv_file)
+    read_input, _ = InputReader(query, generate, None, additional_columns=additional_columns).read()
+    expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     expected_df = expected_df.sort_values(by=['source_id'], ignore_index=True)
     filtered_read_input = filtered_read_input.sort_values(by=['source_id'], ignore_index=True)
     pdt.assert_frame_equal(expected_df, filtered_read_input, check_like=True, check_dtype=False)
 
 
-@pytest.mark.archive
-def test_multiple_and_already_in_output(setup_data):
-    already_in_output = ['bp_standard_deviation', 'rp_coefficients']
-    not_in_output = ['solution_id', 'bp_basis_function_id']
-    additional_columns = format_additional_columns(already_in_output + not_in_output)
-    read_input, _ = InputReader(query, generate, False, additional_columns=additional_columns).read()
-    expected_df, filtered_read_input = parse_dfs_for_test(setup_data['df'], read_input, additional_columns,
-                                                          expected_columns)
+def test_multiple_and_already_in_output():
+    # First two are in already in the output, the other columns are not
+    additional_columns = format_additional_columns(['bp_standard_deviation', 'rp_coefficients', 'solution_id',
+                                                    'bp_basis_function_id'])
+    df = pd.read_csv(with_missing_bp_csv_file)
+    read_input, _ = InputReader(query, generate, None, additional_columns=additional_columns).read()
+    expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     expected_df = expected_df.sort_values(by=['source_id'], ignore_index=True)
     filtered_read_input = filtered_read_input.sort_values(by=['source_id'], ignore_index=True)
     pdt.assert_frame_equal(expected_df, filtered_read_input, check_like=True, check_dtype=False)
 
 
-@pytest.mark.archive
 def test_column_renaming_error():
     additional_columns = format_additional_columns({'source_id': 'bp_n_relevant_bases'})
     with pytest.raises(ValueError):
-        read_input, _ = InputReader(query, generate, False, additional_columns=additional_columns).read()
+        read_input, _ = InputReader(query, generate, None, additional_columns=additional_columns).read()

@@ -62,3 +62,4 @@ class InputReader(object):
         parsed_data, extension = reader.read()
         extension = default_extension if extension is None else extension
         return cast_output(parsed_data), extension
+      

@@ -1,4 +1,5 @@
 import numpy.testing as npt
+import pytest
 from pandas import testing as pdt
 
 from gaiaxpy import calibrate
@@ -12,7 +13,6 @@ from tests.files.paths import (mean_spectrum_fits_file, mean_spectrum_csv_file, 
                                mean_spectrum_xml_plain_file)
 from tests.test_calibrator.calibrator_solutions import sol_default_sampling_array, truncation_default_solution_df
 
-# TODO: Add tests for AVRO format
 
 parser = InternalContinuousParser()
 
@@ -30,9 +30,11 @@ spectra_df_xml_plain, _ = calibrate(mean_spectrum_xml_plain_file, save_file=Fals
 _rtol, _atol = 1e-22, 1e-22
 
 
-def test_create_spectrum():
+@pytest.mark.parametrize('file', ['mean_spectrum_avro_file', 'mean_spectrum_csv_file', 'mean_spectrum_ecsv_file',
+                                  'mean_spectrum_fits_file', 'mean_spectrum_xml_file', 'mean_spectrum_xml_plain_file'])
+def test_create_spectrum(file):
     # Read mean Spectrum
-    parsed_spectrum_file, extension = parser.parse_file(mean_spectrum_csv_file)
+    parsed_spectrum_file, extension = parser.parse_file(file)
     # Create sampled basis functions
     sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_design_matrices[band])
                           for band in BANDS}
@@ -41,9 +43,11 @@ def test_create_spectrum():
     assert isinstance(spectrum, AbsoluteSampledSpectrum)
 
 
-def test_calibrate_both_bands_default_calibration_model_csv():
+@pytest.mark.parametrize('file', ['mean_spectrum_avro_file', 'mean_spectrum_csv_file', 'mean_spectrum_ecsv_file',
+                                  'mean_spectrum_fits_file', 'mean_spectrum_xml_file', 'mean_spectrum_xml_plain_file'])
+def test_calibrate_both_bands_default_calibration_model_csv(file):
     # Default sampling and default calibration sampling
-    spectra_df_csv, positions = calibrate(mean_spectrum_csv_file, truncation=True, save_file=False)
+    spectra_df_csv, positions = calibrate(file, truncation=True, save_file=False)
     npt.assert_array_equal(positions, sol_default_sampling_array)
     pdt.assert_frame_equal(spectra_df_csv, truncation_default_solution_df, rtol=_rtol, atol=_atol)
     pdt.assert_frame_equal(spectra_df_fits, truncation_default_solution_df, rtol=_rtol, atol=_atol)

@@ -44,7 +44,6 @@ def get_xp_sampling_matrix(x_root, xp, n_bands):
     xp_dimension = int(xp_config.attrib['dimension'])
     xp_sampling = np.array([float(element.text) for element in xp_config])
     if not n_bands:
-        # TODO: A bit too custom, could be improved adding a variable to the filter files.
         n_bands = len(xp_sampling) // xp_dimension
     xp_sampling = xp_sampling.reshape(n_bands, xp_dimension)
     return np.transpose(xp_sampling)

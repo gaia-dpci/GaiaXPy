@@ -20,6 +20,13 @@ def get_mag_error(flux, flux_error):
     return 2.5 * flux_error / (flux * math.log(10))
 
 
+phot_system = PhotometricSystem.SDSS_Std
+label = phot_system.get_system_label()
+variables = ['mag', 'flux', 'flux_error']
+bands = ['u', 'g', 'r', 'i', 'z']
+sdss_std_cols = ['source_id'] + [f'{label}_{v}_{b}' for v in variables for b in bands]
+
+
 class TestSingleColourEquation(unittest.TestCase):
 
     def test_gaiaxpy_vs_pmn_photometry(self):
@@ -63,7 +70,6 @@ class TestSingleColourEquation(unittest.TestCase):
         affected_columns = [column for column in output_photometry.columns if affected_band in column]
         output_photometry_equal = output_photometry[unchanged_columns]
         pdt.assert_frame_equal(output_photometry_equal, output_photometry[unchanged_columns])
-        # TODO: Generate new test files with errors in flux and not magnitude
         # Compare changes in photometry
         output_photometry_differences = output_photometry[['source_id'] + affected_columns]
         for source_id in output_photometry['source_id'].values:
@@ -105,16 +111,10 @@ class TestSingleColourEquation(unittest.TestCase):
         phot_system = PhotometricSystem.SDSS_Std
         label = phot_system.get_system_label()
         # Generate a dataframe with the input data
-        # TODO: There are more elegant ways of creating this list
-        columns = ['source_id', f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r', f'{label}_mag_i',
-                   f'{label}_mag_z',
-                   f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r', f'{label}_flux_i', f'{label}_flux_z',
-                   f'{label}_flux_error_u', f'{label}_flux_error_g', f'{label}_flux_error_r', f'{label}_flux_error_i',
-                   f'{label}_flux_error_z']
         values = [428798990699423104, float('NaN'), 1.948665e+01, 1.782151e+01, 1.701492e+01, 1.653498e+01,
                   -6.904391e-32, 5.766324e-31, 2.691271e-30, 5.593872e-30, 8.745204e-30, 3.407144e-32,
                   1.020666e-32, 1.911510e-32, 1.829784e-32, 3.118226e-32]
-        data = pd.DataFrame(np.array([values]), columns=columns)
+        data = pd.DataFrame(np.array([values]), columns=sdss_std_cols)
         corrected_data = apply_colour_equation(data, photometric_system=phot_system, save_file=False)
         columns_that_change = [f'{label}_mag_u', f'{label}_flux_u', f'{label}_flux_error_u']
         # Data that should remain unchanged
@@ -132,16 +132,10 @@ class TestSingleColourEquation(unittest.TestCase):
         # mag, fluxes, errors are set to nan
         phot_system = PhotometricSystem.SDSS_Std
         label = phot_system.get_system_label()
-        # Generate a dataframe with the input data
-        columns = ['source_id', f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r', f'{label}_mag_i',
-                   f'{label}_mag_z',
-                   f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r', f'{label}_flux_i', f'{label}_flux_z',
-                   f'{label}_flux_error_u', f'{label}_flux_error_g', f'{label}_flux_error_r', f'{label}_flux_error_i',
-                   f'{label}_flux_error_z']
         values = [5882658689230693632, float('NaN'), float('NaN'), 2.164732e+01, 1.801127e+01, 1.493796e+01,
                   -1.065495e-32, -4.320473e-33, 7.936535e-32, 2.234461e-30, 3.806927e-29, 5.685276e-33, 7.746770e-34,
                   2.471102e-32, 1.745934e-32, 6.280337e-32]
-        data = pd.DataFrame(np.array([values]), columns=columns)
+        data = pd.DataFrame(np.array([values]), columns=sdss_std_cols)
         corrected_data = apply_colour_equation(data, photometric_system=phot_system, save_file=False)
         columns_that_change = [f'{label}_mag_u', f'{label}_flux_u', f'{label}_flux_error_u']
         # Data that should remain unchanged
@@ -158,15 +152,10 @@ class TestSingleColourEquation(unittest.TestCase):
         phot_system = PhotometricSystem.SDSS_Std
         label = phot_system.get_system_label()
         # Generate a dataframe with the input data
-        columns = ['source_id', f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r', f'{label}_mag_i',
-                   f'{label}_mag_z',
-                   f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r', f'{label}_flux_i', f'{label}_flux_z',
-                   f'{label}_flux_error_u', f'{label}_flux_error_g', f'{label}_flux_error_r', f'{label}_flux_error_i',
-                   f'{label}_flux_error_z']
         values = [4154201362082430080, 2.235461e+01, np.nan, 1.975758e+01, 1.715846e+01, 1.451727e+01, 4.838556e-32,
                   -9.957407e-33, 4.524045e-31, 4.901128e-30, 5.608559e-29, 8.698059e-32, 2.798101e-33, 1.464481e-31,
                   5.201447e-32, 1.301941e-31]
-        data = pd.DataFrame(np.array([values]), columns=columns)
+        data = pd.DataFrame(np.array([values]), columns=sdss_std_cols)
         corrected_data = apply_colour_equation(data, photometric_system=phot_system, save_file=False)
         columns_that_change = [f'{label}_mag_u', f'{label}_flux_u', f'{label}_flux_error_u']
         # Data that should remain unchanged
@@ -182,16 +171,10 @@ class TestSingleColourEquation(unittest.TestCase):
         phot_system = PhotometricSystem.SDSS_Std
         label = phot_system.get_system_label()
         # Generate a dataframe with the input data
-        columns = ['source_id', f'{label}_mag_u', f'{label}_mag_g', f'{label}_mag_r', f'{label}_mag_i',
-                   f'{label}_mag_z',
-                   f'{label}_flux_u', f'{label}_flux_g', f'{label}_flux_r', f'{label}_flux_i', f'{label}_flux_z',
-                   f'{label}_flux_error_u', f'{label}_flux_error_g', f'{label}_flux_error_r', f'{label}_flux_error_i',
-                   f'{label}_flux_error_z']
-        # Use mock data
         values = [123456789, 2.235461e+01, float('NaN'), float('NaN'), 1.715846e+01, 1.451727e+01, 4.838556e-32,
                   -9.957407e-33, -4.524045e-31, 4.901128e-30, 5.608559e-29, 8.698059e-32, 2.798101e-33, 1.464481e-31,
                   5.201447e-32, 1.301941e-31]
-        data = pd.DataFrame(np.array([values]), columns=columns)
+        data = pd.DataFrame(np.array([values]), columns=sdss_std_cols)
         corrected_data = apply_colour_equation(data, photometric_system=phot_system, save_file=False)
         columns_that_change = [f'{label}_mag_u', f'{label}_flux_u', f'{label}_flux_error_u']
         # Data that should remain unchanged

@@ -188,7 +188,10 @@ def array_to_symmetric_matrix(array, array_size):
     if pd.isna(array_size) or (isinstance(array, float) and pd.isna(array)):
         return array
     if isinstance(array_size, float):  # If the missing band source is present, floats may be returned when parsing
-        array_size = int(array_size)  # TODO: This should raise an error if the decimal part is not .0
+        float_size = float(array_size)
+        array_size = int(array_size)
+        if float_size != array_size:
+            raise ValueError("Input must have a decimal part of exactly .0")
     if isinstance(array, np.ndarray):
         n_dim = array.ndim
         if array.size == 0 or n_dim == 2:  # Either empty or already a matrix

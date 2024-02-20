@@ -12,7 +12,6 @@ array = np.array([1, 2, 3, 4, 5, 6])
 size = 3
 
 
-# TODO: Add new systems
 class TestGenericFunctions(unittest.TestCase):
 
     def test_get_system_label(self):

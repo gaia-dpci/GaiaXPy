@@ -17,8 +17,6 @@ def get_system_by_name(lst, name):
 available_systems = list(phot_systems_specs['name'])
 
 
-# TODO: Extend for new systems
-
 class TestSystemIsStandard(unittest.TestCase):
 
     def test_system_is_standard(self):

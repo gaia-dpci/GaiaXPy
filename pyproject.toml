@@ -34,9 +34,6 @@ test = ['pytest', 'pytest-mock']
 homepage = 'https://gaia-dpci.github.io/GaiaXPy-website/'
 documentation = 'https://gaiaxpy.readthedocs.io/en/latest/'
 
-[tool.pytest.ini_options]
-mock_use_standalone_module = true
-
 [tool.setuptools]
 packages = ['gaiaxpy']
 package-dir = {'' = 'src'}

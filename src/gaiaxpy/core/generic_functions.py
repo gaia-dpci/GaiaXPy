@@ -250,7 +250,7 @@ def correlation_to_covariance(correlation: np.ndarray, error: np.ndarray, stdev:
     Raises:
         ValueError: If the dimensions of input correlation are not either 1 or 2.
     """
-    if isinstance(correlation, float) and pd.isna(correlation):
+    if correlation is None or (isinstance(correlation, float) and pd.isna(correlation)):
         return None
     if correlation.ndim == 1:
         size = get_matrix_size_from_lower_triangle(correlation)

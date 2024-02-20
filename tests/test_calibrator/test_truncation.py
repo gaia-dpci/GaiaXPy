@@ -10,7 +10,7 @@ from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousPars
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from tests.files.paths import (mean_spectrum_fits_file, mean_spectrum_csv_file, mean_spectrum_xml_file,
-                               mean_spectrum_xml_plain_file)
+                               mean_spectrum_xml_plain_file, mean_spectrum_avro_file, mean_spectrum_ecsv_file)
 from tests.test_calibrator.calibrator_solutions import sol_default_sampling_array, truncation_default_solution_df
 
 
@@ -30,8 +30,8 @@ spectra_df_xml_plain, _ = calibrate(mean_spectrum_xml_plain_file, save_file=Fals
 _rtol, _atol = 1e-22, 1e-22
 
 
-@pytest.mark.parametrize('file', ['mean_spectrum_avro_file', 'mean_spectrum_csv_file', 'mean_spectrum_ecsv_file',
-                                  'mean_spectrum_fits_file', 'mean_spectrum_xml_file', 'mean_spectrum_xml_plain_file'])
+@pytest.mark.parametrize('file', [mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file,
+                                  mean_spectrum_fits_file, mean_spectrum_xml_file, mean_spectrum_xml_plain_file])
 def test_create_spectrum(file):
     # Read mean Spectrum
     parsed_spectrum_file, extension = parser.parse_file(file)
@@ -43,8 +43,8 @@ def test_create_spectrum(file):
     assert isinstance(spectrum, AbsoluteSampledSpectrum)
 
 
-@pytest.mark.parametrize('file', ['mean_spectrum_avro_file', 'mean_spectrum_csv_file', 'mean_spectrum_ecsv_file',
-                                  'mean_spectrum_fits_file', 'mean_spectrum_xml_file', 'mean_spectrum_xml_plain_file'])
+@pytest.mark.parametrize('file', [mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file,
+                                  mean_spectrum_fits_file, mean_spectrum_xml_file, mean_spectrum_xml_plain_file])
 def test_calibrate_both_bands_default_calibration_model_csv(file):
     # Default sampling and default calibration sampling
     spectra_df_csv, positions = calibrate(file, truncation=True, save_file=False)

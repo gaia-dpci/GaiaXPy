@@ -22,11 +22,6 @@ bp_model = 'v211w'  # Alternative bp model
 xp_sampling_grid, xp_merge = load_xpmerge_from_xml(bp_model=bp_model)
 xp_design_matrices = load_xpsampling_from_xml(bp_model=bp_model)
 
-# Calibrate data in files
-spectra_df_fits, _ = calibrate(mean_spectrum_fits_file, save_file=False, truncation=True)
-spectra_df_xml, _ = calibrate(mean_spectrum_xml_file, save_file=False, truncation=True)
-spectra_df_xml_plain, _ = calibrate(mean_spectrum_xml_plain_file, save_file=False, truncation=True)
-
 _rtol, _atol = 1e-22, 1e-22
 
 
@@ -47,9 +42,6 @@ def test_create_spectrum(file):
                                   mean_spectrum_fits_file, mean_spectrum_xml_file, mean_spectrum_xml_plain_file])
 def test_calibrate_both_bands_default_calibration_model_csv(file):
     # Default sampling and default calibration sampling
-    spectra_df_csv, positions = calibrate(file, truncation=True, save_file=False)
+    spectra_df, positions = calibrate(file, truncation=True, save_file=False)
     npt.assert_array_equal(positions, sol_default_sampling_array)
-    pdt.assert_frame_equal(spectra_df_csv, truncation_default_solution_df, rtol=_rtol, atol=_atol)
-    pdt.assert_frame_equal(spectra_df_fits, truncation_default_solution_df, rtol=_rtol, atol=_atol)
-    pdt.assert_frame_equal(spectra_df_xml, truncation_default_solution_df, rtol=_rtol, atol=_atol)
-    pdt.assert_frame_equal(spectra_df_xml_plain, truncation_default_solution_df, rtol=_rtol, atol=_atol)
+    pdt.assert_frame_equal(spectra_df, truncation_default_solution_df, rtol=_rtol, atol=_atol)

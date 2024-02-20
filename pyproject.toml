@@ -22,11 +22,13 @@ dynamic = [
   'classifiers',
   'description',
   'maintainers',
-  'optional-dependencies',
   'readme',
   'requires-python',
   'version'
 ]
+
+[project.optional-dependencies]
+test = ['pytest', 'pytest-mock']
 
 [project.urls]
 homepage = 'https://gaia-dpci.github.io/GaiaXPy-website/'

@@ -15,8 +15,6 @@ CLASSIFIERS = ['Programming Language :: Python :: 3',
                'License :: OSI Approved :: BSD License',
                'Operating System :: OS Independent']
 
-EXTRAS_REQUIRE = {'tests': ['pytest', 'pytest-mock']}
-
 
 setup(
     name='GaiaXPy',
@@ -31,7 +29,6 @@ setup(
     url='https://gaia-dpci.github.io/GaiaXPy-website/',
     python_requires='>=3.8',
     packages=find_packages('src'),
-    extras_require=EXTRAS_REQUIRE,
     include_package_data=True,
     classifiers=CLASSIFIERS
 )

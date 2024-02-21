@@ -590,3 +590,12 @@ def parse_config(xml_file: Union[Path, str]) -> namedtuple:
     x_root = __get_file_root(xml_file)
     outer_title = x_root.tag.split('}')[1]
     return __parse_config(x_root, outer_title=outer_title)
+
+
+def format_sampled_output(spectra_series):
+    positions = spectra_series.iloc[0].get_positions()
+    spectra_type = get_spectra_type(spectra_series.iloc[0])
+    spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict())
+    spectra_df = pd.DataFrame(spectra_series.tolist())
+    spectra_df.attrs['data_type'] = spectra_type
+    return spectra_df, positions

@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from gaiaxpy.core.generic_functions import cast_output, get_spectra_type, validate_pwl_sampling
+from gaiaxpy.core.generic_functions import cast_output, validate_pwl_sampling, format_sampled_output
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
@@ -166,12 +166,7 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
                                                 unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour,
                                                 disable=disable_info, file=stdout)])
     spectra_series = spectra_series.explode()
-    positions = spectra_series.iloc[0].get_positions()
-    spectra_type = get_spectra_type(spectra_series.iloc[0])
-    spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict())
-    spectra_df = pd.DataFrame(spectra_series.tolist())
-    spectra_df.attrs['data_type'] = spectra_type
-    return spectra_df, positions
+    return format_sampled_output(spectra_series)
 
 
 def get_unique_basis_ids(parsed_input_data: pd.DataFrame) -> set:

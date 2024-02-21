@@ -17,7 +17,7 @@ class XpSpectrum(Spectrum):
         Initialise an XP spectrum.
 
         Args:
-            source_id (str): Source identifier.
+            source_id (int/str): Source identifier.
             xp (str): Gaia photometer, can be either 'bp' or 'rp'.
         """
         Spectrum.__init__(self, source_id)

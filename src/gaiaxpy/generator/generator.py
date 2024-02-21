@@ -12,6 +12,7 @@ from gaiaxpy.output.photometry_data import PhotometryData
 from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
 from .photometric_system import PhotometricSystem
 from ..core.input_validator import validate_save_arguments
+from ..file_parser.cast import _cast
 
 
 def generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
@@ -117,4 +118,4 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
     # Save data
     output_data = PhotometryData(photometry_df)
     output_data.save(save_file, output_path, output_file, output_format, extension)
-    return photometry_df
+    return _cast(photometry_df)

@@ -4,6 +4,7 @@ import pytest
 
 from gaiaxpy import (generate, PhotometricSystem, calibrate, convert, apply_error_correction,
                      get_inverse_covariance_matrix, get_inverse_square_root_covariance_matrix)
+from gaiaxpy.file_parser.cast import _cast
 from tests.files.paths import (mean_spectrum_avro_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file,
                                with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file,
                                no_correction_solution_path)
@@ -58,7 +59,7 @@ def test_generate_other_formats():
                           additional_columns=additional_columns, error_correction=True, save_file=False)
         assert all(output[key].values == [4545469030156206080, 4545469030156206081, 4545469030156206080])
         output = output.drop(columns=[key])
-        pdt.assert_frame_equal(output, solution)
+        pdt.assert_frame_equal(output, _cast(solution))
 
 
 def test_not_implemented_functions():

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required, cast_output
 from .dataframe_numpy_array_reader import DataFrameNumPyArrayReader
 from .dataframe_string_array_reader import DataFrameStringArrayReader
 from .required_columns import MANDATORY_INPUT_COLS, COV_INPUT_COLUMNS, CORR_INPUT_COLUMNS, TRUNCATION_COLS
@@ -88,6 +88,7 @@ class DataFrameReader(object):
                 self.requested_columns = self.requested_columns + covariance_columns
         if not self.disable_info:
             print(self.info_msg + ' Done!', end='\r')
+        data = cast_output(data)
         if self.additional_columns:
             data = rename_with_required(data, self.additional_columns)
         data = data[self.requested_columns] if self.requested_columns else data

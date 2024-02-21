@@ -9,7 +9,6 @@ from .hdfs_reader import HDFSReader
 from .list_reader import ListReader
 from .local_file_reader import LocalFileReader
 from .query_reader import QueryReader
-from ..core.generic_functions import cast_output
 
 default_extension = 'csv'
 
@@ -61,5 +60,4 @@ class InputReader(object):
             raise ValueError('The input provided does not match any of the expected input types.')
         parsed_data, extension = reader.read()
         extension = default_extension if extension is None else extension
-        return cast_output(parsed_data), extension
-      
+        return parsed_data, extension

@@ -1,6 +1,6 @@
 from os.path import splitext
 
-from gaiaxpy.core.generic_functions import standardise_extension
+from gaiaxpy.core.generic_functions import standardise_extension, cast_output
 from gaiaxpy.core.input_validator import check_column_overwrite
 from gaiaxpy.file_parser.parse_external import ExternalParser
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
@@ -10,7 +10,7 @@ from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, COV_INPU
 
 def external(requested_columns=None, additional_columns=None, selector=None, **kwargs):
     return ExternalParser(requested_columns=requested_columns, additional_columns=additional_columns,
-                                    selector=selector, **kwargs)
+                          selector=selector, **kwargs)
 
 
 def internal_continuous(requested_columns=None, additional_columns=None, selector=None, **kwargs):
@@ -87,7 +87,8 @@ class FileReader:
         if hasattr(self, 'address') and hasattr(self, 'port'):
             parser_arguments['address'] = self.address
             parser_arguments['port'] = self.port
-        return self.fps.parser(**parser_arguments).parse_file(self.file, disable_info=self.disable_info)
+        data, extension = self.fps.parser(**parser_arguments).parse_file(self.file, disable_info=self.disable_info)
+        return cast_output(data), extension
 
 
 class FileParserSelector(object):

@@ -3,6 +3,7 @@ import pandas.testing as pdt
 import pytest
 
 from gaiaxpy import generate, PhotometricSystem
+from gaiaxpy.file_parser.cast import _cast
 from tests.files.paths import no_correction_solution_path, correction_solution_path
 from tests.utils.utils import missing_bp_source_id as missing_bp_src
 
@@ -11,12 +12,12 @@ _rtol, _atol = 1e-7, 1e-7
 
 @pytest.fixture(scope='module')
 def no_corr_sol():
-    yield pd.read_csv(no_correction_solution_path, float_precision='round_trip')
+    yield _cast(pd.read_csv(no_correction_solution_path, float_precision='round_trip'))
 
 
 @pytest.fixture(scope='module')
 def with_corr_sol():
-    yield pd.read_csv(correction_solution_path, float_precision='round_trip')
+    yield _cast(pd.read_csv(correction_solution_path, float_precision='round_trip'))
 
 
 @pytest.fixture

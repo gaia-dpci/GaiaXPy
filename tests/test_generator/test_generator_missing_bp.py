@@ -4,6 +4,7 @@ import pytest
 
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.core.generic_functions import str_to_array
+from gaiaxpy.file_parser.cast import _cast
 from gaiaxpy.input_reader.input_reader import InputReader
 from tests.files.paths import (missing_bp_csv_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file,
                                with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file,
@@ -15,12 +16,12 @@ _rtol, _atol = 1e-7, 1e-7
 
 @pytest.fixture(scope='module')
 def with_missing_solution_df_no_corr():
-    yield pd.read_csv(no_correction_solution_path, float_precision='round_trip')
+    yield _cast(pd.read_csv(no_correction_solution_path, float_precision='round_trip'))
 
 
 @pytest.fixture(scope='module')
 def with_missing_solution_df_with_corr():
-    yield pd.read_csv(correction_solution_path, float_precision='round_trip')
+    yield _cast(pd.read_csv(correction_solution_path, float_precision='round_trip'))
 
 
 @pytest.fixture(scope='module')

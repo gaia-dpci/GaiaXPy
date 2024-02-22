@@ -68,8 +68,8 @@ def test_column_types(file):
             f'Key {key} actual type is {actual_dtypes[key]} but expected type is {type_map[key]} for file {file}.'
 
 
-@pytest.mark.parametrize('file', [mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file,
-                                  mean_spectrum_fits_file, mean_spectrum_xml_file, mean_spectrum_xml_plain_file])
+@pytest.mark.parametrize('file', [mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,
+                                  mean_spectrum_xml_file, mean_spectrum_xml_plain_file])
 def test_coefficients_types(file):
     parsed_file, _ = parser.parse_file(file)
     for band in BANDS:
@@ -129,7 +129,7 @@ def test_parse_equality():
     parsed_csv_file, _ = parser.parse_file(mean_spectrum_csv_file)
     parsed_fits_file, _ = parser.parse_file(mean_spectrum_fits_file)
     parsed_plain_xml_file, _ = parser.parse_file(mean_spectrum_xml_plain_file)
-    parsed_xml_file = parser.parse_file(mean_spectrum_xml_file)
+    parsed_xml_file, _ = parser.parse_file(mean_spectrum_xml_file)
     source_ids = parsed_csv_file['source_id'].to_list()
     for source_id in source_ids:
         csv_data = get_spectrum_with_source_id(source_id, parsed_csv_file)

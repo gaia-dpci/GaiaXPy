@@ -25,8 +25,9 @@ array_columns = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_cor
 type_dict = {'bp_coefficients': np.float64, 'bp_coefficient_errors': np.float32, 'bp_coefficient_correlations':
     np.float32, 'rp_coefficient_errors': np.float32}
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_csv_file, with_missing_bp_df, with_missing_bp_sources,
-                                        with_missing_bp_query])
+@pytest.mark.parametrize('input_data', [with_missing_bp_csv_file, with_missing_bp_df,
+                                        pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
+                                        pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_single_column_test(input_data):
     additional_columns = format_additional_columns(['solution_id'])
     df = pd.read_csv(with_missing_bp_csv_file)
@@ -42,8 +43,9 @@ def run_numpy_comparison(expected_df, read_input, _array_columns):
         for index in range(len(expected_df)):
             npt.assert_array_almost_equal(expected_df[column].iloc[index], read_input[column].iloc[index], decimal=5)
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_fits_file, with_missing_bp_df, with_missing_bp_sources,
-                                        with_missing_bp_query])
+@pytest.mark.parametrize('input_data', [with_missing_bp_fits_file, with_missing_bp_df,
+                                        pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
+                                        pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_multiple_columns(input_data):
     additional_columns = format_additional_columns(['solution_id', 'bp_n_relevant_bases'])
     df = pd.read_csv(with_missing_bp_csv_file)
@@ -63,8 +65,9 @@ def test_multiple_columns(input_data):
                            check_dtype=False, check_exact=False)
 
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_xml_file, with_missing_bp_df, with_missing_bp_sources,
-                                        with_missing_bp_query])
+@pytest.mark.parametrize('input_data', [with_missing_bp_xml_file, with_missing_bp_df,
+                                        pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
+                                        pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_column_already_in_output(input_data):
     additional_columns = format_additional_columns(['source_id'])
     df = pd.read_csv(with_missing_bp_csv_file)
@@ -79,8 +82,9 @@ def test_column_already_in_output(input_data):
                            check_dtype=False)
 
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_xml_plain_file, with_missing_bp_df, with_missing_bp_sources,
-                                        with_missing_bp_query])
+@pytest.mark.parametrize('input_data', [with_missing_bp_xml_plain_file, with_missing_bp_df,
+                                        pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
+                                        pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_multiple_and_already_in_output(input_data):
     additional_columns = format_additional_columns(['bp_standard_deviation', 'rp_coefficients', 'solution_id',
                                                     'bp_basis_function_id'])
@@ -99,16 +103,18 @@ def test_multiple_and_already_in_output(input_data):
                            check_dtype=False)
 
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_ecsv_file, with_missing_bp_df, with_missing_bp_sources,
-                                        with_missing_bp_query])
+@pytest.mark.parametrize('input_data', [with_missing_bp_ecsv_file, with_missing_bp_df,
+                                        pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
+                                        pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_column_renaming_error(input_data):
     additional_columns = format_additional_columns({'source_id': 'bp_n_relevant_bases'})
     with pytest.raises(ValueError):
         read_input, _ = InputReader(input_data, generate, False, additional_columns=additional_columns).read()
 
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_csv_file, with_missing_bp_df, with_missing_bp_sources,
-                                        with_missing_bp_query])
+@pytest.mark.parametrize('input_data', [with_missing_bp_csv_file, with_missing_bp_df,
+                                        pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
+                                        pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_multiple_renaming(input_data):
     additional_columns = format_additional_columns({'sol_id': 'solution_id', 'bp_id': 'bp_basis_function_id'})
     df = pd.read_csv(with_missing_bp_csv_file).rename(columns=reverse_simple_add_col_dict(additional_columns))

@@ -4,12 +4,13 @@ import pytest
 
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.core.generic_functions import reverse_simple_add_col_dict, format_additional_columns
+from gaiaxpy.file_parser.cast import _cast
 from tests.files.paths import with_missing_bp_csv_file, no_correction_solution_path
 
 
 @pytest.fixture
 def setup_data():
-    yield {'df': pd.read_csv(with_missing_bp_csv_file)}
+    yield {'df': _cast(pd.read_csv(with_missing_bp_csv_file))}
 
 
 def test_one_non_required_additional_col_as_list(setup_data):
@@ -19,10 +20,11 @@ def test_one_non_required_additional_col_as_list(setup_data):
     solution = solution.drop(columns=[c for c in solution.columns if c != 'source_id' and 'Sdss_' not in c])
     output = generate(df, photometric_system=PhotometricSystem.SDSS, additional_columns=additional_columns,
                       error_correction=False, save_file=False)
+    output = _cast(output)
     assert all(elem in output.columns for elem in additional_columns)
     pdt.assert_frame_equal(output[additional_columns], df[additional_columns])
     output_to_compare = output.drop(columns=additional_columns)
-    pdt.assert_frame_equal(output_to_compare, solution)
+    pdt.assert_frame_equal(output_to_compare, _cast(solution))
 
 
 def test_more_than_one_non_required_additional_col_as_list(setup_data):
@@ -35,7 +37,7 @@ def test_more_than_one_non_required_additional_col_as_list(setup_data):
     assert all(elem in output.columns for elem in additional_columns)
     pdt.assert_frame_equal(output[additional_columns], df[additional_columns])
     output_to_compare = output.drop(columns=additional_columns)
-    pdt.assert_frame_equal(output_to_compare, solution)
+    pdt.assert_frame_equal(output_to_compare, _cast(solution))
 
 
 def test_one_required_additional_col_as_list(setup_data):
@@ -48,7 +50,7 @@ def test_one_required_additional_col_as_list(setup_data):
     assert all(elem in output.columns for elem in additional_columns)
     pdt.assert_frame_equal(output[additional_columns], df[additional_columns])
     output_to_compare = output  # Column is already in the output, it shouldn't be dropped before the comparison
-    pdt.assert_frame_equal(output_to_compare, solution)
+    pdt.assert_frame_equal(output_to_compare, _cast(solution))
 
 
 def test_one_non_required_additional_col_as_dict(setup_data):
@@ -62,7 +64,7 @@ def test_one_non_required_additional_col_as_dict(setup_data):
     assert all(elem in output.columns for elem in additional_columns_values)
     pdt.assert_frame_equal(output[additional_columns_values], df[additional_columns_values])
     output_to_compare = output.drop(columns=additional_columns_values)
-    pdt.assert_frame_equal(output_to_compare, solution)
+    pdt.assert_frame_equal(output_to_compare, _cast(solution))
 
 
 def test_more_than_one_non_required_additional_col_as_dict(setup_data):
@@ -80,7 +82,7 @@ def test_more_than_one_non_required_additional_col_as_dict(setup_data):
     assert all(elem in output.columns for elem in additional_columns_keys)
     pdt.assert_frame_equal(output[additional_columns_keys], df.rename(columns=rename_dict)[additional_columns_keys])
     output_to_compare = output.drop(columns=additional_columns_keys)
-    pdt.assert_frame_equal(output_to_compare, solution)
+    pdt.assert_frame_equal(output_to_compare, _cast(solution))
 
 
 def test_rename_mandatory_columns(setup_data):

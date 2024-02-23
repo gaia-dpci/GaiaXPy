@@ -5,35 +5,31 @@ import pytest
 from gaiaxpy.core.config import load_xpsampling_from_xml, load_xpmerge_from_xml
 from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
 
-offset_system_values = ['JkcStd', 'SdssStd', 'StromgrenStd']
-offset_solutions = [np.array([2.44819e-19, 4.62320e-20, 1.81103e-20, 2.15027e-20, 1.73864e-20]),
-                    np.array([1.05000e-31, 2.47850e-32, 3.49926e-32, 3.80023e-32, 3.23519e-32]), np.zeros(3)]
-
 
 def test_load_xpsampling_from_xml_type():
-    system_value = 'Jkc'
-    xp_sampling = load_xpsampling_from_xml(system=system_value)
+    xp_sampling = load_xpsampling_from_xml(system='Jkc')
     assert isinstance(xp_sampling, dict)
 
 
 def test_load_xpmerge_from_xml_types():
-    system_value = 'Jkc'
-    xp_sampling_grid, xp_merge = load_xpmerge_from_xml(system=system_value)
+    xp_sampling_grid, xp_merge = load_xpmerge_from_xml(system='Jkc')
     assert isinstance(xp_merge, dict)
     assert isinstance(xp_sampling_grid, np.ndarray)
 
 
 def test_load_xpzeropoint_from_xml():
-    system_value = 'Jkc'
-    system = InternalPhotometricSystem(system_value)
+    system = InternalPhotometricSystem('Jkc')
     zero_points = system.get_zero_points()
     bands = system.get_bands()
-    assert isinstance(zero_points, np.ndarray)
     npt.assert_array_equal(zero_points, np.array([-25.9651, -25.4918, -26.0952, -26.6505, -27.3326]))
     npt.assert_array_equal(bands, np.array(['U', 'B', 'V', 'R', 'I']))
 
 
-@pytest.mark.parametrize('system_value, solution', list(zip(offset_system_values, offset_solutions)))
+@pytest.mark.parametrize('system_value, solution', list(zip(['JkcStd', 'SdssStd', 'StromgrenStd'],
+                                                            [np.array([2.44819e-19, 4.62320e-20, 1.81103e-20,
+                                                                       2.15027e-20, 1.73864e-20]),
+                                                             np.array([1.05000e-31, 2.47850e-32, 3.49926e-32,
+                                                                       3.80023e-32, 3.23519e-32]), np.zeros(3)])))
 def test_load_xpoffset(system_value, solution):
     # Standard systems have got an offset file
     system = InternalPhotometricSystem(system_value)

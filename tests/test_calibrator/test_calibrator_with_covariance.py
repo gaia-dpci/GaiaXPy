@@ -13,6 +13,15 @@ from tests.test_calibrator.calibrator_solutions import sol_with_covariance_sampl
 _atol, _rtol = 1e-10, 1e-10
 
 
+def __scale_error(error_array, stdev):
+    if isinstance(stdev, float):
+        error_array = error_array / stdev
+    elif len(stdev) == 2:
+        midpoint = len(error_array) // 2
+        error_array[:midpoint] /= stdev[0]  # Divide the first half by stdev[0]
+        error_array[midpoint:] /= stdev[1]  # Divide the second half by stdev[1]
+    return error_array
+
 def test_with_covariance():
     spectra, sampling = calibrate(with_missing_bp_csv_file, with_correlation=True, save_file=False)
     # Load spectra
@@ -20,18 +29,7 @@ def test_with_covariance():
     solution = join(files_path, 'calibrator_solution', 'calibrate_with_covariance_solution.csv')
     solution_df = pd.read_csv(solution, float_precision='round_trip', converters=_converters)
     stdev_pairs = [(1.1224667, 1.3151282), 1.0339215, (1.0479343, 1.0767492)]
-
-    def scale_error(error_array, stdev):
-        if isinstance(stdev, float):
-            error_array = error_array / stdev
-        elif len(stdev) == 2:
-            midpoint = len(error_array) // 2
-            error_array[:midpoint] /= stdev[0]  # Divide the first half by stdev[0]
-            error_array[midpoint:] /= stdev[1]  # Divide the second half by stdev[1]
-        return error_array
-
-    scaled_errors = [scale_error(arr, dev) for arr, dev in zip(spectra['flux_error'].values, stdev_pairs)]
-
+    scaled_errors = [__scale_error(arr, dev) for arr, dev in zip(spectra['flux_error'].values, stdev_pairs)]
     # Stdevs are one because errors are already scaled
     spectra['covariance'] = [correlation_to_covariance(corr, err, st) for corr, err, st in
                              zip(spectra['correlation'].values, scaled_errors, np.ones(3))]

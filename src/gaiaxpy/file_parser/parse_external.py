@@ -24,7 +24,6 @@ class ExternalParser(GenericParser):
             self.address = kwargs.get('address', None)
             self.port = kwargs.get('port', None)
 
-
     def _parse_csv(self, csv_file, _array_columns=None, _matrix_columns=None):
         """
         Parse the input CSV file and store the result in a pandas DataFrame if it contains externally calibrated sampled

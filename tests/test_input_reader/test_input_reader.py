@@ -12,7 +12,7 @@ columns_to_read = MANDATORY_INPUT_COLS['convert'] + CORR_INPUT_COLUMNS
 dataframe_str = pd.read_csv(mean_spectrum_csv_file, float_precision='round_trip', usecols=columns_to_read)
 parser = InternalContinuousParser(columns_to_read)
 dataframe_np, _ = parser.parse_file(mean_spectrum_csv_file)
-# Temporarily opt for removing cov matrices before comparing
+# Opt for removing cov matrices before comparing. Covariance matrix is tested in a separate file.
 dataframe_np = dataframe_np.drop(columns=['bp_covariance_matrix', 'rp_covariance_matrix'])
 
 _rtol, _atol = 1e-24, 1e-24

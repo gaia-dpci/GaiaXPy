@@ -12,6 +12,7 @@ from gaiaxpy.output.photometry_data import PhotometryData
 from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
 from .photometric_system import PhotometricSystem
 from ..core.input_validator import validate_save_arguments
+from ..file_parser.cast import _cast
 
 
 def generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
@@ -111,11 +112,10 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
             gaia_label = gaia_system.get_system_label()
             gaia_columns = [column for column in photometry_df if column.startswith(gaia_label)]
             photometry_df = photometry_df.drop(columns=gaia_columns)
-    # Readd additional data (do not add columns already present) # TODO: should use suffix instead?
     additional_data = additional_data[[c for c in additional_data.columns if c not in photometry_df.columns]]
     photometry_df = pd.concat([photometry_df, additional_data], axis=1)
     photometry_df = cast_output(photometry_df)
     # Save data
     output_data = PhotometryData(photometry_df)
     output_data.save(save_file, output_path, output_file, output_format, extension)
-    return photometry_df
+    return _cast(photometry_df)

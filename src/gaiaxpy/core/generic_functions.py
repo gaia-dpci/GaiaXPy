@@ -188,7 +188,10 @@ def array_to_symmetric_matrix(array, array_size):
     if pd.isna(array_size) or (isinstance(array, float) and pd.isna(array)):
         return array
     if isinstance(array_size, float):  # If the missing band source is present, floats may be returned when parsing
-        array_size = int(array_size)  # TODO: This should raise an error if the decimal part is not .0
+        float_size = float(array_size)
+        array_size = int(array_size)
+        if float_size != array_size:
+            raise ValueError("Input must have a decimal part of exactly .0")
     if isinstance(array, np.ndarray):
         n_dim = array.ndim
         if array.size == 0 or n_dim == 2:  # Either empty or already a matrix
@@ -250,7 +253,7 @@ def correlation_to_covariance(correlation: np.ndarray, error: np.ndarray, stdev:
     Raises:
         ValueError: If the dimensions of input correlation are not either 1 or 2.
     """
-    if isinstance(correlation, float) and pd.isna(correlation):
+    if correlation is None or (isinstance(correlation, float) and pd.isna(correlation)):
         return None
     if correlation.ndim == 1:
         size = get_matrix_size_from_lower_triangle(correlation)
@@ -587,3 +590,12 @@ def parse_config(xml_file: Union[Path, str]) -> namedtuple:
     x_root = __get_file_root(xml_file)
     outer_title = x_root.tag.split('}')[1]
     return __parse_config(x_root, outer_title=outer_title)
+
+
+def format_sampled_output(spectra_series):
+    positions = spectra_series.iloc[0].get_positions()
+    spectra_type = get_spectra_type(spectra_series.iloc[0])
+    spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict())
+    spectra_df = pd.DataFrame(spectra_series.tolist())
+    spectra_df.attrs['data_type'] = spectra_type
+    return spectra_df, positions

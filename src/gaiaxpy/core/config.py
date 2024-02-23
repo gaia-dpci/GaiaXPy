@@ -27,7 +27,6 @@ def get_file_path(config_file=None):
 
 
 def get_filter_version_from_config(_config_parser):
-    # TODO: return built-in version if the version section is not found.
     try:
         version = _config_parser['filter']['version']
     except KeyError:

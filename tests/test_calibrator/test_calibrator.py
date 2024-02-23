@@ -20,13 +20,9 @@ from tests.test_calibrator.calibrator_solutions import (solution_default_df, sol
 from tests.utils.utils import is_instance_err_message, npt_array_err_message
 
 # Load variables
-label = 'calibrator'
 bp_model = 'v211w'  # Alternative bp model
-xp_sampling_grid, xp_merge = load_xpmerge_from_xml(bp_model=bp_model)
-xp_design_matrices = load_xpsampling_from_xml(bp_model=bp_model)
 
-_rtol = 1e-10
-_atol = 1e-10
+_atol, _rtol = 1e-10, 1e-10
 
 cal_input_files = [mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,
                    mean_spectrum_xml_file, mean_spectrum_xml_plain_file]
@@ -35,6 +31,8 @@ cal_input_files = [mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectru
 @pytest.mark.parametrize('input_file', cal_input_files)
 def test_create_spectrum(input_file):
     def generate_single_spectrum(mean_spectrum_path):
+        xp_design_matrices = load_xpsampling_from_xml(bp_model=bp_model)
+        xp_sampling_grid, xp_merge = load_xpmerge_from_xml(bp_model=bp_model)
         # Read mean Spectrum
         parser = InternalContinuousParser(MANDATORY_INPUT_COLS['calibrate'] + CORR_INPUT_COLUMNS)
         parsed_spectrum_file, extension = parser.parse_file(mean_spectrum_path)
@@ -44,9 +42,8 @@ def test_create_spectrum(input_file):
         return _create_spectrum(parsed_spectrum_file.iloc[0], truncation=False, design_matrix=sampled_basis_func,
                                 merge=xp_merge)
 
-    instance = AbsoluteSampledSpectrum
     spectrum = generate_single_spectrum(input_file)
-    assert isinstance(spectrum, instance), is_instance_err_message(input_file, instance)
+    assert isinstance(spectrum, AbsoluteSampledSpectrum), is_instance_err_message(input_file, AbsoluteSampledSpectrum)
 
 
 @pytest.mark.parametrize('input_file', cal_input_files)
@@ -68,36 +65,20 @@ def test_custom_sampling_default_calibration_model(input_file):
     pdt.assert_frame_equal(spectra_df_custom_sampling, solution_custom_df, atol=_atol, rtol=_rtol)
 
 
+@pytest.mark.parametrize('sampling,sampling_sol,solution', [(None, sol_v211w_default_sampling_array,
+                                                             solution_v211w_default_df),
+                                                            (np.arange(350, 1050, 200), sol_custom_sampling_array,
+                                                             solution_v211w_custom_df)])
 @pytest.mark.parametrize('input_file', cal_input_files)
-def test_calibrate_both_bands_v211w_model(input_file):
-    spectra_df_csv, positions = _calibrate(input_file, save_file=False, bp_model=bp_model)
-    npt.assert_array_equal(positions, sol_v211w_default_sampling_array, err_msg=npt_array_err_message(input_file))
-    pdt.assert_frame_equal(spectra_df_csv, solution_v211w_default_df, atol=_atol, rtol=_rtol)
-
-
-@pytest.mark.parametrize('input_file', cal_input_files)
-def test_custom_sampling_v211w_model(input_file):
-    spectra_df_custom_sampling, positions = _calibrate(input_file, sampling=np.arange(350, 1050, 200), save_file=False,
+def test_custom_sampling_v211w_model(input_file, sampling, sampling_sol, solution):
+    spectra_df_custom_sampling, positions = _calibrate(input_file, sampling=sampling, save_file=False,
                                                        bp_model=bp_model)
-    npt.assert_array_equal(positions, sol_custom_sampling_array, err_msg=npt_array_err_message(input_file))
-    pdt.assert_frame_equal(spectra_df_custom_sampling, solution_v211w_custom_df, atol=_atol, rtol=_rtol)
+    npt.assert_array_equal(positions, sampling_sol, err_msg=npt_array_err_message(input_file))
+    pdt.assert_frame_equal(spectra_df_custom_sampling, solution, atol=_atol, rtol=_rtol)
 
 
-def test_sampling_wrong_array():
+@pytest.mark.parametrize('array', [np.linspace(800, 350, 600), np.linspace(300, 850, 300),
+                                   np.linspace(350, 1500, 200), np.linspace(200, 2000, 100)])
+def test_sampling_wrong_array(array):
     with pytest.raises(ValueError):
-        calibrate(mean_spectrum_avro_file, sampling=np.linspace(800, 350, 600), save_file=False)
-
-
-def test_sampling_low():
-    with pytest.raises(ValueError):
-        calibrate(mean_spectrum_avro_file, sampling=np.linspace(300, 850, 300), save_file=False)
-
-
-def test_sampling_high():
-    with pytest.raises(ValueError):
-        calibrate(mean_spectrum_avro_file, sampling=np.linspace(350, 1500, 200), save_file=False)
-
-
-def test_sampling_both_wrong():
-    with pytest.raises(ValueError):
-        calibrate(mean_spectrum_avro_file, sampling=np.linspace(200, 2000, 100), save_file=False)
+        calibrate(mean_spectrum_avro_file, sampling=array, save_file=False)

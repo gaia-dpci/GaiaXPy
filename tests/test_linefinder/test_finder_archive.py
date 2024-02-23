@@ -2,6 +2,7 @@ import unittest
 
 import pandas as pd
 import pandas.testing as pdt
+import pytest
 
 from gaiaxpy import find_extrema, find_fast, find_lines
 from tests.files.paths import with_missing_bp_csv_file, mean_spectrum_csv_file, found_lines_no_bp_real_path
@@ -36,6 +37,8 @@ _rtol, _atol = 1e-7, 1e-7
 
 
 class TestExtremaFinderArchive(unittest.TestCase):
+
+    @pytest.mark.archive
     def test_query_input_with_missing_bp(self):
         source_ids = ('5853498713190525696', str(missing_bp_source_id), '5762406957886626816')
         query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN {source_ids}"
@@ -46,16 +49,19 @@ class TestExtremaFinderArchive(unittest.TestCase):
                                    found_extrema_no_bp_real[found_extrema_no_bp_real['source_id'] ==
                                                             source_id].reset_index(drop=True))
 
+    @pytest.mark.archive
     def test_query_input_isolated_missing_bp(self):
         isolated_output = find_extrema("SELECT * FROM gaiadr3.gaia_source WHERE source_id IN"
                                        f" ({str(missing_bp_source_id)})", save_file=False)
         pdt.assert_frame_equal(isolated_output, isolated_solution)
 
+    @pytest.mark.archive
     def test_list_input_with_missing_bp(self):
         sources = ['5853498713190525696', missing_bp_source_id, 5762406957886626816]
         with_missing_output = find_extrema(sources, save_file=False)
         pdt.assert_frame_equal(with_missing_output, found_extrema_no_bp_real)
 
+    @pytest.mark.archive
     def test_list_input_isolated_missing_bp(self):
         sources = [missing_bp_source_id]
         missing_output = find_extrema(sources, save_file=False)
@@ -64,6 +70,7 @@ class TestExtremaFinderArchive(unittest.TestCase):
 
 class TestFastFinderArchive(unittest.TestCase):
 
+    @pytest.mark.archive
     def test_query_input_with_missing_bp(self):
         source_ids = ('5853498713190525696', str(missing_bp_source_id), '5762406957886626816')
         query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN {source_ids}"
@@ -74,16 +81,19 @@ class TestFastFinderArchive(unittest.TestCase):
                                    found_fast_no_bp_real[found_fast_no_bp_real['source_id'] ==
                                                          source_id].reset_index(drop=True))
 
+    @pytest.mark.archive
     def test_query_input_isolated_missing_bp(self):
         isolated_output = find_fast(f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN"
                                     f" ({str(missing_bp_source_id)})", save_file=False)
         pdt.assert_frame_equal(isolated_output, isolated_missing_bp_solution_fast)
 
+    @pytest.mark.archive
     def test_list_input_with_missing_bp(self):
         sources = ['5853498713190525696', missing_bp_source_id, 5762406957886626816]
         with_missing_output = find_fast(sources, save_file=False)
         pdt.assert_frame_equal(with_missing_output, found_fast_no_bp_real)
 
+    @pytest.mark.archive
     def test_list_input_isolated_missing_bp(self):
         sources = [missing_bp_source_id]
         missing_output = find_fast(sources, save_file=False)
@@ -92,6 +102,7 @@ class TestFastFinderArchive(unittest.TestCase):
 
 class TestLineFinderArchive(unittest.TestCase):
 
+    @pytest.mark.archive
     def test_query_input_with_missing_bp(self):
         source_ids = ('5853498713190525696', str(missing_bp_source_id), '5762406957886626816')
         query = f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN {source_ids}"
@@ -101,16 +112,19 @@ class TestLineFinderArchive(unittest.TestCase):
         found_lines_no_bp_real = found_lines_no_bp_real.sort_values(by=['source_id', 'line_name'], ignore_index=True)
         pdt.assert_frame_equal(with_missing_output, found_lines_no_bp_real)
 
+    @pytest.mark.archive
     def test_query_input_isolated_missing_bp(self):
         isolated_output = find_lines(f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN"
                                      f" ({str(missing_bp_source_id)})", save_file=False)
         pdt.assert_frame_equal(isolated_output, isolated_missing_bp_solution_line)
 
+    @pytest.mark.archive
     def test_list_input_with_missing_bp(self):
         sources = ['5853498713190525696', missing_bp_source_id, 5762406957886626816]
         with_missing_output = find_lines(sources, save_file=False)
         pdt.assert_frame_equal(with_missing_output, found_lines_no_bp_real)
 
+    @pytest.mark.archive
     def test_list_input_isolated_missing_bp(self):
         sources = [missing_bp_source_id]
         missing_output = find_lines(sources, save_file=False)

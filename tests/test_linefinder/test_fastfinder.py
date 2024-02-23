@@ -4,9 +4,10 @@ import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy.linefinder.linefinder import find_fast
-from tests.files.paths import missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,\
-    missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, \
-    with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file, mean_spectrum_csv_file
+from tests.files.paths import (missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,
+                               missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file,
+                               with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file,
+                               mean_spectrum_csv_file)
 from tests.test_linefinder.linefinder_solutions import found_fast_real, found_fast_trunc_real
 from tests.test_linefinder.test_finder_archive import found_fast_no_bp_real
 from tests.utils.utils import missing_bp_source_id

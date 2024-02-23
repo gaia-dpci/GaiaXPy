@@ -1,6 +1,6 @@
 import numpy as np
-import pandas as pd
 import numpy.testing as npt
+import pandas as pd
 import pandas.testing as pdt
 import pytest
 
@@ -22,8 +22,9 @@ with_missing_bp_query = (f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN 
 
 array_columns = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations',
                  'rp_coefficients', 'rp_coefficient_errors', 'rp_coefficient_correlations']
-type_dict = {'bp_coefficients': np.float64, 'bp_coefficient_errors': np.float32, 'bp_coefficient_correlations':
-    np.float32, 'rp_coefficient_errors': np.float32}
+type_dict = {'bp_coefficients': np.float64, 'bp_coefficient_errors': np.float32,
+             'bp_coefficient_correlations': np.float32, 'rp_coefficient_errors': np.float32}
+
 
 @pytest.mark.parametrize('input_data', [with_missing_bp_csv_file, with_missing_bp_df,
                                         pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
@@ -42,6 +43,7 @@ def run_numpy_comparison(expected_df, read_input, _array_columns):
     for column in _array_columns:
         for index in range(len(expected_df)):
             npt.assert_array_almost_equal(expected_df[column].iloc[index], read_input[column].iloc[index], decimal=5)
+
 
 @pytest.mark.parametrize('input_data', [with_missing_bp_fits_file, with_missing_bp_df,
                                         pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),

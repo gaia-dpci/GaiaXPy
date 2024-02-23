@@ -1,11 +1,10 @@
 import unittest
-from os.path import join
 
 import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy import find_lines
-from tests.files.paths import files_path, missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, \
+from tests.files.paths import missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, \
     missing_bp_xml_file, missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, \
     with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file, mean_spectrum_csv_file, \
     found_lines_real_path, found_lines_trunc_real_path, found_lines_no_bp_real_path

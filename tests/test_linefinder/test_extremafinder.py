@@ -4,8 +4,8 @@ import pandas as pd
 import pandas.testing as pdt
 
 from gaiaxpy.linefinder.linefinder import find_extrema
-from tests.files.paths import missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,\
-    missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file,\
+from tests.files.paths import missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file, \
+    missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file, \
     with_missing_bp_xml_file, with_missing_bp_xml_plain_file, mean_spectrum_csv_file
 from tests.test_linefinder.linefinder_solutions import found_extrema_real, found_extrema_trunc_real
 from tests.test_linefinder.test_finder_archive import found_extrema_no_bp_real

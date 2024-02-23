@@ -13,14 +13,9 @@ from tests.files.paths import (mean_spectrum_fits_file, mean_spectrum_csv_file, 
                                mean_spectrum_xml_plain_file, mean_spectrum_avro_file, mean_spectrum_ecsv_file)
 from tests.test_calibrator.calibrator_solutions import sol_default_sampling_array, truncation_default_solution_df
 
-
 parser = InternalContinuousParser()
 
-# Load variables
-label = 'calibrator'
 bp_model = 'v211w'  # Alternative bp model
-xp_sampling_grid, xp_merge = load_xpmerge_from_xml(bp_model=bp_model)
-xp_design_matrices = load_xpsampling_from_xml(bp_model=bp_model)
 
 _rtol, _atol = 1e-22, 1e-22
 
@@ -28,6 +23,8 @@ _rtol, _atol = 1e-22, 1e-22
 @pytest.mark.parametrize('file', [mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file,
                                   mean_spectrum_fits_file, mean_spectrum_xml_file, mean_spectrum_xml_plain_file])
 def test_create_spectrum(file):
+    xp_sampling_grid, xp_merge = load_xpmerge_from_xml(bp_model=bp_model)
+    xp_design_matrices = load_xpsampling_from_xml(bp_model=bp_model)
     # Read mean Spectrum
     parsed_spectrum_file, extension = parser.parse_file(file)
     # Create sampled basis functions

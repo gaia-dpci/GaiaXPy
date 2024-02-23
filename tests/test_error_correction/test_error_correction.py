@@ -26,14 +26,14 @@ def test_error_correction_no_vega():
         apply_error_correction(multi_synthetic_photometry, save_file=False)
 
 
-def test_photometry_with_nan(self):
+def test_photometry_with_nan():
     phot_with_nan_df = pd.read_csv(phot_with_nan_path)
     output = apply_error_correction(phot_with_nan_df, save_file=False)
     solution = pd.read_csv(phot_with_nan_corrected_sol_path)
     pdt.assert_frame_equal(output, _cast(solution))
 
 
-def test_single_phot_object(self):
+def test_single_phot_object():
     phot_system = PhotometricSystem.Gaia_DR3_Vega
     synthetic_photometry = generate(mean_spectrum_csv_file, photometric_system=phot_system, save_file=False)
     corrected_synth_phot = apply_error_correction(synthetic_photometry, save_file=False)
@@ -42,7 +42,7 @@ def test_single_phot_object(self):
     compare_all_columns(corrected_errors_df, corrected_synth_phot)
 
 
-def test_error_correction(self):
+def test_error_correction():
     phot_list = [PhotometricSystem.Euclid_VIS, PhotometricSystem.Gaia_DR3_Vega, PhotometricSystem.HST_HUGS_Std]
     multi_synthetic_photometry = generate(mean_spectrum_csv_file, photometric_system=phot_list, save_file=False)
     corrected_multiphotometry = apply_error_correction(multi_synthetic_photometry, save_file=False)
@@ -52,7 +52,7 @@ def test_error_correction(self):
     compare_all_columns(corrected_multiphotometry, corrected_solution)
 
 
-def test_error_correction_system_with_no_table(self):
+def test_error_correction_system_with_no_table():
     # Halpha system has got no correction table
     phot_list = [PhotometricSystem.Euclid_VIS, PhotometricSystem.Gaia_DR3_Vega, PhotometricSystem.Halpha_Custom_AB]
     multi_photometry = generate(mean_spectrum_csv_file, photometric_system=phot_list, save_file=False)

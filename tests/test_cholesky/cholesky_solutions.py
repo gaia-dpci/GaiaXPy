@@ -22,9 +22,9 @@ cholesky_solution = pd.read_csv(join(cholesky_sol_path, 'test_cholesky_solution.
 solution_array_columns = [f'{band}_inverse_square_root_covariance_matrix' for band in BANDS]
 solution_converters = dict([(column, lambda x: parse_matrices(x)) for column in solution_array_columns])
 # No missing inv sqrt
-inv_sqrt_cov_matrix_sol_df_no_missing_df = pd.read_csv(join(cholesky_sol_path,
-                                                            'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
-                                                       converters=solution_converters)
+inv_sqrt_cov_matrix_sol_no_missing_df = pd.read_csv(join(cholesky_sol_path,
+                                                         'inv_sqrt_cov_matrix_no_missing_bands_solution.csv'),
+                                                    converters=solution_converters)
 # With missing inv sqrt
 inv_sqrt_cov_matrix_sol_with_missing_df = pd.read_csv(join(cholesky_sol_path,
                                                            'inv_sqrt_cov_matrix_with_missing_band_solution.csv'),

@@ -39,7 +39,7 @@ class MultiSyntheticPhotometry(object):
         self.mags, self.fluxes, self.errors = _generate_variables(photometries)
 
     def _generate_output_df(self):
-        photometries_df = self._photometries_to_dict()
+        photometries_df = self._photometries_to_df()
         # Reorder DataFrame columns
         phot_system_labels = [phot_system.get_system_label() for phot_system in self.photometric_system]
         reordered_columns = ['source_id']
@@ -49,7 +49,7 @@ class MultiSyntheticPhotometry(object):
         photometries_df = photometries_df[reordered_columns]
         return photometries_df
 
-    def _photometries_to_dict(self):
+    def _photometries_to_df(self):
         list_of_dicts = []
         for source_id, mags, fluxes, errors in zip(self.source_ids, self.mags, self.fluxes, self.errors):
             phot = {'source_id': source_id}

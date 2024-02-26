@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pandas as pd
 from astropy.io import fits
-from astropy.io.votable.tree import Field, Param, Resource, VOTableFile, TableElement
+from astropy.io.votable.tree import Field, Param, Resource, VOTableFile
 from astropy.units import UnitsWarning
 from fastavro import parse_schema, writer
 from fastavro.validation import validate_many
@@ -19,6 +19,11 @@ from numpy import ndarray
 from .output_data import OutputData
 from .utils import (_add_ecsv_header, _array_to_standard, _build_ecsv_header, _generate_fits_header,
                     _get_sampling_dict, _load_header_dict, _get_col_subtype_len)
+
+try:
+    from astropy.io.votable.tree import TableElement as ATable
+except ImportError:
+    from astropy.io.votable.tree import Table as ATable
 
 
 class SampledSpectraData(OutputData):
@@ -236,7 +241,7 @@ class SampledSpectraData(OutputData):
         resource = Resource()
         votable.resources.append(resource)
         # Add a table for the spectra (and add the sampling as metadata)
-        spectra_table = TableElement(votable)
+        spectra_table = ATable(votable)
         resource.tables.append(spectra_table)
         # Add sampling as param
         params = _create_params(votable, positions, spectra_df.attrs['data_type'])

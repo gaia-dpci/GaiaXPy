@@ -166,7 +166,7 @@ def _create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_ma
                                                 unit=pbar_units[__FUNCTION_KEY], leave=False, colour=pbar_colour,
                                                 disable=disable_info, file=stdout)])
     spectra_series = spectra_series.explode()
-    return format_sampled_output(spectra_series)
+    return format_sampled_output(spectra_series, with_correlation=with_correlation)
 
 
 def get_unique_basis_ids(parsed_input_data: pd.DataFrame) -> set:

@@ -93,7 +93,7 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
         """
         return cls(source_id, xp, pos, flux, flux_error, cov)
 
-    def spectrum_to_dict(self):
+    def spectrum_to_dict(self, with_correlation):
         """
         Represent spectrum as dictionary.
 
@@ -105,7 +105,7 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
         """
         spectrum_dict = {'source_id': self.source_id, 'xp': self.xp.upper(), 'flux': _list_to_array(self.flux),
                          'flux_error': _list_to_array(self.error)}
-        if 'covariance' in self.__dir__():
+        if with_correlation:
             full_correlation = correlation_from_covariance(self.covariance)
             spectrum_dict['correlation'] = full_correlation if \
                 full_correlation is None else full_correlation[np.tril_indices(full_correlation.shape[0], k=-1)]

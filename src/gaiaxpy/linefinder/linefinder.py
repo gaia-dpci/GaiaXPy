@@ -4,7 +4,6 @@ linefinder.py
 Module for the line finding.
 """
 
-import warnings
 from pathlib import Path
 from typing import Union
 
@@ -25,8 +24,6 @@ from gaiaxpy.linefinder.herm import HermiteDerivative
 from gaiaxpy.linefinder.lines import Extrema, Lines
 from gaiaxpy.linefinder.plotter import plot_spectra_with_lines
 from gaiaxpy.output.line_data import LineData
-
-warnings.filterwarnings('ignore', category=np.VisibleDeprecationWarning)
 
 basis_function_id = {BANDS.bp: 56, BANDS.rp: 57}
 
@@ -319,9 +316,11 @@ def find_lines(input_object: Union[list, Path, str], truncation: bool = False, s
     # Internal info will be disabled, but the user will need some info
     print('Preparing required internal data...' + ' ' * 10, end='\r')
     # Get converted spectra
-    con_spectra, con_sampling = _convert(parsed_input_data, truncation=truncation, save_file=False, disable_info=True)
+    con_spectra, con_sampling = _convert(parsed_input_data, truncation=truncation, with_correlation=False,
+                                         save_file=False, disable_info=True)
     # Get calibrated spectra
-    cal_spectra, cal_sampling = _calibrate(parsed_input_data, truncation=truncation, save_file=False, disable_info=True)
+    cal_spectra, cal_sampling = _calibrate(parsed_input_data, truncation=truncation, with_correlation=False,
+                                           save_file=False, disable_info=True)
     # Set indices as we'll need to search for values in the frames many times
     cal_spectra = cal_spectra.set_index('source_id')
     con_spectra = con_spectra.set_index('source_id')

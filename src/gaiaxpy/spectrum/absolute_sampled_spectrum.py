@@ -97,7 +97,7 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
     def get_position_label(cls):
         return 'Wavelength [nm]'
 
-    def spectrum_to_dict(self):
+    def spectrum_to_dict(self, with_correlation):
         """
         Represent the spectrum as a dictionary.
 
@@ -109,7 +109,7 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
         """
         spectrum_dict = {'source_id': self.source_id, 'flux': _list_to_array(self.flux),
                          'flux_error': _list_to_array(self.error)}
-        if self.covariance is not None:
+        if with_correlation:
             full_correlation = correlation_from_covariance(self.covariance)
             spectrum_dict['correlation'] = full_correlation[np.tril_indices(full_correlation.shape[0], k=-1)]
         return spectrum_dict

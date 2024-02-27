@@ -226,6 +226,8 @@ def _extract_systems_from_data(data_columns, photometric_system=None):
 
 
 def correlation_from_covariance(covariance):
+    if covariance is None:
+        return None
     v = np.sqrt(np.diag(covariance))
     outer_v = np.outer(v, v)
     correlation = covariance / outer_v

@@ -109,7 +109,8 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
             full_correlation = correlation_from_covariance(self.covariance)
             spectrum_dict['correlation'] = full_correlation if \
                 full_correlation is None else full_correlation[np.tril_indices(full_correlation.shape[0], k=-1)]
-            spectrum_dict['standard_deviation'] = self.stdev
+            if self.stdev is not None:
+                spectrum_dict['standard_deviation'] = self.stdev
         return spectrum_dict
 
     def _sampling_to_dict(self):

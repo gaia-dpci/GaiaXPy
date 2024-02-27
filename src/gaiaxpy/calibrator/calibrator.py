@@ -198,7 +198,7 @@ def __create_spectra(parsed_input_data: pd.DataFrame, truncation: bool, design_m
                                                  with_correlation=with_correlation) for row in tqdm(
         parsed_spectrum_file_dict, desc=pbar_message[__FUNCTION_KEY], unit=pbar_units[__FUNCTION_KEY], leave=False,
         colour=pbar_colour, disable=disable_info, file=stdout)])
-    return format_sampled_output(spectra_series)
+    return format_sampled_output(spectra_series, with_correlation=with_correlation)
 
 
 def _create_spectrum(row, truncation, design_matrix, merge, with_correlation=False):

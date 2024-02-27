@@ -226,6 +226,8 @@ def _extract_systems_from_data(data_columns, photometric_system=None):
 
 
 def correlation_from_covariance(covariance):
+    if covariance is None:
+        return None
     v = np.sqrt(np.diag(covariance))
     outer_v = np.outer(v, v)
     correlation = covariance / outer_v
@@ -378,7 +380,7 @@ def get_bands_config(bases_config):
     elif hasattr(bases_config, 'basisDefinition'):
         return bases_config.basisDefinition.spline
     else:
-        raise ValueError(f'Bases configuration type not implemented.')
+        raise ValueError('Bases configuration type not implemented.')
 
 
 def __range_to_output(d: dict) -> Tuple[float, float]:
@@ -592,10 +594,10 @@ def parse_config(xml_file: Union[Path, str]) -> namedtuple:
     return __parse_config(x_root, outer_title=outer_title)
 
 
-def format_sampled_output(spectra_series):
+def format_sampled_output(spectra_series, with_correlation):
     positions = spectra_series.iloc[0].get_positions()
     spectra_type = get_spectra_type(spectra_series.iloc[0])
-    spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict())
+    spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict(with_correlation))
     spectra_df = pd.DataFrame(spectra_series.tolist())
     spectra_df.attrs['data_type'] = spectra_type
     return spectra_df, positions

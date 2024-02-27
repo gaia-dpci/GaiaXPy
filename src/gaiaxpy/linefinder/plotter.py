@@ -9,7 +9,7 @@ colours = [f'tab:{colour}' for colour in ['green', 'orange', 'purple', 'brown', 
 
 
 def plot_spectra_with_lines(source_id: Union[int, str], sampling, bp_flux, rp_flux, wavelength, flux, bp_lines,
-                            rp_lines, save_plots, output_path=None, prefix='', format='jpg'):
+                            rp_lines, save_plots, output_path=None, prefix='', format='jpg'):  # noqa
     """
     Plots spectra with lines for a given source ID.
 

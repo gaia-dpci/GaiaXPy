@@ -22,6 +22,7 @@ def __scale_error(error_array, stdev):
         error_array[midpoint:] /= stdev[1]  # Divide the second half by stdev[1]
     return error_array
 
+
 def test_with_covariance():
     spectra, sampling = calibrate(with_missing_bp_csv_file, with_correlation=True, save_file=False)
     # Load spectra

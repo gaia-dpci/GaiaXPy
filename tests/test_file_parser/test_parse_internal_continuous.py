@@ -64,7 +64,7 @@ def test_column_types(file):
     parsed_file, _ = parser.parse_file(file)
     actual_dtypes = dict(zip(parsed_file.columns, parsed_file.dtypes))
     for key in actual_dtypes.keys():
-        assert actual_dtypes[key] == type_map[key],\
+        assert actual_dtypes[key] == type_map[key], \
             f'Key {key} actual type is {actual_dtypes[key]} but expected type is {type_map[key]} for file {file}.'
 
 

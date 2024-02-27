@@ -19,7 +19,7 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
     A Gaia BP/RP spectrum sampled to a given grid of positions.
     """
 
-    def __init__(self, source_id=0, xp=None, pos=None, flux=np.nan, flux_error=np.nan, cov=None, stdev=None):
+    def __init__(self, source_id=0, xp=None, pos=None, flux=None, flux_error=None, cov=None, stdev=None):
         XpSpectrum.__init__(self, source_id, xp)
         self.pos = pos
         self.n_samples = None if is_array_empty(self.pos) else len(self.pos)
@@ -93,7 +93,7 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
         """
         return cls(source_id, xp, pos, flux, flux_error, cov)
 
-    def spectrum_to_dict(self):
+    def spectrum_to_dict(self, with_correlation):
         """
         Represent spectrum as dictionary.
 
@@ -105,11 +105,11 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
         """
         spectrum_dict = {'source_id': self.source_id, 'xp': self.xp.upper(), 'flux': _list_to_array(self.flux),
                          'flux_error': _list_to_array(self.error)}
-        if not is_array_empty(self.covariance):
+        if with_correlation:
             full_correlation = correlation_from_covariance(self.covariance)
-            spectrum_dict['correlation'] = full_correlation[np.tril_indices(full_correlation.shape[0], k=-1)]
-            if self.stdev:
-                spectrum_dict['standard_deviation'] = self.stdev
+            spectrum_dict['correlation'] = full_correlation if \
+                full_correlation is None else full_correlation[np.tril_indices(full_correlation.shape[0], k=-1)]
+            spectrum_dict['standard_deviation'] = self.stdev
         return spectrum_dict
 
     def _sampling_to_dict(self):

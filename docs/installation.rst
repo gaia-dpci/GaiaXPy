@@ -61,3 +61,5 @@ To install GaiaXPy from source:
     source .env/bin/activate
     # Install the package
     python setup.py install
+    # Or alternative installation command
+    pip install -e .

@@ -15,7 +15,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.append('gaiaxpy')
-from gaiaxpy import __version__
+from gaiaxpy import __version__ # noqa
 
 
 def parse_linspace(values):
@@ -28,10 +28,10 @@ def parse_linspace(values):
     return output
 
 
-def parse_signature(signature, function_name):
+def parse_signature(signature):
     if 'sampling' in signature:
         try:
-            expr = re.compile("\(\[(.*)\]\)")
+            expr = re.compile(r"\(\[(.*)\]\)")
             array_values = expr.search(signature).group(1)
             sampling_compressed = parse_linspace(array_values)
             signature = signature.replace(f'array([{array_values}])', sampling_compressed)
@@ -42,9 +42,8 @@ def parse_signature(signature, function_name):
 
 def edit_default_value(app, what, name, obj, options, signature, return_annotation):
     if what in ['function', 'method'] and signature:
-        function_name = name.split('.')[-1]
-        signature = parse_signature(signature, function_name)
-    return (signature, return_annotation)
+        signature = parse_signature(signature)
+    return signature, return_annotation
 
 
 def setup(app):
@@ -54,8 +53,8 @@ def setup(app):
 
 # -- Project information -----------------------------------------------------
 project = u'GaiaXPy'
-copyright = u'2023, DPAC, CU5, DPCI'
-author = u'Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
+copyright = u'2024, DPAC, CU5, DPCI'
+author = u'Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
 
 # The short X.Y version
 version = f'{__version__} (latest)'

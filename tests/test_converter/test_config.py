@@ -1,51 +1,58 @@
-import unittest
-
 import pandas as pd
+import pytest
 
-from gaiaxpy.config.paths import optimised_bases_file
-from gaiaxpy.converter import config
-
-columns = ['uniqueId', 'dimension', 'range', 'normalizedRange', 'transformedSetDimension', 'transformationMatrix']
-
-parsed_config = config.parse_configuration_file(optimised_bases_file, columns)
-loaded_config = config.load_config(optimised_bases_file)  # id 7 not in the config file
-
-not_empty_df = config.get_config(parsed_config, 57)  # id 57 in the config file
-empty_df = config.get_config(parsed_config, 7)
+from gaiaxpy.config.paths import hermite_bases_file
+from gaiaxpy.converter.config import get_unique_id, parse_config
 
 
-class TestParseConfigurationFile(unittest.TestCase):
-
-    def test_parse_configuration_file_type(self):
-        self.assertIsInstance(parsed_config, pd.DataFrame)
-
-    def test_parse_configuration_dimensions(self):
-        self.assertEqual(parsed_config.shape, (2, 6))
-
-    def test_parse_configuration_columns(self):
-        self.assertEqual(list(parsed_config.columns), columns)
+@pytest.fixture(scope='module')
+def columns():
+    columns = ['dimension', 'range', 'normalizedRange', 'uniqueId', 'transformedSetDimension', 'transformationMatrix']
+    yield columns
 
 
-class TestLoadConfig(unittest.TestCase):
+@pytest.fixture(scope='module')
+def parsed_config():
+    bases_config = parse_config(hermite_bases_file)  # id 7 not in the config file
+    bands_config = bases_config.hermiteFunction
 
-    def test_load_config_type(self):
-        self.assertIsInstance(loaded_config, pd.DataFrame)
+    bp_config = bands_config.bpConfig
+    rp_config = bands_config.rpConfig
+    bp_config_dict = {field: getattr(bp_config, field) for field in bp_config._fields}
+    rp_config_dict = {field: getattr(rp_config, field) for field in rp_config._fields}
 
-    def test_load_config_dimensions(self):
-        self.assertEqual(loaded_config.shape, parsed_config.shape)
-
-    def test_load_config_columns(self):
-        self.assertEqual(loaded_config.columns.all(), parsed_config.columns.all())
+    yield pd.DataFrame([bp_config_dict, rp_config_dict])
 
 
-class TestGetConfig(unittest.TestCase):
+def test_parse_configuration_file_type(parsed_config):
+    assert isinstance(parsed_config, pd.DataFrame)
 
-    def test_get_config_not_empty_df(self):
-        self.assertEqual(not_empty_df.shape, (1, 6))
-        self.assertIsInstance(not_empty_df, pd.DataFrame)
-        self.assertEqual(list(not_empty_df), columns)
 
-    def test_get_config_empty_df(self):
-        self.assertEqual(empty_df.shape, (0, 6))
-        self.assertIsInstance(empty_df, pd.DataFrame)
-        self.assertEqual(list(empty_df), columns)
+def test_parse_configuration_dimensions(parsed_config):
+    assert parsed_config.shape == (2, 6)
+
+
+def test_parse_configuration_columns(parsed_config, columns):
+    assert list(parsed_config.columns) == columns
+
+
+def test_load_config_type(parsed_config):
+    assert isinstance(parsed_config, pd.DataFrame)
+
+
+def test_load_config_dimensions(parsed_config):
+    assert parsed_config.shape == parsed_config.shape
+
+
+def test_get_config_not_empty_df(columns, parsed_config):
+    not_empty_df = get_unique_id(parsed_config, 57)  # id 57 in the config file
+    assert not_empty_df.shape == (1, 6)
+    assert isinstance(not_empty_df, pd.DataFrame)
+    assert list(not_empty_df) == columns
+
+
+def test_get_config_empty_df(columns, parsed_config):
+    empty_df = get_unique_id(parsed_config, 7)
+    assert empty_df.shape == (0, 6)
+    assert isinstance(empty_df, pd.DataFrame)
+    assert list(empty_df) == columns

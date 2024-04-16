@@ -1,137 +1,124 @@
-import unittest
-from ast import literal_eval
 from itertools import islice
 
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
+import pytest
 
 from gaiaxpy import convert
-from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices, get_unique_basis_ids
+from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
+from gaiaxpy.input_reader.input_reader import InputReader
+from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-from tests.files.paths import mean_spectrum_xml_plain_file, con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path,\
-    mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,\
-    mean_spectrum_xml_file
+from tests.files.paths import (con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path, mean_spectrum_avro_file,
+                               mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,
+                               mean_spectrum_xml_file, mean_spectrum_xml_plain_file)
 from tests.test_converter.converter_paths import optimised_bases_df, converter_csv_solution_0_60_481_df
 from tests.utils.utils import get_spectrum_with_source_id_and_xp, npt_array_err_message, is_instance_err_message
 
 con_input_files = [mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,
                    mean_spectrum_xml_file, mean_spectrum_xml_plain_file]
 
-# Parsers
-parser = InternalContinuousParser()
-
-sampling = np.linspace(0, 60, 481)
-
-sampled_parser = InternalSampledParser()
-ref_sampled, _ = sampled_parser._parse(con_ref_sampled_csv_path)
-ref_sampled_truncated, _ = sampled_parser._parse(con_ref_sampled_truncated_csv_path)
-
 TOL = 4
 _rtol, _atol = 1e-6, 1e-6  # Precision varies with extension
 
 
-class TestGetMethods(unittest.TestCase):
-
-    def test_get_unique_basis_ids(self):
-        instance = set
-        for file in con_input_files:
-            parsed_input, _ = parser._parse(file)
-            unique_bases_ids = get_unique_basis_ids(parsed_input)
-            self.assertIsInstance(unique_bases_ids, instance, msg=is_instance_err_message(file, instance))
-            self.assertEqual(unique_bases_ids, {56, 57})
-
-    def test_get_design_matrices(self):
-        instance = SampledBasisFunctions
-        for file in con_input_files:
-            parsed_input, _ = parser._parse(file)
-            unique_bases_ids = get_unique_basis_ids(parsed_input)
-            design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_bases_df)
-            self.assertIsInstance(design_matrices, dict, msg=is_instance_err_message(file, dict))
-            self.assertEqual(len(design_matrices), 2)
-            self.assertEqual(list(design_matrices.keys()), [56, 57])
-            self.assertIsInstance(design_matrices[56], instance, msg=is_instance_err_message(file, instance))
-            self.assertIsInstance(design_matrices[57], instance, msg=is_instance_err_message(file, instance))
+@pytest.fixture(scope='module')
+def parser():
+    yield InternalContinuousParser(MANDATORY_INPUT_COLS['convert'] + CORR_INPUT_COLUMNS)
 
 
-class TestCreateSpectrum(unittest.TestCase):
-
-    def test_create_spectrum(self):
-        spectrum = dict()
-        truncation = True
-        instance = XpSampledSpectrum
-        for file in con_input_files:
-            parsed_input, _ = parser._parse(file)
-            parsed_input_dict = parsed_input.to_dict('records')
-            unique_bases_ids = get_unique_basis_ids(parsed_input)
-            design_matrices = get_design_matrices(unique_bases_ids, sampling, optimised_bases_df)
-            for row in islice(parsed_input_dict, 1):  # Just the first row
-                for band in BANDS:
-                    spectrum[band] = _create_spectrum(row, truncation, design_matrices, band)
-            self.assertEqual(spectrum[BANDS.bp].get_source_id(), spectrum[BANDS.rp].get_source_id())
-            for band in BANDS:
-                self.assertIsInstance(spectrum[band], instance, msg=is_instance_err_message(file, instance, band))
-                self.assertEqual(spectrum[band].get_xp(), band)
+@pytest.fixture(scope='module')
+def sampled_parser():
+    yield InternalSampledParser()
 
 
-class TestConverter(unittest.TestCase):
-
-    def test_converter_both_types(self):
-        for file in con_input_files:
-            converted_df, _ = convert(file, sampling=sampling, save_file=False)
-            self.assertIsInstance(converted_df, pd.DataFrame)
-            self.assertEqual(len(converted_df), 4)
-            pdt.assert_frame_equal(converted_df, converter_csv_solution_0_60_481_df, rtol=1e-6, atol=1e-6)
-
-    def test_conversion(self):
-        for file in con_input_files:
-            converted_df, _ = convert(file, sampling=sampling, save_file=False)
-            for spectrum in converted_df.to_dict('records'):
-                ref = get_spectrum_with_source_id_and_xp(spectrum['source_id'], spectrum['xp'], ref_sampled)
-                npt.assert_almost_equal(ref['flux'], spectrum['flux'], decimal=TOL)
-                npt.assert_almost_equal(ref['error'], spectrum['flux_error'], decimal=TOL)
+@pytest.fixture(scope='module')
+def ref_sampled(sampled_parser):
+    ref_sampled, _ = sampled_parser.parse_file(con_ref_sampled_csv_path)
+    yield ref_sampled
 
 
-class TestTruncation(unittest.TestCase):
-
-    def test_truncation(self):
-        for file in con_input_files:
-            converted_truncated_df, _ = convert(file, sampling=sampling, truncation=True, save_file=False)
-            for spectrum in converted_truncated_df.to_dict('records'):
-                ref = get_spectrum_with_source_id_and_xp(spectrum['source_id'], spectrum['xp'], ref_sampled_truncated)
-                npt.assert_almost_equal(ref['flux'], spectrum['flux'], decimal=TOL, err_msg=npt_array_err_message(file))
-                npt.assert_almost_equal(ref['error'], spectrum['flux_error'], decimal=TOL,
-                                        err_msg=npt_array_err_message(file))
+@pytest.fixture(scope='module')
+def ref_sampled_truncated(sampled_parser):
+    ref_sampled_truncated, _ = sampled_parser.parse_file(con_ref_sampled_truncated_csv_path)
+    yield ref_sampled_truncated
 
 
-class TestConverterSamplingRange(unittest.TestCase):
+@pytest.fixture(scope='module')
+def sampling():
+    yield np.linspace(0, 60, 481)
 
-    def test_sampling_equal(self):
-        for file in con_input_files:
-            _, _positions = convert(file, sampling=sampling, truncation=True, save_file=False)
-            npt.assert_array_equal(sampling, _positions)
 
-    def test_sampling_low(self):
-        for file in con_input_files:
-            with self.assertRaises(ValueError):
-                convert(file, sampling=np.linspace(-15, 60, 600), save_file=False)
+@pytest.mark.parametrize('file', con_input_files)
+def test_get_design_matrices(file, parser, sampling):
+    instance = SampledBasisFunctions
+    parsed_input, _ = parser.parse_file(file)
+    design_matrices = get_design_matrices(sampling, optimised_bases_df)
+    assert len(design_matrices) == 2
+    assert list(design_matrices.keys()) == ['bp', 'rp']
+    assert isinstance(design_matrices, dict), is_instance_err_message(file, dict)
+    assert isinstance(design_matrices['bp'], instance), is_instance_err_message(file, instance)
+    assert isinstance(design_matrices['rp'], instance), is_instance_err_message(file, instance)
 
-    def test_sampling_high(self):
-        for file in con_input_files:
-            with self.assertRaises(ValueError):
-                convert(file, sampling=np.linspace(-10, 71, 600), save_file=False)
 
-    def test_sampling_both_wrong(self):
-        for file in con_input_files:
-            with self.assertRaises(ValueError):
-                convert(file, sampling=np.linspace(-11, 71, 600), save_file=False)
+@pytest.mark.parametrize('file', con_input_files)
+def test_create_spectrum(file, sampling):
+    spectrum = dict()
+    truncation = True
+    instance = XpSampledSpectrum
+    parsed_input, _ = InputReader(file, convert, truncation).read()
+    parsed_input_dict = parsed_input.to_dict('records')
+    design_matrices = get_design_matrices(sampling, optimised_bases_df)
+    for row in islice(parsed_input_dict, 1):  # Just the first row
+        for band in BANDS:
+            spectrum[band] = _create_spectrum(row, truncation, design_matrices, band)
+    assert spectrum[BANDS.bp].get_source_id() == spectrum[BANDS.rp].get_source_id()
+    for band in BANDS:
+        assert isinstance(spectrum[band], instance), is_instance_err_message(file, instance, band)
+        assert spectrum[band].get_xp() == band
 
-    def test_sampling_none(self):
-        for file in con_input_files:
-            with self.assertRaises(ValueError):
-                convert(file, sampling=None, save_file=False)
+
+@pytest.mark.parametrize('file', con_input_files)
+def test_converter_both_types(file, sampling):
+    converted_df, _ = convert(file, sampling=sampling, save_file=False)
+    assert isinstance(converted_df, pd.DataFrame)
+    assert len(converted_df) == 4
+    pdt.assert_frame_equal(converted_df, converter_csv_solution_0_60_481_df, rtol=_rtol, atol=_atol)
+
+
+@pytest.mark.parametrize('file', con_input_files)
+def test_conversion(file, ref_sampled, sampling):
+    converted_df, _ = convert(file, sampling=sampling, save_file=False)
+    for spectrum in converted_df.to_dict('records'):
+        ref = get_spectrum_with_source_id_and_xp(spectrum['source_id'], spectrum['xp'], ref_sampled)
+        npt.assert_almost_equal(ref['flux'], spectrum['flux'], decimal=TOL)
+        npt.assert_almost_equal(ref['error'], spectrum['flux_error'], decimal=TOL)
+
+
+@pytest.mark.parametrize('file', con_input_files)
+def test_truncation(file, ref_sampled_truncated, sampling):
+    converted_truncated_df, _ = convert(file, sampling=sampling, truncation=True, save_file=False)
+    for spectrum in converted_truncated_df.to_dict('records'):
+        ref = get_spectrum_with_source_id_and_xp(spectrum['source_id'], spectrum['xp'], ref_sampled_truncated)
+        npt.assert_almost_equal(ref['flux'], spectrum['flux'], decimal=TOL, err_msg=npt_array_err_message(file))
+        npt.assert_almost_equal(ref['error'], spectrum['flux_error'], decimal=TOL, err_msg=npt_array_err_message(file))
+
+
+@pytest.mark.parametrize('file', con_input_files)
+@pytest.mark.parametrize('_sampling', [np.linspace(-15, 60, 600), np.linspace(-10, 71, 600),
+                                       np.linspace(-11, 71, 600), None])
+def test_sampling_error(file, _sampling):
+    with pytest.raises(ValueError):
+        convert(file, sampling=_sampling, save_file=False)
+
+
+@pytest.mark.parametrize('file', con_input_files)
+def test_sampling_equal(file, sampling):
+    _, _positions = convert(file, sampling=sampling, truncation=True, save_file=False)
+    npt.assert_array_equal(sampling, _positions)

@@ -123,7 +123,7 @@ If the function accepts a sampling, it has to correspond to a NumPy array and be
 Note on TOPCAT
 --------------
 
-`TOPCAT <http://www.star.bris.ac.uk/~mbt/topcat/>`_ can read the FITS and XML output files of the calibrator, converter, generator and line finder. It is possible to plot their contents using TOPCAT.
+`TOPCAT <http://www.star.bris.ac.uk/~mbt/topcat/>`_ can read the FITS and XML output files of the calibrator, converter, and generator. It is possible to plot their contents using TOPCAT.
 
 The functionality that allows to generate these plots is the `XYArray Layer Control <http://www.star.bristol.ac.uk/~mbt/topcat/sun253/GangLayerControl_xyarray.html>`_.
 

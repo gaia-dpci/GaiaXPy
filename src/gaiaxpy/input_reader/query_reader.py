@@ -1,3 +1,5 @@
+import re
+
 from astroquery.gaia import GaiaClass
 
 from gaiaxpy.core.server import data_release, gaia_server
@@ -20,6 +22,30 @@ class QueryReader(ArchiveReader):
         super(QueryReader, self).__init__(function, truncation, user, password, additional_columns=additional_columns,
                                           disable_info=disable_info)
 
+    @staticmethod
+    def get_srcid_column(ids):
+        """
+        Get the name of the source ID column from an Astropy Table.
+
+        Args:
+            ids (Table): A table containing columns.
+
+        Returns:
+            str: The name of the source ID column.
+
+        Raises:
+            ValueError: If the source ID column is not found in the DataFrame.
+            ValueError: If the index of the source ID column is not a string.
+        """
+        try:
+            stripped_pairs = ((re.sub(r'[-_ ]', '', c.lower()), c) for c in ids.columns.keys())
+            sid_col = next(original for stripped, original in stripped_pairs if stripped in ['sourceid', 'srcid'])
+        except StopIteration:
+            raise ValueError('Source ID column not found in query result.')
+        if not isinstance(sid_col, str):
+            raise ValueError(f'Index of source ID column should be a string, but is {type(sid_col).__name__}: {sid_col}.')
+        return sid_col
+
     def read(self, _data_release=data_release):
         query = self.content
         function_name = self.function.__name__
@@ -33,7 +59,7 @@ class QueryReader(ArchiveReader):
             print(self.info_msg, end='\r')
         job = gaia.launch_job_async(query, dump_to_file=False)
         ids = job.get_results()
-        result = gaia.load_data(ids=ids['source_id'], format='csv', data_release=_data_release,
+        result = gaia.load_data(ids=ids[self.get_srcid_column(ids)], format='csv', data_release=_data_release,
                                 data_structure='raw', retrieval_type='XP_CONTINUOUS', avoid_datatype_check=True)
         try:
             continuous_key = [key for key in result.keys() if 'continuous' in key.lower()][0]

@@ -18,7 +18,7 @@ CLASSIFIERS = ['Programming Language :: Python :: 3',
 
 
 def get_property(prop):
-    version_file_path = dirname(join(abspath(__file__), 'src/gaiaxpy/core/version.py'))
+    version_file_path = join(dirname(abspath(__file__)), 'src/gaiaxpy/core/version.py')
     result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open(version_file_path).read())
     return result.group(1)
 

@@ -1,11 +1,3 @@
-# flake8: noqa
-from setuptools_scm import get_version
-
-try:
-    __version__ = get_version()
-except Exception:
-    __version__ = 'unknown version'
-
 from .calibrator.calibrator import calibrate
 from .cholesky.cholesky import get_chi2, get_inverse_covariance_matrix, get_inverse_square_root_covariance_matrix
 from .converter.converter import convert
@@ -14,3 +6,4 @@ from .error_correction.error_correction import apply_error_correction
 from .generator.generator import generate
 from .generator.photometric_system import PhotometricSystem, load_additional_systems, remove_additional_systems
 from .plotter.plot_spectra import plot_spectra
+from .core.version import __version__

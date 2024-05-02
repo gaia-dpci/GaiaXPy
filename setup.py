@@ -6,6 +6,7 @@ Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palav
 Based on:
 https://packaging.python.org/tutorials/packaging-projects
 """
+import re
 
 from setuptools import setup, find_packages
 
@@ -16,9 +17,14 @@ CLASSIFIERS = ['Programming Language :: Python :: 3',
                'Operating System :: OS Independent']
 
 
+def get_property(prop):
+    result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open('src/gaiaxpy/core/version.py').read())
+    return result.group(1)
+
+
 setup(
     name='GaiaXPy',
-    use_scm_version={'write_to_template': '__version__ = "{version}"\n'},
+    version=get_property('__version__'),
     author=AUTHORS,
     author_email='fda@ast.cam.ac.uk',
     maintainer='Daniela Ruz-Mieres',

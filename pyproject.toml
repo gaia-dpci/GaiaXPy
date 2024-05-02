@@ -1,5 +1,5 @@
 [build-system]
-requires = ['setuptools', 'setuptools_scm', 'wheel']
+requires = ['setuptools', 'wheel']
 build-backend = 'setuptools.build_meta'
 
 [project]
@@ -14,7 +14,6 @@ dependencies = [
   'numpy>1.23',
   'packaging',
   'pandas>=1.5.0',
-  'setuptools_scm',
   'scipy',
   'tqdm>=4.64.0'
 ]
@@ -36,7 +35,3 @@ documentation = 'https://gaiaxpy.readthedocs.io/en/latest/'
 [tool.setuptools]
 packages = ['gaiaxpy']
 package-dir = {'' = 'src'}
-
-[tool.setuptools_scm]
-version_scheme = 'post-release'
-write_to = 'src/gaiaxpy/_version.py'

@@ -12,7 +12,6 @@ from tests.utils.utils import get_spectrum_with_source_id
 
 parser = InternalContinuousParser(MANDATORY_INPUT_COLS['calibrate'] + CORR_INPUT_COLUMNS)
 
-
 type_map = {'source_id': pd.Int64Dtype(),
             'solution_id': pd.Int64Dtype(),
             f'{BANDS.rp}_n_parameters': pd.Int16Dtype(),

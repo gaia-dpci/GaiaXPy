@@ -51,22 +51,22 @@ class SampledBasisFunctions(object):
             SampledBasisFunctions: An instance of this class.
         """
         n_samples = len(sampling)
-        scale = ((external_instrument_model.bases['normRangeMax'][0] -
-                  external_instrument_model.bases['normRangeMin'][0]) /
-                 (external_instrument_model.bases['pwlRangeMax'][0] -
-                  external_instrument_model.bases['pwlRangeMin'][0]))
-        offset = (external_instrument_model.bases['normRangeMin'][0] -
-                  external_instrument_model.bases['pwlRangeMin'][0] * scale)
+        scale = ((external_instrument_model.bases['normRangeMax'] -
+                  external_instrument_model.bases['normRangeMin']) /
+                 (external_instrument_model.bases['pwlRangeMax'] -
+                  external_instrument_model.bases['pwlRangeMin']))
+        offset = (external_instrument_model.bases['normRangeMin'] -
+                  external_instrument_model.bases['pwlRangeMin'] * scale)
 
         sampling_pwl = external_instrument_model.wl_to_pwl(sampling)
         rescaled_pwl = (sampling_pwl * scale) + offset
 
-        bases_transformation = external_instrument_model.bases['transformationMatrix'][0]
+        bases_transformation = external_instrument_model.bases['transformationMatrix']
         evaluated_hermite_bases = np.array([_evaluate_hermite_function(n_h, pos, weight) for pos, weight in
                                             zip(rescaled_pwl, weights) for n_h in np.arange(
-                int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))]).reshape(
-            n_samples, int(external_instrument_model.bases['nInverseBasesCoefficients'][0]))
-        _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'][0] @ evaluated_hermite_bases.T
+                int(external_instrument_model.bases['nInverseBasesCoefficients']))]).reshape(
+            n_samples, int(external_instrument_model.bases['nInverseBasesCoefficients']))
+        _design_matrix = external_instrument_model.bases['inverseBasesCoefficients'] @ evaluated_hermite_bases.T
         transformed_design_matrix = bases_transformation @ _design_matrix
 
         hc = 1.e9 * nature.C * nature.PLANCK
@@ -80,7 +80,7 @@ class SampledBasisFunctions(object):
 
         norm = np.array([compute_norm(wl) for wl in sampling])
         design_matrix = np.array([transformed_design_matrix[i] * norm for i in
-                                  np.arange(external_instrument_model.bases['nBases'][0])])
+                                  np.arange(external_instrument_model.bases['nBases'])])
 
         return cls(sampling, design_matrix=design_matrix)
 

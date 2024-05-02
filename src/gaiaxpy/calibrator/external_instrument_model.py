@@ -54,10 +54,10 @@ class ExternalInstrumentModel(object):
         response = dict(zip(['wavelength', 'response'], [_resp[0], _resp[1]]))
         # Bases
         bases, _ = InverseBasesParser().parse_file(bases_path)
-        bases['inverseBasesCoefficients'][0] = bases['inverseBasesCoefficients'][0].reshape(
-            bases['nBases'][0], bases['nInverseBasesCoefficients'][0])
-        bases['transformationMatrix'][0] = bases['transformationMatrix'][0].reshape(
-            bases['nBases'][0], bases['nTransformedBases'][0])
+        bases = bases.iloc[0]
+        bases['inverseBasesCoefficients'] = bases['inverseBasesCoefficients'].reshape(bases['nBases'],
+                                                                                      bases['nInverseBasesCoefficients'])
+        bases['transformationMatrix'] = bases['transformationMatrix'].reshape(bases['nBases'], bases['nTransformedBases'])
         return cls(dispersion, response, bases)
 
     def get_response(self, wavelength: float) -> np.ndarray:

@@ -12,7 +12,7 @@ from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from tests.files.paths import (with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file,
                                with_missing_bp_xml_file, with_missing_bp_xml_plain_file, input_reader_solution_path)
-from tests.utils.utils import parse_matrices
+from tests.utils.utils import parse_matrices, cast_nans
 
 CON_COLS = MANDATORY_INPUT_COLS['convert'] + CORR_INPUT_COLUMNS
 
@@ -60,8 +60,8 @@ def test_file_missing_bp():
         parsed_data_file, _ = InputReader(file, convert, False).read()
         for column in ir_solution_array_columns:
             parsed_data_file[column] = parsed_data_file[column].apply(lambda x: _convert_to_nan(x))
-        pdt.assert_frame_equal(parsed_data_file, input_reader_solution_df, rtol=_rtol, atol=_atol, check_dtype=False,
-                               check_like=True)
+        pdt.assert_frame_equal(cast_nans(parsed_data_file), cast_nans(input_reader_solution_df), rtol=_rtol, atol=_atol,
+                               check_dtype=False, check_like=True)
 
 
 def test_fits_file_missing_bp():
@@ -72,7 +72,8 @@ def test_fits_file_missing_bp():
         parsed_data_file[column] = parsed_data_file[column].apply(lambda x: _convert_to_nan(x))
     parsed_data_file = parsed_data_file.drop(columns=columns_to_drop)
     solution_df = input_reader_solution_df.drop(columns=columns_to_drop)
-    pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False, check_like=True)
+    pdt.assert_frame_equal(cast_nans(parsed_data_file), cast_nans(solution_df), rtol=_rtol, atol=_atol,
+                           check_dtype=False, check_like=True)
 
 
 def test_xml_file_missing_bp():
@@ -82,4 +83,5 @@ def test_xml_file_missing_bp():
     check_special_columns(columns_to_drop, parsed_data_file, input_reader_solution_df)
     parsed_data_file = parsed_data_file.drop(columns=columns_to_drop)
     solution_df = input_reader_solution_df.drop(columns=columns_to_drop)
-    pdt.assert_frame_equal(parsed_data_file, solution_df, rtol=_rtol, atol=_atol, check_dtype=False, check_like=True)
+    pdt.assert_frame_equal(cast_nans(parsed_data_file), cast_nans(solution_df), rtol=_rtol, atol=_atol,
+                           check_dtype=False, check_like=True)

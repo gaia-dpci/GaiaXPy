@@ -1,6 +1,5 @@
 include LICENCE
 include pyproject.toml
-include requirements.txt
-include gaiaxpy/output/ecsv_headers/headers_dict.txt
-graft gaiaxpy/config
+include src/gaiaxpy/output/ecsv_headers/headers_dict.txt
+graft src/gaiaxpy/config
 global-exclude __pycache__

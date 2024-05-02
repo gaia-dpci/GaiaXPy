@@ -1,10 +1,10 @@
 # flake8: noqa
+from setuptools_scm import get_version
+
 try:
-    from ._version import version as __version__
-    from ._version import version_tuple
-except ImportError:
+    __version__ = get_version()
+except Exception:
     __version__ = 'unknown version'
-    version_tuple = (0, 0, __version__)
 
 from .calibrator.calibrator import calibrate
 from .cholesky.cholesky import get_chi2, get_inverse_covariance_matrix, get_inverse_square_root_covariance_matrix

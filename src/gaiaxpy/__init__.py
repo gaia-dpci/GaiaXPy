@@ -1,3 +1,4 @@
+#noqa
 from .calibrator.calibrator import calibrate
 from .cholesky.cholesky import get_chi2, get_inverse_covariance_matrix, get_inverse_square_root_covariance_matrix
 from .converter.converter import convert

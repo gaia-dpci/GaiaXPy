@@ -7,7 +7,7 @@ Based on:
 https://packaging.python.org/tutorials/packaging-projects
 """
 import re
-
+from os.path import abspath, dirname, join
 from setuptools import setup, find_packages
 
 AUTHORS = 'Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
@@ -18,7 +18,8 @@ CLASSIFIERS = ['Programming Language :: Python :: 3',
 
 
 def get_property(prop):
-    result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open('src/gaiaxpy/core/version.py').read())
+    version_file_path = join(dirname(abspath(__file__)), 'src/gaiaxpy/core/version.py')
+    result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open(version_file_path).read())
     return result.group(1)
 
 

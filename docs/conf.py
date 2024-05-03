@@ -13,9 +13,8 @@ import sys
 
 import numpy as np
 
-sys.path.insert(0, os.path.abspath('..'))
-sys.path.append('src/gaiaxpy')
-from gaiaxpy import __version__ # noqa
+sys.path.insert(0, os.path.abspath('../src/gaiaxpy'))
+from gaiaxpy.core.version import __version__ # noqa
 
 
 def parse_linspace(values):

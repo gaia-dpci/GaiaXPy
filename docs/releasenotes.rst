@@ -3,6 +3,17 @@ Release notes
 
 .. _releasenotes:
 
+Version 2.1.1
+-------------
+Released on 2024/05/03.
+
+* Fixed incompatibility with Archive output affecting ADQL queries: `issue #91 <https://github.com/gaia-dpci/GaiaXPy/issues/91>`_
+* Removed Python 3.7 support, added Python 3.12 support: `issue #81 <https://github.com/gaia-dpci/GaiaXPy/issues/81>`_
+* Modified converter output for sources with a missing band: `issue #78 <https://github.com/gaia-dpci/GaiaXPy/issues/78>`_
+* Modified to generator output for sources with a missing band: `issue #79 <https://github.com/gaia-dpci/GaiaXPy/issues/79>`_
+* Fixed bug specific to additional systems and GaiaDR3Vega: `issue #83 <https://github.com/gaia-dpci/GaiaXPy/issues/83>`_
+* Removed some conditions on additional filters file names: `issue #72 <https://github.com/gaia-dpci/GaiaXPy/issues/72>`_
+
 Version 2.1.0
 -------------
 Released on 2023/08/11.

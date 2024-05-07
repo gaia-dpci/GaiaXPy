@@ -1,4 +1,4 @@
-from gaiaxpy import load_additional_systems, generate
+from gaiaxpy import load_additional_systems, generate, remove_additional_systems
 from tests.files.paths import with_missing_bp_csv_file
 from tests.test_generator.generator_paths import additional_filters_dir
 
@@ -14,3 +14,4 @@ def test_load_additional_with_err_corr():
     assert len(photometry) == 3
     assert photometry['source_id'].to_list() == [5853498713190525696, 5405570973190252288, 5762406957886626816]
     assert list(photometry.columns) == expected_columns
+    __PhotometricSystem = remove_additional_systems()

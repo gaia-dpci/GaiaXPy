@@ -6,7 +6,7 @@ from gaiaxpy import generate
 from gaiaxpy.core.generic_functions import _get_built_in_systems
 from gaiaxpy.generator.photometric_system import PhotometricSystem, load_additional_systems, remove_additional_systems
 from tests.files.paths import with_missing_bp_ecsv_file
-from tests.test_generator.generator_paths import additional_filters_dir
+from tests.test_generator.generator_paths import additional_filters_dir, additional_filters_dup_dir
 from tests.test_generator.test_internal_photometric_system import phot_systems_specs
 
 
@@ -86,7 +86,7 @@ def test_user_interaction():
     assert set(phot_system_list) == set(built_in_systems)
     __PhotometricSystem = load_additional_systems(additional_filters_dir)
     new_phot_systems = [s for s in __PhotometricSystem.get_available_systems().split(', ')]
-    assert len(phot_system_list) + 4 == len(new_phot_systems)
+    assert len(phot_system_list) + 5 == len(new_phot_systems)
     ps = [__PhotometricSystem[s] for s in ['Pristine', 'SDSS', 'PanSTARRS1_Std', 'USER_Panstarrs1Std', 'USER_Sdss',
                                            'USER_Pristine']]
     output = generate(with_missing_bp_ecsv_file, photometric_system=ps, save_file=False)
@@ -97,6 +97,7 @@ def test_user_interaction():
     __PhotometricSystem = remove_additional_systems()
     phot_system_list = [s for s in __PhotometricSystem.get_available_systems().split(', ')]
     assert set(phot_system_list) == set(built_in_systems)
+    __PhotometricSystem = remove_additional_systems()
 
 
 def test_additional_systems_names():
@@ -105,4 +106,12 @@ def test_additional_systems_names():
     __PhotometricSystem = load_additional_systems(additional_filters_dir)
     ps = [__PhotometricSystem[s].get_system_name() for s in __PhotometricSystem.get_available_systems().split(', ') if
           s.startswith('USER')]
-    assert ps == ['USER_Panstarrs1Std', 'USER_Sdss', 'USER_Pristine', 'USER_AFilter']
+    assert ps == ['USER_Panstarrs1Std', 'USER_Sdss', 'USER_Pristine', 'USER_ASubstring_AndMore', 'USER_ASubstring']
+    __PhotometricSystem = remove_additional_systems()
+
+
+def test_duplicate_names_in_dir():
+    global PhotometricSystem
+    PhotometricSystem = remove_additional_systems()
+    with pytest.raises(ValueError):
+        __PhotometricSystem = load_additional_systems(additional_filters_dup_dir)

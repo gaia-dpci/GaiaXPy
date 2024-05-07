@@ -41,8 +41,7 @@ def test_system_is_standardised():
     standardised_dict = {s: "StandardisedPhotometricSystem" for s in standardised_systems}
     solution_dict = {**regular_dict, **standardised_dict}
     for system in all_phot_systems:
-        assert system.value.__class__.__name__ == solution_dict[system.name], \
-            f'Test has failed for system {system.name}.'
+        assert system.value.__class__.__name__ == solution_dict[system.name], f'Test has failed for system {system.name}.'
 
 
 def test_init(phot_systems):
@@ -103,7 +102,7 @@ def test_user_interaction():
 def test_additional_systems_names():
     global PhotometricSystem
     PhotometricSystem = remove_additional_systems()
-    PhotometricSystem = load_additional_systems(additional_filters_dir)
-    ps = [PhotometricSystem[s].get_system_name() for s in PhotometricSystem.get_available_systems().split(', ') if
+    __PhotometricSystem = load_additional_systems(additional_filters_dir)
+    ps = [__PhotometricSystem[s].get_system_name() for s in __PhotometricSystem.get_available_systems().split(', ') if
           s.startswith('USER')]
     assert ps == ['USER_Panstarrs1Std', 'USER_Sdss', 'USER_Pristine', 'USER_AFilter']

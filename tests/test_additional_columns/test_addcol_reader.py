@@ -11,7 +11,7 @@ from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from tests.files.paths import with_missing_bp_csv_file, with_missing_bp_fits_file, with_missing_bp_xml_file, \
     with_missing_bp_xml_plain_file, with_missing_bp_ecsv_file
-from tests.utils.utils import parse_dfs_for_test, missing_bp_source_id
+from tests.utils.utils import parse_dfs_for_test, missing_bp_source_id, cast_nans
 
 expected_columns = MANDATORY_INPUT_COLS[generate.__name__] + CORR_INPUT_COLUMNS
 
@@ -36,13 +36,18 @@ def test_single_column_test(input_data):
     expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     expected_df = expected_df.sort_values(by=['source_id'], ignore_index=True)
     filtered_read_input = filtered_read_input.sort_values(by=['source_id'], ignore_index=True)
-    pdt.assert_frame_equal(expected_df, filtered_read_input, check_like=True, check_dtype=False)
+    pdt.assert_frame_equal(cast_nans(expected_df), cast_nans(filtered_read_input), check_like=True, check_dtype=False)
 
 
 def run_numpy_comparison(expected_df, read_input, _array_columns):
     for column in _array_columns:
         for index in range(len(expected_df)):
-            npt.assert_array_almost_equal(expected_df[column].iloc[index], read_input[column].iloc[index], decimal=5)
+            expected_value = expected_df[column].iloc[index]
+            read_value = read_input[column].iloc[index]
+            if expected_value is None and read_value is None:
+                assert True
+            else:
+                npt.assert_array_almost_equal(expected_value, read_value, decimal=5)
 
 
 @pytest.mark.parametrize('input_data', [with_missing_bp_fits_file, with_missing_bp_df,
@@ -61,6 +66,8 @@ def test_multiple_columns(input_data):
         expected_df[key] = expected_df[key].apply(lambda x: x.astype(value) if isinstance(x, np.ndarray) else x)
     expected_df = expected_df.sort_values(by=['source_id'], ignore_index=True)
     filtered_read_input = filtered_read_input.sort_values(by=['source_id'], ignore_index=True)
+    expected_df = cast_nans(expected_df)
+    filtered_read_input = cast_nans(filtered_read_input)
     run_numpy_comparison(expected_df, filtered_read_input, array_columns)
     untested_columns = list(set(expected_df.columns) - set(array_columns))
     pdt.assert_frame_equal(expected_df[untested_columns], filtered_read_input[untested_columns], check_like=True,
@@ -80,8 +87,8 @@ def test_column_already_in_output(input_data):
     # Check NumPy arrays separately due to issue with pandas testing
     run_numpy_comparison(expected_df, filtered_read_input, array_columns)
     untested_columns = list(set(expected_df.columns) - set(array_columns))
-    pdt.assert_frame_equal(expected_df[untested_columns], filtered_read_input[untested_columns], check_like=True,
-                           check_dtype=False)
+    pdt.assert_frame_equal(cast_nans(expected_df)[untested_columns], cast_nans(filtered_read_input[untested_columns]),
+                           check_like=True, check_dtype=False)
 
 
 @pytest.mark.parametrize('input_data', [with_missing_bp_xml_plain_file, with_missing_bp_df,
@@ -124,4 +131,4 @@ def test_multiple_renaming(input_data):
     expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     expected_df = expected_df.sort_values(by=['source_id'], ignore_index=True)
     filtered_read_input = filtered_read_input.sort_values(by=['source_id'], ignore_index=True)
-    pdt.assert_frame_equal(expected_df, filtered_read_input, check_like=True, check_dtype=False)
+    pdt.assert_frame_equal(cast_nans(expected_df), cast_nans(filtered_read_input), check_like=True, check_dtype=False)

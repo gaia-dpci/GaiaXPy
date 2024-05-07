@@ -9,7 +9,7 @@ from glob import glob
 from os import remove
 from os.path import exists, split, join
 
-from gaiaxpy import __version__
+from gaiaxpy.core.version import __version__
 from gaiaxpy.config.paths import config_ini_file
 from gaiaxpy.core.config import (get_filter_version_from_config, replace_file_name, get_file_path,
                                  ADDITIONAL_SYSTEM_PREFIX)

@@ -6,7 +6,8 @@ Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palav
 Based on:
 https://packaging.python.org/tutorials/packaging-projects
 """
-
+import re
+from os.path import abspath, dirname, join
 from setuptools import setup, find_packages
 
 AUTHORS = 'Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
@@ -16,9 +17,15 @@ CLASSIFIERS = ['Programming Language :: Python :: 3',
                'Operating System :: OS Independent']
 
 
+def get_property(prop):
+    version_file_path = join(dirname(abspath(__file__)), 'src/gaiaxpy/core/version.py')
+    result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open(version_file_path).read())
+    return result.group(1)
+
+
 setup(
     name='GaiaXPy',
-    use_scm_version={'write_to_template': '__version__ = "{version}"\n'},
+    version=get_property('__version__'),
     author=AUTHORS,
     author_email='fda@ast.cam.ac.uk',
     maintainer='Daniela Ruz-Mieres',

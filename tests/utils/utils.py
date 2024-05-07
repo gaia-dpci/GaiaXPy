@@ -43,6 +43,22 @@ def array_to_symmetric_matrix_row_major(size, array):
 _rtol, _atol = 1e-7, 1e-7
 
 
+def cast_nans(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Cast nans to None to avoid pandas FutureWarnings not relevant to the package.
+    None does not present comparison issues unlike nan (nan != nan).
+
+    Args:
+        df (pd.DataFrame): A pandas DataFrame.
+
+    Returns:
+        DataFrame: DataFrame with replaced nan values.
+    """
+    for col in df.columns:
+        df[col] = df[col].replace([float('nan'), np.nan, pd.NA], None)
+    return df
+
+
 def parse_matrices(string):
     return None if len(string) == 0 else np.array(json.loads(string))
 

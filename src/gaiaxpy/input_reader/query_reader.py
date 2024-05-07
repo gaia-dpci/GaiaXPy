@@ -23,12 +23,12 @@ class QueryReader(ArchiveReader):
                                           disable_info=disable_info)
 
     @staticmethod
-    def get_srcid_column(ids):
+    def get_srcids(_table):
         """
         Get the name of the source ID column from an Astropy Table.
 
         Args:
-            ids (Table): A table containing columns.
+            _table (Table): A table containing columns.
 
         Returns:
             str: The name of the source ID column.
@@ -38,13 +38,13 @@ class QueryReader(ArchiveReader):
             ValueError: If the index of the source ID column is not a string.
         """
         try:
-            stripped_pairs = ((re.sub(r'[-_ ]', '', c.lower()), c) for c in ids.columns.keys())
+            stripped_pairs = ((re.sub(r'[-_ ]', '', c.lower()), c) for c in _table.columns.keys())
             sid_col = next(original for stripped, original in stripped_pairs if stripped in ['sourceid', 'srcid'])
         except StopIteration:
             raise ValueError('Source ID column not found in query result.')
         if not isinstance(sid_col, str):
             raise ValueError(f'Index of source ID column should be a string, but is {type(sid_col).__name__}: {sid_col}.')
-        return sid_col
+        return _table[sid_col]
 
     def read(self, _data_release=data_release):
         query = self.content
@@ -58,8 +58,8 @@ class QueryReader(ArchiveReader):
         if not self.disable_info:
             print(self.info_msg, end='\r')
         job = gaia.launch_job_async(query, dump_to_file=False)
-        ids = job.get_results()
-        result = gaia.load_data(ids=ids[self.get_srcid_column(ids)], format='csv', data_release=_data_release,
+        query_result = job.get_results()
+        result = gaia.load_data(ids=self.get_srcids(query_result), format='csv', data_release=_data_release,
                                 data_structure='raw', retrieval_type='XP_CONTINUOUS', avoid_datatype_check=True)
         try:
             continuous_key = [key for key in result.keys() if 'continuous' in key.lower()][0]

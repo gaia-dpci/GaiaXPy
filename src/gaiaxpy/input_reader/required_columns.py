@@ -6,8 +6,6 @@ __GEN_MANDATORY_COLS = ['source_id', 'bp_n_parameters', 'bp_standard_deviation',
                         'rp_standard_deviation']
 __INV_MANDATORY_COLS = ['source_id', 'bp_n_parameters', 'rp_n_parameters', 'bp_standard_deviation',
                         'rp_standard_deviation']
-__LIN_MANDATORY_COLS = ['source_id', 'bp_n_parameters', 'rp_n_parameters', 'bp_standard_deviation',
-                        'rp_standard_deviation']
 
 COV_INPUT_COLUMNS = ['bp_coefficient_covariances', 'rp_coefficient_covariances']
 CORR_INPUT_COLUMNS = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations',
@@ -17,8 +15,6 @@ MANDATORY_INPUT_COLS = {'_apply_colour_equation': __GEN_MANDATORY_COLS, '_apply_
                         '_calibrate': __CAL_MANDATORY_COLS, 'calibrate': __CAL_MANDATORY_COLS,
                         '_convert': __CON_MANDATORY_COLS, 'convert': __CON_MANDATORY_COLS,
                         '_generate': __GEN_MANDATORY_COLS, 'generate': __GEN_MANDATORY_COLS,
-                        'find_lines': __LIN_MANDATORY_COLS, 'find_fast': __LIN_MANDATORY_COLS,
-                        'find_extrema': __LIN_MANDATORY_COLS,
                         'get_inverse_covariance_matrix': __INV_MANDATORY_COLS,
                         'get_inverse_square_root_covariance_matrix': __INV_MANDATORY_COLS}
 

@@ -101,7 +101,9 @@ def test_user_interaction():
 
 
 def test_additional_systems_names():
-    __PhotometricSystem = load_additional_systems(additional_filters_dir)
-    ps = [__PhotometricSystem[s].get_system_name() for s in __PhotometricSystem.get_available_systems().split(', ') if
+    global PhotometricSystem
+    PhotometricSystem = remove_additional_systems()
+    PhotometricSystem = load_additional_systems(additional_filters_dir)
+    ps = [PhotometricSystem[s].get_system_name() for s in PhotometricSystem.get_available_systems().split(', ') if
           s.startswith('USER')]
     assert ps == ['USER_Panstarrs1Std', 'USER_Sdss', 'USER_Pristine', 'USER_AFilter']

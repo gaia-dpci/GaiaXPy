@@ -10,6 +10,9 @@ from tests.test_generator.generator_paths import additional_filters_dir, additio
 from tests.test_generator.test_internal_photometric_system import phot_systems_specs
 
 
+def setup():
+    PhotometricSystem = remove_additional_systems()
+
 def get_system_by_name(lst, name):
     return [item[1] for item in lst if item[0] == name][0]
 
@@ -30,7 +33,6 @@ def test_system_is_standardised():
     Check class assigned to each photometric system. Will raise an error if a system is missing in the solution
     dictionary.
     """
-    PhotometricSystem = remove_additional_systems()  # Ensure only built-in systems are present
     all_phot_systems = [PhotometricSystem[s] for s in PhotometricSystem.get_available_systems().split(', ')]
     regular_systems = ["DECam", "Els_Custom_W09_S2", "Euclid_VIS", "Gaia_2", "Gaia_DR3_Vega", "Halpha_Custom_AB",
                        "H_Custom", "Hipparcos_Tycho", "HST_ACSWFC", "HST_WFC3UVIS", "HST_WFPC2", "IPHAS", "JKC",
@@ -80,7 +82,6 @@ def test_get_set_zero_points(phot_systems, available_systems):
 
 
 def test_user_interaction():
-    PhotometricSystem = remove_additional_systems()  # Ensure only built-in systems are present
     phot_system_list = [s for s in PhotometricSystem.get_available_systems().split(', ')]
     built_in_systems = _get_built_in_systems()
     assert set(phot_system_list) == set(built_in_systems)
@@ -101,8 +102,6 @@ def test_user_interaction():
 
 
 def test_additional_systems_names():
-    global PhotometricSystem
-    PhotometricSystem = remove_additional_systems()
     __PhotometricSystem = load_additional_systems(additional_filters_dir)
     ps = [__PhotometricSystem[s].get_system_name() for s in __PhotometricSystem.get_available_systems().split(', ') if
           s.startswith('USER')]
@@ -111,7 +110,5 @@ def test_additional_systems_names():
 
 
 def test_duplicate_names_in_dir():
-    global PhotometricSystem
-    PhotometricSystem = remove_additional_systems()
     with pytest.raises(ValueError):
         __PhotometricSystem = load_additional_systems(additional_filters_dup_dir)

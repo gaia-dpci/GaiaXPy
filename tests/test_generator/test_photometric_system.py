@@ -82,33 +82,32 @@ def test_get_set_zero_points(phot_systems, available_systems):
 
 
 def test_user_interaction():
+    global PhotometricSystem
     phot_system_list = [s for s in PhotometricSystem.get_available_systems().split(', ')]
     built_in_systems = _get_built_in_systems()
     assert set(phot_system_list) == set(built_in_systems)
-    __PhotometricSystem = load_additional_systems(additional_filters_dir)
-    new_phot_systems = [s for s in __PhotometricSystem.get_available_systems().split(', ')]
+    PhotometricSystem = load_additional_systems(additional_filters_dir)
+    new_phot_systems = [s for s in PhotometricSystem.get_available_systems().split(', ')]
     assert len(phot_system_list) + 5 == len(new_phot_systems)
-    ps = [__PhotometricSystem[s] for s in ['Pristine', 'SDSS', 'PanSTARRS1_Std', 'USER_Panstarrs1Std', 'USER_Sdss',
+    ps = [PhotometricSystem[s] for s in ['Pristine', 'SDSS', 'PanSTARRS1_Std', 'USER_Panstarrs1Std', 'USER_Sdss',
                                            'USER_Pristine']]
     output = generate(with_missing_bp_ecsv_file, photometric_system=ps, save_file=False)
     built_in_columns = [c for c in output.columns if not c.startswith('USER')]
     built_in_columns.remove('source_id')
     for column in built_in_columns:
         npt.assert_array_equal(output[column].values, output[f'USER_{column}'].values)
-    __PhotometricSystem = remove_additional_systems()
-    phot_system_list = [s for s in __PhotometricSystem.get_available_systems().split(', ')]
+    PhotometricSystem = remove_additional_systems()
+    phot_system_list = [s for s in PhotometricSystem.get_available_systems().split(', ')]
     assert set(phot_system_list) == set(built_in_systems)
-    __PhotometricSystem = remove_additional_systems()
 
 
 def test_additional_systems_names():
-    __PhotometricSystem = load_additional_systems(additional_filters_dir)
-    ps = [__PhotometricSystem[s].get_system_name() for s in __PhotometricSystem.get_available_systems().split(', ') if
+    PhotometricSystem = load_additional_systems(additional_filters_dir)
+    ps = [PhotometricSystem[s].get_system_name() for s in PhotometricSystem.get_available_systems().split(', ') if
           s.startswith('USER')]
     assert ps == ['USER_Panstarrs1Std', 'USER_Sdss', 'USER_Pristine', 'USER_ASubstring_AndMore', 'USER_ASubstring']
-    __PhotometricSystem = remove_additional_systems()
 
 
 def test_duplicate_names_in_dir():
     with pytest.raises(ValueError):
-        __PhotometricSystem = load_additional_systems(additional_filters_dup_dir)
+        load_additional_systems(additional_filters_dup_dir)

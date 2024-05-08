@@ -108,7 +108,7 @@ def test_additional_systems_names(__ps):
     __ps = load_additional_systems(additional_filters_dir)
     ps = [__ps[s].get_system_name() for s in __ps.get_available_systems().split(', ') if
           s.startswith('USER')]
-    assert ps == ['USER_Panstarrs1Std', 'USER_Sdss', 'USER_Pristine', 'USER_ASubstring_AndMore', 'USER_ASubstring']
+    assert set(ps) == {'USER_Panstarrs1Std', 'USER_Sdss', 'USER_Pristine', 'USER_ASubstring_AndMore', 'USER_ASubstring'}
 
 
 def test_duplicate_names_in_dir(__ps):

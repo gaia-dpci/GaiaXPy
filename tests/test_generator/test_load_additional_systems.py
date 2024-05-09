@@ -5,7 +5,7 @@ from tests.files.paths import with_missing_bp_csv_file
 from tests.test_generator.generator_paths import additional_filters_dir
 
 
-@pytest.fixture
+@pytest.fixture(scope='class')
 def __ps():
     PhotometricSystem = remove_additional_systems()
     yield PhotometricSystem

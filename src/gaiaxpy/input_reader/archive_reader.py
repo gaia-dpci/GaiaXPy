@@ -33,3 +33,9 @@ class ArchiveReader(object):
             gaia.login(user=user, password=password)
         else:
             pass
+
+    def show_info_msg(self, done=False):
+        msg = self.info_msg
+        if done:
+            msg = msg + ' Done!'
+        print(msg, end='\r')

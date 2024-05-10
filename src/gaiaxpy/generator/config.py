@@ -41,7 +41,7 @@ def __get_file_names_recursively(dir_path: str, show_warning: bool = False) -> l
     if len(compliant_files) == 0:
         raise ValueError('No filter files found in the given directory. Please check your files.')
     elif len(compliant_files) < len(all_files) and show_warning:
-        message = 'Some files in the directory do not correspond to filter files. The program will ignore them.'
+        message = 'Based on their names, some files in the directory do not correspond to filter files. They will be ignored.'
         print(f'UserWarning: {message}', file=sys.stderr)
     return compliant_files
 

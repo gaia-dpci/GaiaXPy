@@ -67,7 +67,7 @@ class DataFrameReader(object):
 
     def read(self):
         if not self.disable_info:
-            print(self.info_msg, end='\r')
+            self.show_info_msg()
         content = self.content
         str_array_columns, np_array_columns = self.__get_parseable_columns()
         if str_array_columns:
@@ -88,10 +88,16 @@ class DataFrameReader(object):
                     data[f'{band}_covariance_matrix'] = data.apply(get_covariance_matrix, axis=1, args=(band,))
                 self.requested_columns = self.requested_columns + covariance_columns
         if not self.disable_info:
-            print(self.info_msg + ' Done!', end='\r')
+            self.show_info_msg(done=True)
         data = _cast(data)
         if self.additional_columns:
             data = rename_with_required(data, self.additional_columns)
         data = data[self.requested_columns] if self.requested_columns else data
         # No extension returned for DataFrames
         return data, None
+
+    def show_info_msg(self, done=False):
+        msg = self.info_msg
+        if done:
+            msg = msg + ' Done!'
+        print(msg, end='\r')

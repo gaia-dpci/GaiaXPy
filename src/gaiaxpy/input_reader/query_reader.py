@@ -56,7 +56,7 @@ class QueryReader(ArchiveReader):
         self._login(gaia)
         # ADQL query
         if not self.disable_info:
-            print(self.info_msg, end='\r')
+            self.show_info_msg()
         job = gaia.launch_job_async(query, dump_to_file=False)
         query_result = job.get_results()
         result = gaia.load_data(ids=self.get_srcids(query_result), format='csv', data_release=_data_release,
@@ -67,6 +67,6 @@ class QueryReader(ArchiveReader):
         except KeyError:
             raise ValueError('No continuous raw data found for the requested query.')
         if not self.disable_info:
-            print(self.info_msg + ' Done!', end='\r')
+            self.show_info_msg(done=True)
         return DataFrameReader(data, function_name, self.truncation, additional_columns=self.additional_columns,
                                disable_info=True).read()

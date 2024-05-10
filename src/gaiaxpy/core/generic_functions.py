@@ -347,12 +347,6 @@ def format_additional_columns(additional_columns: Optional[Union[str, list, dict
         return convert_values_to_lists(additional_columns)
 
 
-def validate_error_correction(phot_system, error_correction):
-    if any(system.name.startswith(ADDITIONAL_SYSTEM_PREFIX) for system in phot_system) and error_correction:
-        raise ValueError('Photometry is requested for a non-built-in system, but error_correction is set to True. '
-                         'Error correction is only implemented for built-in systems.')
-
-
 def validate_photometric_system(photometric_system):
     """
     Ensure photometric system input isn't empty.

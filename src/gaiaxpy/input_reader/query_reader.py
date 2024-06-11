@@ -3,6 +3,7 @@ import re
 from astroquery.gaia import GaiaClass
 
 from gaiaxpy.core.server import data_release, gaia_server
+from gaiaxpy.core.version import __version__
 from .archive_reader import ArchiveReader
 from .dataframe_reader import DataFrameReader
 from ..core.custom_errors import SelectorNotImplementedError
@@ -43,11 +44,28 @@ class QueryReader(ArchiveReader):
         except StopIteration:
             raise ValueError('Source ID column not found in query result.')
         if not isinstance(sid_col, str):
-            raise ValueError(f'Index of source ID column should be a string, but is {type(sid_col).__name__}: {sid_col}.')
+            raise ValueError(
+                f'Index of source ID column should be a string, but is {type(sid_col).__name__}: {sid_col}.')
         return _table[sid_col]
 
-    def read(self, _data_release=data_release):
+    @staticmethod
+    def _add_marker(query, comment):
+        def __remove_comments(_query: str) -> str:
+            single_line_comment = re.compile(r'--.*$', re.MULTILINE)
+            multi_line_comment = re.compile(r'/\*.*?\*/', re.DOTALL)
+            query_no_single_line_comments = single_line_comment.sub('', _query)  # Remove single-line comments
+            return multi_line_comment.sub('', query_no_single_line_comments)  # Remove multi-line comments
+
+        query = __remove_comments(query)
+
+        if comment:
+            insensitive_select = re.compile(re.escape('select'), re.IGNORECASE)
+            query = insensitive_select.sub(f'select --{comment} \n', query)
+        return query
+
+    def read(self, _data_release=data_release, _comment=f'This query was launched from within GaiaXPy {__version__}'):
         query = self.content
+        query = self._add_marker(query, _comment)
         function_name = self.function.__name__
         if function_name in not_supported_functions:
             raise ValueError(f'Function {function_name} does not accept ADQL queries.')

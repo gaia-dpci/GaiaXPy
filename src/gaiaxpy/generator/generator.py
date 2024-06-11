@@ -4,8 +4,7 @@ from typing import Union, Optional
 import pandas as pd
 
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import _apply_colour_equation
-from gaiaxpy.core.generic_functions import cast_output, format_additional_columns, validate_photometric_system, \
-    validate_error_correction
+from gaiaxpy.core.generic_functions import cast_output, format_additional_columns, validate_photometric_system
 from gaiaxpy.error_correction.error_correction import _apply_error_correction
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
@@ -89,7 +88,6 @@ def _generate(input_object: Union[list, Path, str], photometric_system: Union[li
     # Prepare systems, keep track of original systems (especially required for error_correction)
     internal_phot_system = photometric_system.copy() if isinstance(photometric_system, list) else (
         [photometric_system].copy())
-    validate_error_correction(internal_phot_system, error_correction)
     gaia_system = PhotometricSystem.Gaia_DR3_Vega
     is_gaia_in_input = __is_gaia_initially_in_systems(internal_phot_system)
     if error_correction and not is_gaia_in_input:

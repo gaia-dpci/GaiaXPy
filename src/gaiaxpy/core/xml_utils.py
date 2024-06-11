@@ -34,7 +34,7 @@ def get_xp_merge(x_root):
 
 def get_array_text(x_root, tag):
     result = x_root.find(tag)
-    result = [element.text for element in result] if result else None
+    result = [element.text for element in result] if result is not None else None
     length = len(result) if result else None
     return result, length
 

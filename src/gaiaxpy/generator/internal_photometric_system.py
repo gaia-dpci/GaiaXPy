@@ -115,27 +115,35 @@ class InternalPhotometricSystem(object):
             str: Path of a file.
         """
 
-        def _validate_additional_system_file(_actual_path):
-            file_names = [split(p)[1] for p in _actual_path]
+        def _extract_matches(_actual_path, _system_name):
+            __is_built_in_name = lambda fname: fname.startswith('XpFilter')
+            __is_exact_match = lambda fname, sysname: fname.startswith(sysname) and f'{sysname}.' in fname
+            __matches_additional = lambda fname: pattern.match(fname)
+            __split_paths = [split(p) for p in _actual_path]
+            __paths, __filenames = zip(*__split_paths)
             pattern = re.compile(_ADDITIONAL_SYSTEM_FILES_REGEX, re.IGNORECASE)
-            if all(f.startswith('XpFilter') for f in file_names):
+            if all(__is_built_in_name(f) for f in __filenames):  # If system is built-in
                 return _actual_path
-            return [join(file_path, s) for s in file_names if pattern.match(s) and not s.startswith('XpFilter')]
+            return [join(p, fn) for p, fn in __split_paths if not __is_built_in_name(fn) and __matches_additional(fn)
+                    and __is_exact_match(fn, _system_name)]  # If is additional
+
+        def _validate_path(_actual_path):
+            if len(actual_path) == 0:
+                raise ValueError('Filter file not found in given path.')
+            elif len(actual_path) > 1:
+                # Remove configuration file if it exists to avoid issues when reloading
+                if exists(_CFG_FILE_PATH):
+                    remove(_CFG_FILE_PATH)
+                raise ValueError(f'More than one system named {self.label.replace(f"{ADDITIONAL_SYSTEM_PREFIX}_", "")}'
+                                 f' were found. System names in the given directory should be unique. Operation aborted.')
 
         file_name = replace_file_name(self.config_file, 'filter', 'filter', bp_model, rp_model, self.label)
         system_name = file_name.split('.')[0]
         file_path = get_file_path(self.config_file)
         # Search file in file path to obtain the actual path
         actual_path = glob(file_path + f"/**/{system_name}*.xml", recursive=True)
-        actual_path = _validate_additional_system_file(actual_path)
-        if len(actual_path) == 0:
-            raise ValueError('Filter file not found in given path.')
-        elif len(actual_path) > 1:
-            # Remove configuration file if it exists to avoid issues on reloading
-            if exists(_CFG_FILE_PATH):
-                remove(_CFG_FILE_PATH)
-            raise ValueError(f'More than one system named {self.label.replace(f"{ADDITIONAL_SYSTEM_PREFIX}_", "")}'
-                             f' were found. System names in the given directory should be unique. Operation aborted.')
+        actual_path = _extract_matches(actual_path, system_name)
+        _validate_path(actual_path)
         self.filter_file = actual_path[0]
 
     def _load_offset_from_xml(self):

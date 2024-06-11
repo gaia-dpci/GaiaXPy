@@ -3,6 +3,8 @@ multi_synthetic_photometry.py
 ====================================
 Module to represent a synthetic photometry in multiple photometric systems.
 """
+import re
+from typing import List
 
 import pandas as pd
 
@@ -39,13 +41,25 @@ class MultiSyntheticPhotometry(object):
         self.mags, self.fluxes, self.errors = _generate_variables(photometries)
 
     def _generate_output_df(self):
+        def _get_column_sublist(_label: str, _df: pd.DataFrame) -> List:
+            """
+            Get the columns in a DataFrame that correspond to a particular system.
+
+            Args:
+                _label: A system label.
+                _df: A DataFrame containing photometry data.
+
+            Returns:
+                A list of column names.
+            """
+            _pattern = fr'{_label}_(flux_error|flux|mag)_[A-Za-z0-9]+'
+            return list(filter(lambda col: re.match(_pattern, col), _df.columns))
+
         photometries_df = self._photometries_to_df()
         # Reorder DataFrame columns
         phot_system_labels = [phot_system.get_system_label() for phot_system in self.photometric_system]
-        reordered_columns = ['source_id']
-        for label in phot_system_labels:
-            column_sublist = [column for column in photometries_df.columns if column.startswith(f'{label}_')]
-            reordered_columns.extend(column_sublist)
+        reordered_columns = ['source_id'] + [col for label in phot_system_labels for col in _get_column_sublist(
+            label, photometries_df)]
         photometries_df = photometries_df[reordered_columns]
         return photometries_df
 

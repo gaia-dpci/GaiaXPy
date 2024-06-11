@@ -74,12 +74,12 @@ class GenericParser(object):
             str: File extension ('.csv', '.fits', or '.xml').
         """
         if not disable_info:
-            print(self.info_msg, end='\r')
+            self.print_info_msg()
         extension = _get_file_extension(file_path)
         parser = self.get_parser(extension)
         parsed_data = _cast(parser(file_path))
         if not disable_info:
-            print(self.info_msg + ' Done!', end='\r')
+            self.print_info_msg(done=True)
         return parsed_data, extension
 
     def _parse_avro(self, avro_file):
@@ -155,6 +155,12 @@ class GenericParser(object):
                 df[values_column] = df.apply(lambda row: array_to_symmetric_matrix(row[values_column],
                                                                                    row[size_column]), axis=1)
         return df
+
+    def print_info_msg(self, done=False):
+        msg = self.info_msg
+        if done:
+            msg = msg + ' Done!'
+        print(msg, end='\r')
 
 
 def _get_file_extension(file_path):

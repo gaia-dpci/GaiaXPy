@@ -18,7 +18,7 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
         self.bp_model = bp_model
         self.rp_model = rp_model
 
-    def generate(self, parsed_input_data, extension, output_file, output_format, save_file):
+    def generate(self, parsed_input_data, extension, output_file, output_format, save_file, truncation):
         __FUNCTION_KEY = 'photometry'
         # Recover attributes
         systems = self.photometric_system
@@ -33,7 +33,7 @@ class MultiSyntheticPhotometryGenerator(SyntheticPhotometryGenerator):
                                    xp_sampling, xp_sampling_grid in zip(xp_sampling_list, xp_sampling_grid_list)]
         # One list per system
         photometry_list_of_lists = [self._create_photometry_list(parsed_input_data, phot_system,
-                                                                 sampled_basis_func, xp_merge)
+                                                                 sampled_basis_func, truncation, xp_merge)
                                     for phot_system, sampled_basis_func, xp_merge
                                     in zip(systems, sampled_basis_func_list, xp_merge_list)]
         # Now the first list contains the photometries in all systems for the first source_id, and so on.

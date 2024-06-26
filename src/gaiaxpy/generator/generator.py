@@ -53,14 +53,17 @@ def generate(input_object: Union[list, Path, pd.DataFrame, str], photometric_sys
 
 
 def _generate(input_object: Union[list, Path, pd.DataFrame, str], photometric_system: Union[list, PhotometricSystem],
-              output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
-              output_format: str = None, save_file: bool = True, error_correction: bool = False,
-              additional_columns: Optional[Union[dict, list, str]] = None, selector=None, username: str = None,
-              password: str = None, bp_model: str = 'v375wi', rp_model: str = 'v142r') -> pd.DataFrame:
+              truncation: bool = False, output_path: Union[Path, str] = '.',
+              output_file: str = 'output_synthetic_photometry', output_format: str = None, save_file: bool = True,
+              error_correction: bool = False, additional_columns: Optional[Union[dict, list, str]] = None,
+              selector=None, username: str = None, password: str = None, bp_model: str = 'v375wi',
+              rp_model: str = 'v142r') -> pd.DataFrame:
     """
     Internal function of the calibration utility. Refer to "generate".
 
     Args:
+        truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
+            the recommended value in the input files.
         selector (function): Function to filter AVRO records. The records returned will be the ones for which the
         function returns True. The field names used in the selector function should match the ones in the AVRO schema
         as the filter is run before any column renaming happens. If selector is not None and the input is not an AVRO
@@ -95,15 +98,16 @@ def _generate(input_object: Union[list, Path, pd.DataFrame, str], photometric_sy
         internal_phot_system.append(gaia_system)
     additional_columns = format_additional_columns(additional_columns)
     # Read input data
-    parsed_input_data, extension = InputReader(input_object, generate, False, additional_columns=additional_columns,
-                                               selector=selector, user=username, password=password).read()
+    parsed_input_data, extension = InputReader(input_object, generate, truncation=truncation,
+                                               additional_columns=additional_columns, selector=selector, user=username,
+                                               password=password).read()
     additional_data = parsed_input_data[list(additional_columns.keys())]
     # Generate photometry
     phot_generator = MultiSyntheticPhotometryGenerator(internal_phot_system, bp_model=bp_model, rp_model=rp_model)
     photometry_df = phot_generator.generate(parsed_input_data, extension, output_file=None, output_format=None,
-                                            save_file=False)
-    photometry_df = _apply_colour_equation(photometry_df, photometric_system=internal_phot_system,
-                                           save_file=False, disable_info=True)
+                                            save_file=False, truncation=truncation)
+    photometry_df = _apply_colour_equation(photometry_df, photometric_system=internal_phot_system, save_file=False,
+                                           disable_info=True)
     if error_correction:
         photometry_df = _apply_error_correction(photometry_df, photometric_system=photometric_system, save_file=False,
                                                 disable_info=True)

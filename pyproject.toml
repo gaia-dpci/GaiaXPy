@@ -11,7 +11,7 @@ dependencies = [
   'fastavro',
   'hdfs',
   'matplotlib',
-  'numpy>1.23',
+  'numpy>2.0.0',
   'packaging',
   'pandas>=1.5.0',
   'scipy',

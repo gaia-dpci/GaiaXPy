@@ -49,4 +49,5 @@ def _generate_synthetic_photometry(row, design_matrix, merge, truncation, photom
     cont_dict = {band: XpContinuousSpectrum(row['source_id'], band.upper(), row[f'{band}_coefficients'],
                                             get_covariance_matrix(row, band), row[f'{band}_standard_deviation'])
                  for band in BANDS}
+    truncation = {band: row[f'{band}_n_relevant_bases'] for band in BANDS} if truncation else None
     return SingleSyntheticPhotometry(row['source_id'], cont_dict, design_matrix, merge, truncation, photometric_system)

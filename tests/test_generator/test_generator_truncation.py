@@ -32,21 +32,22 @@ data = {
 }
 solution = pd.DataFrame(data)
 
-PhotometricSystem = load_additional_systems(join(files_path, 'generator_truncation'))
+def test_truncation():
+    PhotometricSystem = load_additional_systems(join(files_path, 'generator_truncation'))
 
-no_trunc = _generate(c04_trunc_input, photometric_system=PhotometricSystem.USER_GaiaC4Eps, truncation=False,
-                     save_file=False)
-trunc = _generate(c04_trunc_input, photometric_system=PhotometricSystem.USER_GaiaC4Eps, truncation=True,
-                  save_file=False)
+    no_trunc = _generate(c04_trunc_input, photometric_system=PhotometricSystem.USER_GaiaC4Eps, truncation=False,
+                         save_file=False)
+    trunc = _generate(c04_trunc_input, photometric_system=PhotometricSystem.USER_GaiaC4Eps, truncation=True,
+                      save_file=False)
 
-columns_to_keep = ['source_id', 'USER_GaiaC4Eps_flux_BP']
+    columns_to_keep = ['source_id', 'USER_GaiaC4Eps_flux_BP']
 
-no_trunc = no_trunc[columns_to_keep].sort_values(by=['source_id'], ignore_index=True).rename(
-    columns={'USER_GaiaC4Eps_flux_BP': 'synth_bp'})
-trunc = trunc[columns_to_keep].sort_values(by=['source_id'], ignore_index=True).rename(
-    columns={'USER_GaiaC4Eps_flux_BP': 'synth_trunc_bp'})
+    no_trunc = no_trunc[columns_to_keep].sort_values(by=['source_id'], ignore_index=True).rename(
+        columns={'USER_GaiaC4Eps_flux_BP': 'synth_bp'})
+    trunc = trunc[columns_to_keep].sort_values(by=['source_id'], ignore_index=True).rename(
+        columns={'USER_GaiaC4Eps_flux_BP': 'synth_trunc_bp'})
 
-merged_df = pd.merge(no_trunc, trunc, on='source_id', how='inner')
-pdt.assert_frame_equal(merged_df, solution, check_dtype=False)
+    merged_df = pd.merge(no_trunc, trunc, on='source_id', how='inner')
+    pdt.assert_frame_equal(merged_df, solution, check_dtype=False)
 
-PhotometricSystem = remove_additional_systems()
+    PhotometricSystem = remove_additional_systems()

@@ -4,7 +4,7 @@ import pandas.testing as pdt
 from os.path import join
 
 from gaiaxpy.generator.generator import _generate
-from gaiaxpy import load_additional_systems, PhotometricSystem, remove_additional_systems
+from gaiaxpy import load_additional_systems, remove_additional_systems
 from tests.files.paths import files_path, c04_trunc_input
 
 # Solution
@@ -33,11 +33,12 @@ data = {
 solution = pd.DataFrame(data)
 
 def test_truncation():
-    PhotometricSystem = load_additional_systems(join(files_path, 'generator_truncation'))
+    _PhotometricSystem = remove_additional_systems()
+    _PhotometricSystem = load_additional_systems(join(files_path, 'generator_truncation'))
 
-    no_trunc = _generate(c04_trunc_input, photometric_system=PhotometricSystem.USER_GaiaC4Eps, truncation=False,
+    no_trunc = _generate(c04_trunc_input, photometric_system=_PhotometricSystem.USER_GaiaC4Eps, truncation=False,
                          save_file=False)
-    trunc = _generate(c04_trunc_input, photometric_system=PhotometricSystem.USER_GaiaC4Eps, truncation=True,
+    trunc = _generate(c04_trunc_input, photometric_system=_PhotometricSystem.USER_GaiaC4Eps, truncation=True,
                       save_file=False)
 
     columns_to_keep = ['source_id', 'USER_GaiaC4Eps_flux_BP']
@@ -50,4 +51,4 @@ def test_truncation():
     merged_df = pd.merge(no_trunc, trunc, on='source_id', how='inner')
     pdt.assert_frame_equal(merged_df, solution, check_dtype=False)
 
-    PhotometricSystem = remove_additional_systems()
+    _PhotometricSystem = remove_additional_systems()

@@ -51,14 +51,15 @@ def __output_list_to_df(parsed_input_data: pd.DataFrame, bands_output: list, out
     return pd.DataFrame(zip(*output_list), columns=output_columns)
 
 
-def get_inverse_square_root_covariance_matrix(input_object: Union[list, Path, str], band: Optional[str] = None):
+def get_inverse_square_root_covariance_matrix(input_object: Union[list, Path, pd.DataFrame, str],
+                                              band: Optional[str] = None):
     """
     Compute the inverse square root covariance matrix.
 
     Args:
-        input_object (list/Path/str): Path to the file containing the mean spectra as downloaded from the archive in
-            their continuous representation, a pandas DataFrame, a list of sources ids (string or long), or an ADQL
-            query.
+        input_object (list/Path/pd.DataFrame/str): Path to the file containing the mean spectra as downloaded from the
+            Archive in their continuous representation, a pandas DataFrame, a list of sources ids (string or long), or
+            an ADQL query.
         band (str): Chosen band: 'bp' or 'rp'. If no band is passed, the function will compute the inverse square root
             covariance for both 'bp' and 'rp'.
 

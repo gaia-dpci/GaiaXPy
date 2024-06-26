@@ -14,7 +14,7 @@ from ..core.input_validator import validate_save_arguments
 from ..file_parser.cast import _cast
 
 
-def generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
+def generate(input_object: Union[list, Path, pd.DataFrame, str], photometric_system: Union[list, PhotometricSystem],
              output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
              output_format: str = None, save_file: bool = True, error_correction: bool = False,
              additional_columns: Optional[Union[dict, list, str]] = None, username: str = None, password: str = None) \
@@ -26,8 +26,9 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
     automatically when generating the corresponding synthetic photometry.
 
     Args:
-        input_object (list/Path/str): Path to the file containing the mean spectra as downloaded from the archive in
-            their continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
+        input_object (list/Path/pd.DataFrame/str): Path to the file containing the mean spectra as downloaded from
+            the archive in their continuous representation, a list of sources ids (string or long), or a pandas
+            DataFrame.
         photometric_system (list/PhotometricSystem): Desired photometric system or list of photometric systems.
         output_path (Path/str): Path where to save the output data.
         output_file (str): Name of the output file without extension (e.g. 'my_file').
@@ -51,7 +52,7 @@ def generate(input_object: Union[list, Path, str], photometric_system: Union[lis
                      password=password)
 
 
-def _generate(input_object: Union[list, Path, str], photometric_system: Union[list, PhotometricSystem],
+def _generate(input_object: Union[list, Path, pd.DataFrame, str], photometric_system: Union[list, PhotometricSystem],
               output_path: Union[Path, str] = '.', output_file: str = 'output_synthetic_photometry',
               output_format: str = None, save_file: bool = True, error_correction: bool = False,
               additional_columns: Optional[Union[dict, list, str]] = None, selector=None, username: str = None,

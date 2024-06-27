@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 70  # Set the timeout value in minutes
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         os: [ubuntu-latest, macOS-latest, windows-latest]
@@ -27,7 +27,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install setuptools
         python -m pip install flake8 pytest
     - name: Install package
       run: |

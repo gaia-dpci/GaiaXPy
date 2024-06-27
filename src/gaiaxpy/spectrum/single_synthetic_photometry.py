@@ -19,7 +19,7 @@ class SingleSyntheticPhotometry(PhotometricAbsoluteSampledSpectrum):
     Synthetic photometry derived from Gaia spectra in one photometric system.
     """
 
-    def __init__(self, source_id, xp_spectra, sampled_bases, merge, photometric_system):
+    def __init__(self, source_id, xp_spectra, sampled_bases, merge, truncation, photometric_system):
         """
         Initialise a synthetic photometry in a single photometric system.
 
@@ -30,9 +30,11 @@ class SingleSyntheticPhotometry(PhotometricAbsoluteSampledSpectrum):
                 sampled spectrum.
             merge (dict): The weighting factors for BP and RP sampled onto the grid defining the resolution of the final
                 sampled spectrum.
+            truncation (dict): The number of relevant bases per band.
             photometric_system (PhotometricSystem): The photometric system of the synthetic photometry.
         """
-        PhotometricAbsoluteSampledSpectrum.__init__(self, source_id, xp_spectra, sampled_bases, merge)
+        PhotometricAbsoluteSampledSpectrum.__init__(self, source_id, xp_spectra, sampled_bases, merge,
+                                                    truncation=truncation)
         self.photometric_system = photometric_system.value
         # Correct flux if necessary (regular Photometric systems return the original value)
         aux_flux = self.flux

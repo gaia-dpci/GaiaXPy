@@ -35,6 +35,8 @@ missing_bp_xml_file = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_dr3int
 missing_bp_xml_plain_file = join(continuous_path, 'XP_CONTINUOUS_RAW_missing_BP_plain_dr3int6.xml')
 # Colour equation
 colour_eq_csv_file = join(continuous_path, 'XP_CONTINUOUS_RAW_colour_eq_dr3int6.csv')
+# Generator truncation
+c04_trunc_input = join(files_path, 'generator_truncation', 'sources.avro')
 
 """
 ==================

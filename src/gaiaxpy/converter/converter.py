@@ -28,7 +28,7 @@ from ..core.input_validator import validate_save_arguments
 __FUNCTION_KEY = 'converter'
 
 
-def convert(input_object: Union[list, Path, str], sampling: Optional[np.ndarray] = np.linspace(0, 60, 600),
+def convert(input_object: Union[list, Path, pd.DataFrame, str], sampling: Optional[np.ndarray] = np.linspace(0, 60, 600),
             truncation: bool = False, with_correlation: bool = False, output_path: Union[Path, str] = '.',
             output_file: str = 'output_spectra', output_format: str = None, save_file: bool = True,
             username: str = None, password: str = None) -> (pd.DataFrame, np.ndarray):
@@ -39,8 +39,8 @@ def convert(input_object: Union[list, Path, str], sampling: Optional[np.ndarray]
         that were considered not to be significant considering the errors on the reconstructed mean spectra.
 
     Args:
-        input_object (list/Path/str): Path to the file containing the mean spectra as downloaded from the archive in
-            their continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
+        input_object (list/Path/pd.DataFrame/str): Path to the file containing the mean spectra as downloaded from the
+            Archive in their continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
         sampling (ndarray): 1D array containing the desired sampling in pseudo-wavelengths.
         truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
             the recommended value in the input files.

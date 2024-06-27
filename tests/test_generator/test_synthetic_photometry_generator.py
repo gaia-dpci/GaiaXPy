@@ -39,5 +39,5 @@ def test_generate_synthetic_photometry():
         sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_sampling[band])
                               for band in BANDS}
         synthetic_photometry = _generate_synthetic_photometry(df.iloc[0], sampled_basis_func, xp_merge,
-                                                              phot_system_johnson)
+                                                              False, phot_system_johnson)
         assert isinstance(synthetic_photometry, SingleSyntheticPhotometry)

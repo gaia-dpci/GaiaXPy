@@ -3,6 +3,16 @@ Release notes
 
 .. _releasenotes:
 
+Version 2.1.2
+-------------
+Released on 2024/06/12.
+
+* Fixed issue with loading a nested directory with additional systems: `issue #100 <https://github.com/gaia-dpci/GaiaXPy/issues/100>`_
+* Fixed issue with substrings in additional system names: `issue #102 <https://github.com/gaia-dpci/GaiaXPy/issues/102>`_
+* Removed unnecessary restriction in error correction: `issue #103 <https://github.com/gaia-dpci/GaiaXPy/issues/103>`_
+* Added internal query marker: `issue #106 <https://github.com/gaia-dpci/GaiaXPy/issues/106>`_
+
+
 Version 2.1.1
 -------------
 Released on 2024/05/03.

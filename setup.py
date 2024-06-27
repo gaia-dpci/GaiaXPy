@@ -24,13 +24,6 @@ def get_property(prop):
     return result.group(1)
 
 
-# Load the dependencies from pyproject.toml
-def load_dependencies():
-    with open('pyproject.toml', 'r') as f:
-        pyproject_data = toml.load(f)
-        return pyproject_data['project']['dependencies']
-
-
 setup(
     name='GaiaXPy',
     version=get_property('__version__'),
@@ -44,7 +37,6 @@ setup(
     url='https://gaia-dpci.github.io/GaiaXPy-website/',
     python_requires='>=3.8',
     packages=find_packages('src'),
-    install_requires=load_dependencies(),
     extras_require={'tests': ['pytest', 'pytest-mock']},
     include_package_data=True,
     classifiers=CLASSIFIERS

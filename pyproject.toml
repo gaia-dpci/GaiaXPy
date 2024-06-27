@@ -1,5 +1,5 @@
 [build-system]
-requires = ['distutils', 'setuptools', 'toml', 'wheel']
+requires = ['setuptools', 'toml', 'wheel']
 build-backend = 'setuptools.build_meta'
 
 [project]

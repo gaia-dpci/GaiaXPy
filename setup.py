@@ -7,7 +7,6 @@ Based on:
 https://packaging.python.org/tutorials/packaging-projects
 """
 import re
-import toml
 from os.path import abspath, dirname, join
 from setuptools import setup, find_packages
 

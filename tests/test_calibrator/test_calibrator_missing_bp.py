@@ -2,10 +2,10 @@ import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
 import pytest
-
 from gaiaxpy import calibrate
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.input_reader.input_reader import InputReader
+
 from tests.files.paths import (missing_bp_csv_file, missing_bp_ecsv_file, missing_bp_fits_file, missing_bp_xml_file,
                                missing_bp_xml_plain_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file,
                                with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file)

@@ -2,10 +2,10 @@ import numpy as np
 import numpy.testing as npt
 import pandas.testing as pdt
 import pytest
-
 from gaiaxpy import get_chi2, get_inverse_covariance_matrix
 from gaiaxpy.cholesky.cholesky import get_inverse_square_root_covariance_matrix
 from gaiaxpy.core.satellite import BANDS
+
 from tests.files.paths import with_missing_bp_csv_file
 from tests.test_cholesky.cholesky_solutions import inv_cov_with_missing_df, isolated_missing_df
 from tests.utils.utils import missing_bp_source_id, assert_band_err

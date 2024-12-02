@@ -6,9 +6,9 @@ import pandas.testing as pdt
 import pytest
 from astropy.io.votable import parse_single_table
 from astropy.table import Table
-
 from gaiaxpy import calibrate, convert, generate, PhotometricSystem
 from gaiaxpy.file_parser.parse_generic import GenericParser
+
 from tests.files.paths import output_sol_path, mean_spectrum_csv_file
 
 _rtol, _atol = 1e-10, 1e-10

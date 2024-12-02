@@ -10,10 +10,9 @@ from os.path import join
 
 import numpy as np
 import pandas as pd
-from scipy import interpolate
-
 from gaiaxpy.config.paths import config_path, config_ini_file
 from gaiaxpy.core.satellite import BANDS, BP_WL, RP_WL
+from scipy import interpolate
 
 
 @lru_cache(maxsize=None)

@@ -6,9 +6,9 @@ from io import StringIO
 import pandas as pd
 import pandas.testing as pdt
 import pytest
-
-from gaiaxpy import generate, PhotometricSystem, remove_additional_systems, load_additional_systems
+from gaiaxpy import generate, remove_additional_systems, load_additional_systems
 from gaiaxpy.file_parser.cast import _cast
+
 from tests.files.paths import missing_bp_csv_file, mean_spectrum_fits_file, gen_missing_band_sol_path
 from tests.test_generator.generator_paths import additional_filters_dir
 

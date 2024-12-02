@@ -1,9 +1,9 @@
 from itertools import product
 
 import pandas as pd
-
 from gaiaxpy.generator.generator import generate
 from gaiaxpy.generator.photometric_system import PhotometricSystem
+
 from tests.files.paths import (mean_spectrum_csv_file, mean_spectrum_avro_file, mean_spectrum_fits_file,
                                mean_spectrum_xml_file)
 

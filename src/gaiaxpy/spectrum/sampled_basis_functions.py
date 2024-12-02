@@ -8,10 +8,9 @@ import functools
 import math
 
 import numpy as np
+from gaiaxpy.core import nature, satellite
 from scipy.interpolate import BSpline
 from scipy.special import eval_hermite, gamma
-
-from gaiaxpy.core import nature, satellite
 
 sqrt_4_pi = np.pi ** (-0.25)
 

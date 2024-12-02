@@ -4,6 +4,7 @@ from gaiaxpy.spectrum.generic_spectrum import Spectrum
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int4
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.xp_spectrum import XpSpectrum
+
 from tests.files.paths import mean_spectrum_csv_file
 
 

@@ -5,8 +5,8 @@ Module to plot multiple XP spectra.
 """
 
 import matplotlib.pyplot as plt
-
 from gaiaxpy.core.satellite import BANDS
+
 from .plotter import Plotter
 
 

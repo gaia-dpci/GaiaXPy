@@ -1,8 +1,8 @@
 import pandas as pd
 import pytest
+from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from numpy import ndarray, dtype
 
-from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
 from tests.files.paths import con_ref_sampled_csv_path
 
 

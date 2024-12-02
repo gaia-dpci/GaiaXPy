@@ -1,10 +1,10 @@
-import pandas as pd
-import pandas.testing as pdt
-
 from os.path import join
 
-from gaiaxpy.generator.generator import _generate
+import pandas as pd
+import pandas.testing as pdt
 from gaiaxpy import load_additional_systems, remove_additional_systems
+from gaiaxpy.generator.generator import _generate
+
 from tests.files.paths import files_path, c04_trunc_input
 
 # Solution
@@ -31,6 +31,7 @@ data = {
                        17611290.115720753, 5692.020619987301]
 }
 solution = pd.DataFrame(data)
+
 
 def test_truncation():
     _PhotometricSystem = remove_additional_systems()

@@ -7,12 +7,12 @@ Module to parse input files containing internally calibrated continuous spectra.
 import numpy as np
 import pandas as pd
 from fastavro import __version__ as fa_version
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
 from hdfs import InsecureClient
 from hdfs.ext.avro import AvroReader
 from packaging import version
 from requests.exceptions import ConnectionError
 
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
 from .cast import _cast
 from .parse_generic import GenericParser
 from .utils import _csv_to_avro_map, _get_from_dict

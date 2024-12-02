@@ -1,9 +1,9 @@
 import pandas as pd
 import pandas.testing as pdt
 import pytest
-
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.file_parser.cast import _cast
+
 from tests.files.paths import no_correction_solution_path, correction_solution_path
 from tests.utils.utils import missing_bp_source_id as missing_bp_src
 

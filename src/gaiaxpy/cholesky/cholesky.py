@@ -8,12 +8,11 @@ from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
-from numpy import diag, dot, identity
-from scipy.linalg import cholesky, solve_triangular
-
 from gaiaxpy.core.generic_functions import parse_band
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
+from numpy import diag, dot, identity
+from scipy.linalg import cholesky, solve_triangular
 
 
 def __get_dot_product(_L_inv: np.ndarray) -> Optional[np.ndarray]:

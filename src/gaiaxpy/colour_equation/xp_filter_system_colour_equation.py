@@ -14,9 +14,6 @@ from typing import Union, Optional
 
 import numpy as np
 import pandas as pd
-from numpy import poly1d
-from tqdm import tqdm
-
 from gaiaxpy.config.paths import filters_path
 from gaiaxpy.core.generic_functions import cast_output
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
@@ -24,6 +21,8 @@ from gaiaxpy.core.input_validator import validate_save_arguments
 from gaiaxpy.generator.photometric_system import PhotometricSystem
 from gaiaxpy.input_reader.dataframe_reader import DataFrameReader
 from gaiaxpy.output.photometry_data import PhotometryData
+from numpy import poly1d
+from tqdm import tqdm
 
 colour_eq_dir = Path(filters_path, '..', 'colour_eq_files')
 

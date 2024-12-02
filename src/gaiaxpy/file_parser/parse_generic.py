@@ -7,8 +7,8 @@ from os.path import splitext
 
 import pandas as pd
 from astropy.table import Table
-
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
+
 from .cast import _cast
 
 valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']

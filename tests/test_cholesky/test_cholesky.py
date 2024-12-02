@@ -3,13 +3,13 @@ import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
 import pytest
-
 from gaiaxpy import get_chi2, get_inverse_covariance_matrix
 from gaiaxpy.cholesky.cholesky import (get_inverse_square_root_covariance_matrix,
                                        _get_inverse_square_root_covariance_matrix_aux)
 from gaiaxpy.core.generic_functions import str_to_array, array_to_symmetric_matrix
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
+
 from tests.files.paths import (mean_spectrum_csv_file, with_missing_bp_csv_file, with_missing_bp_xml_file)
 from tests.test_cholesky.cholesky_solutions import (cholesky_solution, inv_sqrt_cov_matrix_sol_no_missing_df,
                                                     inv_sqrt_cov_matrix_sol_with_missing_df)

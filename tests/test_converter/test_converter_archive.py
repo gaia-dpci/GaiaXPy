@@ -1,8 +1,8 @@
 import numpy.testing as npt
 import pandas.testing as pdt
 import pytest
-
 from gaiaxpy import convert
+
 from tests.test_converter.converter_paths import (missing_solution_df, with_missing_solution_df,
                                                   with_missing_solution_sampling)
 from tests.utils.utils import missing_bp_source_id

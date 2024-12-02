@@ -2,12 +2,12 @@ from pathlib import Path
 from typing import Union, Optional
 
 import pandas as pd
-
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import _apply_colour_equation
 from gaiaxpy.core.generic_functions import cast_output, format_additional_columns, validate_photometric_system
 from gaiaxpy.error_correction.error_correction import _apply_error_correction
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
+
 from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
 from .photometric_system import PhotometricSystem
 from ..core.input_validator import validate_save_arguments

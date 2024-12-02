@@ -11,8 +11,6 @@ from typing import Union, Optional
 
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
-
 from gaiaxpy.core.generic_functions import cast_output, validate_pwl_sampling, format_sampled_output
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.core.satellite import BANDS
@@ -21,6 +19,8 @@ from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
+from tqdm import tqdm
+
 from .config import parse_config, get_bands_config
 from ..config.paths import hermite_bases_file
 from ..core.input_validator import validate_save_arguments
@@ -28,7 +28,8 @@ from ..core.input_validator import validate_save_arguments
 __FUNCTION_KEY = 'converter'
 
 
-def convert(input_object: Union[list, Path, pd.DataFrame, str], sampling: Optional[np.ndarray] = np.linspace(0, 60, 600),
+def convert(input_object: Union[list, Path, pd.DataFrame, str],
+            sampling: Optional[np.ndarray] = np.linspace(0, 60, 600),
             truncation: bool = False, with_correlation: bool = False, output_path: Union[Path, str] = '.',
             output_file: str = 'output_spectra', output_format: str = None, save_file: bool = True,
             username: str = None, password: str = None) -> (pd.DataFrame, np.ndarray):

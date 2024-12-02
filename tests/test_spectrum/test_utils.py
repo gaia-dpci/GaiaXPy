@@ -1,8 +1,8 @@
 import numpy as np
-
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
+
 from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file
 
 

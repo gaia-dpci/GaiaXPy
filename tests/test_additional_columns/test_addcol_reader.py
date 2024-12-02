@@ -3,12 +3,12 @@ import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
 import pytest
-
 from gaiaxpy import generate
 from gaiaxpy.core.generic_functions import format_additional_columns, reverse_simple_add_col_dict
 from gaiaxpy.file_parser.cast import _cast
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
+
 from tests.files.paths import with_missing_bp_csv_file, with_missing_bp_fits_file, with_missing_bp_xml_file, \
     with_missing_bp_xml_plain_file, with_missing_bp_ecsv_file
 from tests.utils.utils import parse_dfs_for_test, missing_bp_source_id, cast_nans

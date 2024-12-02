@@ -1,6 +1,6 @@
 import pytest
-
 from gaiaxpy import convert, plot_spectra
+
 from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file
 
 

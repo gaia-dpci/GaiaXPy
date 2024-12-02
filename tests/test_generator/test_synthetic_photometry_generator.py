@@ -6,6 +6,7 @@ from gaiaxpy.generator.synthetic_photometry_generator import _generate_synthetic
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.single_synthetic_photometry import SingleSyntheticPhotometry
+
 from tests.files.paths import (mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_xml_file,
                                mean_spectrum_xml_plain_file, mean_spectrum_fits_file, mean_spectrum_ecsv_file)
 

@@ -4,9 +4,9 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
-
 from gaiaxpy import calibrate
 from gaiaxpy.core.generic_functions import str_to_array, correlation_to_covariance
+
 from tests.files.paths import files_path, with_missing_bp_csv_file
 from tests.test_calibrator.calibrator_solutions import sol_with_covariance_sampling_array
 

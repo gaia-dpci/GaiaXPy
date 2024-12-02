@@ -1,7 +1,5 @@
 import numpy.testing as npt
 import pytest
-from pandas import testing as pdt
-
 from gaiaxpy import calibrate
 from gaiaxpy.calibrator.calibrator import _create_spectrum
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
@@ -9,6 +7,8 @@ from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
+from pandas import testing as pdt
+
 from tests.files.paths import (mean_spectrum_fits_file, mean_spectrum_csv_file, mean_spectrum_xml_file,
                                mean_spectrum_xml_plain_file, mean_spectrum_avro_file, mean_spectrum_ecsv_file)
 from tests.test_calibrator.calibrator_solutions import sol_default_sampling_array, truncation_default_solution_df

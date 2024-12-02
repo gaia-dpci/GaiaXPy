@@ -1,10 +1,9 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
-from numpy import ndarray
-
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
+from numpy import ndarray
 
 _rtol, _atol = 1e-24, 1e-24
 

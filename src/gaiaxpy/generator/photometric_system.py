@@ -9,8 +9,8 @@ from os import remove
 from os.path import exists
 
 from aenum import Enum
-
 from gaiaxpy.core.generic_functions import _get_built_in_systems, _is_built_in_system
+
 from .config import _CFG_FILE_PATH, create_config, get_additional_filters_names, contains_filter_key
 from .regular_photometric_system import RegularPhotometricSystem
 from .standardised_photometric_system import StandardisedPhotometricSystem

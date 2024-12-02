@@ -4,11 +4,11 @@ import numpy as np
 import pandas as pd
 import pandas.testing as pdt
 import pytest
-
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
 from gaiaxpy.core.generic_functions import cast_output
 from gaiaxpy.file_parser.cast import _cast
+
 from tests.files.paths import colour_eq_csv_file
 from tests.test_colour_equation.colour_equation_paths import col_eq_sol_johnson_path
 

@@ -4,12 +4,12 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
-
 from gaiaxpy import convert
 from gaiaxpy.core.generic_functions import correlation_to_covariance
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
+
 from tests.files.paths import (with_missing_bp_csv_file, with_missing_bp_ecsv_file, with_missing_bp_fits_file,
                                with_missing_bp_xml_file, with_missing_bp_xml_plain_file, input_reader_solution_path)
 from tests.utils.utils import parse_matrices, cast_nans

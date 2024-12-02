@@ -7,9 +7,8 @@ These are dispersion function, instrument response and set of inverse bases.
 
 import numpy as np
 import pandas as pd
-from scipy import interpolate
-
 from gaiaxpy.file_parser.parse_inverse import InverseBasesParser
+from scipy import interpolate
 
 
 class ExternalInstrumentModel(object):
@@ -56,8 +55,10 @@ class ExternalInstrumentModel(object):
         bases, _ = InverseBasesParser().parse_file(bases_path)
         bases = bases.iloc[0]
         bases['inverseBasesCoefficients'] = bases['inverseBasesCoefficients'].reshape(bases['nBases'],
-                                                                                      bases['nInverseBasesCoefficients'])
-        bases['transformationMatrix'] = bases['transformationMatrix'].reshape(bases['nBases'], bases['nTransformedBases'])
+                                                                                      bases[
+                                                                                          'nInverseBasesCoefficients'])
+        bases['transformationMatrix'] = bases['transformationMatrix'].reshape(bases['nBases'],
+                                                                              bases['nTransformedBases'])
         return cls(dispersion, response, bases)
 
     def get_response(self, wavelength: float) -> np.ndarray:

@@ -1,9 +1,9 @@
 from os.path import join
 
 import pandas as pd
-
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.core.satellite import BANDS
+
 from tests.files.paths import files_path, with_missing_bp_csv_file
 from tests.utils.utils import parse_matrices, missing_bp_source_id
 

@@ -1,6 +1,6 @@
 import numpy.testing as npt
-
 from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
+
 from tests.test_generator.generator_paths import phot_systems_specs
 
 # An InternalPhotometricSystem is created from a label, not from a name (i.e. from GaiaDr3Ab, not from GAIA_DR3_AB)

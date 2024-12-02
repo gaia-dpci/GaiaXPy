@@ -1,11 +1,11 @@
 import numpy.testing as npt
 import pandas as pd
 import pytest
-from numpy import ndarray, dtype
-
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
+from numpy import ndarray, dtype
+
 from tests.files.paths import (mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_ecsv_file,
                                mean_spectrum_fits_file, mean_spectrum_xml_file, mean_spectrum_xml_plain_file)
 from tests.utils.utils import get_spectrum_with_source_id

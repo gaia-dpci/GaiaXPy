@@ -9,6 +9,9 @@ from os.path import dirname, abspath, join
 from gaiaxpy.core.generic_functions import standardise_extension
 from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
 
+from numpy import set_printoptions
+set_printoptions(legacy='1.21')
+
 
 def _initialise_header():
     return ["# %ECSV 1.0", "# ---", "# delimiter: ','", "# datatype:"]

@@ -6,9 +6,10 @@ Module to parse input files containing spectra.
 from os.path import splitext
 
 import pandas as pd
+from astropy.io.votable import parse_single_table
 from astropy.table import Table
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
 
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, str_to_array
 from .cast import _cast
 
 valid_extensions = ['avro', 'csv', 'ecsv', 'fits', 'xml']
@@ -146,9 +147,9 @@ class GenericParser(object):
         Returns:
             DataFrame: A pandas DataFrame representing the XML file.
         """
-        # Astropy won't automatically remove the columns that are not in _usecols, but it speeds up the process a bit
-        table = Table.read(xml_file, columns=_usecols)
-        # The table read by Astropy will still contain all the columns
+        table = parse_single_table(xml_file).to_table()
+        # The columns argument of the parse_single_table function triggers an error in certain versions of Astropy,
+        # so all columns are read first, and then the unused ones are removed.
         df = table.to_pandas()[_usecols] if _usecols else table.to_pandas()
         if _matrix_columns:
             for size_column, values_column in _matrix_columns:

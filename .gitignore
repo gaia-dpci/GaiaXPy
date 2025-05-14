@@ -2,6 +2,7 @@
 .DS_Store
 .coverage
 coverage.xml
+noxfile.py
 src/gaiaxpy/_version.py
 tox.ini
 query_tests.py
@@ -11,6 +12,7 @@ query_tests.py
 .idea/
 .pytest_cache/
 .svn/
+.nox/
 .tox/
 __pycache__/
 build/

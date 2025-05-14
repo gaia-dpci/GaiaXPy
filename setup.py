@@ -1,7 +1,7 @@
 """
 Setup module for GaiaXPy.
 
-Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres - 2024
+Francesca De Angeli, Zuzanna Kostrzewa-Rutkowska, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres - 2025
 
 Based on:
 https://packaging.python.org/tutorials/packaging-projects
@@ -34,7 +34,7 @@ setup(
     long_description=open('README.md', 'r').read(),
     long_description_content_type='text/markdown',
     url='https://gaia-dpci.github.io/GaiaXPy-website/',
-    python_requires='>=3.8',
+    python_requires='>=3.9',
     packages=find_packages('src'),
     extras_require={'tests': ['pytest', 'pytest-mock']},
     include_package_data=True,

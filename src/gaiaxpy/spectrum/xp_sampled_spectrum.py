@@ -140,8 +140,8 @@ class XpSampledSpectrum(XpSpectrum, SampledSpectrum):
 
     @classmethod
     def get_flux_label(cls):
-        return "Flux [e-/s]"
+        return r'Flux [$\mathrm{e^-\,s^{-1}}$]'
 
     @classmethod
     def get_position_label(cls):
-        return "Pseudo-wavelength"
+        return r'Pseudo\mbox{-}wavelength'

@@ -91,11 +91,11 @@ class AbsoluteSampledSpectrum(SampledSpectrum):
 
     @classmethod
     def get_flux_label(cls):
-        return 'Flux [W nm^-1 m^-2]'
+        return r'Flux [$\mathrm{W\,nm^{-1}\,m^{-2}}$]'
 
     @classmethod
     def get_position_label(cls):
-        return 'Wavelength [nm]'
+        return r'Wavelength [$\mathrm{nm}$]'
 
     def spectrum_to_dict(self, with_correlation):
         """

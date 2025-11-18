@@ -43,14 +43,17 @@ dev = [
     'pytest',
     'pytest-cov',
     'pytest-mock',
-    'flake8',
-    'hypothesis'
+    'flake8'
 ]
 docs = [
     'hatch',
     'sphinx',
     'sphinx-rtd-theme'
 ]
+
+[pytest]
+addopts = '--cov=gaiaxpy --cov-report=term-missing --cov-fail-under=85'
+testpaths = 'tests'
 
 # To build docs
 [tool.hatch.envs.docs]

@@ -24,19 +24,26 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install package and dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
-    - name: Install package
+        pip install -e '.[dev,docs]'
+    - name: Run tests
       run: |
-        pip install -e ".[tests]"
+        python -m pytest -m "not plotter and not archive" -s
+    - name: Build the package
+      run: |
+        pip install build
+        python -m build
+    - name: Verify data files included in wheel
+      run: unzip -l dist/*.whl | grep -E "gaiaxpy/config/filters/.*\.xml" || (echo "Filter files missing in wheel!" && exit 1)
+    - name: Verify data files included in sdist
+      run: tar -tzf dist/*.tar.gz | grep -E "gaiaxpy/config/filters/.*\.xml" || (echo "Filter files missing in sdist!" && exit 1)
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        python -m pytest -m "not plotter and not archive" -s
+    - name: Build docs with Hatch
+      run: hatch run docs:build

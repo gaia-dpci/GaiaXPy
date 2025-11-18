@@ -8,3 +8,8 @@ from .error_correction.error_correction import apply_error_correction
 from .generator.generator import generate
 from .generator.photometric_system import PhotometricSystem, load_additional_systems, remove_additional_systems
 from .plotter.plot_spectra import plot_spectra
+
+__all__ = ['calibrate', 'get_chi2', 'get_inverse_covariance_matrix', 'get_inverse_square_root_covariance_matrix',
+           'convert', 'pwl_to_wl', 'wl_to_pwl', 'pwl_range', 'wl_range', 'apply_error_correction', 'generate',
+           'PhotometricSystem', 'load_additional_systems', 'remove_additional_systems', 'plot_spectra',
+           '__version__']

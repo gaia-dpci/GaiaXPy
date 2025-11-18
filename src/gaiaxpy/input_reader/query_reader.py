@@ -83,7 +83,7 @@ class QueryReader(ArchiveReader):
             continuous_key = [key for key in result.keys() if 'continuous' in key.lower()][0]
             data = result[continuous_key][0].to_pandas()
         except KeyError:
-            raise ValueError('No continuous raw data found for the requested query.')
+            raise ValueError('No continuous BP/RP data found for the requested query.')
         if not self.disable_info:
             self.show_info_msg(done=True)
         return DataFrameReader(data, function_name, self.truncation, additional_columns=self.additional_columns,

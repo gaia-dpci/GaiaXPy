@@ -36,9 +36,17 @@ jobs:
         pip install build
         python -m build
     - name: Verify data files included in wheel
-      run: unzip -l dist/*.whl | grep -E "gaiaxpy/config/filters/.*\.xml" || (echo "Filter files missing in wheel!" && exit 1)
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+             unzip -l dist/*.whl | grep -E "gaiaxpy/config/filters/.*\.xml" || (echo "Filter files missing in wheel!" && exit 1)
+        fi
+      shell: bash
     - name: Verify data files included in sdist
-      run: tar -tzf dist/*.tar.gz | grep -E "gaiaxpy/config/filters/.*\.xml" || (echo "Filter files missing in sdist!" && exit 1)
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+             tar -tzf dist/*.tar.gz | grep -E "gaiaxpy/config/filters/.*\.xml" || (echo "Filter files missing in sdist!" && exit 1)
+        fi
+      shell: bash
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names

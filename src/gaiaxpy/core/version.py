@@ -1,1 +1,4 @@
-__version__ = '2.1.3.dev'
+from importlib import metadata
+
+# Expose version attribute
+__version__ = metadata.version('gaiaxpy')

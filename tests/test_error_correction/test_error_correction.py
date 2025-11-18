@@ -1,9 +1,9 @@
 import pandas as pd
 import pandas.testing as pdt
 import pytest
+
 from gaiaxpy import generate, apply_error_correction, PhotometricSystem
 from gaiaxpy.file_parser.cast import _cast
-
 from tests.files.paths import phot_with_nan_path, mean_spectrum_csv_file
 from tests.test_error_correction.error_correction_paths import corrected_error_solution_path, \
     phot_with_nan_corrected_sol_path

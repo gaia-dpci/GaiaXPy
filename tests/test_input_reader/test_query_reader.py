@@ -2,6 +2,7 @@ import re
 
 import pandas as pd
 import pytest
+
 from gaiaxpy import convert
 from gaiaxpy.input_reader.query_reader import QueryReader
 

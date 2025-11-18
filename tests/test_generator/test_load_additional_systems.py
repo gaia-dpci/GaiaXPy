@@ -1,6 +1,6 @@
 import pytest
-from gaiaxpy import load_additional_systems, generate, remove_additional_systems
 
+from gaiaxpy import load_additional_systems, generate, remove_additional_systems
 from tests.files.paths import with_missing_bp_csv_file
 from tests.test_generator.generator_paths import additional_filters_dir
 

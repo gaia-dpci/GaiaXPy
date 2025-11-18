@@ -1,11 +1,11 @@
 import pandas as pd
 import pandas.testing as pdt
 import pytest
+
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.core.generic_functions import str_to_array
 from gaiaxpy.file_parser.cast import _cast
 from gaiaxpy.input_reader.input_reader import InputReader
-
 from tests.files.paths import (missing_bp_csv_file, with_missing_bp_csv_file, with_missing_bp_ecsv_file,
                                with_missing_bp_fits_file, with_missing_bp_xml_file, with_missing_bp_xml_plain_file,
                                no_correction_solution_path, correction_solution_path)

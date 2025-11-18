@@ -5,7 +5,6 @@ import pandas as pd
 
 from .dataframe_reader import DataFrameReader
 from .file_reader import FileParserSelector
-from .hdfs_reader import HDFSReader
 from .list_reader import ListReader
 from .local_file_reader import LocalFileReader
 from .query_reader import QueryReader
@@ -52,10 +51,6 @@ class InputReader(object):
         elif isinstance(content, str) and content.lower().startswith('select'):
             reader = QueryReader(content, function, truncation, user=self.user, password=self.password,
                                  additional_columns=additional_columns, selector=selector, disable_info=disable_info)
-        elif isinstance(content, str) and content.lower().startswith('hdfs://'):
-            parser = FileParserSelector(function)
-            reader = HDFSReader(parser, content, truncation, additional_columns=additional_columns, selector=selector,
-                                disable_info=disable_info)
         else:
             raise ValueError('The input provided does not match any of the expected input types.')
         parsed_data, extension = reader.read()

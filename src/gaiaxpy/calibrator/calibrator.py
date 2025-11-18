@@ -12,6 +12,8 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
+
 from gaiaxpy.config.paths import config_path, config_ini_file
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.generic_functions import cast_output, validate_wl_sampling, parse_band, format_sampled_output
@@ -22,8 +24,6 @@ from gaiaxpy.output.sampled_spectra_data import SampledSpectraData
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.utils import get_covariance_matrix
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
-from tqdm import tqdm
-
 from .external_instrument_model import ExternalInstrumentModel
 from ..core.input_validator import validate_save_arguments
 from ..spectrum.calibration_absolute_sampled_spectrum import CalibrationAbsoluteSampledSpectrum

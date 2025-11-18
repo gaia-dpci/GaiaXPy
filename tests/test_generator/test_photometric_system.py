@@ -1,10 +1,10 @@
 import numpy.testing as npt
 import pytest
+from numpy import ndarray
+
 from gaiaxpy import generate
 from gaiaxpy.core.generic_functions import _get_built_in_systems
 from gaiaxpy.generator.photometric_system import load_additional_systems, remove_additional_systems
-from numpy import ndarray
-
 from tests.files.paths import with_missing_bp_ecsv_file
 from tests.test_generator.generator_paths import additional_filters_dir, additional_filters_dup_dir
 from tests.test_generator.test_internal_photometric_system import phot_systems_specs

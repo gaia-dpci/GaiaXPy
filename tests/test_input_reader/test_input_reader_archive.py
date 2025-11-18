@@ -1,8 +1,8 @@
 import pandas.testing as pdt
 import pytest
+
 from gaiaxpy import calibrate
 from gaiaxpy.input_reader.input_reader import InputReader
-
 from tests.files.paths import mean_spectrum_csv_file
 
 _rtol, _atol = 1e-24, 1e-24

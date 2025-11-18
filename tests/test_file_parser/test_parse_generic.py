@@ -1,6 +1,6 @@
 import pytest
-from gaiaxpy.file_parser.parse_generic import _get_file_extension, GenericParser, InvalidExtensionError
 
+from gaiaxpy.file_parser.parse_generic import _get_file_extension, GenericParser, InvalidExtensionError
 from tests.files.paths import mini_csv_file, mini_fits_file, mini_xml_file
 
 

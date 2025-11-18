@@ -1,6 +1,6 @@
 import pytest
-from gaiaxpy import calibrate, convert, plot_spectra
 
+from gaiaxpy import calibrate, convert, plot_spectra
 from tests.files.paths import mean_spectrum_avro_file, mean_spectrum_csv_file
 
 

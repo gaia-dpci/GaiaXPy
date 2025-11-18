@@ -15,12 +15,13 @@ from xml.etree import ElementTree as et
 
 import numpy as np
 import pandas as pd
+from numpy import ndarray
+
 from gaiaxpy.config.paths import filters_path, config_path
 from gaiaxpy.core.custom_errors import InvalidBandError
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.generator.config import get_additional_filters_path
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
-from numpy import ndarray
 
 # Verifying the function is valid first, will help when adding new functions
 PHOTOMETRY_FUNCTIONS = ['generate', '_generate']

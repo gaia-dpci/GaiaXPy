@@ -1,11 +1,11 @@
 import numpy as np
 import numpy.testing as npt
 import pytest
+
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.core.generic_functions import (_get_system_label, _extract_systems_from_data, validate_pwl_sampling,
                                             array_to_symmetric_matrix, correlation_to_covariance,
                                             get_matrix_size_from_lower_triangle)
-
 from tests.files.paths import mean_spectrum_fits_file
 
 

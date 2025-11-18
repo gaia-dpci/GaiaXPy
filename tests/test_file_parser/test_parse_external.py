@@ -1,9 +1,9 @@
 import pandas as pd
 import pytest
-from gaiaxpy.file_parser.parse_external import ExternalParser
-from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
 from numpy import ndarray, dtype
 
+from gaiaxpy.file_parser.parse_external import ExternalParser
+from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
 from tests.files.paths import mini_csv_file, no_ext_file
 
 

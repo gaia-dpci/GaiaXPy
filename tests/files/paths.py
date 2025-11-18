@@ -1,6 +1,7 @@
 from os.path import abspath, dirname, join
 
 import numpy as np
+
 from gaiaxpy.core.generic_functions import str_to_array
 
 files_path = abspath(join(dirname(__file__)))

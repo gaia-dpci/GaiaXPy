@@ -8,7 +8,6 @@ from gaiaxpy.spectrum.absolute_sampled_spectrum import AbsoluteSampledSpectrum
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
-
 from tests.files.paths import mean_spectrum_csv_file
 
 

@@ -11,13 +11,14 @@ from sys import stdout
 
 import numpy as np
 import pandas as pd
+from scipy.interpolate import interp1d
+from tqdm import tqdm
+
 from gaiaxpy.config.paths import correction_tables_path
 from gaiaxpy.core.generic_functions import cast_output, _extract_systems_from_data, _warning
 from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
-from scipy.interpolate import interp1d
-from tqdm import tqdm
 
 
 @lru_cache(maxsize=None)

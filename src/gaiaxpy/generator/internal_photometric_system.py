@@ -16,7 +16,6 @@ from gaiaxpy.core.generic_functions import _get_system_label
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.core.version import __version__
 from gaiaxpy.core.xml_utils import get_file_root, parse_array, get_array_text, get_xp_sampling_matrix, get_xp_merge
-
 from .config import _CFG_FILE_PATH, _ADDITIONAL_SYSTEM_FILES_REGEX
 
 

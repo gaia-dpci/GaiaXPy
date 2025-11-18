@@ -2,9 +2,9 @@ from os.path import join
 
 import pandas as pd
 import pandas.testing as pdt
+
 from gaiaxpy import load_additional_systems, remove_additional_systems
 from gaiaxpy.generator.generator import _generate
-
 from tests.files.paths import files_path, c04_trunc_input
 
 # Solution

@@ -3,14 +3,14 @@ from os.path import join
 
 import numpy as np
 import pytest
+from numpy import ndarray
+
 from gaiaxpy.calibrator.calibrator import __create_merge
 from gaiaxpy.calibrator.external_instrument_model import ExternalInstrumentModel
 from gaiaxpy.config.paths import config_path, config_ini_file
 from gaiaxpy.core.config import load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
-from numpy import ndarray
-
 from tests.utils.utils import assert_band_err
 
 rtol = 1e-6

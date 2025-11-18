@@ -26,7 +26,7 @@ classifiers = [
 ]
 dependencies = [
     'aenum',
-    'astropy!=7.0.0,!=7.0.1',
+    'astropy>=5.3.3,!=7.0.0,!=7.0.1',
     'astroquery',
     'fastavro',
     'hdfs',

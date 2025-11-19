@@ -52,20 +52,25 @@ jobs:
 
     - name: Validate tag matches version
       run: |
-        TAG="${GITHUB_REF#refs/tags/}"
+        RAW_TAG="${GITHUB_REF#refs/tags/}"
         PKG_VERSION="${{ steps.pkgver.outputs.version }}"
 
-        # Strip leading 'v' from tag if present
-        NORMALISED_TAG="${TAG#v}"
+        # Extract last word from the tag (e.g. from tag 'GaiaXPy v2.1.2' extract 'v2.1.2')
+        LAST_TOKEN=$(echo "$RAW_TAG" | awk '{print $NF}')
 
-        echo "Tag: $TAG"
-        echo "Normalised: $NORMALISED_TAG"
+        # Strip leading 'v' from the version token if present
+        NORMALISED_TAG="${LAST_TOKEN#v}"
+
+        echo "Raw tag:         $RAW_TAG"
+        echo "Last token:      $LAST_TOKEN"
+        echo "Normalised tag:  $NORMALISED_TAG"
         echo "Package version: $PKG_VERSION"
 
         if [ "$NORMALISED_TAG" != "$PKG_VERSION" ]; then
-          echo "❌ Tag and package version do not match"
+          echo "Tag version '$NORMALISED_TAG' does not match package version '$PKG_VERSION'"
           exit 1
         fi
+        echo "Tag matches package version"
 
     - name: Build package
       run: python -m build

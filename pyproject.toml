@@ -1,29 +1,9 @@
 [build-system]
-requires = ['hatchling', 'hatch-vcs']
-build-backend = 'hatchling.build'
+requires = ['setuptools', 'wheel']
+build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'GaiaXPy'
-dynamic = ['version']
-description = 'Utilities to handle BP/RP (XP) Gaia low-resolution spectra as delivered via the Archive.'
-readme = 'README.md'
-requires-python = '>=3.10'
-license = 'BSD-3-Clause'  # SPDX identifier as a string. It must be 'license', not 'licence' according to PEP621
-license-files = ['LICENSE']
-authors = [
-    {name = 'Francesca De Angeli', email = 'fda@ast.cam.ac.uk'},
-    {name = 'Zuzanna Kostrzewa-Rutkowska'},
-    {name = 'Paolo Montegriffo', email = 'paolo.montegriffo@inaf.it'},
-    {name = 'Lovro Palaversa'},
-    {name = 'Daniela Ruz-Mieres', email = 'dr540@ast.cam.ac.uk'},
-]
-maintainers = [
-    {name = 'Daniela Ruz-Mieres', email = 'dr540@ast.cam.ac.uk'}
-]
-classifiers = [
-  'Programming Language :: Python :: 3',
-  'Operating System :: OS Independent'
-]
 dependencies = [
     'aenum',
     'astropy>=5.3.3,!=7.0.0,!=7.0.1',
@@ -36,48 +16,21 @@ dependencies = [
     'scipy',
     'tqdm>=4.66.3'
 ]
-
-[project.optional-dependencies]
-dev = [
-    'pytest',
-    'pytest-cov',
-    'pytest-mock',
-    'flake8'
+dynamic = [
+    'authors',
+    'classifiers',
+    'description',
+    'maintainers',
+    'optional-dependencies',
+    'readme',
+    'requires-python',
+    'version'
 ]
-docs = [
-    'hatch',
-    'sphinx',
-    'sphinx-rtd-theme'
-]
-
-[pytest]
-addopts = '--cov=gaiaxpy --cov-report=term-missing --cov-fail-under=85'
-testpaths = 'tests'
-
-# To build docs
-[tool.hatch.envs.docs]
-dependencies = []
-
-[tool.hatch.envs.docs.scripts]
-build = 'pip install -e .[docs] && sphinx-build docs/source docs/build'
-
-[tool.hatch.metadata]
-allow-direct-references = true
-
-[tool.hatch.version]
-path = 'src/gaiaxpy/core/__init__.py'
-source = 'vcs'
-raw-options = {version_scheme = 'guess-next-dev', local_scheme = 'node-and-date'}
-
-[tool.hatch.build]
-packages = ['src']
-
-[tool.hatch.build.targets.sdist]
-include = ['src/gaiaxpy']
-
-[tool.hatch.build.targets.wheel]
-packages = ['src/gaiaxpy']
 
 [project.urls]
 homepage = 'https://gaia-dpci.github.io/GaiaXPy-website/'
 documentation = 'https://gaiaxpy.readthedocs.io/en/latest/'
+
+[tool.setuptools]
+packages = ['gaiaxpy']
+package-dir = { '' = 'src' }

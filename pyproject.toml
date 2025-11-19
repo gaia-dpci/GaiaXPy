@@ -60,7 +60,7 @@ testpaths = 'tests'
 dependencies = []
 
 [tool.hatch.envs.docs.scripts]
-build = 'pip install -e .[docs] && sphinx-build docs/source docs/build'
+build = 'pip install -e .[docs] && sphinx-build docs docs/build'
 
 [tool.hatch.metadata]
 allow-direct-references = true

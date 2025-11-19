@@ -35,7 +35,7 @@ Contents
 ========
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
    Homepage <https://gaia-dpci.github.io/GaiaXPy-website/>
    description

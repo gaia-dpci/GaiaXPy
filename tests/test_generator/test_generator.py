@@ -64,7 +64,8 @@ def test_error_correction_additional_systems(__ps):
     # Get the printed output
     printed_text = captured_output.getvalue().strip().split('\n')
     # Check if the expected output is in the captured output
-    _pattern = r'UserWarning: System \w+ does not have a correction table\. The program will not apply error correction over this system.'
+    _pattern = (r'UserWarning: System \w+ does not have a correction table\. The program will not apply error '
+                r'correction over this system.')
     matches = [re.match(_pattern, text) for text in printed_text]
     # Check that match always occurs at the beginning
     assert sum(m.start() for m in matches) == 0

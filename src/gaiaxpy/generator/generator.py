@@ -62,12 +62,13 @@ def _generate(input_object: Union[list, Path, pd.DataFrame, str], photometric_sy
     Internal function of the calibration utility. Refer to "generate".
 
     Args:
-        truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
-            the recommended value in the input files.
-        selector (function): Function to filter AVRO records. The records returned will be the ones for which the
-        function returns True. The field names used in the selector function should match the ones in the AVRO schema
-        as the filter is run before any column renaming happens. If selector is not None and the input is not an AVRO
-        file, a SelectorNotImplementedError will be raised.
+        truncation (bool): Toggle truncation of the set of bases. The level of truncation to be
+            applied is defined by the recommended value in the input files.
+        selector (function): Function to filter AVRO records. The records returned will be the
+            ones for which the function returns True. The field names used in the selector
+            function should match the ones in the AVRO schema as the filter is run before any
+            column renaming happens. If selector is not None and the input is not an AVRO file,
+            a SelectorNotImplementedError will be raised.
         bp_model (str): The bp model.
         rp_model (str): The rp model.
     """

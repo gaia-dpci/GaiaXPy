@@ -116,16 +116,22 @@ class InternalPhotometricSystem(object):
         """
 
         def _extract_matches(_actual_path, _system_name):
-            __is_built_in_name = lambda fname: fname.startswith('XpFilter')
-            __is_exact_match = lambda fname, sysname: fname.startswith(sysname) and f'{sysname}.' in fname
-            __matches_additional = lambda fname: pattern.match(fname)
+            def __is_built_in_name(f_name):
+                return f_name.startswith('XpFilter')
+
+            def __is_exact_match(f_name, sys_name):
+                return f_name.startswith(sys_name) and f'{sys_name}.' in f_name
+
+            def __matches_additional(f_name, _pattern):
+                return _pattern.match(f_name)
+
             __split_paths = [split(p) for p in _actual_path]
             __paths, __filenames = zip(*__split_paths)
             pattern = re.compile(_ADDITIONAL_SYSTEM_FILES_REGEX, re.IGNORECASE)
             if all(__is_built_in_name(f) for f in __filenames):  # If system is built-in
                 return _actual_path
-            return [join(p, fn) for p, fn in __split_paths if not __is_built_in_name(fn) and __matches_additional(fn)
-                    and __is_exact_match(fn, _system_name)]  # If is additional
+            return [join(p, fn) for p, fn in __split_paths if not __is_built_in_name(fn) and
+                    __matches_additional(fn, pattern) and __is_exact_match(fn, _system_name)]  # If is additional
 
         def _validate_path(_actual_path):
             if len(actual_path) == 0:

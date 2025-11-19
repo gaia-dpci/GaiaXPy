@@ -6,8 +6,12 @@ Module to represent generic output data.
 from ast import literal_eval
 from os.path import dirname, abspath, join
 
+from numpy import set_printoptions
+
 from gaiaxpy.core.generic_functions import standardise_extension
 from gaiaxpy.file_parser.parse_generic import InvalidExtensionError
+
+set_printoptions(legacy='1.21')
 
 
 def _initialise_header():

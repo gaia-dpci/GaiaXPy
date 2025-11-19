@@ -7,7 +7,7 @@ import pandas as pd
 import pandas.testing as pdt
 import pytest
 
-from gaiaxpy import generate, PhotometricSystem, remove_additional_systems, load_additional_systems
+from gaiaxpy import generate, remove_additional_systems, load_additional_systems
 from gaiaxpy.file_parser.cast import _cast
 from tests.files.paths import missing_bp_csv_file, mean_spectrum_fits_file, gen_missing_band_sol_path
 from tests.test_generator.generator_paths import additional_filters_dir
@@ -64,7 +64,8 @@ def test_error_correction_additional_systems(__ps):
     # Get the printed output
     printed_text = captured_output.getvalue().strip().split('\n')
     # Check if the expected output is in the captured output
-    _pattern = r'UserWarning: System \w+ does not have a correction table\. The program will not apply error correction over this system.'
+    _pattern = (r'UserWarning: System \w+ does not have a correction table\. The program will not apply error '
+                r'correction over this system.')
     matches = [re.match(_pattern, text) for text in printed_text]
     # Check that match always occurs at the beginning
     assert sum(m.start() for m in matches) == 0

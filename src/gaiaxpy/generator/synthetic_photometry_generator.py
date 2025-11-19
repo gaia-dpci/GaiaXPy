@@ -18,19 +18,19 @@ config_parser.read(config_ini_file)
 
 
 class SyntheticPhotometryGenerator(object):
-    def generate(self, parsed_input_data, extension, output_file, output_format, save_file):
+    def generate(self, parsed_input_data, extension, output_file, output_format, save_file, truncation):
         raise ValueError('Method not defined for base class.')
 
     def _get_sampled_basis_functions(self, xp_sampling, xp_sampling_grid):
         return {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_sampling[band]) for band in BANDS}
 
-    def _create_photometry_list(self, parsed_input_data, photometric_system, sampled_basis_func, xp_merge):
+    def _create_photometry_list(self, parsed_input_data, photometric_system, sampled_basis_func, truncation, xp_merge):
         parsed_input_data_dict = parsed_input_data.to_dict('records')
-        return (_generate_synthetic_photometry(row, sampled_basis_func, xp_merge, photometric_system) for row in
-                parsed_input_data_dict)
+        return (_generate_synthetic_photometry(row, sampled_basis_func, xp_merge, truncation, photometric_system) for
+                row in parsed_input_data_dict)
 
 
-def _generate_synthetic_photometry(row, design_matrix, merge, photometric_system):
+def _generate_synthetic_photometry(row, design_matrix, merge, truncation, photometric_system):
     """
     Create the synthetic photometry from the input continuously-represented mean spectrum and design matrix.
 
@@ -40,6 +40,7 @@ def _generate_synthetic_photometry(row, design_matrix, merge, photometric_system
         design_matrix (ndarray): 2D array containing the basis functions sampled for the specific photometric system.
         merge (dict): Dictionary containing an array of weights per BP and one for RP. These have one value per sample
             and define the contributions from BP and RP to the joined absolute spectrum.
+        truncation (bool): Toggle truncation of the set of bases.
         photometric_system (obj): Photometric system object containing the zero-points.
 
     Returns:
@@ -48,4 +49,5 @@ def _generate_synthetic_photometry(row, design_matrix, merge, photometric_system
     cont_dict = {band: XpContinuousSpectrum(row['source_id'], band.upper(), row[f'{band}_coefficients'],
                                             get_covariance_matrix(row, band), row[f'{band}_standard_deviation'])
                  for band in BANDS}
-    return SingleSyntheticPhotometry(row['source_id'], cont_dict, design_matrix, merge, photometric_system)
+    truncation = {band: row[f'{band}_n_relevant_bases'] for band in BANDS} if truncation else None
+    return SingleSyntheticPhotometry(row['source_id'], cont_dict, design_matrix, merge, truncation, photometric_system)

@@ -31,7 +31,7 @@ from ..spectrum.calibration_absolute_sampled_spectrum import CalibrationAbsolute
 __FUNCTION_KEY = 'calibrator'
 
 
-def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None, truncation: bool = False,
+def calibrate(input_object: Union[list, Path, pd.DataFrame, str], sampling: np.ndarray = None, truncation: bool = False,
               output_path: Union[Path, str] = '.', output_file: str = 'output_spectra', output_format: str = None,
               save_file: bool = True, with_correlation: bool = False, username: str = None, password: str = None) -> \
         (pd.DataFrame, np.ndarray):
@@ -42,8 +42,8 @@ def calibrate(input_object: Union[list, Path, str], sampling: np.ndarray = None,
     available data.
 
     Args:
-        input_object (list/Path/str): Path to the file containing the mean spectra as downloaded from the archive in
-            their continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
+        input_object (list/Path/pd.DataFrame/str): Path to the file containing the mean spectra as downloaded from the
+            Archive in their continuous representation, a list of sources ids (string or long), or a pandas DataFrame.
         sampling (ndarray): 1D array containing the desired sampling in absolute wavelengths [nm].
         truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
             the recommended value in the input files.

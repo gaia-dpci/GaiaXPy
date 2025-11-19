@@ -6,6 +6,7 @@ from gaiaxpy.generator.synthetic_photometry_generator import _generate_synthetic
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.single_synthetic_photometry import SingleSyntheticPhotometry
+
 from tests.files.paths import (mean_spectrum_avro_file, mean_spectrum_csv_file, mean_spectrum_xml_file,
                                mean_spectrum_xml_plain_file, mean_spectrum_fits_file, mean_spectrum_ecsv_file)
 
@@ -39,5 +40,5 @@ def test_generate_synthetic_photometry():
         sampled_basis_func = {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_sampling[band])
                               for band in BANDS}
         synthetic_photometry = _generate_synthetic_photometry(df.iloc[0], sampled_basis_func, xp_merge,
-                                                              phot_system_johnson)
+                                                              False, phot_system_johnson)
         assert isinstance(synthetic_photometry, SingleSyntheticPhotometry)

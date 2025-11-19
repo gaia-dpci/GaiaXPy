@@ -10,8 +10,10 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
+plt.rcParams['text.usetex'] = True
 
-class Plotter(object):
+
+class Plotter:
 
     def __init__(self, spectra, sampling, show_plot, output_path, output_file, _format, legend, save_file):
         if isinstance(spectra, pd.Series):

@@ -18,7 +18,6 @@ import pandas as pd
 from numpy import ndarray
 
 from gaiaxpy.config.paths import filters_path, config_path
-from gaiaxpy.core.config import ADDITIONAL_SYSTEM_PREFIX
 from gaiaxpy.core.custom_errors import InvalidBandError
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.generator.config import get_additional_filters_path

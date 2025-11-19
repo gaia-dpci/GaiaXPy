@@ -110,7 +110,7 @@ class SampledSpectraData(OutputData):
         """
         data = self.data
         positions = self.positions
-        modified_data = data.applymap(lambda x: _array_to_standard(x) if isinstance(x, ndarray) else x)
+        modified_data = data.map(lambda x: _array_to_standard(x) if isinstance(x, ndarray) else x)
         Path(output_path).mkdir(parents=True, exist_ok=True)
         modified_data.to_csv(join(output_path, f'{output_file}.csv'), index=False)
         # Assume the sampling is the same for all spectra
@@ -128,7 +128,7 @@ class SampledSpectraData(OutputData):
         """
         data = self.data
         positions = self.positions
-        modified_data = data.applymap(lambda x: _array_to_standard(x, 'ecsv') if isinstance(x, ndarray) else x)
+        modified_data = data.map(lambda x: _array_to_standard(x, 'ecsv') if isinstance(x, ndarray) else x)
         header_lines = _build_ecsv_header(modified_data, positions)
         Path(output_path).mkdir(parents=True, exist_ok=True)
         modified_data.to_csv(join(output_path, f'{output_file}.ecsv'), index=False)

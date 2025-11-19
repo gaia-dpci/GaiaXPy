@@ -23,18 +23,18 @@ GaiaXPy can receive pandas DataFrames, what type of frame is it expecting?
 
 GaiaXPy expects to receive a pandas DataFrame with at minimum the columns and types:
 
-* source_id (int)
-* bp_n_parameters (int)
-* rp_n_parameters (int)
-* bp_coefficients (NumPy ndarray)
-* bp_coefficient_errors (NumPy ndarray)
-* bp_coefficient_correlations (NumPy ndarray)
-* rp_coefficients (NumPy ndarray)
-* rp_coefficient_errors (NumPy ndarray)
-* rp_coefficient_correlations (NumPy ndarray)
-* bp_basis_function_id (int, only required if truncation=True)
-* rp_basis_function_id (int, only required if truncation=True)
+* ``source_id`` (``int``)
+* ``bp_n_parameters`` (``int``)
+* ``rp_n_parameters`` (``int``)
+* ``bp_coefficients`` (NumPy ndarray)
+* ``bp_coefficient_errors`` (NumPy ndarray)
+* ``bp_coefficient_correlations`` (NumPy ndarray)
+* ``rp_coefficients`` (NumPy ndarray)
+* ``rp_coefficient_errors`` (NumPy ndarray)
+* ``rp_coefficient_correlations`` (NumPy ndarray)
+* ``bp_basis_function_id`` (``int``, only required if ``truncation=True``)
+* ``rp_basis_function_id`` (``int``, only required if ``truncation=True``)
 
 If strings are present in the data, the program will fail.
 
-The NumPy ndarrays should be 1-dimensional arrays. In the case of bp_coefficient_correlations and rp_coefficient_correlations, both 1-dimensional and 2-dimensional arrays are accepted. If a 1-dimensional array is passed, the program will use the function `array_to_symmetric_matrix <https://gaiaxpy.readthedocs.io/en/latest/gaiaxpy.core.html#gaiaxpy.core.generic_functions.array_to_symmetric_matrix>`_ to transform the array. If a 2-dimensional array is received, no changes will be applied. This 2-dimensional array should have dimensions (55, 55).
+The NumPy ndarrays should be 1-dimensional arrays. In the case of ``bp_coefficient_correlations`` and ``rp_coefficient_correlations``, both 1-dimensional and 2-dimensional arrays are accepted. If a 1-dimensional array is passed, the program will use the function `array_to_symmetric_matrix <https://gaiaxpy.readthedocs.io/en/latest/gaiaxpy.core.html#gaiaxpy.core.generic_functions.array_to_symmetric_matrix>`_ to transform the array. If a 2-dimensional array is received, no changes will be applied. This 2-dimensional array should have dimensions ``(55, 55)``.

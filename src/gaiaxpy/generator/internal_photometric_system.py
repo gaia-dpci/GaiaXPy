@@ -9,12 +9,12 @@ from glob import glob
 from os import remove
 from os.path import exists, split, join
 
-from gaiaxpy.core.version import __version__
 from gaiaxpy.config.paths import config_ini_file
 from gaiaxpy.core.config import (get_filter_version_from_config, replace_file_name, get_file_path,
                                  ADDITIONAL_SYSTEM_PREFIX)
 from gaiaxpy.core.generic_functions import _get_system_label
 from gaiaxpy.core.satellite import BANDS
+from gaiaxpy.core.version import __version__
 from gaiaxpy.core.xml_utils import get_file_root, parse_array, get_array_text, get_xp_sampling_matrix, get_xp_merge
 from .config import _CFG_FILE_PATH, _ADDITIONAL_SYSTEM_FILES_REGEX
 
@@ -116,16 +116,22 @@ class InternalPhotometricSystem(object):
         """
 
         def _extract_matches(_actual_path, _system_name):
-            __is_built_in_name = lambda fname: fname.startswith('XpFilter')
-            __is_exact_match = lambda fname, sysname: fname.startswith(sysname) and f'{sysname}.' in fname
-            __matches_additional = lambda fname: pattern.match(fname)
+            def __is_built_in_name(f_name):
+                return f_name.startswith('XpFilter')
+
+            def __is_exact_match(f_name, sys_name):
+                return f_name.startswith(sys_name) and f'{sys_name}.' in f_name
+
+            def __matches_additional(f_name, _pattern):
+                return _pattern.match(f_name)
+
             __split_paths = [split(p) for p in _actual_path]
             __paths, __filenames = zip(*__split_paths)
             pattern = re.compile(_ADDITIONAL_SYSTEM_FILES_REGEX, re.IGNORECASE)
             if all(__is_built_in_name(f) for f in __filenames):  # If system is built-in
                 return _actual_path
-            return [join(p, fn) for p, fn in __split_paths if not __is_built_in_name(fn) and __matches_additional(fn)
-                    and __is_exact_match(fn, _system_name)]  # If is additional
+            return [join(p, fn) for p, fn in __split_paths if not __is_built_in_name(fn) and
+                    __matches_additional(fn, pattern) and __is_exact_match(fn, _system_name)]  # If is additional
 
         def _validate_path(_actual_path):
             if len(actual_path) == 0:

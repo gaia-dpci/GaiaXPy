@@ -65,7 +65,7 @@ def _cast(df):
         except KeyError:
             continue  # Not every key is available in every case
         except ValueError as err:
-            if np.isnan(np.sum(df[column].values)):
+            if df[column].isna().any():
                 pass  # There can be nan values, do nothing with them at this step
             else:
                 # This is an actual error

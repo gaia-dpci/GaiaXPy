@@ -30,7 +30,42 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install build
+        pip install build twine
+        pip install sphinx sphinx-rtd-theme
+
+    - name: Extract version from installed package
+      id: pkgver
+      run: |
+        pip install .
+        python - << 'EOF'
+        import importlib.metadata as m
+        from pathlib import Path
+
+        # Infer package name from pyproject
+        import tomllib
+        data = tomllib.loads(Path('pyproject.toml').read_text())
+        pkg_name = data['project']['name']
+
+        version = m.version(pkg_name)
+        print(f"::set-output name=version::{version}")
+        EOF
+
+    - name: Validate tag matches version
+      run: |
+        TAG="${GITHUB_REF#refs/tags/}"
+        PKG_VERSION="${{ steps.pkgver.outputs.version }}"
+
+        # Strip leading 'v' from tag if present
+        NORMALISED_TAG="${TAG#v}"
+
+        echo "Tag: $TAG"
+        echo "Normalised: $NORMALISED_TAG"
+        echo "Package version: $PKG_VERSION"
+
+        if [ "$NORMALISED_TAG" != "$PKG_VERSION" ]; then
+          echo "❌ Tag and package version do not match"
+          exit 1
+        fi
 
     - name: Build package
       run: python -m build

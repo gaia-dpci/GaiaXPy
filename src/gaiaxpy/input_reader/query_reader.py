@@ -1,9 +1,9 @@
 import re
 
 from astroquery.gaia import GaiaClass
+
 from gaiaxpy.core.server import data_release, gaia_server
 from gaiaxpy.core.version import __version__
-
 from .archive_reader import ArchiveReader
 from .dataframe_reader import DataFrameReader
 from ..core.custom_errors import SelectorNotImplementedError

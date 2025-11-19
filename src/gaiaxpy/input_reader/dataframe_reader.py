@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
 
+from gaiaxpy.core.generic_functions import array_to_symmetric_matrix, rename_with_required
 from .dataframe_numpy_array_reader import DataFrameNumPyArrayReader
 from .dataframe_string_array_reader import DataFrameStringArrayReader
 from .required_columns import MANDATORY_INPUT_COLS, COV_INPUT_COLUMNS, CORR_INPUT_COLUMNS, TRUNCATION_COLS

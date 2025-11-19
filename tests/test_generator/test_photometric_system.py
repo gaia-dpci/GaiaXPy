@@ -1,10 +1,10 @@
 import numpy.testing as npt
 import pytest
+from numpy import ndarray
+
 from gaiaxpy import generate
 from gaiaxpy.core.generic_functions import _get_built_in_systems
 from gaiaxpy.generator.photometric_system import load_additional_systems, remove_additional_systems
-from numpy import ndarray
-
 from tests.files.paths import with_missing_bp_ecsv_file
 from tests.test_generator.generator_paths import additional_filters_dir, additional_filters_dup_dir
 from tests.test_generator.test_internal_photometric_system import phot_systems_specs
@@ -108,7 +108,8 @@ def test_additional_systems_names(__ps):
     __ps = load_additional_systems(additional_filters_dir)
     ps = [__ps[s].get_system_name() for s in __ps.get_available_systems().split(', ') if
           s.startswith('USER')]
-    assert set(ps) == {'USER_Panstarrs1Std', 'USER_Sdss', 'USER_Pristine', 'USER_ASubstring_AndMore', 'USER_ASubstring'}
+    assert set(ps) == {'USER_Panstarrs1Std', 'USER_Sdss', 'USER_Pristine', 'USER_ASubstring_AndMore',
+                       'USER_ASubstring'}
 
 
 def test_duplicate_names_in_dir(__ps):

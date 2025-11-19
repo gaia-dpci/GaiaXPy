@@ -4,6 +4,7 @@ from os.path import basename, isfile
 
 import numpy as np
 import pandas as pd
+
 from gaiaxpy.core.generic_functions import str_to_array, array_to_symmetric_matrix
 
 missing_bp_source_id = 5405570973190252288

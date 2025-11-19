@@ -2,21 +2,32 @@ import re
 
 import pandas as pd
 import pytest
+
 from gaiaxpy import convert
 from gaiaxpy.input_reader.query_reader import QueryReader
 
 # Regular query
 query_0 = "select * from gaiadr3.gaia_source WHERE source_id IN ('5762406957886626816', '5853498713190525696')"
 # One single-line comment
-query_1 = "select * from gaiadr3.gaia_source WHERE source_id IN ('5762406957886626816', '5853498713190525696') -- This query selects all columns from the specified table"
+query_1 = ("select * from gaiadr3.gaia_source WHERE source_id IN ('5762406957886626816', '5853498713190525696') "
+           "-- This query selects all columns from the specified table")
 # More than one single-line comment
-query_2 = "-- This query selects all columns from the specified table\nselect *  -- Selecting all columns\nfrom gaiadr3.gaia_source  -- From the Gaia DR3 source table\nWHERE source_id IN ('5762406957886626816', '5853498713190525696')  -- Where the source_id matches the given values"
+query_2 = ("-- This query selects all columns from the specified table\nselect *  -- Selecting all "
+           "columns\nfrom gaiadr3.gaia_source  -- From the Gaia DR3 source table\nWHERE source_id IN"
+           " ('5762406957886626816', '5853498713190525696')  -- Where the source_id matches the given values")
 # One multi-line comment
-query_3 = "/*\n  This query selects all columns from the gaiadr3.gaia_source table\n  where the source_id is in the specified list of values.\n*/\nselect * from gaiadr3.gaia_source WHERE source_id IN ('5762406957886626816', '5853498713190525696')"
+query_3 = ("/*\n  This query selects all columns from the gaiadr3.gaia_source table\n  where the source_id "
+           "is in the specified list of values.\n*/\nselect * from gaiadr3.gaia_source WHERE source_id IN "
+           "('5762406957886626816', '5853498713190525696')")
 # More than one multi-line comment
-query_4 = "/*\n  This query selects all columns from the gaiadr3.gaia_source table.\n*/\nselect * \n/*\n  Filtering rows where the source_id matches one of the specified values.\n*/\nfrom gaiadr3.gaia_source \nWHERE source_id IN ('5762406957886626816', '5853498713190525696')"
+query_4 = ("/*\n  This query selects all columns from the gaiadr3.gaia_source table.\n*/\nselect * \n/*\n  "
+           "Filtering rows where the source_id matches one of the specified values.\n*/\nfrom "
+           "gaiadr3.gaia_source \nWHERE source_id IN ('5762406957886626816', '5853498713190525696')")
 # A combination of the previous ones
-query_5 = "-- This query selects all columns\n/*\n  From the gaiadr3.gaia_source table.\n  The query filters rows based on source_id.\n*/\nselect * \nfrom gaiadr3.gaia_source  -- Gaia DR3 source table\nWHERE \n  /* Filtering condition */\n  source_id IN ('5762406957886626816', '5853498713190525696')\n-- End of the query"
+query_5 = ("-- This query selects all columns\n/*\n  From the gaiadr3.gaia_source table.\n  The query "
+           "filters rows based on source_id.\n*/\nselect * \nfrom gaiadr3.gaia_source  -- Gaia DR3 source "
+           "table\nWHERE \n  /* Filtering condition */\n  source_id IN ('5762406957886626816', "
+           "'5853498713190525696')\n-- End of the query")
 # An empty single-line comment
 query_6 = "select * from gaiadr3.gaia_source WHERE source_id IN ('5762406957886626816', '5853498713190525696')  -- "
 # An empty multi-line comment

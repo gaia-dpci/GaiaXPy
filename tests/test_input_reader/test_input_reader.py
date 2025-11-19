@@ -1,11 +1,11 @@
 import pandas as pd
 import pandas.testing as pdt
 import pytest
+
 from gaiaxpy import convert
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
-
 from tests.files.paths import mean_spectrum_csv_file
 
 columns_to_read = MANDATORY_INPUT_COLS['convert'] + CORR_INPUT_COLUMNS

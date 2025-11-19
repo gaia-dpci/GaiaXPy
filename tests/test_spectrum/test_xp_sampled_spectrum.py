@@ -1,4 +1,5 @@
 import numpy as np
+
 from gaiaxpy.config.paths import hermite_bases_file
 from gaiaxpy.converter.converter import get_design_matrices
 from gaiaxpy.core.generic_functions import parse_config
@@ -11,7 +12,6 @@ from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from gaiaxpy.spectrum.xp_spectrum import XpSpectrum
-
 from tests.files.paths import mean_spectrum_csv_file
 
 

@@ -1,7 +1,7 @@
 import pandas.testing as pdt
 import pytest
-from gaiaxpy.generator.generator import _generate, generate, PhotometricSystem
 
+from gaiaxpy.generator.generator import _generate, generate, PhotometricSystem
 from tests.files.paths import mean_spectrum_avro_file
 
 

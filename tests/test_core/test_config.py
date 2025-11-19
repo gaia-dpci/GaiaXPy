@@ -3,10 +3,11 @@ from os.path import basename, join
 import numpy as np
 import numpy.testing as npt
 import pytest
+from numpy import ndarray
+
 from gaiaxpy.config.paths import filters_path
 from gaiaxpy.core.config import get_file, load_xpmerge_from_xml, load_xpsampling_from_xml
 from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
-from numpy import ndarray
 
 
 @pytest.fixture(scope='module')

@@ -1,9 +1,9 @@
 from sys import stdout
 
-from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
-from gaiaxpy.spectrum.multi_synthetic_photometry import MultiSyntheticPhotometry
 from tqdm import tqdm
 
+from gaiaxpy.core.generic_variables import pbar_colour, pbar_units, pbar_message
+from gaiaxpy.spectrum.multi_synthetic_photometry import MultiSyntheticPhotometry
 from .synthetic_photometry_generator import SyntheticPhotometryGenerator
 
 

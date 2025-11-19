@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 import pandas.testing as pdt
+
 from gaiaxpy.config.paths import spline_bases_file
 from gaiaxpy.converter.converter import _convert
 from gaiaxpy.core.generic_functions import str_to_array
-
 from tests.test_c04.c04_paths import regular_single_source_file, no_corr_output_file, with_corr_output_file
 
 

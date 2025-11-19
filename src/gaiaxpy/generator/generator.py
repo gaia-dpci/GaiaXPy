@@ -2,12 +2,12 @@ from pathlib import Path
 from typing import Union, Optional
 
 import pandas as pd
+
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import _apply_colour_equation
 from gaiaxpy.core.generic_functions import cast_output, format_additional_columns, validate_photometric_system
 from gaiaxpy.error_correction.error_correction import _apply_error_correction
 from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.output.photometry_data import PhotometryData
-
 from .multi_synthetic_photometry_generator import MultiSyntheticPhotometryGenerator
 from .photometric_system import PhotometricSystem
 from ..core.input_validator import validate_save_arguments
@@ -62,12 +62,13 @@ def _generate(input_object: Union[list, Path, pd.DataFrame, str], photometric_sy
     Internal function of the calibration utility. Refer to "generate".
 
     Args:
-        truncation (bool): Toggle truncation of the set of bases. The level of truncation to be applied is defined by
-            the recommended value in the input files.
-        selector (function): Function to filter AVRO records. The records returned will be the ones for which the
-        function returns True. The field names used in the selector function should match the ones in the AVRO schema
-        as the filter is run before any column renaming happens. If selector is not None and the input is not an AVRO
-        file, a SelectorNotImplementedError will be raised.
+        truncation (bool): Toggle truncation of the set of bases. The level of truncation to be
+            applied is defined by the recommended value in the input files.
+        selector (function): Function to filter AVRO records. The records returned will be the
+            ones for which the function returns True. The field names used in the selector
+            function should match the ones in the AVRO schema as the filter is run before any
+            column renaming happens. If selector is not None and the input is not an AVRO file,
+            a SelectorNotImplementedError will be raised.
         bp_model (str): The bp model.
         rp_model (str): The rp model.
     """

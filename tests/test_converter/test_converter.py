@@ -5,6 +5,7 @@ import numpy.testing as npt
 import pandas as pd
 import pandas.testing as pdt
 import pytest
+
 from gaiaxpy import convert
 from gaiaxpy.converter.converter import _create_spectrum, get_design_matrices
 from gaiaxpy.core.satellite import BANDS
@@ -14,7 +15,6 @@ from gaiaxpy.input_reader.input_reader import InputReader
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
-
 from tests.files.paths import (con_ref_sampled_csv_path, con_ref_sampled_truncated_csv_path, mean_spectrum_avro_file,
                                mean_spectrum_csv_file, mean_spectrum_ecsv_file, mean_spectrum_fits_file,
                                mean_spectrum_xml_file, mean_spectrum_xml_plain_file)

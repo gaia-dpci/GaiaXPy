@@ -1,9 +1,9 @@
 import pandas as pd
 import pandas.testing as pdt
 import pytest
+
 from gaiaxpy.generator.generator import generate
 from gaiaxpy.generator.photometric_system import PhotometricSystem
-
 from tests.files.paths import mean_spectrum_csv_file, mean_spectrum_fits_file, mean_spectrum_xml_file
 
 _rtol, _atol = 1e-24, 1e-24

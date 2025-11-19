@@ -51,6 +51,7 @@ jobs:
         EOF
 
     - name: Validate tag matches version
+      if: "!contains(github.ref_name, 'test-')"
       run: |
         RAW_TAG="${GITHUB_REF#refs/tags/}"
         PKG_VERSION="${{ steps.pkgver.outputs.version }}"
@@ -83,7 +84,7 @@ jobs:
         password: ${{ secrets.TEST_PYPI_API_TOKEN }}
 
     - name: Publish to PyPI
-      if: "!contains(github.ref, 'test')"
+      if: "!contains(github.ref_name, 'test-')"
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}

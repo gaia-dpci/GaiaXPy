@@ -51,5 +51,3 @@ DOIs
 * **DOI v1.0.2**: 10.5281/zenodo.6569912
 
 * **DOI v1.0.0**: 10.5281/zenodo.6563093
-
-A paper is in preparation and details will be added here as soon as possible.

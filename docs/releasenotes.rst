@@ -6,36 +6,38 @@ Release notes
 Version 2.1.5
 -------------
 
-Released on 2026/10/15
+Released on 2026/10/15.
 
-* Add GACS 3.15 fix: https://github.com/gaia-dpci/GaiaXPy/pull/152
-* Remove Python 3.10 support.
+* Add GACS 3.15 fix: `PR #152 <https://github.com/gaia-dpci/GaiaXPy/pull/152>`_
+* Remove Python 3.10 support. Add support for Python 3.15.
 
 Version 2.1.4
 -------------
+
 Released on 2025/12/15.
 
-* Make generator truncation parameter available: https://github.com/gaia-dpci/GaiaXPy/pull/145
-* Add missing known issues to docs: https://github.com/gaia-dpci/GaiaXPy/pull/148
+* Make generator truncation parameter available: `PR #145 <https://github.com/gaia-dpci/GaiaXPy/pull/145>`_
+* Add missing known issues to docs: `PR #148 <https://github.com/gaia-dpci/GaiaXPy/pull/148>`_
 
 Version 2.1.3
 -------------
+
 Released on 2025/12/10.
 
-* Added bases truncation for synthetic photometry generator: https://github.com/gaia-dpci/GaiaXPy/pull/110
-* Improved package installer, Python requirements updated to Python >= 3.10: https://github.com/gaia-dpci/GaiaXPy/pull/130
-* Fixed slow import when Archive is unavailable: https://github.com/gaia-dpci/GaiaXPy/pull/140
-* Plots use LaTeX labels: https://github.com/gaia-dpci/GaiaXPy/issues/80
+* Added bases truncation for synthetic photometry generator: `PR #110 <https://github.com/gaia-dpci/GaiaXPy/pull/110>`_
+* Improved package installer, Python requirements updated to Python >= 3.10: `PR #130 <https://github.com/gaia-dpci/GaiaXPy/pull/130>`_
+* Fixed slow import when Archive is unavailable: `PR #140 <https://github.com/gaia-dpci/GaiaXPy/pull/140>`_
+* Plots use LaTeX labels: `issue #80 <https://github.com/gaia-dpci/GaiaXPy/issues/80>`_
 
 Version 2.1.2
 -------------
+
 Released on 2024/06/12.
 
 * Fixed issue with loading a nested directory with additional systems: `issue #100 <https://github.com/gaia-dpci/GaiaXPy/issues/100>`_
 * Fixed issue with substrings in additional system names: `issue #102 <https://github.com/gaia-dpci/GaiaXPy/issues/102>`_
 * Removed unnecessary restriction in error correction: `issue #103 <https://github.com/gaia-dpci/GaiaXPy/issues/103>`_
 * Added internal query marker: `issue #106 <https://github.com/gaia-dpci/GaiaXPy/issues/106>`_
-
 
 Version 2.1.1
 -------------

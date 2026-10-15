@@ -7,7 +7,7 @@ name = 'GaiaXPy'
 dynamic = ['version']
 description = 'Utilities to handle BP/RP (XP) Gaia low-resolution spectra as delivered via the Archive.'
 readme = 'README.md'
-requires-python = '>=3.10'
+requires-python = '>=3.11'
 license = 'BSD-3-Clause'  # SPDX identifier as a string. It must be 'license', not 'licence' according to PEP621
 license-files = ['LICENSE']
 authors = [

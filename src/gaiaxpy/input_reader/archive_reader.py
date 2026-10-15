@@ -5,6 +5,7 @@ from gaiaxpy.input_reader.required_columns import CORR_INPUT_COLUMNS, MANDATORY_
 class ArchiveReader(object):
 
     def __init__(self, function, truncation, user, password, additional_columns=None, disable_info=False):
+        self.archive_data_structure = 'DATAMODEL_GAIA'
         self.function = function
         self.truncation = truncation
         self.user = user

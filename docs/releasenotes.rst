@@ -3,6 +3,14 @@ Release notes
 
 .. _releasenotes:
 
+Version 2.1.5
+-------------
+
+Released on 2026/10/15
+
+* Add GACS 3.15 fix: https://github.com/gaia-dpci/GaiaXPy/pull/152
+* Remove Python 3.10 support.
+
 Version 2.1.4
 -------------
 Released on 2025/12/15.

@@ -45,7 +45,8 @@ class ListReader(ArchiveReader):
         # ADQL query
         if not self.disable_info:
             self.show_info_msg()
-        result = gaia.load_data(ids=sources, format='csv', data_release=_data_release, data_structure='raw',
+        result = gaia.load_data(ids=sources, format='csv', data_release=_data_release,
+                                data_structure=self.archive_data_structure,
                                 retrieval_type='XP_CONTINUOUS', avoid_datatype_check=True)
         try:
             continuous_key = [key for key in result.keys() if 'continuous' in key.lower()][0]

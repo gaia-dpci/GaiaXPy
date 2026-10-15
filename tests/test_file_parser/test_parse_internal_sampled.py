@@ -1,5 +1,8 @@
-import pandas as pd
 import pytest
+import numpy as np
+import pandas as pd
+
+from pandas.api.types import is_string_dtype
 from numpy import ndarray, dtype
 
 from gaiaxpy.file_parser.parse_internal_sampled import InternalSampledParser
@@ -23,7 +26,11 @@ def test_parse_returns_dataframe(parsed_csv_file):
 
 # 'O' stands for object
 def test_column_types(parsed_csv_file):
-    assert list(parsed_csv_file.dtypes) == [pd.Int64Dtype(), dtype('O'), dtype('O'), dtype('O')]
+    dtypes = parsed_csv_file.dtypes
+    assert dtypes['source_id'] == pd.Int64Dtype()
+    assert is_string_dtype(dtypes['xp'])
+    assert dtypes['flux'] == np.dtype('O')
+    assert dtypes['error'] == np.dtype('O')
 
 
 @pytest.mark.parametrize('column', ['flux', 'error'])

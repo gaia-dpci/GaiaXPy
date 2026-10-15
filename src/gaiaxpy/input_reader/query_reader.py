@@ -8,7 +8,6 @@ from ..core.custom_errors import SelectorNotImplementedError
 
 not_supported_functions = ['apply_colour_equation']
 
-
 class QueryReader(ArchiveReader):
 
     def __init__(self, content, function, truncation, user=None, password=None, additional_columns=None, selector=None,
@@ -79,7 +78,8 @@ class QueryReader(ArchiveReader):
         job = gaia.launch_job_async(query, dump_to_file=False)
         query_result = job.get_results()
         result = gaia.load_data(ids=self.get_srcids(query_result), format='csv', data_release=_data_release,
-                                data_structure='raw', retrieval_type='XP_CONTINUOUS', avoid_datatype_check=True)
+                                data_structure=self.archive_data_structure, retrieval_type='XP_CONTINUOUS',
+                                avoid_datatype_check=True)
         try:
             continuous_key = [key for key in result.keys() if 'continuous' in key.lower()][0]
             data = result[continuous_key][0].to_pandas()

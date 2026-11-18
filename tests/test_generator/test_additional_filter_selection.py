@@ -92,8 +92,14 @@ def test_nested_duplicate_reports_both_paths(tmp_path):
 
 @pytest.mark.parametrize('first_name,second_name', [('Example-Filter', 'Example_Filter'), ('JKC', 'Jkc')])
 def test_identifier_or_column_label_collision_is_rejected(first_name, second_name, tmp_path):
-    first = _write_minimal_dr3_filter(tmp_path, system_name=first_name)
-    second = _write_minimal_dr3_filter(tmp_path, system_name=second_name)
+    # Use separate directories so names differing only by case remain distinct
+    # on case-insensitive filesystems (such as the default macOS filesystem).
+    first_dir = tmp_path / 'first'
+    second_dir = tmp_path / 'second'
+    first_dir.mkdir()
+    second_dir.mkdir()
+    first = _write_minimal_dr3_filter(first_dir, system_name=first_name)
+    second = _write_minimal_dr3_filter(second_dir, system_name=second_name)
     with pytest.raises(ValueError, match='collision') as error:
         load_additional_systems(tmp_path)
     assert str(first) in str(error.value)

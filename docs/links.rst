@@ -7,6 +7,8 @@ Where to get the data?
 ----------------------
 The data can be extracted from the `Gaia Archive <https://archives.esac.esa.int/gaia/>`_.
 
+See the `Datalink tutorial <https://www.cosmos.esa.int/web/gaia-users/archive/datalink-products>`_.
+
 More about Gaia
 ---------------
 More information on Gaia can be found on `Cosmos <https://www.cosmos.esa.int/web/gaia/home>`_.

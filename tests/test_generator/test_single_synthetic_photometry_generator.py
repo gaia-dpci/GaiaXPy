@@ -3,9 +3,9 @@ from itertools import product
 import pandas as pd
 
 from gaiaxpy.generator.generator import generate
-from gaiaxpy.generator.photometric_system import PhotometricSystem
-from tests.files.paths import (mean_spectrum_csv_file, mean_spectrum_avro_file, mean_spectrum_fits_file,
-                               mean_spectrum_xml_file)
+from gaiaxpy.photometric_system.photometric_system import PhotometricSystem
+from tests.files.continuous import (dr3_mean_spectra_avro_file, dr3_mean_spectra_csv_file, dr3_mean_spectra_fits_file,
+                                    dr3_mean_spectra_xml_binary_file)
 
 
 def columns_from_vars(bands, label):
@@ -14,11 +14,12 @@ def columns_from_vars(bands, label):
 
 
 def test_generate_single():
-    phot_system_johnson = PhotometricSystem.JKC
-    phot_system_sdss = PhotometricSystem.SDSS
-    jkc_columns = columns_from_vars(['U', 'B', 'V', 'R', 'I'], 'Jkc')
-    sdss_columns = columns_from_vars(['u', 'g', 'r', 'i', 'z'], 'Sdss')
-    input_files = [mean_spectrum_csv_file, mean_spectrum_fits_file, mean_spectrum_avro_file, mean_spectrum_xml_file]
+    phot_system_johnson = PhotometricSystem.DR3_JKC
+    phot_system_sdss = PhotometricSystem.DR3_SDSS
+    jkc_columns = columns_from_vars(['U', 'B', 'V', 'R', 'I'], 'DR3_Jkc')
+    sdss_columns = columns_from_vars(['u', 'g', 'r', 'i', 'z'], 'DR3_Sdss')
+    input_files = [dr3_mean_spectra_csv_file, dr3_mean_spectra_fits_file, dr3_mean_spectra_avro_file,
+                   dr3_mean_spectra_xml_binary_file]
     phot_systems = [phot_system_johnson, phot_system_johnson, phot_system_sdss, phot_system_sdss]
     output_columns = [jkc_columns, jkc_columns, sdss_columns, sdss_columns]
     for file, syst, cols in zip(input_files, phot_systems, output_columns):

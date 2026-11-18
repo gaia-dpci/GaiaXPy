@@ -7,7 +7,7 @@ General description
 GaiaXPy is a Python library to facilitate handling Gaia BP/RP spectra as distributed from the `Gaia Archive <https://gea.esac.esa.int/archive/>`_.
 
 BP/RP (often shortened as XP) spectra became available for the first time in Gaia Data Release 3 (DR3).
-In their first release, only source **mean spectra** are available: these are spectra that have been generated from a number of single observations of the same object. **Epoch spectra**, i.e. spectra consisting of one single observation, will become available in future releases.
+DR3 provides source **mean spectra**, generated from multiple observations of the same object. This version of GaiaXPy supports DR3 mean-spectrum processing.
 
 Two reference systems are defined by the data processing:
 
@@ -26,8 +26,12 @@ These will be pseudo-wavelengths in the case of internally calibrated spectra, a
 What can GaiaXPy do for you?
 ----------------------------
 
-The GaiaXPy library will grow in time. For Gaia DR3 the following functionalities are covered:
+GaiaXPy provides the following tools:
 
 - **Calibration** of internally-calibrated continuously-represented mean spectra to the absolute system. An absolute spectrum sampled on a user-defined or default wavelength grid is created for each set of BP and RP input spectra, that will be combined into one single absolute spectrum covering the entire wavelength range covered by BP and RP. If either band is missing, the output spectrum will only cover the range covered by the available data.
 - **Conversion** of mean spectra from a continuous representation to a sampled spectrum, optionally on a user-defined grid of positions. The output spectrum will be in the internal system (if an absolute spectrum is required, please use the Calibration functionality).
 - **Generation** of synthetic photometry in bands that are covered by the BP/RP wavelength range. Several sets of filters are included in the package.
+
+- **Plotting** of sampled spectra returned by calibration and conversion.
+
+See :doc:`usage` for examples and :doc:`gaiaxpy` for the API reference.

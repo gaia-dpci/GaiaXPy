@@ -3,10 +3,13 @@ import numpy.testing as npt
 import pytest
 
 from gaiaxpy import generate, PhotometricSystem
-from gaiaxpy.core.generic_functions import (_get_system_label, _extract_systems_from_data, validate_pwl_sampling,
+from gaiaxpy.core.generic_functions import (validate_pwl_sampling,
                                             array_to_symmetric_matrix, correlation_to_covariance,
-                                            get_matrix_size_from_lower_triangle)
-from tests.files.paths import mean_spectrum_fits_file
+                                            get_matrix_size_from_lower_triangle, extract_systems_from_data)
+from gaiaxpy.core.generic_variables import RELEASES
+from gaiaxpy.error_correction.error_corrector import ErrorCorrector
+from gaiaxpy.photometric_system.utils import _get_system_label
+from tests.files.continuous import dr3_mean_spectra_fits_file
 
 
 @pytest.fixture
@@ -25,7 +28,7 @@ def test_get_system_label():
     assert _get_system_label('Els_Custom_W09_S2') == 'ElsCustomW09S2'
     assert _get_system_label('Euclid_VIS') == 'EuclidVis'
     assert _get_system_label('Gaia_2') == 'Gaia2'
-    assert _get_system_label('Gaia_DR3_Vega') == 'GaiaDr3Vega'
+    assert _get_system_label('Gaia_Vega') == 'GaiaVega'
     assert _get_system_label('Halpha_Custom_AB') == 'HalphaCustomAb'
     assert _get_system_label('H_Custom') == 'HCustom'
     assert _get_system_label('Hipparcos_Tycho') == 'HipparcosTycho'
@@ -46,12 +49,14 @@ def test_get_system_label():
 
 
 def test_extract_systems_from_data():
-    expected_output = ['Wfirst', 'HstWfc3uvis', 'GaiaDr3Vega', 'ElsCustomW09S2']
-    phot_list = [PhotometricSystem.WFIRST, PhotometricSystem.HST_WFC3UVIS, PhotometricSystem.Gaia_DR3_Vega,
-                 PhotometricSystem.Els_Custom_W09_S2]
-    photometry = generate(mean_spectrum_fits_file, photometric_system=phot_list, save_file=False)
-    assert _extract_systems_from_data(photometry) == expected_output
-    assert _extract_systems_from_data(photometry, photometric_system=phot_list) == expected_output
+    sys_check = ErrorCorrector(RELEASES.dr3)
+    expected_output = ['DR3_Wfirst', 'DR3_HstWfc3uvis', 'DR3_GaiaVega', 'DR3_ElsCustomW09S2']
+    phot_list = [PhotometricSystem.DR3_WFIRST, PhotometricSystem.DR3_HST_WFC3UVIS, PhotometricSystem.DR3_Gaia_Vega,
+                 PhotometricSystem.DR3_Els_Custom_W09_S2]
+    photometry = generate(dr3_mean_spectra_fits_file, photometric_system=phot_list, save_file=False)
+    assert extract_systems_from_data(photometry, release=sys_check.get_release()) == expected_output
+    assert (extract_systems_from_data(photometry, release=sys_check.get_release(), photometric_system=phot_list)
+            == expected_output)
 
 
 def test_validate_pwl_sampling_upper_limit():

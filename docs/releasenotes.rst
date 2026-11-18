@@ -3,21 +3,31 @@ Release notes
 
 .. _releasenotes:
 
+Version 2.1.5
+-------------
+
+Released on 2026/10/15.
+
+* Added a fix for GACS 3.15: `PR #152 <https://github.com/gaia-dpci/GaiaXPy/pull/152>`_
+* Removed support for Python 3.10 and added support for Python 3.15.
+
 Version 2.1.4
 -------------
-To be released.
 
-* Make generator truncation parameter available: https://github.com/gaia-dpci/GaiaXPy/pull/145
-* Add missing known issues to docs: https://github.com/gaia-dpci/GaiaXPy/pull/148
+Released on 2025/12/15.
+
+* Exposed the truncation parameter in the generator: `PR #145 <https://github.com/gaia-dpci/GaiaXPy/pull/145>`_
+* Documented additional known issues: `PR #148 <https://github.com/gaia-dpci/GaiaXPy/pull/148>`_
 
 Version 2.1.3
 -------------
+
 Released on 2025/12/10.
 
-* Added bases truncation for synthetic photometry generator: https://github.com/gaia-dpci/GaiaXPy/pull/110
-* Improved package installer, Python requirements updated to Python >= 3.10: https://github.com/gaia-dpci/GaiaXPy/pull/130
-* Fixed slow import when Archive is unavailable: https://github.com/gaia-dpci/GaiaXPy/pull/140
-* Plots use LaTeX labels: https://github.com/gaia-dpci/GaiaXPy/issues/80
+* Added basis truncation to the synthetic photometry generator: `PR #110 <https://github.com/gaia-dpci/GaiaXPy/pull/110>`_
+* Improved package installation and raised the minimum Python version to 3.10: `PR #130 <https://github.com/gaia-dpci/GaiaXPy/pull/130>`_
+* Fixed slow import when Archive is unavailable: `PR #140 <https://github.com/gaia-dpci/GaiaXPy/pull/140>`_
+* Added LaTeX labels to plots: `issue #80 <https://github.com/gaia-dpci/GaiaXPy/issues/80>`_
 
 Version 2.1.2
 -------------
@@ -36,7 +46,7 @@ Released on 2024/05/03.
 * Fixed incompatibility with Archive output affecting ADQL queries: `issue #91 <https://github.com/gaia-dpci/GaiaXPy/issues/91>`_
 * Removed Python 3.7 support, added Python 3.12 support: `issue #81 <https://github.com/gaia-dpci/GaiaXPy/issues/81>`_
 * Modified converter output for sources with a missing band: `issue #78 <https://github.com/gaia-dpci/GaiaXPy/issues/78>`_
-* Modified to generator output for sources with a missing band: `issue #79 <https://github.com/gaia-dpci/GaiaXPy/issues/79>`_
+* Modified generator output for sources with a missing band: `issue #79 <https://github.com/gaia-dpci/GaiaXPy/issues/79>`_
 * Fixed bug specific to additional systems and GaiaDR3Vega: `issue #83 <https://github.com/gaia-dpci/GaiaXPy/issues/83>`_
 * Removed some conditions on additional filters file names: `issue #72 <https://github.com/gaia-dpci/GaiaXPy/issues/72>`_
 
@@ -44,9 +54,9 @@ Version 2.1.0
 -------------
 Released on 2023/08/11.
 
-* Python 3.6 no longer supported.
-* Output files modified to comply with standards, according to issues `#51 <https://github.com/gaia-dpci/GaiaXPy/issues/51>`_ and `#52 <https://github.com/gaia-dpci/GaiaXPy/issues/52>`_.
-* Speed improvements on the main tools of up to 9x. The main results are summarised in the table below.
+* Removed support for Python 3.6.
+* Updated output files to comply with the standards described in issues `#51 <https://github.com/gaia-dpci/GaiaXPy/issues/51>`_ and `#52 <https://github.com/gaia-dpci/GaiaXPy/issues/52>`_.
+* Improved the performance of the main tools by up to 9 times. The table below summarises the results.
 
 The table shows the processing time speed up factors (i.e. excluding input reading and output storing) according to input format and tool or function.
 
@@ -141,17 +151,17 @@ Version 1.1.2
 -------------
 Released on 2022/06/14.
 
-* Cosmos credentials are optional when using lists and queries.
+* Made Cosmos credentials optional for source ID lists and queries.
 
 Version 1.1.1
 -------------
 Released on 2022/06/13.
 
-* Query official Gaia Archive.
+* Switched queries to the official Gaia Archive.
 * Updated Hipparcos-Tycho bases.
 * Added fix for single band source with lists and queries.
 * Added error correction tables for ``Gaia_DR3_Vega``, ``Els_Custom_W09_S2``, ``Pristine`` and ``Sky_Mapper``.
-* Fixed but in error correction caused when a regular system and its standardised version where requested on the same data frame.
+* Fixed an error-correction bug when a regular system and its standardised version were requested for the same DataFrame.
 
 Version 1.1.0
 -------------
@@ -161,7 +171,7 @@ Released 2022/06/08.
 * Fixed error when passing a single PhotometricSystem to error correction.
 * Added SkyMapper filter.
 * Fixed Windows compatibility.
-* The u band has been removed from the standardised Stromgren system. (See Gaia Collaboration, Montegriffo et al. 2022 for more details.)
+* Removed the u band from the standardised Stromgren system. (See Gaia Collaboration, Montegriffo et al. 2022 for more details.)
 
 Version 1.0.2
 -------------
@@ -173,7 +183,7 @@ Version 1.0.1
 -------------
 Released on 2022/05/22.
 
-* Erroneous release, will be ignored by the installer.
+* Released in error and marked to be ignored by the installer.
 
 Version 1.0.0
 -------------

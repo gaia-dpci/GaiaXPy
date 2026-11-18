@@ -1,23 +1,40 @@
 How to cite GaiaXPy
 ===================
 
-If you use GaiaXPy in your research, please cite the `homepage <https://gaia-dpci.github.io/GaiaXPy-website/>`_ and DOI. A DOI will be available for each release of the package.
-When using synthetic photometry from GaiaXPy please cite also Gaia Collaboration, Montegriffo et al. 2022.
+If you use GaiaXPy in your research, cite the DOI for the software release. The DOIs are listed below.
 
-Although there's also a concept DOI pointing to the latest version, using the DOI associated with each release is recommended.
+For DR3 synthetic photometry, also cite `Gaia Collaboration, Montegriffo et al. (2023), A&A, 674, A33 <https://doi.org/10.1051/0004-6361/202243709>`_.
 
-To find out which version of the package you're using, simply run:
+Further references will be added to this section, including a citation for the GaiaXPy paper.
 
-.. role:: python(code)
-   :language: python
+Identify the version and scientific references
+----------------------------------------------
+
+For results that include output metadata, use the recorded ``gaiaxpy_version``
+to identify the package version that produced the result. The metadata also
+records the configuration files used in the calculation and their bibliographic
+references where supplied. Consult those references when citing the models,
+filters or corrections used in the analysis.
+
+For a returned DataFrame named ``data``, the metadata is available in
+``data.attrs['gaiaxpy_metadata']``. For saved results, use the function
+``read_output_metadata`` from ``gaiaxpy.output``. For CSV results, it reads the
+companion metadata file. See :doc:`usage` for an example.
+
+To check the version installed in the current environment, run:
 
 .. code-block:: python
 
    import gaiaxpy
+
    print(gaiaxpy.__version__)
 
 DOIs
 ----
+* **DOI v2.1.5**: 10.5281/zenodo.23400597
+
+* **DOI v2.1.4**: 10.5281/zenodo.17943031
+
 * **DOI v2.1.3**: 10.5281/zenodo.17879827
 
 * **DOI v2.1.2**: 10.5281/zenodo.11617977

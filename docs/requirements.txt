@@ -1,13 +1,14 @@
 aenum
-astropy>=5.3
+astropy>=5.3.3,!=7.0.0,!=7.0.1
 astroquery
 fastavro
 hdfs
+joblib
 matplotlib
 numpy
 packaging
-pandas>=2.0.2
-scipy
+pandas>=1.5.0
+scipy>=1.10
 tqdm>=4.66.3
 -e .
 sphinx

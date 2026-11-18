@@ -8,9 +8,10 @@ import pytest
 from gaiaxpy import generate, PhotometricSystem
 from gaiaxpy.colour_equation.xp_filter_system_colour_equation import apply_colour_equation
 from gaiaxpy.core.generic_functions import cast_output
+from gaiaxpy.core.pandas_compat import CSV_FLOAT_PRECISION_KWARGS
 from gaiaxpy.file_parser.cast import _cast
-from tests.files.paths import colour_eq_csv_file
-from tests.test_colour_equation.colour_equation_paths import col_eq_sol_johnson_path
+from tests.files.colour_equation import col_eq_sol_johnson_path
+from tests.files.continuous import dr3_colour_eq_csv_file
 
 
 def get_mag_error(flux, flux_error):
@@ -19,8 +20,8 @@ def get_mag_error(flux, flux_error):
 
 @pytest.fixture(scope='module')
 def sdss_std_cols():
-    phot_system = PhotometricSystem.SDSS_Std
-    label = phot_system.get_system_label()
+    phot_system = PhotometricSystem.DR3_SDSS_Std
+    label = f'{phot_system.value.get_system_prefix()}_{phot_system.get_system_label()}'
     variables = ['mag', 'flux', 'flux_error']
     bands = ['u', 'g', 'r', 'i', 'z']
     sdss_std_cols = ['source_id'] + [f'{label}_{v}_{b}' for v in variables for b in bands]
@@ -29,7 +30,7 @@ def sdss_std_cols():
 
 def test_wrong_input_type():
     with pytest.raises(ValueError):
-        _ = apply_colour_equation(colour_eq_csv_file)
+        _ = apply_colour_equation(dr3_colour_eq_csv_file)
 
 
 @pytest.mark.parametrize('values', [[4154201362082430080, 2.235461e+01, np.nan, 1.975758e+01, 1.715846e+01,
@@ -48,8 +49,8 @@ def test_wrong_input_type():
                                      3.806927e-29, 5.685276e-33, 7.746770e-34, 2.471102e-32, 1.745934e-32,
                                      6.280337e-32]])
 def test_colour(sdss_std_cols, values):
-    _phot_system = PhotometricSystem.SDSS_Std
-    _label = _phot_system.get_system_label()
+    _phot_system = PhotometricSystem.DR3_SDSS_Std
+    _label = f'{_phot_system.value.get_system_prefix()}_{_phot_system.get_system_label()}'
     data = pd.DataFrame(np.array([values]), columns=sdss_std_cols)
     corrected_data = apply_colour_equation(data, photometric_system=_phot_system, save_file=False)
     columns_that_change = [f'{_label}_mag_u', f'{_label}_flux_u', f'{_label}_flux_error_u']
@@ -75,8 +76,8 @@ def test_gaiaxpy_vs_pmn_photometry():
         # Sources for which data could be extracted from Geapre
         sources_to_keep = [4408087461749558912, 4408087908426160384, 4408088011505376128]
         # File corresponds to solution post-correction
-        _jkc_solution = pd.read_csv(col_eq_sol_johnson_path)
-        _jkc_solution.drop(columns=['BP-RP'], inplace=True)
+        _jkc_solution = pd.read_csv(col_eq_sol_johnson_path, **CSV_FLOAT_PRECISION_KWARGS)
+        _jkc_solution = _jkc_solution.drop(columns=['BP-RP'])
         _jkc_solution = _jkc_solution.loc[_jkc_solution['source_id'].isin(sources_to_keep)].reset_index(drop=True)
         _jkc_solution = _cast(_jkc_solution)
         return _jkc_solution
@@ -88,12 +89,12 @@ def test_gaiaxpy_vs_pmn_photometry():
                 flux_error_col = column.replace('flux', 'mag')
                 _output_photometry[flux_error_col] = get_mag_error(_output_photometry[flux_col],
                                                                    _output_photometry[column])
-        _output_photometry.drop(columns=[c for c in _output_photometry.columns if 'flux' in c], inplace=True)
+        _output_photometry = _output_photometry.drop(columns=[c for c in _output_photometry.columns if 'flux' in c])
         return _output_photometry
 
-    phot_system = PhotometricSystem.JKC_Std
-    label = phot_system.get_system_label()
-    output_photometry = generate(colour_eq_csv_file, phot_system, save_file=False)
+    phot_system = PhotometricSystem.DR3_JKC_Std
+    label = f'{phot_system.value.get_system_prefix()}_{phot_system.get_system_label()}'
+    output_photometry = generate(dr3_colour_eq_csv_file, phot_system, save_file=False)
     output_photometry = __arrange_output(output_photometry, label)
     johnson_solution_df = __prepare_solution()
     pdt.assert_frame_equal(output_photometry, johnson_solution_df, check_like=True)

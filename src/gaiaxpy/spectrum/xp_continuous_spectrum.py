@@ -1,34 +1,28 @@
-"""
-xp_continuous_spectrum.py
-====================================
-Module to represent a BP/RP continuous spectrum.
-"""
-
-import numpy as np
+"""Continuous BP/RP coefficients and their error information."""
 
 from gaiaxpy.core.generic_functions import array_to_symmetric_matrix
-from .utils import _list_to_array, get_covariance_matrix
+from .utils import get_covariance_matrix
 from .xp_spectrum import XpSpectrum
 
 
 class XpContinuousSpectrum(XpSpectrum):
-    """
-    A Gaia BP/RP spectrum represented as a continuous function defined as the sum of a set of bases functions multiplied
-        by a set of coefficient. This definition is the result of the least squares fit. Covariance and standard
-        deviation for the least square solution are also part of the continuous spectrum definition to allow estimating
-        errors.
+    """Hold the coefficient representation of one source in one photometer.
+
+    The basis configuration is supplied separately when evaluating the spectrum.
+    Coefficient covariance and the solution standard deviation are stored
+    separately and used together when calculating sampled flux errors.
     """
 
     def __init__(self, source_id, xp, coefficients, covariance, standard_deviation):
-        """
-        Initialise XP continuous spectrum.
+        """Store the continuous-spectrum arrays without copying or reshaping them.
 
         Args:
-            source_id (str): Source identifier.
-            xp (str): Gaia photometer, can be either 'bp' or 'rp'.
-            coefficients (ndarray): 1D array containing the coefficients multiplying the basis functions.
-            covariance (ndarray): 2D array containing the covariance of the least squares solution.
-            standard_deviation (float): Standard deviation of the least squares solution.
+            source_id (int or str): Source identifier.
+            xp (str): BP or RP photometer.
+            coefficients (numpy.ndarray): Coefficient vector of length n_bases.
+            covariance (numpy.ndarray or float): Coefficient covariance matrix of
+                shape (n_bases, n_bases), or NaN for an unavailable spectrum.
+            standard_deviation (float): Standard deviation of the spectrum solution.
         """
         XpSpectrum.__init__(self, source_id, xp)
         self.coefficients = coefficients
@@ -37,14 +31,22 @@ class XpContinuousSpectrum(XpSpectrum):
 
     @classmethod
     def from_data_frame(cls, df, band):
-        """
-        Initialise XP continuous spectrum from a Pandas DataFrame.
+        """Construct a spectrum from one row containing packed correlations.
 
         Args:
-            df (DataFrame): DataFrame containing at least the fields source_id, BAND_n_parameters, BAND_coefficients,
-                BAND_coefficient_correlations, BAND_standard_deviation, where BAND is either 'bp' or 'rp'. The same
-                structure as used in the archive for the correlation matrix is expected.
-            band (str): Gaia photometer, can be either 'bp' or 'rp'.
+            df (pandas.Series): One source row with source_id and the selected band's
+                n_parameters, coefficients, coefficient_correlations,
+                coefficient_errors and standard_deviation fields. Band fields use
+                the ``bp_`` or ``rp_`` prefix.
+            band (str): Lowercase ``bp`` or ``rp``, used directly in field names.
+
+        Returns:
+            XpContinuousSpectrum: Coefficients and reconstructed covariance.
+
+        Notes:
+            Despite the method name, the input is a row, not a full table. The row's
+            coefficient_correlations field is replaced with the full symmetric
+            matrix before calculating covariance.
         """
         corr = array_to_symmetric_matrix(df[f'{band}_coefficient_correlations'], df[f'{band}_n_parameters'])
         df[f'{band}_coefficient_correlations'] = corr
@@ -53,63 +55,33 @@ class XpContinuousSpectrum(XpSpectrum):
 
     @classmethod
     def get_units(cls):
+        """Return the empty units mapping for a continuous coefficient representation.
+
+        Returns:
+            dict: Empty dictionary; units are not assigned to individual coefficients.
+        """
         return dict()
 
     def get_coefficients(self):
-        """
-        Get the coefficients associated with the spectrum.
+        """Return the stored coefficient vector without conversion.
 
         Returns:
-            ndarray: The 1D array of the coefficients multiplying the basis functions.
+            numpy.ndarray: Value supplied at construction.
         """
         return self.coefficients
 
     def get_covariance(self):
-        """
-        Get the covariance associated with the spectrum.
+        """Return the stored coefficient covariance without conversion.
 
         Returns:
-            ndarray: The 2D array of the covariance matrix.
+            numpy.ndarray or float: Value supplied at construction.
         """
         return self.covariance
 
     def get_standard_deviation(self):
-        """
-        Get the standard deviation associated with the spectrum.
+        """Return the stored solution standard deviation without conversion.
 
         Returns:
-            float: The standard deviation of the least squares solution.
+            float: Value supplied at construction.
         """
         return self.standard_deviation
-
-    def spectrum_to_dict(self):
-        """
-        Represent spectrum as dictionary.
-
-        Returns:
-            dict: A dictionary populated with the minimum set of parameters that need to be stored for this object.
-                This is optimised for writing large number of sampled spectra and for this reason the array of positions
-                is NOT included as it is expected to be the same for a batch of spectra. The array fo positions can be
-                retrieved calling the sampling_to_dict method.
-        """
-        diagonal = np.sqrt(np.diag(self.covariance))
-        diagonal_inv = np.diag(1.0 / diagonal)
-        correlation_matrix = np.matmul(np.matmul(diagonal_inv, self.covariance), diagonal_inv)
-        return {
-            'source_id': self.source_id,
-            'xp': self.xp.upper(),
-            'standard_deviation': self.standard_deviation,
-            'coefficients': _list_to_array(self.coefficients),
-            'coefficient_correlations': _list_to_array(_extract_lower_triangle(correlation_matrix)),
-            'coefficient_errors': _list_to_array(diagonal),
-            'n_parameters': len(self.coefficients)
-        }
-
-
-def _extract_lower_triangle(matrix):
-    """
-    Extract the lower triangle of the matrix without including the diagonal.
-    """
-    # Get the indices
-    indices = np.tril_indices(matrix.shape[0], k=-1)
-    return np.array([matrix[i][j] for i, j in zip(indices[0], indices[1])])

@@ -7,59 +7,67 @@ import pandas as pd
 import pandas.testing as pdt
 import pytest
 
-from gaiaxpy import generate, remove_additional_systems, load_additional_systems
+from gaiaxpy import generate, remove_additional_systems, load_additional_systems, PhotometricSystem
+from gaiaxpy.core.pandas_compat import CSV_FLOAT_PRECISION_KWARGS
 from gaiaxpy.file_parser.cast import _cast
-from tests.files.paths import missing_bp_csv_file, mean_spectrum_fits_file, gen_missing_band_sol_path
-from tests.test_generator.generator_paths import additional_filters_dir
+from tests.files.continuous import dr3_missing_bp_csv_file, dr3_mean_spectra_fits_file
+from tests.files.generator import additional_filters_dir
+from tests.files.generator import gen_missing_band_sol_path
 
 _rtol, _atol = 1e-23, 1e-23
 
 
+@pytest.fixture(autouse=True)
+def remove_systems():
+    yield
+    remove_additional_systems()
+
+
 @pytest.fixture(scope='function')
 def __ps():
-    PhotometricSystem = remove_additional_systems()
     yield PhotometricSystem
 
 
 @pytest.fixture
 def systems_list(__ps):
-    systems = [__ps.Els_Custom_W09_S2, __ps.Euclid_VIS, __ps.Gaia_2, __ps.Gaia_DR3_Vega, __ps.Halpha_Custom_AB,
-               __ps.H_Custom, __ps.Hipparcos_Tycho, __ps.HST_ACSWFC, __ps.HST_HUGS_Std, __ps.HST_WFC3UVIS,
-               __ps.HST_WFPC2, __ps.IPHAS, __ps.JKC, __ps.JKC_Std, __ps.JPAS, __ps.JPLUS, __ps.JWST_NIRCAM,
-               __ps.PanSTARRS1, __ps.PanSTARRS1_Std, __ps.Pristine, __ps.SDSS, __ps.SDSS_Std, __ps.Sky_Mapper,
-               __ps.Stromgren, __ps.Stromgren_Std, __ps.WFIRST]
+    systems = [__ps.DR3_Els_Custom_W09_S2, __ps.DR3_Euclid_VIS, __ps.DR3_Gaia_2, __ps.DR3_Gaia_Vega,
+               __ps.DR3_Halpha_Custom_AB, __ps.DR3_H_Custom, __ps.DR3_Hipparcos_Tycho, __ps.DR3_HST_ACSWFC,
+               __ps.DR3_HST_HUGS_Std, __ps.DR3_HST_WFC3UVIS, __ps.DR3_HST_WFPC2, __ps.DR3_IPHAS, __ps.DR3_JKC,
+               __ps.DR3_JKC_Std, __ps.DR3_JPAS, __ps.DR3_JPLUS, __ps.DR3_JWST_NIRCAM, __ps.DR3_PanSTARRS1,
+               __ps.DR3_PanSTARRS1_Std, __ps.DR3_Pristine, __ps.DR3_SDSS, __ps.DR3_SDSS_Std, __ps.DR3_Sky_Mapper,
+               __ps.DR3_Stromgren, __ps.DR3_Stromgren_Std, __ps.DR3_WFIRST]
     yield systems
 
 
 def test_missing_band_csv(systems_list):
-    generated_photometry = generate(missing_bp_csv_file, photometric_system=systems_list, save_file=False)
-    solution_df = _cast(pd.read_csv(gen_missing_band_sol_path, float_precision='round_trip'))
+    generated_photometry = generate(dr3_missing_bp_csv_file, photometric_system=systems_list, save_file=False)
+    solution_df = _cast(pd.read_csv(gen_missing_band_sol_path, **CSV_FLOAT_PRECISION_KWARGS))
     pdt.assert_frame_equal(generated_photometry, solution_df, rtol=_rtol, atol=_atol)
 
 
 def test_duplicate_columns(systems_list):
-    generated_photometry = generate(missing_bp_csv_file, photometric_system=systems_list, save_file=False)
+    generated_photometry = generate(dr3_missing_bp_csv_file, photometric_system=systems_list, save_file=False)
     assert 0 == len([item for item, count in Counter(generated_photometry.columns).items() if count > 1])
 
 
 def test_single_phot_object(__ps):
-    photometry = generate(mean_spectrum_fits_file, photometric_system=__ps.JKC, save_file=False)
+    photometry = generate(dr3_mean_spectra_fits_file, photometric_system=__ps.DR3_JKC, save_file=False)
     assert isinstance(photometry, pd.DataFrame)
 
 
 def test_single_phot_object_with_correction(__ps):
-    system = __ps.JKC
-    photometry = generate(mean_spectrum_fits_file, photometric_system=system, error_correction=True, save_file=False)
+    system = __ps.DR3_JKC
+    photometry = generate(dr3_mean_spectra_fits_file, photometric_system=system, error_correction=True, save_file=False)
     assert isinstance(photometry, pd.DataFrame)
 
 
 def test_error_correction_additional_systems(__ps):
     __ps = load_additional_systems(additional_filters_dir)
-    additional_systems = [system for system in __ps if system.get_system_name().startswith('USER_')]
-
+    additional_systems = [system for system in __ps if system.get_system_name().startswith('USER_DR3')]
     captured_output = StringIO()
     sys.stderr = captured_output
-    _ = generate(mean_spectrum_fits_file, photometric_system=additional_systems, error_correction=True, save_file=False)
+    _ = generate(dr3_mean_spectra_fits_file, photometric_system=additional_systems, error_correction=True,
+                 save_file=False)
     sys.stderr = sys.__stderr__
     # Get the printed output
     printed_text = captured_output.getvalue().strip().split('\n')

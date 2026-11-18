@@ -66,7 +66,7 @@ GaiaXPy v.2.1.0 (new version)
 | XML plain        | 28.90s          |  7.84s         | 25.25s         |  0.54s     |
 +------------------+-----------------+----------------+----------------+------------+
 
-*GaiaXPy XML output is always plain.
+*GaiaXPy XML output is always plain.*
 
 As it can be observed, the input reading time is longer for certain formats in v2.1.0 compared to the previous version,
 and the same applies to output writing.

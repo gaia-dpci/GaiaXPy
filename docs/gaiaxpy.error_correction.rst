@@ -6,7 +6,7 @@ Error correction
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: gaiaxpy.error_correction.error_correction
+.. automodule:: gaiaxpy.error_correction.error_corrector
    :members:
    :undoc-members:
    :show-inheritance:

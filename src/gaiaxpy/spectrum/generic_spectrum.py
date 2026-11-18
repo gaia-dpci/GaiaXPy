@@ -1,30 +1,22 @@
-"""
-generic_spectrum.py
-====================================
-Module to represent a generic spectrum.
-"""
+"""Source identification shared by spectrum representations."""
 from typing import Union
 
 
-class Spectrum(object):
-    """
-    Base spectrum. Contain only the source ID.
-    """
+class Spectrum:
+    """Store the identifier associated with a spectrum."""
 
     def __init__(self, source_id: Union[str, int]):
-        """
-        Initialise a spectrum.
+        """Store a source identifier without converting or validating it.
 
         Args:
-            source_id (str): Source identifier. Can be a Gaia source ID (long) or any other source identifier.
+            source_id (int or str): Gaia source ID or another identifier.
         """
         self.source_id = source_id
 
     def get_source_id(self):
-        """
-        Get the source ID of the spectrum.
+        """Return the source identifier in its original type.
 
         Returns:
-            str: Source identifier.
+            int or str: Identifier supplied at construction.
         """
         return self.source_id

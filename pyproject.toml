@@ -5,23 +5,25 @@ build-backend = 'hatchling.build'
 [project]
 name = 'GaiaXPy'
 dynamic = ['version']
-description = 'Utilities to handle BP/RP (XP) Gaia low-resolution spectra as delivered via the Archive.'
+description = 'Utilities to handle BP/RP (XP) Gaia low-resolution spectra as delivered via the Gaia Archive.'
 readme = 'README.md'
 requires-python = '>=3.11'
-license = 'BSD-3-Clause'  # SPDX identifier as a string. It must be 'license', not 'licence' according to PEP621
+license = 'BSD-3-Clause'
 license-files = ['LICENSE']
 authors = [
-    {name = 'Francesca De Angeli', email = 'fda@ast.cam.ac.uk'},
-    {name = 'Paolo Montegriffo', email = 'paolo.montegriffo@inaf.it'},
-    {name = 'Lovro Palaversa'},
-    {name = 'Daniela Ruz-Mieres', email = 'dr540@ast.cam.ac.uk'},
+    { name = 'Francesca De Angeli', email = 'fda@ast.cam.ac.uk' },
+    { name = 'Daniela Ruz-Mieres', email = 'dr540@ast.cam.ac.uk' },
+    { name = 'Paolo Montegriffo', email = 'paolo.montegriffo@inaf.it' },
+    { name = 'Rene Andrae', email = 'andrae@mpia.de'},
+    { name = 'Michele Bellazzini', email = 'michele.bellazzini@inaf.it' },
+    { name = 'Lovro Palaversa', email = 'lp@irb.hr' }
 ]
 maintainers = [
-    {name = 'Daniela Ruz-Mieres', email = 'dr540@ast.cam.ac.uk'}
+    { name = 'Daniela Ruz-Mieres', email = 'dr540@ast.cam.ac.uk' }
 ]
 classifiers = [
-  'Programming Language :: Python :: 3',
-  'Operating System :: OS Independent'
+    'Programming Language :: Python :: 3',
+    'Operating System :: OS Independent'
 ]
 dependencies = [
     'aenum',
@@ -29,11 +31,12 @@ dependencies = [
     'astroquery',
     'fastavro',
     'hdfs',
+    'joblib',
     'matplotlib',
     'numpy',
     'packaging',
     'pandas>=1.5.0',
-    'scipy',
+    'scipy>=1.10',
     'tqdm>=4.66.3'
 ]
 
@@ -42,7 +45,8 @@ dev = [
     'pytest',
     'pytest-cov',
     'pytest-mock',
-    'flake8'
+    'flake8',
+    'openpyxl>=3.1'
 ]
 docs = [
     'hatch',
@@ -50,9 +54,14 @@ docs = [
     'sphinx-rtd-theme'
 ]
 
-[pytest]
-addopts = '--cov=gaiaxpy --cov-report=term-missing --cov-fail-under=85'
-testpaths = 'tests'
+[tool.pytest.ini_options]
+addopts = ""
+testpaths = ['tests']
+markers = [
+    "archive: marks archive tests (deselect with '-m \"not archive\"')",
+    "plotter: marks plotter tests (deselect with '-m \"not plotter\"')",
+    "long: marks slow tests (deselect with '-m \"not long\"')"
+]
 
 # To build docs
 [tool.hatch.envs.docs]
@@ -65,9 +74,12 @@ build = 'pip install -e .[docs] && sphinx-build docs docs/build'
 allow-direct-references = true
 
 [tool.hatch.version]
-path = 'src/gaiaxpy/core/__init__.py'
 source = 'vcs'
-raw-options = {version_scheme = 'guess-next-dev', local_scheme = 'node-and-date'}
+
+[tool.hatch.version.raw-options]
+version_scheme = "no-guess-dev"
+local_scheme = "node-and-date"
+fallback_version = "3.0.0.dev0"
 
 [tool.hatch.build]
 packages = ['src']

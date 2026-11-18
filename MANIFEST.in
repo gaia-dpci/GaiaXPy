@@ -1,5 +1,4 @@
 include LICENCE
 include pyproject.toml
 graft src/gaiaxpy
-prune src/gaiaxpy/config/calibrations
 global-exclude __pycache__

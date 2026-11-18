@@ -37,18 +37,38 @@ jobs:
       run: |
         pip install build
         python -m build
-    - name: Verify data files included in wheel
-      run: |
-        if [ "$RUNNER_OS" == "Linux" ]; then
-             unzip -l dist/*.whl | grep -E "gaiaxpy/config/filters/.*\.xml" || (echo "Filter files missing in wheel!" && exit 1)
-        fi
+    - name: Verify bundled DR3 filter configurations
       shell: bash
-    - name: Verify data files included in sdist
       run: |
-        if [ "$RUNNER_OS" == "Linux" ]; then
-             tar -tzf dist/*.tar.gz | grep -E "gaiaxpy/config/filters/.*\.xml" || (echo "Filter files missing in sdist!" && exit 1)
-        fi
-      shell: bash
+        python - <<'PYCODE'
+        from pathlib import Path
+        from tarfile import open as open_tar
+        from zipfile import ZipFile
+
+        source = Path('src/gaiaxpy/config/filters/dr3')
+        expected = {p.relative_to('src').as_posix() for p in source.glob('*.yaml')}
+        assert expected, 'No DR3 filter configurations found in source tree'
+
+        wheel_paths = list(Path('dist').glob('*.whl'))
+        sdist_paths = list(Path('dist').glob('*.tar.gz'))
+        assert len(wheel_paths) == 1, f'Expected one wheel: {wheel_paths}'
+        assert len(sdist_paths) == 1, f'Expected one sdist: {sdist_paths}'
+
+        with ZipFile(wheel_paths[0]) as archive:
+            wheel_names = set(archive.namelist())
+        missing = sorted(expected - wheel_names)
+        assert not missing, f'DR3 filter files missing from wheel: {missing}'
+
+        with open_tar(sdist_paths[0], 'r:gz') as archive:
+            sdist_names = {
+                '/'.join(name.split('/')[1:])
+                for name in archive.getnames()
+            }
+        missing = sorted({'src/' + path for path in expected} - sdist_names)
+        assert not missing, f'DR3 filter files missing from sdist: {missing}'
+
+        print(f'Verified {len(expected)} DR3 filter YAML files in wheel and sdist')
+        PYCODE
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names

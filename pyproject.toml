@@ -76,11 +76,6 @@ allow-direct-references = true
 [tool.hatch.version]
 source = 'vcs'
 
-[tool.hatch.version.raw-options]
-version_scheme = "no-guess-dev"
-local_scheme = "node-and-date"
-fallback_version = "3.0.0.dev0"
-
 [tool.hatch.build]
 packages = ['src']
 

@@ -3,7 +3,7 @@ Index
 
 |License|
 
-**GaiaXPy version:** |release|
+**GaiaXPy version:** 2.2.0
 
 .. |License| image:: https://img.shields.io/badge/License-BSD_3--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause

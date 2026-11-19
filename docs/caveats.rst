@@ -25,9 +25,9 @@ Filters
 Since GaiaXPy was originally published, two issues with photometric filters have been found. The affected filters are
 **SDSS** and **PanSTARRS1_Std**.
 
-**SDSS**: The SDSS filters (available as PhotometricSystem.SDSS) that were originally published have been replaced with
+**SDSS**: The SDSS filters (formerly available as ``PhotometricSystem.SDSS``, now ``PhotometricSystem.DR3_SDSS``) that were originally published have been replaced with
 those defined in `Doi et al. 2010, AJ, 141, 47 <https://ui.adsabs.harvard.edu/abs/2010AJ....139.1628D/abstract>`_.
-Note that the standardised version (PhotometricSystem.SDSS_Std) was already based on Doi et al. 2010, AJ, 141, 47 and is
+Note that the standardised version (formerly ``PhotometricSystem.SDSS_Std``, now ``PhotometricSystem.DR3_SDSS_Std``) was already based on Doi et al. 2010, AJ, 141, 47 and is
 therefore unchanged with respect to previous versions of GaiaXPy.
 
 **PanSTARRS1_Std**: Due to a bug in GaiaXPy, the synthetic photometry for the standardised PanSTARRS1 y band (contained

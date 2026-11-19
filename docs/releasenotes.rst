@@ -3,6 +3,54 @@ Release notes
 
 .. _releasenotes:
 
+Version 2.2.0
+-------------
+
+Released on 2026/11/19.
+
+**Breaking changes**
+
+* Built-in photometric-system identifiers now include the Gaia data release.
+  For example, ``PhotometricSystem.JKC`` has been renamed to
+  ``PhotometricSystem.DR3_JKC``, and ``PhotometricSystem.SDSS`` to
+  ``PhotometricSystem.DR3_SDSS``. Update scripts that refer to these
+  identifiers. Use ``PhotometricSystem.get_available_systems()`` to inspect
+  the identifiers available in the installed version. Gaia DR3 is the only
+  supported data release in 2.2.0; the new naming convention prepares for
+  future multi-release support.
+* User-defined photometric systems have release- and version-specific
+  identifiers, such as ``PhotometricSystem.USER_DR3_Example_v1``. Scripts
+  referring to previously loaded additional systems may need to update
+  their names. Check any code that relies on generated photometry column
+  names when migrating to versioned additional systems.
+
+**New functionality**
+
+* Added processing provenance metadata, including the GaiaXPy version,
+  processing operation and relevant configurations. Metadata are retained
+  in supported output formats. Added metadata support for synthetic
+  photometry, including relevant standardisation and error-correction configurations.
+* Added support for gzip-compressed CSV, ECSV, FITS and XML/VOTable inputs,
+  and ZIP files as downloaded from the Gaia Archive.
+* Added ``get_required_columns()`` to describe the publicly supported
+  input columns for GaiaXPy operations.
+* Added versioned user-defined photometric systems and improved their
+  discovery, loading and management.
+
+**Bug fixes**
+
+* Fixed the computation of correlation matrices returned by ``calibrate()`` when ``with_correlation=True``, ensuring consistency with the propagated covariance matrix.
+* Fixed plotting issues when the input DataFrame has a non-consecutive or otherwise modified index.
+* Improved handling of missing BP or RP spectra when plotting, ensuring consistent source colours across panels.
+
+**Improvements**
+
+* Improved input handling for DataFrames, individual spectra, ZIP archives,
+  queries and source-ID selections.
+* Improved file output and overwrite controls.
+* Improved Archive authentication options, including credentials files and
+  interactive password entry.
+
 Version 2.1.5
 -------------
 

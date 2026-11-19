@@ -6,19 +6,23 @@ import pytest
 
 from gaiaxpy import generate
 from gaiaxpy.core.generic_functions import format_additional_columns, reverse_simple_add_col_dict
+from gaiaxpy.core.generic_variables import RELEASES
+from gaiaxpy.core.pandas_compat import CSV_FLOAT_PRECISION_KWARGS
 from gaiaxpy.file_parser.cast import _cast
 from gaiaxpy.input_reader.input_reader import InputReader
-from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
-from tests.files.paths import with_missing_bp_csv_file, with_missing_bp_fits_file, with_missing_bp_xml_file, \
-    with_missing_bp_xml_plain_file, with_missing_bp_ecsv_file
-from tests.utils.utils import parse_dfs_for_test, missing_bp_source_id, cast_nans
+from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS, OPTIONAL_INPUT_COLS
+from tests.files.continuous import (dr3_with_missing_bp_csv_file, dr3_with_missing_bp_fits_file,
+                                    dr3_with_missing_bp_xml_binary_file, dr3_with_missing_bp_xml_plain_file,
+                                    dr3_with_missing_bp_ecsv_file)
+from tests.utils.utils import parse_dfs_for_test, dr3_missing_bp_source_id, cast_nans
 
-expected_columns = MANDATORY_INPUT_COLS[generate.__name__] + CORR_INPUT_COLUMNS
+expected_columns = (MANDATORY_INPUT_COLS[generate.__name__] + CORR_INPUT_COLUMNS
+                    + OPTIONAL_INPUT_COLS[generate.__name__])
 
-with_missing_bp_df = pd.read_csv(with_missing_bp_csv_file)
-with_missing_bp_sources = [5853498713190525696, missing_bp_source_id, 5762406957886626816]
+with_missing_bp_df = pd.read_csv(dr3_with_missing_bp_csv_file, **CSV_FLOAT_PRECISION_KWARGS)
+with_missing_bp_sources = [5853498713190525696, dr3_missing_bp_source_id, 5762406957886626816]
 with_missing_bp_query = (f"SELECT * FROM gaiadr3.gaia_source WHERE source_id IN ('5762406957886626816',"
-                         f"'5853498713190525696', {str(missing_bp_source_id)})")
+                         f"'5853498713190525696', {str(dr3_missing_bp_source_id)})")
 
 array_columns = ['bp_coefficients', 'bp_coefficient_errors', 'bp_coefficient_correlations',
                  'rp_coefficients', 'rp_coefficient_errors', 'rp_coefficient_correlations']
@@ -26,13 +30,15 @@ type_dict = {'bp_coefficients': np.float64, 'bp_coefficient_errors': np.float32,
              'bp_coefficient_correlations': np.float32, 'rp_coefficient_errors': np.float32}
 
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_csv_file, with_missing_bp_df,
+@pytest.mark.parametrize('input_data', [dr3_with_missing_bp_csv_file, with_missing_bp_df,
                                         pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
                                         pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_single_column_test(input_data):
     additional_columns = format_additional_columns(['solution_id'])
-    df = pd.read_csv(with_missing_bp_csv_file)
-    read_input, _ = InputReader(input_data, generate, None, additional_columns=additional_columns).read()
+    df = pd.read_csv(dr3_with_missing_bp_csv_file, **CSV_FLOAT_PRECISION_KWARGS)
+    # Input correction should have no effect
+    read_input, _, _ = InputReader(input_data, generate, truncation=False, additional_columns=additional_columns,
+                                   release=RELEASES.dr3).read()
     expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     expected_df = expected_df.sort_values(by=['source_id'], ignore_index=True)
     filtered_read_input = filtered_read_input.sort_values(by=['source_id'], ignore_index=True)
@@ -50,13 +56,14 @@ def run_numpy_comparison(expected_df, read_input, _array_columns):
                 npt.assert_array_almost_equal(expected_value, read_value, decimal=5)
 
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_fits_file, with_missing_bp_df,
+@pytest.mark.parametrize('input_data', [dr3_with_missing_bp_fits_file, with_missing_bp_df,
                                         pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
                                         pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_multiple_columns(input_data):
     additional_columns = format_additional_columns(['solution_id', 'bp_n_relevant_bases'])
-    df = pd.read_csv(with_missing_bp_csv_file)
-    read_input, _ = InputReader(input_data, generate, False, additional_columns=additional_columns).read()
+    df = pd.read_csv(dr3_with_missing_bp_csv_file, **CSV_FLOAT_PRECISION_KWARGS)
+    read_input, _, _ = InputReader(input_data, generate, truncation=False, additional_columns=additional_columns,
+                                   release=RELEASES.dr3).read()
     expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     for column in array_columns:
         filtered_read_input[column] = filtered_read_input[column].apply(lambda x: np.nan if (isinstance(
@@ -74,13 +81,14 @@ def test_multiple_columns(input_data):
                            check_dtype=False, check_exact=False)
 
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_xml_file, with_missing_bp_df,
+@pytest.mark.parametrize('input_data', [dr3_with_missing_bp_xml_binary_file, with_missing_bp_df,
                                         pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
                                         pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_column_already_in_output(input_data):
     additional_columns = format_additional_columns(['source_id'])
-    df = pd.read_csv(with_missing_bp_csv_file)
-    read_input, _ = InputReader(input_data, generate, False, additional_columns=additional_columns).read()
+    df = pd.read_csv(dr3_with_missing_bp_csv_file, **CSV_FLOAT_PRECISION_KWARGS)
+    read_input, _, _ = InputReader(input_data, generate, truncation=False, additional_columns=additional_columns,
+                                   release=RELEASES.dr3).read()
     expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     expected_df = expected_df.sort_values(by=['source_id'], ignore_index=True)
     filtered_read_input = filtered_read_input.sort_values(by=['source_id'], ignore_index=True)
@@ -91,14 +99,15 @@ def test_column_already_in_output(input_data):
                            check_like=True, check_dtype=False)
 
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_xml_plain_file, with_missing_bp_df,
+@pytest.mark.parametrize('input_data', [dr3_with_missing_bp_xml_plain_file, with_missing_bp_df,
                                         pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
                                         pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_multiple_and_already_in_output(input_data):
     additional_columns = format_additional_columns(['bp_standard_deviation', 'rp_coefficients', 'solution_id',
                                                     'bp_basis_function_id'])
-    df = pd.read_csv(with_missing_bp_csv_file)
-    read_input, _ = InputReader(input_data, generate, False, additional_columns=additional_columns).read()
+    df = pd.read_csv(dr3_with_missing_bp_csv_file, **CSV_FLOAT_PRECISION_KWARGS)
+    read_input, _, _ = InputReader(input_data, generate, truncation=False, additional_columns=additional_columns,
+                                   release=RELEASES.dr3).read()
     expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     expected_df = _cast(expected_df)
     expected_df = expected_df.sort_values(by=['source_id'], ignore_index=True)
@@ -112,22 +121,25 @@ def test_multiple_and_already_in_output(input_data):
                            check_dtype=False)
 
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_ecsv_file, with_missing_bp_df,
+@pytest.mark.parametrize('input_data', [dr3_with_missing_bp_ecsv_file, with_missing_bp_df,
                                         pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
                                         pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_column_renaming_error(input_data):
     additional_columns = format_additional_columns({'source_id': 'bp_n_relevant_bases'})
     with pytest.raises(ValueError):
-        read_input, _ = InputReader(input_data, generate, False, additional_columns=additional_columns).read()
+        read_input, _, _ = InputReader(input_data, generate, truncation=False, additional_columns=additional_columns,
+                                       release=RELEASES.dr3).read()
 
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_csv_file, with_missing_bp_df,
+@pytest.mark.parametrize('input_data', [dr3_with_missing_bp_csv_file, with_missing_bp_df,
                                         pytest.param(with_missing_bp_sources, marks=pytest.mark.archive),
                                         pytest.param(with_missing_bp_query, marks=pytest.mark.archive)])
 def test_multiple_renaming(input_data):
-    additional_columns = format_additional_columns({'sol_id': 'solution_id', 'bp_id': 'bp_basis_function_id'})
-    df = pd.read_csv(with_missing_bp_csv_file).rename(columns=reverse_simple_add_col_dict(additional_columns))
-    read_input, _ = InputReader(input_data, generate, False, additional_columns=additional_columns).read()
+    additional_columns = format_additional_columns({'rp_id': 'rp_basis_function_id', 'bp_id': 'bp_basis_function_id'})
+    df = pd.read_csv(dr3_with_missing_bp_csv_file, **CSV_FLOAT_PRECISION_KWARGS).rename(
+        columns=reverse_simple_add_col_dict(additional_columns))
+    read_input, _, _ = InputReader(input_data, generate, truncation=False, additional_columns=additional_columns,
+                                   release=RELEASES.dr3).read()
     expected_df, filtered_read_input = parse_dfs_for_test(df, read_input, additional_columns, expected_columns)
     expected_df = expected_df.sort_values(by=['source_id'], ignore_index=True)
     filtered_read_input = filtered_read_input.sort_values(by=['source_id'], ignore_index=True)

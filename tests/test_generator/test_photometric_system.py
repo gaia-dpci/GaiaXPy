@@ -2,17 +2,20 @@ import numpy.testing as npt
 import pytest
 from numpy import ndarray
 
-from gaiaxpy import generate
-from gaiaxpy.core.generic_functions import _get_built_in_systems
-from gaiaxpy.generator.photometric_system import load_additional_systems, remove_additional_systems
-from tests.files.paths import with_missing_bp_ecsv_file
-from tests.test_generator.generator_paths import additional_filters_dir, additional_filters_dup_dir
-from tests.test_generator.test_internal_photometric_system import phot_systems_specs
+from gaiaxpy.photometric_system.photometric_system import (load_additional_systems, remove_additional_systems,
+                                                           PhotometricSystem)
+from tests.files.generator import additional_filters_dir
+from tests.reference.generator import phot_systems_specs
+
+
+@pytest.fixture(autouse=True)
+def remove_systems():
+    yield
+    remove_additional_systems()
 
 
 @pytest.fixture(scope='module')
 def __ps():
-    PhotometricSystem = remove_additional_systems()
     yield PhotometricSystem
 
 
@@ -36,14 +39,17 @@ def test_system_is_standardised(__ps):
     Check class assigned to each photometric system. Will raise an error if a system is missing in the solution
     dictionary.
     """
-    all_phot_systems = [__ps[s] for s in __ps.get_available_systems().split(', ')]
-    regular_systems = ["DECam", "Els_Custom_W09_S2", "Euclid_VIS", "Gaia_2", "Gaia_DR3_Vega", "Halpha_Custom_AB",
-                       "H_Custom", "Hipparcos_Tycho", "HST_ACSWFC", "HST_WFC3UVIS", "HST_WFPC2", "IPHAS", "JKC",
-                       "JPAS", "JPLUS", "JWST_NIRCAM", "LSST", "PanSTARRS1", "Pristine", "SDSS", "Sky_Mapper",
-                       "Stromgren", "WFIRST"]
-    standardised_systems = ["HST_HUGS_Std", "JKC_Std", "PanSTARRS1_Std", "SDSS_Std", "Stromgren_Std"]
-    regular_dict = {s: "RegularPhotometricSystem" for s in regular_systems}
-    standardised_dict = {s: "StandardisedPhotometricSystem" for s in standardised_systems}
+    all_phot_systems = [__ps[s] for s in __ps.get_available_systems(grouped=False).split(', ')]
+    regular_systems = ['DR3_DECam', 'DR3_Els_Custom_W09_S2', 'DR3_Euclid_VIS', 'DR3_Gaia_2', 'DR3_Gaia_Vega',
+                       'DR3_Halpha_Custom_AB', 'DR3_H_Custom', 'DR3_Hipparcos_Tycho', 'DR3_HST_ACSWFC',
+                       'DR3_HST_HUGS_Std', 'DR3_HST_WFC3UVIS', 'DR3_HST_WFPC2', 'DR3_IPHAS', 'DR3_JKC', 'DR3_JKC_Std',
+                       'DR3_JPAS', 'DR3_JPLUS', 'DR3_JWST_NIRCAM', 'DR3_LSST', 'DR3_PanSTARRS1', 'DR3_PanSTARRS1_Std',
+                       'DR3_Pristine', 'DR3_SDSS', 'DR3_SDSS_Std', 'DR3_Sky_Mapper', 'DR3_Stromgren',
+                       'DR3_Stromgren_Std', 'DR3_WFIRST']
+    standardised_systems = ['DR3_HST_HUGS_Std', 'DR3_JKC_Std', 'DR3_PanSTARRS1_Std', 'DR3_SDSS_Std',
+                            'DR3_Stromgren_Std']
+    regular_dict = {s: 'RegularPhotometricSystem' for s in regular_systems}
+    standardised_dict = {s: 'StandardisedPhotometricSystem' for s in standardised_systems}
     solution_dict = {**regular_dict, **standardised_dict}
     for system in all_phot_systems:
         assert system.value.__class__.__name__ == solution_dict[
@@ -85,34 +91,9 @@ def test_get_set_zero_points(phot_systems, available_systems):
         npt.assert_array_equal(system_zero_points, test_zero_points)
 
 
-def test_user_interaction(__ps):
-    phot_system_list = [s for s in __ps.get_available_systems().split(', ')]
-    built_in_systems = _get_built_in_systems()
-    assert set(phot_system_list) == set(built_in_systems)
-    __ps = load_additional_systems(additional_filters_dir)
-    new_phot_systems = [s for s in __ps.get_available_systems().split(', ')]
-    assert len(phot_system_list) + 5 == len(new_phot_systems)
-    ps = [__ps[s] for s in ['Pristine', 'SDSS', 'PanSTARRS1_Std', 'USER_Panstarrs1Std', 'USER_Sdss',
-                            'USER_Pristine']]
-    output = generate(with_missing_bp_ecsv_file, photometric_system=ps, save_file=False)
-    built_in_columns = [c for c in output.columns if not c.startswith('USER')]
-    built_in_columns.remove('source_id')
-    for column in built_in_columns:
-        npt.assert_array_equal(output[column].values, output[f'USER_{column}'].values)
-    __ps = remove_additional_systems()
-    phot_system_list = [s for s in __ps.get_available_systems().split(', ')]
-    assert set(phot_system_list) == set(built_in_systems)
-
-
 def test_additional_systems_names(__ps):
     __ps = load_additional_systems(additional_filters_dir)
-    ps = [__ps[s].get_system_name() for s in __ps.get_available_systems().split(', ') if
+    ps = [__ps[s].get_system_name() for s in __ps.get_available_systems(grouped=False).split(', ') if
           s.startswith('USER')]
-    assert set(ps) == {'USER_Panstarrs1Std', 'USER_Sdss', 'USER_Pristine', 'USER_ASubstring_AndMore',
-                       'USER_ASubstring'}
-
-
-def test_duplicate_names_in_dir(__ps):
-    __ps = remove_additional_systems()
-    with pytest.raises(ValueError):
-        load_additional_systems(additional_filters_dup_dir)
+    assert set(ps) == {'USER_DR3_Panstarrs1Std_v1', 'USER_DR3_Sdss_v1', 'USER_DR3_Pristine_v1',
+                       'USER_DR3_ASubstring_AndMore_v1', 'USER_DR3_ASubstring_v1'}

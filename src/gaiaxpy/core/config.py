@@ -3,114 +3,206 @@ config.py
 ====================================
 Module to handle the calibrator and generator configuration files.
 """
+from pathlib import Path
+from typing import Union
 
-from configparser import ConfigParser
-from os.path import join
+import numpy as np
+import yaml
 
-from gaiaxpy.config.paths import filters_path, config_ini_file
+from gaiaxpy.core.generic_variables import YAML_EXTENSIONS
 from gaiaxpy.core.satellite import BANDS
-from gaiaxpy.core.xml_utils import get_file_root, get_array_text, get_xp_merge, get_xp_sampling_matrix
-
-ADDITIONAL_SYSTEM_PREFIX = 'USER'
+from gaiaxpy.core.utils import get_file_root, get_array_text, get_xp_merge, get_xp_sampling_matrix
 
 
-def get_file_path(config_file=None):
-    if not config_file:
-        return filters_path
-    _config_parser = ConfigParser()
-    _config_parser.read(config_file)
-    try:
-        file_path = _config_parser['filter']['filters_dir']
-    except KeyError:
-        return filters_path
-    return file_path
+def _is_yaml_file(file_path: Union[Path, str]) -> bool:
+    return str(file_path).lower().endswith(YAML_EXTENSIONS)
 
 
-def get_filter_version_from_config(_config_parser):
-    try:
-        version = _config_parser['filter']['version']
-    except KeyError:
-        version = None
-    return version
+def _load_yaml_config(xp_filter_file: Union[Path, str]) -> dict:
+    xp_filter_file = Path(xp_filter_file)
+
+    if not xp_filter_file.is_file():
+        raise FileNotFoundError(f'File not found: {xp_filter_file}')
+
+    with xp_filter_file.open('r', encoding='utf-8') as yaml_file:
+        yaml_root = yaml.safe_load(yaml_file)
+
+    return yaml_root.get('config', yaml_root)
 
 
-def replace_file_name(_config_file, label, key, bp_model, rp_model, system):
-    _config_parser = ConfigParser()
-    _config_parser.read(_config_file)
-    version = get_filter_version_from_config(_config_parser)
-    if version:
-        file_name = _config_parser.get(label, key).replace('version', version)
-        system = system.replace(f'{ADDITIONAL_SYSTEM_PREFIX}_', '')
-    else:
-        file_name = _config_parser.get(label, key).format(label, key).replace('model',
-                                                                              f'{bp_model}{rp_model}')
-    file_name = file_name.replace('system', system) if system else file_name.replace('system_', '')
-    return file_name
-
-
-def get_file(label, key, system, bp_model, rp_model, config_file=None):
+def _get_yaml_array(xp_filter_file: Union[Path, str], yaml_config: dict, array_config) -> \
+        'np.ndarray':
     """
-    Get the file path corresponding to the given label and key.
-
-    Args:
-        label (str): Label of the photometric system or functionality (e.g.: 'Johnson' or 'calibrator').
-        key (str): Type of file to load ('zeropoint', 'merge', 'sampling').
-        system (str): Photometric system name, can be None in which case the generic configuration is loaded.
-        bp_model (str): BP model.
-        rp_model (str): RP model.
-        config_file: Path to configuration file.
-
-    Returns:
-        str: Path of a file.
+    Load an array stored in a YAML (with an array or an index to a NPZ file) or a NPZ file.
     """
-    _config_file = config_ini_file if config_file is None else config_file
-    file_name = replace_file_name(_config_file, label, key, bp_model, rp_model, system)
-    file_path = get_file_path(config_file)
-    return join(file_path, file_name)
+    import numpy as np
+
+    if isinstance(array_config, dict):
+        if 'values' in array_config:
+            return np.asarray(array_config['values'], dtype=float)
+
+        if 'npz_key' in array_config:
+            array_file = yaml_config.get('arrayFile')
+
+            if not array_file:
+                raise ValueError('The YAML configuration contains an npz_key but does not '
+                                 'define config.arrayFile.')
+
+            npz_path = Path(xp_filter_file).parent / array_file
+
+            if not npz_path.is_file():
+                raise FileNotFoundError(f'NPZ resource file not found: {npz_path}')
+
+            npz_key = array_config['npz_key']
+
+            with np.load(npz_path, allow_pickle=False) as npz_file:
+                if npz_key not in npz_file:
+                    raise KeyError(f'Array {npz_key!r} not found in {npz_path}. '
+                                   f'Available arrays: {npz_file.files}')
+
+                return np.asarray(npz_file[npz_key], dtype=float)
+
+        raise ValueError("Array configuration must contain either 'values' or 'npz_key'.")
+
+    # Backwards compatibility for arrays written directly as YAML lists.
+    return np.asarray(array_config, dtype=float)
 
 
-def load_xpmerge_from_xml(system=None, bp_model=None, rp_model='v142r', config_file=None):
+def load_xpmerge_from_yaml(xp_filter_file: Union[Path, str]) -> ('np.ndarray', dict):
     """
-    Load the XpMerge table from the filter XML file.
-
-    Args:
-        system (str): Name of the photometric system if it corresponds.
-        bp_model (str): BP model.
-        rp_model (str): RP model.
-        config_file (str): Path to configuration file.
-
-    Returns:
-        ndarray: Array containing the sampling grid values.
-        dict: A dictionary containing the XpMerge table with one entry for BP and one for RP.
+    Load the XpMerge table from the filter YAML file.
     """
-    bp_model = bp_model if bp_model else 'v375wi'
-    label = key = 'filter'
-    file_path = get_file(label, key, system, bp_model, rp_model, config_file=config_file)
-    x_root = get_file_root(file_path)
-    sampling_grid, bp_merge, rp_merge = get_xp_merge(x_root)
+    yaml_config = _load_yaml_config(xp_filter_file)
+    xp_merge_config = yaml_config['XpMerge']
+
+    sampling_grid = _get_yaml_array(xp_filter_file, yaml_config,
+                                    xp_merge_config['sampleMeanWavelengths'])
+    bp_merge = _get_yaml_array(xp_filter_file, yaml_config, xp_merge_config['bpWeights'])
+    rp_merge = _get_yaml_array(xp_filter_file, yaml_config, xp_merge_config['rpWeights'])
+
     return sampling_grid, dict(zip(BANDS, [bp_merge, rp_merge]))
 
 
-def load_xpsampling_from_xml(system=None, bp_model=None, rp_model='v142r', config_file=None):
+def load_xpmerge_from_npz(xp_filter_file: Union[Path, str]) -> ('np.ndarray', dict):
+    sampling_grid = _load_npz_array(xp_filter_file,
+                                    'config/XpMerge/sampleMeanWavelengths').astype(float, copy=False)
+
+    bp_merge = _load_npz_array(xp_filter_file, 'config/XpMerge/bpWeights').astype(float, copy=False)
+    rp_merge = _load_npz_array(xp_filter_file, 'config/XpMerge/rpWeights').astype(float, copy=False)
+
+    return sampling_grid, dict(zip(BANDS, [bp_merge, rp_merge]))
+
+
+def load_xpmerge_from_file(xp_filter_file: Union[Path, str]) -> ('np.ndarray', dict):
     """
-    Load the XpSampling table from the XML filter file.
+    Load the XpMerge table from the filter XML or YAML file.
 
     Args:
-        system (str): Photometric system name, can be None in which case the generic configuration is loaded.
-        bp_model (str): BP model.
-        rp_model (str): RP model.
-        config_file (str): Path to configuration file.
+        xp_filter_file: Path to the XpFilter file.
 
     Returns:
-        dict: A dictionary containing the XpSampling table with one entry for BP and one for RP.
+        Array containing the sampling grid values and a dictionary containing
+        the XpMerge table for BP and RP.
     """
-    bp_model = bp_model if bp_model else 'v375wi'
-    xml_file = get_file('filter', 'filter', system, bp_model, rp_model, config_file=config_file)
-    x_root = get_file_root(xml_file)
+    if _is_npz_file(xp_filter_file):
+        return load_xpmerge_from_npz(xp_filter_file)
+
+    if _is_yaml_file(xp_filter_file):
+        return load_xpmerge_from_yaml(xp_filter_file)
+
+    x_root = get_file_root(xp_filter_file)
+    sampling_grid, bp_merge, rp_merge = get_xp_merge(x_root)
+
+    return sampling_grid, dict(zip(BANDS, [bp_merge, rp_merge]))
+
+
+def _is_npz_file(file_path: Union[Path, str]) -> bool:
+    return str(file_path).lower().endswith('.npz')
+
+
+def _load_npz_array(npz_file: Union[Path, str], key: str) -> 'np.ndarray':
+    npz_file = Path(npz_file)
+
+    if not npz_file.is_file():
+        raise FileNotFoundError(f'File not found: {npz_file}')
+
+    with np.load(npz_file, allow_pickle=False) as archive:
+        if key not in archive:
+            raise KeyError(f'Array {key!r} not found in {npz_file}. '
+                           f'Available arrays: {archive.files}')
+
+        return np.asarray(archive[key])
+
+
+def _load_xp_sampling_matrix_from_npz(xp_filter_file: Union[Path, str], xp: str) -> 'np.ndarray':
+    prefix = f'config/XpSampling/{xp.lower()}SampledBases'
+
+    values = _load_npz_array(xp_filter_file, prefix).astype(float, copy=False)
+    sampling_grid = _load_npz_array(xp_filter_file, 'config/XpMerge/sampleMeanWavelengths')
+
+    n_samples = sampling_grid.size
+
+    if values.size % n_samples:
+        raise ValueError(f'Invalid {xp.upper()} sampling matrix: '
+                         f'{values.size} values cannot be divided into '
+                         f'{n_samples} wavelength samples.')
+
+    dimension = values.size // n_samples
+
+    return values.reshape(n_samples, dimension).T
+
+
+def load_xpsampling_from_npz(xp_filter_file: Union[Path, str]) -> dict:
+    bp_sampling = _load_xp_sampling_matrix_from_npz(xp_filter_file, BANDS.bp)
+    rp_sampling = _load_xp_sampling_matrix_from_npz(xp_filter_file, BANDS.rp)
+
+    if bp_sampling.shape[1] != rp_sampling.shape[1]:
+        raise ValueError('BP and RP sampling matrices contain different numbers '
+                         f'of samples: {bp_sampling.shape[1]} and {rp_sampling.shape[1]}.')
+
+    return dict(zip(BANDS, [bp_sampling, rp_sampling]))
+
+
+def load_xpsampling_from_yaml(xp_filter_file: Union[Path, str]) -> dict:
+    """
+    Load the XpSampling table from the filter YAML file.
+    """
+    yaml_config = _load_yaml_config(xp_filter_file)
+    xp_sampling = yaml_config["XpSampling"]
+
+    output = {}
+
+    for band in BANDS:
+        cfg = xp_sampling[f"{band}SampledBases"]
+
+        values = np.asarray(cfg["values"], dtype=float)
+        dimension = cfg["dimension"]
+
+        output[band] = values.reshape(-1, dimension).T
+
+    return output
+
+
+def load_xpsampling_from_file(xp_filter_file: Union[Path, str]) -> dict:
+    """
+    Load the XpSampling table from the XML or YAML filter file.
+
+    Args:
+        xp_filter_file: Path to the XpFilter file.
+
+    Returns:
+        Dictionary containing the XpSampling table for BP and RP.
+    """
+    if _is_npz_file(xp_filter_file):
+        return load_xpsampling_from_npz(xp_filter_file)
+
+    if _is_yaml_file(xp_filter_file):
+        return load_xpsampling_from_yaml(xp_filter_file)
+
+    x_root = get_file_root(xp_filter_file)
     _, n_bands = get_array_text(x_root, 'bands')
 
-    bp_sampling = get_xp_sampling_matrix(x_root, 'bp', n_bands)
-    rp_sampling = get_xp_sampling_matrix(x_root, 'rp', n_bands)
+    bp_sampling = get_xp_sampling_matrix(x_root, BANDS.bp, n_bands)
+    rp_sampling = get_xp_sampling_matrix(x_root, BANDS.rp, n_bands)
 
-    xp_sampling = dict(zip(BANDS, [bp_sampling, rp_sampling]))
-    return xp_sampling
+    return dict(zip(BANDS, [bp_sampling, rp_sampling]))

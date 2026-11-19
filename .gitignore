@@ -1,18 +1,15 @@
+*.prof
 *.pyc
 .DS_Store
 .coverage
 coverage.xml
-noxfile.py
-src/gaiaxpy/_version.py
 tox.ini
-query_tests.py
 .eggs/
 .env/
 .env10/
 .idea/
 .pytest_cache/
 .svn/
-.nox/
 .tox/
 __pycache__/
 build/
@@ -21,4 +18,5 @@ docs/_build/
 GaiaXPy.egg-info/
 htmlcov/
 junit/
-tests_output_files/
+lib/
+venv/

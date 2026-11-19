@@ -6,11 +6,6 @@ Output
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: gaiaxpy.output.continuous_spectra_data
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 .. automodule:: gaiaxpy.output.output_data
    :members:
    :undoc-members:

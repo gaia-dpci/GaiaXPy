@@ -1,7 +1,6 @@
+:orphan:
+
 GaiaXPy
 =======
 
-.. toctree::
-   :maxdepth: 3
-
-   gaiaxpy
+See the :doc:`gaiaxpy` reference for the package API.

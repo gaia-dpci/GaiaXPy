@@ -10,13 +10,18 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
    gaiaxpy.calibrator
    gaiaxpy.cholesky
+   gaiaxpy.colour_equation
+   gaiaxpy.config
    gaiaxpy.converter
    gaiaxpy.core
    gaiaxpy.error_correction
+   gaiaxpy.file_parser
    gaiaxpy.generator
+   gaiaxpy.input_reader
+   gaiaxpy.output
    gaiaxpy.plotter
    gaiaxpy.spectrum

@@ -36,11 +36,6 @@ Spectrum
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: gaiaxpy.spectrum.spectral_energy_distribution
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 .. automodule:: gaiaxpy.spectrum.utils
    :members:
    :undoc-members:

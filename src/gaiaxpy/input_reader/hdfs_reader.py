@@ -1,3 +1,7 @@
+"""Configure the internal Avro reader for files stored on HDFS.
+Support for HDFS and Avro files is intended solely for internal use.
+The Archive does not distribute Avro files."""
+
 import subprocess
 from os.path import splitext
 
@@ -7,6 +11,15 @@ from gaiaxpy.input_reader.file_reader import FileReader
 
 
 def get_http_port():
+    """Read the NameNode HTTP port using the installed hdfs command.
+
+    Returns:
+        str: Port extracted from dfs.namenode.http-address.
+
+    Raises:
+        Exception: The hdfs configuration command returns a non-zero status.
+        FileNotFoundError: The hdfs executable is unavailable.
+    """
     command = ['hdfs', 'getconf', '-confKey', 'dfs.namenode.http-address']
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
     output, error = process.communicate()
@@ -17,7 +30,27 @@ def get_http_port():
 
 
 def split_cluster_path(file_path, expected_protocol='http', p_sep='://'):
+    """Separate an HDFS URL into its service address, file path and HTTP port.
+
+    Args:
+        file_path (str): URL containing a service address and file path.
+        expected_protocol (str): Protocol used in the returned service address.
+        p_sep (str): Separator between protocol and address; defaults to '://'.
+
+    Returns:
+        tuple[str, str, str]: Service address, absolute file path and configured
+        NameNode HTTP port. The protocol is replaced when necessary, and the
+        port comes from the local hdfs configuration.
+
+    Raises:
+        ValueError: No file-path separator follows the service address.
+
+    Notes:
+        Resolving the port requires the hdfs command and its local configuration.
+    """
+
     def process_address_and_port(_file_path, _protocol_split_index):
+        """Split the service address and use the configured NameNode HTTP port."""
         expected_port = get_http_port()
         address_and_port = _file_path[:_protocol_split_index]
         split_index_port = address_and_port.find(':', len(f'{expected_protocol}{p_sep}'))
@@ -30,6 +63,7 @@ def split_cluster_path(file_path, expected_protocol='http', p_sep='://'):
             return address_and_port, expected_port
 
     def modify_protocol(_given_protocol, _expected_protocol, _file_path):
+        """Replace the URL protocol when it differs from the expected protocol."""
         if _given_protocol != _expected_protocol:
             return _expected_protocol + _file_path[len(_given_protocol):]
         return _file_path
@@ -45,9 +79,31 @@ def split_cluster_path(file_path, expected_protocol='http', p_sep='://'):
 
 
 class HDFSReader(FileReader):
+    """Configure FileReader for an Avro file on an HDFS service.
+
+    This internal reader requires the hdfs command and an Avro-capable parser.
+    """
 
     def __init__(self, file_parser_selector, file, truncation, additional_columns=None, selector=None,
                  disable_info=False):
+        """Resolve the service connection and configure the Avro file reader.
+        Support for HDFS and Avro files is intended solely for internal use.
+        The Archive does not distribute Avro files.
+
+        Args:
+            file_parser_selector (FileParserSelector): Parser factory for the operation.
+            file (str): HDFS URL containing the service address and file path.
+            truncation (bool): Whether subsequent calculations use the recommended
+                number of basis functions for each source and photometer. When True,
+                this reader includes bp_n_relevant_bases and rp_n_relevant_bases.
+                When False, calculations use all available basis functions.
+            additional_columns (dict or None): Extra input-field mappings.
+            selector (object or None): Selection passed to the parser.
+            disable_info (bool): Suppress routine reading messages.
+
+        Raises:
+            ExtensionNotImplementedError: The file extension is not Avro.
+        """
         address, file_path, port = split_cluster_path(file)
         extension = standardise_extension(splitext(file_path)[1]).lower()
         if standardise_extension(splitext(file_path)[1]).lower() != 'avro':

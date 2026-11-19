@@ -31,6 +31,8 @@ To check the version installed in the current environment, run:
 
 DOIs
 ----
+* **DOI v2.2.0**: 10.5281/zenodo.24356606
+
 * **DOI v2.1.5**: 10.5281/zenodo.23400597
 
 * **DOI v2.1.4**: 10.5281/zenodo.17943031

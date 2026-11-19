@@ -1,78 +1,105 @@
-"""
-cholesky.py
-====================================
-Module that implements the Cholesky functionality.
+"""Use Cholesky factorisation to weight continuous-spectrum coefficient residuals.
+
+For each source and photometer, let D contain coefficient_errors divided by
+standard_deviation on its diagonal, and let R be the coefficient correlation
+matrix. These functions use C = D @ R @ D. If R = L @ L.T is its correlation
+factorisation, the returned inverse Cholesky factor of C is
+W = inv(D @ L) = inv(L) @ inv(D).
+Then W.T @ W = inv(C), and chi-squared is the squared norm of W @ residuals.
+
+This inverse-square-root convention gives a lower-triangular matrix rather
+than the symmetric inverse square root of C. No truncation is applied and
+results are returned in memory without saving output files.
 """
 from pathlib import Path
 from typing import Optional, Union
 
 import numpy as np
-import pandas as pd
 from numpy import diag, dot, identity
 from scipy.linalg import cholesky, solve_triangular
 
 from gaiaxpy.core.generic_functions import parse_band
+from gaiaxpy.core.release_resolution import parse_release
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
 
 
-def __get_dot_product(_L_inv: np.ndarray) -> Optional[np.ndarray]:
-    """
-    Calculate the dot product of the transpose of L_inv with itself.
+def __get_dot_product(_lower_inv: np.ndarray) -> Optional[np.ndarray]:
+    """Compute the inverse covariance W.T @ W from its inverse Cholesky factor W.
 
     Args:
-        _L_inv (ndarray): A 2D numpy array.
+        _lower_inv (numpy.ndarray or None): Inverse lower Cholesky factor of the
+            covariance, or None for a source/photometer without a result.
 
     Returns:
-        ndarray: The dot product of the transpose of L_inv with itself. None: If L_inv does not have the attribute `T`
-            (transpose).
+        numpy.ndarray or None: Matrix product, or None if the supplied object
+        has no transpose attribute. Other matrix-operation errors are reported
+        to the caller.
     """
     try:
-        return dot(_L_inv.T, _L_inv)
+        return dot(_lower_inv.T, _lower_inv)
     except AttributeError:
         return None
 
 
-def __output_list_to_df(parsed_input_data: pd.DataFrame, bands_output: list, output_columns: list) -> pd.DataFrame:
-    """
-    Convert a list of output data into a pandas DataFrame.
+def __output_list_to_df(parsed_input_data: 'pd.DataFrame', bands_output: list, output_columns: list) -> 'pd.DataFrame':
+    """Combine source identifiers and per-photometer matrix iterables into a table.
 
     Args:
-        parsed_input_data (pd.Dataframe): Parsed initial data.
-        bands_output (list): A list of output data, where each element is a list of values for a specific band.
-        output_columns (list): A list of strings representing the column names for the output DataFrame.
+        parsed_input_data (pandas.DataFrame): Prepared table containing source_id.
+        bands_output (list): One iterable of matrices or None entries per
+            selected photometer, in input row order.
+        output_columns (list[str]): source_id followed by a name for each
+            photometer's output.
 
     Returns:
-        pd.DataFrame: A DataFrame containing the source ID and the output data for each band.
+        pandas.DataFrame: Source identifiers and matrix-valued columns with
+        a default integer index.
     """
-    output_list = [parsed_input_data['source_id']]
-    for element in bands_output:
-        output_list.append(element)
-    return pd.DataFrame(zip(*output_list), columns=output_columns)
+    from pandas import DataFrame as pdDf
+    output_list = [parsed_input_data['source_id']] + bands_output
+    return pdDf(zip(*output_list, strict=True), columns=output_columns)
 
 
-def get_inverse_square_root_covariance_matrix(input_object: Union[list, Path, pd.DataFrame, str],
-                                              band: Optional[str] = None):
-    """
-    Compute the inverse square root covariance matrix.
+def get_inverse_square_root_covariance_matrix(input_object: Union[list, Path, 'pd.DataFrame', str],
+                                              band: Optional[str] = None, release: str | None = None) \
+        -> (Union)['pd.DataFrame', np.ndarray]:
+    """Compute the inverse Cholesky factor of each selected coefficient covariance.
 
     Args:
-        input_object (list/Path/pd.DataFrame/str): Path to the file containing the mean spectra as downloaded from the
-            Archive in their continuous representation, a pandas DataFrame, a list of sources ids (string or long), or
-            an ADQL query.
-        band (str): Chosen band: 'bp' or 'rp'. If no band is passed, the function will compute the inverse square root
-            covariance for both 'bp' and 'rp'.
+        input_object (str, pathlib.Path, pandas.DataFrame, list or tuple): Input
+            continuous BP/RP mean spectra. Supply a local file, a DataFrame,
+            a list or tuple of integer source IDs, or an ADQL query. Supported local
+            formats include CSV, ECSV, FITS and XML/VOTable, gzip inputs and
+            Archive ZIP files. Source-ID selections and queries retrieve Archive
+            spectra. InputReader requires its usual continuous-spectrum fields
+            for both photometers, including coefficient error information and
+            standard deviations, even when one photometer is selected here.
+        band (str or None): 'bp' or 'rp', ignoring case. None, the default,
+            computes both photometers independently.
+        release (str or None): Gaia release. Defaults to 'dr3' when not specified.
+            When identifiable, the input release must match the selected release.
 
     Returns:
-        DataFrame or ndarray: DataFrame containing the source IDs and the output inverse square root covariance matrices
-            for the sources in the input object if it contains more than one source or no band is passed to the
-            function.
-            The function will return a ndarray (of shape (55, 55)) if there is only one source ID in the input data
-            and a single band is selected.
+        pandas.DataFrame, numpy.ndarray or None: With exactly one input row and
+        one selected photometer, return its inverse Cholesky factor directly,
+        or None when its factorisation cannot be computed. Otherwise, return
+        source_id and bp_inverse_square_root_covariance_matrix and/or
+        rp_inverse_square_root_covariance_matrix columns. Each cell contains
+        a matrix or None; rows follow the prepared input order. Matrix dimensions
+        match the number of coefficients for that photometer and release.
+
+    Raises:
+        InvalidBandError: A supplied band is unsupported.
+        InvalidReleaseError: A supplied release is unsupported.
+        ValueError: Required input fields are missing, or supplied and
+            detected releases disagree.
     """
+    release = parse_release(release)
     if band is not None:
         band = parse_band(band)
-    parsed_input_data, extension = InputReader(input_object, get_inverse_square_root_covariance_matrix, False).read()
+    parsed_input_data, extension, release = InputReader(input_object, get_inverse_square_root_covariance_matrix,
+                                                        truncation=False, release=release).read()
     if band is None:
         bands_to_process = BANDS
         output_columns = ['source_id', 'bp_inverse_square_root_covariance_matrix',
@@ -95,46 +122,67 @@ def get_inverse_square_root_covariance_matrix(input_object: Union[list, Path, pd
 
 def _get_inverse_square_root_covariance_matrix_aux(xp_errors: np.ndarray, xp_correlation_matrix: np.ndarray) -> \
         Optional[np.ndarray]:
-    """
-    Calculate the inverse square root of the covariance matrix.
+    """Compute an inverse Cholesky factor from scaled errors and correlations.
 
     Args:
-        xp_errors (ndarray): A numpy array representing the measurement errors.
-        xp_correlation_matrix (ndarray): A numpy array representing the correlation matrix.
+        xp_errors (numpy.ndarray): One-dimensional coefficient-error vector
+            after division by the photometer's standard_deviation.
+        xp_correlation_matrix (numpy.ndarray): Corresponding square correlation
+            matrix, expected to be symmetric and positive definite.
 
     Returns:
-        ndarray: The inverse square root of the covariance matrix. None: If the Cholesky decomposition of the
-            correlation matrix fails.
+        numpy.ndarray or None: inv(L) @ diag(1 / xp_errors), where L is the
+        lower Cholesky factor of the correlation matrix. Return None when
+        factorisation, triangular solving or subsequent operations raise
+        ValueError, including a non-positive-definite correlation matrix.
+
+    Notes:
+        Uses the lower triangle for Cholesky factorisation. No separate symmetry
+        check is performed. Zero errors are not rejected before division and
+        can produce non-finite results. Other exception types reach the caller.
     """
     try:
-        _L = cholesky(xp_correlation_matrix, lower=True)
+        _lower = cholesky(xp_correlation_matrix, lower=True)
         # Invert lower triangular matrix
-        _L_inv = solve_triangular(_L, identity(len(_L)), lower=True)
+        _lower_inv = solve_triangular(_lower, identity(len(_lower)), lower=True)
         # Matrix of inverse errors
-        _E_inv = diag(1.0 / xp_errors)
-        return dot(_L_inv, _E_inv)
+        _error_inv = diag(1.0 / xp_errors)
+        return dot(_lower_inv, _error_inv)
     except ValueError:
         return None
 
 
-def get_inverse_covariance_matrix(input_object: Union[list, Path, str], band: Optional[str] = None):
-    """
-    Compute the inverse covariance matrix.
+def get_inverse_covariance_matrix(input_object: Union[list, Path, 'pd.DataFrame', str], band: Optional[str] = None,
+                                  release: str | None = None) -> 'pd.DataFrame':
+    """Compute the scaled coefficient covariance inverse for each selected photometer.
 
     Args:
-        input_object (object): Path to the file containing the mean spectra as downloaded from the archive in their
-            continuous representation, a pandas DataFrame, a list of sources ids (string or long), or an ADQL query.
-        band (str): Chosen band: 'bp' or 'rp'. If no band is passed, the function will compute the inverse covariance
-            for both 'bp' and 'rp'.
+        input_object (str, pathlib.Path, pandas.DataFrame, list or tuple): Input
+            continuous BP/RP mean spectra as a local file, DataFrame, list or
+            tuple of integer source IDs, or ADQL query. Formats and reader requirements
+            are the same as get_inverse_square_root_covariance_matrix, including
+            fields for both photometers when only one is selected.
+        band (str or None): 'bp' or 'rp', ignoring case. None computes both
+            photometers independently.
+        release (str or None): Gaia release. Defaults to 'dr3' when not specified.
+            When identifiable, the input release must match the selected release.
 
     Returns:
-        DataFrame or ndarray: DataFrame containing the source IDs and the output inverse covariance matrices for the
-            sources in the input object if it contains more than one source or no band is passed to the function.
-            The function will return a ndarray (of shape (55, 55)) if there is only one source ID in the input data
-            and a single band is selected.
+        pandas.DataFrame, numpy.ndarray or None: For one source and one selected
+        photometer, return its square inverse covariance matrix directly or
+        None if no inverse Cholesky factor could be computed. Otherwise, return source_id
+        and bp_inverse_covariance and/or rp_inverse_covariance columns, with
+        a matrix or None in each cell. Rows follow the prepared input order.
+
+    Raises:
+        InvalidBandError: A supplied band is unsupported.
+        InvalidReleaseError: A supplied release is unsupported.
+        ValueError: Input fields or release information are missing or inconsistent.
     """
+    release = parse_release(release)
     band = band if band is None else parse_band(band)
-    parsed_input_data, extension = InputReader(input_object, get_inverse_covariance_matrix, False).read()
+    parsed_input_data, extension, release = InputReader(input_object, get_inverse_covariance_matrix, truncation=False,
+                                                        release=release).read()
     bands_output = []
     if band is None:
         bands_to_process = BANDS
@@ -146,8 +194,8 @@ def get_inverse_covariance_matrix(input_object: Union[list, Path, str], band: Op
         # The formal errors need to be scaled by the inverse standard deviation.
         xp_errors = parsed_input_data[f'{b}_coefficient_errors'] / parsed_input_data[f'{b}_standard_deviation']
         xp_correlation_matrix = parsed_input_data[f'{b}_coefficient_correlations']
-        _L_inv_iterable = map(_get_inverse_square_root_covariance_matrix_aux, xp_errors, xp_correlation_matrix)
-        band_output = map(__get_dot_product, _L_inv_iterable)
+        _lower_inv_iterable = map(_get_inverse_square_root_covariance_matrix_aux, xp_errors, xp_correlation_matrix)
+        band_output = map(__get_dot_product, _lower_inv_iterable)
         bands_output.append(band_output)
     output_df = __output_list_to_df(parsed_input_data, bands_output, output_columns)
     if len(bands_to_process) == 1 and len(output_df) == 1:
@@ -156,24 +204,37 @@ def get_inverse_covariance_matrix(input_object: Union[list, Path, str], band: Op
         return output_df
 
 
-def get_chi2(_L_inv: np.ndarray, residuals: np.ndarray) -> np.ndarray:
-    """
-    Compute chi-squared (chi2) from given inverse Cholesky of the covariance matrix (L^-1) and a residual vector
-    (r = data - model). This function defines x = L^-1 * r such that chi2 = |x|^2, which guarantees that chi2 >= 0.
+def get_chi2(_lower_inv: np.ndarray, residuals: np.ndarray) -> float:
+    """Compute chi-squared using an inverse Cholesky factor and coefficient residuals.
 
     Args:
-        _L_inv (ndarray): Inverse square root of the covariance, as computed from the function
-            get_inverse_square_root_covariance_matrix.
-        residuals (ndarray): Difference between the observed coefficient vector and some model prediction of it.
+        _lower_inv (numpy.ndarray): Inverse lower Cholesky factor W, such as the
+            result of get_inverse_square_root_covariance_matrix for one source
+            and photometer. Supply the matrix itself, not its containing DataFrame.
+        residuals (numpy.ndarray): One-dimensional coefficient residual vector,
+            observed minus model, in the same coefficient order as the matrix.
 
     Returns:
-        float: Chi-squared value.
+        float: dot(W @ residuals, W @ residuals). For a valid real inverse
+        Cholesky factor, this is residuals.T @ inv(C) @ residuals for the covariance C
+        represented by W. Dimensions can differ between photometers and releases.
+
+    Raises:
+        ValueError: Either input is None, the matrix is not square and
+            two-dimensional, or residuals is not a matching one-dimensional array.
+
+    Notes:
+        Only presence and dimensions are checked. Inputs must already be NumPy
+        arrays with suitable real numeric values; this function does not verify
+        finite values or that W corresponds to a valid covariance. It does not
+        apply additional scaling by standard_deviation.
     """
-    if _L_inv is None or residuals is None:
+    if _lower_inv is None or residuals is None:
         raise ValueError('Input parameters cannot be None.')
-    if _L_inv.shape != (55, 55):
-        raise ValueError('Inverse covariance matrix shape must be (55, 55).')
-    if residuals.shape != (55,):
-        raise ValueError('Residuals shape must be (55,).')
-    x = dot(_L_inv, residuals)
+    if _lower_inv.ndim != 2 or _lower_inv.shape[0] != _lower_inv.shape[1]:
+        raise ValueError('Inverse square root covariance matrix must be a square 2D array.')
+    if residuals.ndim != 1 or residuals.shape[0] != _lower_inv.shape[0]:
+        raise ValueError('Residuals must be a 1D array with the same number of elements as the covariance matrix '
+                         'qdimension.')
+    x = dot(_lower_inv, residuals)
     return dot(x.T, x)

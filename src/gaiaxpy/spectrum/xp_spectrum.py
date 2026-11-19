@@ -1,33 +1,30 @@
-"""
-xp_spectrum.py
-====================================
-Module to represent a BP/RP spectrum.
-"""
+"""Representation of BP/RP spectra."""
 
 from .generic_spectrum import Spectrum
+from ..core.generic_functions import parse_band
 
 
 class XpSpectrum(Spectrum):
-    """
-    A spectrum observed with one of the Gaia low-resolution photometers (Blue or Red Photometer, BP or RP).
-    """
+    """Associate a source ID with the BP or RP photometer."""
 
-    def __init__(self, source_id, xp):
-        """
-        Initialise an XP spectrum.
+    def __init__(self, source_id, band):
+        """Store the source ID and normalise the photometer name.
 
         Args:
-            source_id (int/str): Source identifier.
-            xp (str): Gaia photometer, can be either 'bp' or 'rp'.
+            source_id (int or str): Source identifier.
+            band (str): BP or RP, ignoring case. A one-item list of the name
+                is also accepted.
+
+        Raises:
+            InvalidBandError: The supplied name is not a recognised photometer.
         """
         Spectrum.__init__(self, source_id)
-        self.xp = xp
+        self.band = parse_band(band)
 
-    def get_xp(self):
-        """
-        Get band.
+    def get_band(self):
+        """Return the photometer name.
 
         Returns:
-            str: Photometer identifier. Either 'bp' or 'rp'.
+            str: Lowercase 'bp' or 'rp'.
         """
-        return self.xp
+        return self.band

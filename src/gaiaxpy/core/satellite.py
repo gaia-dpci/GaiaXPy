@@ -12,10 +12,9 @@ TELESCOPE_PUPIL_AREA = 0.7278
 WLRange = namedtuple('WLRange', 'low high')
 
 # Wavelength range covered by the BP spectrum
-BP_WL = WLRange(330, 643)
-
+BP_WL_DR3 = WLRange(330, 643)
 # Wavelength range covered by the RP spectrum
-RP_WL = WLRange(635, 1020)
+RP_WL_DR3 = WLRange(635, 1020)
 
 # Bands
 Bands = namedtuple('Bands', 'bp rp')

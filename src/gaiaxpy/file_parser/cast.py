@@ -1,8 +1,10 @@
+"""Standardise recognised column types after reading a spectrum table.
+
+Identifiers, counts and scalar statistics use pandas nullable integer or
+floating-point types. Array-valued columns remain object columns. Helpers
+also remove NumPy masks from supported array fields.
 """
-cast.py
-====================================
-Module to cast the data after parsing.
-"""
+
 import numpy as np
 from numpy.ma import MaskError, getdata
 from pandas.errors import IntCastingNaNError
@@ -28,6 +30,11 @@ __type_map = {'source_id': 'Int64', 'solution_id': 'Int64',
 
 
 def __replace_masked_array(value):
+    """Return the data behind a masked array, or an empty array for a float zero.
+
+    Empty masked arrays also become empty NumPy arrays. Other values are
+    returned unchanged; masks are removed rather than filled with NaN.
+    """
     if (isinstance(value, np.ma.core.MaskedArray) and getdata(value).size == 0) or (isinstance(value, float) and
                                                                                     value == 0.0):
         return np.array([])
@@ -38,17 +45,34 @@ def __replace_masked_array(value):
 
 
 def __replace_masked_constant(value):
+    """Replace a masked scalar whose stored value is zero with NaN.
+
+    Return other values unchanged.
+    """
     if isinstance(value, np.ma.core.MaskedConstant):
         return np.nan if value.item() == 0.0 else value
     return value
 
 
 def _cast(df):
-    """
-    Cast types to the defined ones to standardise the different input formats.
+    """Convert recognised columns to the types required by GaiaXPy.
 
     Args:
-        df (DataFrame): a DataFrame with parsed data from input files.
+        df (pandas.DataFrame): Table to update. Columns absent from the type
+            mapping are left unchanged, and mapped columns need not all exist.
+
+    Returns:
+        pandas.DataFrame: The same DataFrame, updated in place. Array-valued
+        fields use object columns; recognised scalar fields are converted to
+        nullable numeric types where possible.
+
+    Raises:
+        ValueError: A column without missing values cannot be converted to its
+            expected type.
+
+    Notes:
+        Some conversion failures involving missing or masked values are left
+        for later input handling, so a column may retain its original type.
     """
     # flake8: noqa
     for column in ['bp_n_parameters', 'bp_basis_function_id']:

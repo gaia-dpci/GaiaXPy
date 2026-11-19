@@ -1,50 +1,67 @@
-"""
-synthetic_photometry_generator.py
-====================================
-Module for the generation of synthetic photometry.
+"""Provide shared basis preparation and single-source photometry construction.
+
+Generation uses passband integration matrices stored in each filter file rather
+than first sampling a calibrated spectrum on a wavelength grid.
 """
 
-from configparser import ConfigParser
+import yaml
 
-from gaiaxpy.config.paths import config_ini_file
+from gaiaxpy.config.paths import config_yaml_file
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.spectrum.sampled_basis_functions import SampledBasisFunctions
 from gaiaxpy.spectrum.single_synthetic_photometry import SingleSyntheticPhotometry
 from gaiaxpy.spectrum.utils import get_covariance_matrix
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 
-config_parser = ConfigParser()
-config_parser.read(config_ini_file)
+with open(config_yaml_file) as f:
+    config_parser = yaml.safe_load(f)
 
 
-class SyntheticPhotometryGenerator(object):
-    def generate(self, parsed_input_data, extension, output_file, output_format, save_file, truncation):
+class SyntheticPhotometryGenerator:
+    """Define the generation interface and shared design-matrix preparation."""
+
+    def generate(self, parsed_input_data, truncation, disable_info=False):
+        """Reject direct generation through the base class.
+
+        Subclasses implement this interface. Direct use raises ValueError.
+        """
         raise ValueError('Method not defined for base class.')
 
     def _get_sampled_basis_functions(self, xp_sampling, xp_sampling_grid):
-        return {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_sampling[band]) for band in BANDS}
+        """Wrap the BP/RP integration matrices as SampledBasisFunctions.
 
-    def _create_photometry_list(self, parsed_input_data, photometric_system, sampled_basis_func, truncation, xp_merge):
-        parsed_input_data_dict = parsed_input_data.to_dict('records')
-        return (_generate_synthetic_photometry(row, sampled_basis_func, xp_merge, truncation, photometric_system) for
-                row in parsed_input_data_dict)
+        Args:
+            xp_sampling (dict): BP and RP matrices keyed by 'bp' and 'rp', with
+                basis functions along rows and passbands along columns.
+            xp_sampling_grid (array-like): Filter sampling associated with the
+                matrix columns, in passband order.
+
+        Returns:
+            dict: SampledBasisFunctions objects keyed by photometer.
+        """
+        return {band: SampledBasisFunctions.from_design_matrix(xp_sampling_grid, xp_sampling[band]) for band in BANDS}
 
 
 def _generate_synthetic_photometry(row, design_matrix, merge, truncation, photometric_system):
-    """
-    Create the synthetic photometry from the input continuously-represented mean spectrum and design matrix.
+    """Construct photometry for one source and one selected system.
 
     Args:
-        row (DataFrame): Single row in a DataFrame containing the entry for one source in the mean spectra file. This
-            will include columns for both bands (although one could be missing).
-        design_matrix (ndarray): 2D array containing the basis functions sampled for the specific photometric system.
-        merge (dict): Dictionary containing an array of weights per BP and one for RP. These have one value per sample
-            and define the contributions from BP and RP to the joined absolute spectrum.
-        truncation (bool): Toggle truncation of the set of bases.
-        photometric_system (obj): Photometric system object containing the zero-points.
+        row (pandas.Series or mapping): Source fields accessed by column name,
+            including BP/RP coefficients, coefficient errors and correlations,
+            standard deviations and, when truncating, relevant-basis counts.
+        design_matrix (dict): Per-photometer SampledBasisFunctions describing
+            passband integration, keyed by 'bp' and 'rp'.
+        merge (dict): BP/RP contribution weights in passband order.
+        truncation (bool): True passes this source's bp_n_relevant_bases for BP
+            and rp_n_relevant_bases for RP. False uses all available functions.
+        photometric_system (PhotometricSystem): Selected system supplying zero
+            points and flux-bias corrections.
 
     Returns:
-        SingleSyntheticPhotometry: The output synthetic photometry.
+        SingleSyntheticPhotometry: Source photometry after configured flux-bias
+        corrections and magnitude conversion. Later pipeline stages handle
+        colour equations, tabulated flux-error correction and polynomial
+        standardisation.
     """
     cont_dict = {band: XpContinuousSpectrum(row['source_id'], band.upper(), row[f'{band}_coefficients'],
                                             get_covariance_matrix(row, band), row[f'{band}_standard_deviation'])

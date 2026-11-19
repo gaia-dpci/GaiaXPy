@@ -11,11 +11,6 @@ File parser
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: gaiaxpy.file_parser.parse_external
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 .. automodule:: gaiaxpy.file_parser.parse_generic
    :members:
    :undoc-members:
@@ -26,12 +21,7 @@ File parser
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: gaiaxpy.file_parser.parse_internal_sampled
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: gaiaxpy.file_parser.utils
+.. automodule:: gaiaxpy.file_parser.ecsv_utils
    :members:
    :undoc-members:
    :show-inheritance:

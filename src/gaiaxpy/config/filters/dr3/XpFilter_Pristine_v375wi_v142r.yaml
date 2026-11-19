@@ -1,0 +1,38 @@
+config:
+  solutionId: 4545469030156206114
+  bands:
+    n: 1
+    values: [ CaHK ]
+  XpSampling:
+    bpSampledBases:
+      dimension: 55
+      values: [ 1.08148609847e-20, -4.93640483009e-20, 9.06667284207e-20, -8.17191279773e-20, 1.2150570693e-19, 1.59924643532e-19, 5.12785647927e-20, 1.1833066624e-20, 1.76806193827e-20, -4.84470060786e-20, 5.49007567622e-20, 6.22731745548e-20, -1.73328657e-19, -2.43962283359e-20, -1.46588037752e-19, -5.04151025558e-20, -2.4630036398e-19, 7.33165649061e-20, 1.72861173544e-20, 4.86364625775e-19, 1.37131158051e-19, -1.51929473833e-19, -4.83288495179e-20, 6.50563557027e-20, -5.3398548091e-20, -1.1822787307e-19, 1.05308390683e-19, -3.2570805576e-19, 1.74414103796e-19, -8.08529031691e-20, -1.01889483229e-19, -4.28578714652e-19, 2.08618954745e-19, 5.28632035739e-20, -1.13677512927e-19, -1.74538618857e-19, -3.39499086706e-20, 7.49729848203e-20, -1.19490044395e-20, 3.32267581504e-19, -1.09164756697e-19, 8.94126937543e-20, 7.99920571596e-20, -2.67511289135e-20, 2.9170043841e-19, -6.46796295585e-20, 5.24725417455e-20, 6.2451162869e-19, 3.90154900738e-19, 2.65052161595e-19, -2.81874304107e-19, 2.53782075101e-20, 3.88416380786e-19, 6.50583250731e-20, 2.12166734247e-19 ]
+    rpSampledBases:
+      dimension: 55
+      values: [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ]
+  XpMerge:
+    sampleMeanWavelengths: [ 395.183 ]
+    bpWeights: [ 1.0 ]
+    rpWeights: [ 1.0 ]
+  fluxBias: [ 0.0 ]
+  zeropoints: [ -25.3443 ]
+gaiaxpy_metadata:
+  original_filename: XpFilter_Pristine_v375wi_v142r.yaml
+  data_release: dr3
+  component_type: photometric_filter
+  version: '1'
+  description: Synthetic photometry configuration for the Pristine system. The values
+    are unchanged from those distributed for Gaia DR3. The file format was converted
+    from XML to YAML; this conversion did not change the photometric system or its
+    numerical configuration.
+  reference: 'Gaia Collaboration, Montegriffo, P., et al. (2023). Gaia Data Release
+    3: The Galaxy in your preferred colours. Synthetic photometry from Gaia low-resolution
+    spectra. Astronomy & Astrophysics, 674, A33. https://doi.org/10.1051/0004-6361/202243709.'
+  schema_version: 1
+  changes:
+  - version: '1'
+    description: Initial version registration.
+  basis_type: basic
+  internal_identifiers:
+  - v375wi
+  - v142r

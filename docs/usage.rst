@@ -1,7 +1,15 @@
 Usage
 =====
 
-The package currently includes four different functionalities: a **calibrator**, a **converter**, a **synthetic photometry generator**, and a **plotter**.
+.. note::
+    This page contains a summary of how GaiaXPy should be used. For details, please consult the available `tutorials <https://gaia-dpci.github.io/GaiaXPy-website/tutorials.html>`_.
+
+GaiaXPy provides tools for working with Gaia DR3 BP/RP mean spectra, including calibration, conversion to sampled spectra, synthetic photometry and plotting.
+
+Supporting functions include covariance calculations, Cholesky factorisation, wavelength and pseudo-wavelength conversion.
+
+This page introduces common inputs and outputs for the mean-spectrum tools.
+See :doc:`gaiaxpy` for the full API reference.
 
 .. role:: python(code)
    :language: python
@@ -10,32 +18,43 @@ The package currently includes four different functionalities: a **calibrator**,
 Input data types
 ------------------
 
-**Note:** The following information does not apply to the **plotter** functionality.
+.. note::
+    The following information does not apply to the :ref:`plotter <plotter>` functionality.
 
-The functions in GaiaXPy can receive different kinds of inputs. The ones currently implemented are :python:`files`, :python:`lists` , :python:`ADQL queries` and `pandas <https://pandas.pydata.org/>`_ :python:`DataFrames`.
+The mean-spectrum tools accept files, source-ID selections (lists or tuples of integers or integer strings), ADQL queries and `pandas <https://pandas.pydata.org/>`_ DataFrames, as described below.
 
 Files
 -----
-The functions accept input files with the extensions: :python:`csv`, :python:`ecsv`, :python:`fits`, and :python:`xml`.
-These are files that contain XP continuous raw data as extracted from the `Gaia Archive <https://archives.esac.esa.int/gaia/>`_.
+Supported file formats are ``CSV``, ``ECSV``, ``FITS`` and ``XML/VOTable``. GaiaXPy accepts ``.csv.gz``, ``.ecsv.gz``, ``.fits.gz``, ``.xml.gz``, and
+``.zip`` input files as downloaded from the `Gaia Archive <https://archives.esac.esa.int/gaia/>`_ directly. These use the same parsing, column selection, normalisation
+and release validation as uncompressed inputs. Gzip-compressed output is not supported.
 
-Lists
------
-Lists are accepted only by :python:`calibrate`, :python:`convert`, and :python:`generate`. These lists have to correspond to a list of source IDs. Both lists of strings and lists of long are accepted.
+The mean-spectrum tools read continuous XP data from the `Gaia Archive <https://archives.esac.esa.int/gaia/>`_. Files must contain the columns required by the selected operation.
 
-When a list is passed to one of the tools, the function will internally request the required data for the given sources from the Gaia Archive.
+Source-ID lists and tuples
+--------------------------
+The :python:`calibrate`, :python:`convert` and :python:`generate` functions accept lists
+or tuples of source IDs supplied as integers, integer strings, or a mixture. String IDs are converted to integers before Archive retrieval.
 
-Passing Cosmos credentials (:python:`username` and :python:`password`) is optional.
+These functions retrieve the required DR3 data for the selected sources from the Gaia Archive.
+
+Cosmos credentials can be supplied using :python:`username` and :python:`password`, or :python:`credentials_file`. Authentication may be requested when needed.
 
 ADQL queries
 ------------
-ADQL queries are accepted only by the :python:`calibrate`, :python:`convert`, and :python:`generate`. Queries need to be passed as strings (e.g.: :python:`"select TOP 100 source_id from gaiadr3.gaia_source where has_xp_continuous = 'True'"`).
+The same functions accept ADQL queries supplied as strings. Queries must return a source-ID column, for example:
 
-Passing Cosmos credentials (:python:`username` and :python:`password`) is optional.
+.. code-block:: python
+
+    query = "SELECT TOP 100 source_id FROM gaiadr3.gaia_source WHERE has_xp_continuous = 'True'"
+
+This example selects sources with continuous XP spectra.
+
+Cosmos credentials can be supplied using :python:`username` and :python:`password`, or :python:`credentials_file`. Authentication may be requested when needed.
 
 DataFrames
 ----------
-DataFrames can be accepted by all the tools available and will work as far as the names of the columns in the DataFrame match the columns used in the files extracted from the Gaia Archive.
+DataFrames must contain the columns and array values required by the selected operation. Use ``get_required_columns`` to inspect these requirements; see :doc:`faqs`.
 
 Some tools require to have the columns :python:`bp_coefficient_correlations` and :python:`rp_coefficient_correlations`. The data in these two columns will be converted to matrices using the
 function :python:`array_to_symmetric_matrix` if they come as arrays as it happens for the data served from the archive. No changes will be made if the data in these columns already correspond to matrices.
@@ -68,8 +87,8 @@ Input
    output_data = generic_function(read_df)
 
    # Passing a list
-   sources = [1234567890, 0987654321] # Or ['1234567890', '0987654321'] as strings
-   output_data = generic_function(sources)
+   sources = [1234567890123456789, "2345678901234567890"]
+   output_data = generic_function(sources, release="dr3")
 
 Output
 ------
@@ -94,10 +113,11 @@ Storage
 The functions have the option :python:`save_file` which is set to :python:`True` by default.
 
 The output file has the same extension as the input file unless the user chooses a different output format. In the case of elements that do not have an extension like lists and DataFrames, :python:`csv` is used by default.
-The option :python:`output_format` allows to store the data in the formats :python:`avro`, :python:`csv`, :python:`ecsv`, :python:`fits`, and :python:`xml`.
+The option :python:`output_format` selects ``CSV``, ``ECSV``, ``FITS`` or ``XML/VOTable``.
 
-Depending on the format chosen to store the data, the functions will create one or two files. The formats :python:`fits` and :python:`xml` will create one file that contains both the data and the sampling.
-However, the formats :python:`avro` and :python:`csv` will generate two files, one for each of the output variables. In this case, the name of the sampling file will include the suffix :python:`_sampling`.
+For calibrated and converted sampled spectra, ``CSV`` writes a data file and a separate ``<output_file>_sampling.csv`` file. CSV outputs also save provenance in ``<output_file>_metadata.csv``. Photometry tables do not have a separate sampling file.
+
+``ECSV``, ``FITS``, ``XML/VOTable`` embed metadata and, for sampled-spectrum output, the sampling in the main file. Sampled-spectrum Avro output uses a separate ``_sampling.avro`` file.
 
 .. code-block:: python
 
@@ -111,19 +131,38 @@ If the function accepts a sampling, it has to correspond to a NumPy array and be
 .. code-block:: python
 
     import numpy as np
-    from gaiaxpy import generic_function
+    from gaiaxpy import calibrate
 
-    input_file = 'path/to/input/file.extension'
-    output_data, output_sampling = generic_function(input_file, sampling=np.linspace(0, 100, 1000))
+    input_file = 'path/to/mean_spectrum.csv'
+    output_data, output_sampling = calibrate(input_file, sampling=np.arange(336, 1021, 2))
 
 .. warning::
     If an output file with the same name as an existing one is created,
     the data of the previous file will be automatically overwritten.
 
-Note on TOPCAT
---------------
+Output metadata
+---------------
 
-`TOPCAT <http://www.star.bris.ac.uk/~mbt/topcat/>`_ can read the FITS and XML output files of the calibrator, converter, and generator. It is possible to plot their contents using TOPCAT.
+Calibration, conversion and photometry results store provenance and
+relevant paper references in ``data.attrs['gaiaxpy_metadata']``. To read
+it from a saved output, use:
+
+.. code-block:: python
+
+    from gaiaxpy.output import read_output_metadata
+
+    metadata = read_output_metadata('output_spectra.csv')
+
+The metadata also contains the paths to the configuration files used to compute
+the output data.
+
+For ``CSV``, the helper reads the companion ``_metadata.csv`` file. It also accepts
+that companion's path directly.
+
+Interaction with TOPCAT
+-----------------------
+
+`TOPCAT <http://www.star.bris.ac.uk/~mbt/topcat/>`_ can read the ``FITS`` and ``XML`` output files of the calibrator, converter, and generator. It is possible to plot their contents using TOPCAT.
 
 The functionality that allows to generate these plots is the `XYArray Layer Control <http://www.star.bristol.ac.uk/~mbt/topcat/sun253/GangLayerControl_xyarray.html>`_.
 
@@ -133,103 +172,142 @@ A tutorial on how to work with TOPCAT is available `here <https://gaia-dpci.gith
 Calibrator
 ----------
 
-The function :python:`calibrate` returns a DataFrame of calibrated spectra and a NumPy array with the sampling. The default output file name is :python:`'output_spectra'`, but the user can choose a different one.
+:python:`calibrate` returns a DataFrame of calibrated spectra and a NumPy array
+of wavelengths in nm. The default sampling covers 336–1020 nm in 2 nm steps.
+Custom wavelength grids must lie within [330, 1050] nm.
 
-.. code-block:: python
-
-   import numpy
-   from gaiaxpy import calibrate
-
-   mean_spectrum_file = 'path/to/mean_spectrum_with_correlation.csv'
-   calibrated_df, sampling = calibrate(mean_spectrum_file, sampling=np.arange(336, 1021, 2), save_file=False)
-
-The default sampling is :python:`np.arange(336, 1021, 2)`; however, in order to improve the resolution at the blue end, the log-scale sampling :python:`numpy.geomspace(330, 1049.9999999999, 361)` is proposed as an alternative.
-
-All the available options can be found in :ref:`calibrate <calibrate>`.
+The default output file name is ``output_spectra``; use ``output_file`` to
+choose another name. See :ref:`calibrate <calibrate>` for all parameters and
+return values.
 
 ---------
 Converter
 ---------
 
-The function :python:`convert` returns a DataFrame where each row corresponds to a converted spectrum, and a NumPy array with the sampling.
+:python:`convert` returns a DataFrame of sampled BP/RP spectra and a NumPy
+array of pseudo-wavelengths. The default sampling is
+``numpy.linspace(0, 60, 600)``. Custom grids must lie within [0, 60].
 
-.. code-block:: python
-
-    from gaiaxpy import convert
-
-    mean_spectrum_file = 'path/to/mean_spectrum_with_correlation.csv'
-    converted_data, sampling = convert(mean_spectrum_file, save_file=False)
-
-There is also a default sampling which is :python:`numpy.linspace(0, 60, 600)`.
-
-.. code-block:: python
-
-    from gaiaxpy import convert
-
-    mean_spectrum_file = 'path/to/mean_spectrum_with_correlation.csv'
-    converted_data, sampling = convert(mean_spectrum_file, sampling=numpy.linspace(0, 70, 1000), output_file='my_output_name', output_format='.xml')
-
-All the available options can be found in :ref:`convert <convert>`.
+See :ref:`convert <convert>` for all parameters and return values.
 
 ------------------------------
 Synthetic photometry generator
 ------------------------------
 
-The synthetic photometry utility uses the method :python:`generate` to return a DataFrame with the generated synthetic photometry results.
-Magnitudes, fluxes and flux errors are computed for each filter. The synthetic fluxes are given in units
-of W nm :superscript:`-1` m :superscript:`-2` for photometric systems on VEGAMAG and W Hz :superscript:`-1` m :superscript:`-2`
-for systems in AB. See also `Gaia Collaboration, Montegriffo et al. 2022, Gaia Data Release 3: The Galaxy in your preferred
-colours. Synthetic photometry from Gaia low-resolution spectra <https://arxiv.org/abs/2206.06215>`_.
+:python:`generate` returns a DataFrame containing magnitudes, fluxes and flux
+errors for each selected passband. Fluxes are in ``W nm^-1 m^-2`` for VEGAMAG
+systems and ``W Hz^-1 m^-2`` for AB systems.
 
-.. code-block:: python
+Choose photometric systems matching the input release, such as
+``PhotometricSystem.DR3_JKC`` for DR3.
+Use ``PhotometricSystem.get_available_systems()`` to list the available systems.
+See :ref:`generate <generate>` for all parameters and return values.
 
-    from gaiaxpy import generate, PhotometricSystem
-
-    mean_spectrum_file = 'path/to/mean_spectrum_with_correlation.csv'
-    phot_system = PhotometricSystem.JKC
-    generated_data = generate(mean_spectrum_file, phot_system, save_file=False)
-
-`This table <_static/images/PhotometricSystem_table.pdf>`_ lists the available systems providing references for the passband definitions.
-The last column indicates the presence of a standardised version of the same set of filters (see `Gaia Collaboration, Montegriffo et al. 2022 <https://arxiv.org/abs/2206.06215>`_ for details). The asterisk for the HST WFC3 UVIS and
-ACS WFC systems indicates that only a small selection (f438w, f606w, f814w) of the bands in these
-two systems have been standardised using the HUGS catalogue (Nardiello, D., et al. 2018, The Hubble Space Telescope UV Legacy Survey of Galactic Globular
-Clusters - XVII. Public Catalogue Release, 481, 3382–3393). These are available as HST_HUGS in GaiaXPy.
-No ultraviolet band is provided in the standardised version of the Stromgren system (this is also indicated
-with an asterisk).
-
-The complete list of the systems included in the package can also be obtained as follows:
-
-.. code-block:: python
-
-    from gaiaxpy import PhotometricSystem
-
-    PhotometricSystem.get_available_systems()
+For worked examples of calibration, conversion and synthetic photometry, see
+the `GaiaXPy tutorials <https://gaia-dpci.github.io/GaiaXPy-website/tutorials.html>`_.
 
 Photometric systems requests
 ----------------------------
 Users can request the addition of other photometric systems by raising an `issue via GitHub <https://github.com/gaia-dpci/GaiaXPy/issues>`_.
 The main conditions for adding a new system are the following:
 
-* Only passbands that are fully enclosed in the Gaia BP/RP wavelength range [330, 1050] nm can be reproduced.
+* Only passbands that are fully enclosed in the Gaia BP/RP wavelength range ``[330, 1050] nm`` can be reproduced.
 * Requests need to be properly justified. An example: it would be pointless to include a specific set of passbands that is used at a given telescope to approximate the JKC or SDSS systems. Synthetic magnitudes/fluxes (standardised or non-standardised) in these systems can be already obtained with GaiaXPy. On the other hand, it would be useful to include a set of passbands adopted by an existing or forthcoming survey that intends to provide magnitudes in its own “natural” photometric system, or a set aimed at tracing a specific feature/characteristic of the available XP spectra, not covered by already included passbands.
 * The newly added systems will be publicly available to all GaiaXPy users.
 * The new system to be added is specified as follows:
 
-  * one CSV file per passband, containing the following columns: wavelength in nm or Angstrom, total response in arbitrary units.
-  * it must be clearly specified if the transmission curves are photonic curves or energy curves (see, e.g., Bessell & Murphy 2012).
-  * it must be clearly specified if the desired magnitudes are VEGAMAG or AB mag.
+  * one ``CSV`` file per passband, containing the following columns: wavelength in nm or Angstrom, total response in arbitrary units.
+  * it must be clearly specified if the transmission curves are photonic curves or energy curves (see, e.g., ``Bessell & Murphy 2012``).
+  * it must be clearly specified if the desired magnitudes are ``VEGAMAG`` or ``AB`` mag.
   * a reference for the source of all the above info (especially the transmission curves) must be provided.
 
 All the available options for this method can be found in :ref:`generate <generate>`.
 
-Downloadable SVO systems
-------------------------
-The Spanish Virtual Observatory (`SVO <https://svo.cab.inta-csic.es/main/index.php>`_) provides additional files that
-can be downloaded from their webpage and then loaded into GaiaXPy version 2.0.0 or later.
+Additional photometric systems
+------------------------------
+The Spanish Virtual Observatory (`SVO <https://svo.cab.inta-csic.es/main/index.php>`_)
+provides additional photometric-system files for Gaia DR3. These XML files can
+be downloaded and loaded into GaiaXPy (version ``2.0.0`` or later) to generate synthetic photometry alongside
+the built-in systems.
 
 These files contain additional photometric systems from which synthetic photometry can be generated in the same way it is done with the built-in GaiaXPy systems.
 
 A tutorial on how to use this functionality is available in the `Tutorials section <https://gaia-dpci.github.io/GaiaXPy-website/tutorials.html>`_ of the main GaiaXPy webpage.
+
+``PhotometricSystem`` is a stable registry of the currently available systems.
+To load additional systems:
+
+.. code-block:: python
+
+    from gaiaxpy import PhotometricSystem, load_additional_systems, remove_additional_systems
+
+    load_additional_systems('/path/to/filters')
+    system = PhotometricSystem.USER_DR3_Sdss_v1
+    names = PhotometricSystem.get_available_systems()
+    remove_additional_systems()
+
+The argument can be a single filter file or a directory, supplied as ``str`` or
+``pathlib.Path``. Directory discovery is recursive. Selecting a file loads only
+that file. Supported filenames are ``<system>.gaiaxpy_dr3_<version>.xml``, case-insensitively.
+
+Downloaded DR3 XML files and user-created files following this convention
+remain usable without modifications to their contents. Directory discovery warns
+with paths for unrelated files that it ignores. Explicitly selecting an unsupported
+filename, or a filter declaring an unsupported release/format combination, raises
+an error. A directory containing a recognisable but unsupported release/format
+combination also raises an error.
+
+Additional systems are identified by release, base system name and version.
+Different systems may use different versions, and multiple versions of one system
+can be loaded together. For example, these files may coexist:
+
+.. code-block:: text
+
+    Example.gaiaxpy_dr3_v1.xml
+    Example.gaiaxpy_dr3_v2.xml
+    Other.gaiaxpy_dr3_v7.xml
+
+Select each version explicitly:
+
+.. code-block:: python
+
+    from gaiaxpy import generate
+
+    load_additional_systems('/path/to/filters')
+    systems = [PhotometricSystem.USER_DR3_Example_v1,
+               PhotometricSystem.USER_DR3_Example_v2]
+    photometry = generate(input_data, photometric_system=systems, save_file=False)
+
+Additional-system identifiers and photometry column labels always include the
+version, even when only one version is loaded. There are no unversioned aliases. For a band ``G``, the example
+produces distinct columns such as ``USER_DR3_Example_v1_flux_G`` and
+``USER_DR3_Example_v2_flux_G``. Use ``get_available_systems()`` to see the
+filter names.
+
+References imported by other modules see the same updated selection. Existing
+code such as ``PhotometricSystem = load_additional_systems(path)`` continues to
+work. Subsequent loads replace the additional selection after confirmation;
+they do not accumulate systems. A failed load leaves the previous selection and
+configuration unchanged. Removing or replacing a selection invalidates its
+previously selected additional-system objects.
+
+Filter versions and optional metadata
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``system.get_version()`` reports the version of the selected filter file. Built-in
+filters use their embedded metadata; their versions are independent of the
+GaiaXPy package version.
+
+DR3 XML files without a metadata block remain supported.
+Their versions come from their filenames, and ``get_metadata()`` returns an empty
+dictionary. Conflicting or malformed metadata causes the complete load to fail
+before replacing the previous selection.
+
+For user-created files, the user assigns the version to identify their own
+configuration as part of the file name; it does not imply an official Gaia
+or SVO release.
+
+.. _plotter:
 
 -------
 Plotter
@@ -244,5 +322,7 @@ This functionality allows to plot the output of the calibrator and converter. It
 
 The parameter :python:`multi` set as :python:`True` plots all the results in the image, whereas :python:`False` generates one plot per spectrum in the data.
 The parameter :python:`show_plot` shows the images if it is set as :python:`True`. If a :python:`output_path` is provided, the plots are automatically saved.
+
+By default, plot labels do not require LaTeX. Set ``use_tex=True`` to render labels using LaTeX; this requires a LaTeX installation.
 
 All the available options are described in :ref:`plot_spectra <plotter>`.

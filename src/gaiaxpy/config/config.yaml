@@ -1,0 +1,29 @@
+# Paths are relative to config path defined in paths.py
+calibrator:
+  dr3:
+    sampling:
+      path: 'calibrator_config/dr3'
+      generic: '{xp}_dr3_{model}_{kind}.npz'
+    nosampling:
+      path: 'xp_filter/dr3'
+      generic: 'XpFilter_{model}.npz'
+colour_equation:
+  dr3:
+    path: 'colour_eq_files/dr3'
+converter:
+  dr3:
+    path: 'converter_config/dr3'
+    file: 'OptimisedCalibratedBases_BpId32_RpId37_withNormalisation.npz'
+core:
+  dr3:
+    path: 'dispersion'
+    dispersion_function: 'TabulatedDispersionFunction-DR3-v375wiv142r.csv'
+error_corrector:
+  dr3:
+    path: 'correction_tables/dr3'
+    generic: 'DIDREQ-465-{system}-correction-factors.csv'
+generator:
+  dr3:
+    photsystem:
+      path: 'filters/dr3'
+      filter: 'XpFilter_{system}_{model}.yaml'

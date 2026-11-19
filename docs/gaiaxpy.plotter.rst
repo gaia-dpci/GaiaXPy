@@ -16,8 +16,6 @@ Plotter
    :undoc-members:
    :show-inheritance:
 
-.. _plotter:
-
 .. automodule:: gaiaxpy.plotter.plot_spectra
    :members:
    :undoc-members:

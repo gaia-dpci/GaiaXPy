@@ -1,8 +1,9 @@
 import pandas.testing as pdt
 import pytest
 
-from gaiaxpy.generator.generator import _generate, generate, PhotometricSystem
-from tests.files.paths import mean_spectrum_avro_file
+from gaiaxpy.generator.generator import _generate, generate
+from gaiaxpy.photometric_system.photometric_system import PhotometricSystem
+from tests.files.continuous import dr3_mean_spectra_avro_file
 
 
 @pytest.fixture(scope='module')
@@ -16,17 +17,17 @@ def select_records_with_value(record):
 
 
 def test_select_end_6(selected_source_id):
-    ps = [PhotometricSystem.JKC, PhotometricSystem.JPAS]
-    output = _generate(mean_spectrum_avro_file, photometric_system=ps, selector=select_records_with_value,
-                       save_file=False)
+    ps = [PhotometricSystem.DR3_JKC, PhotometricSystem.DR3_JPAS]
+    output = _generate(dr3_mean_spectra_avro_file, photometric_system=ps, save_file=False,
+                       selector=select_records_with_value, release='dr3')
     assert output['source_id'].iloc[0] == selected_source_id
 
 
 def test_select_with_additional_columns(selected_source_id):
-    ps = [PhotometricSystem.JKC, PhotometricSystem.JPAS]
+    ps = [PhotometricSystem.DR3_JKC, PhotometricSystem.DR3_JPAS]
     additional_columns = {'nuEff': ['specShape', 'nuEff'], 'nuEffError': ['specShape', 'nuEffError']}
-    output = _generate(mean_spectrum_avro_file, photometric_system=ps, selector=select_records_with_value,
-                       additional_columns=additional_columns, error_correction=True, save_file=False)
-    regular_output = generate(mean_spectrum_avro_file, photometric_system=ps, additional_columns=additional_columns,
-                              error_correction=True, save_file=False)
+    output = _generate(dr3_mean_spectra_avro_file, photometric_system=ps, save_file=False, error_correction=True,
+                       additional_columns=additional_columns, selector=select_records_with_value, release='dr3')
+    regular_output = generate(dr3_mean_spectra_avro_file, photometric_system=ps, save_file=False, error_correction=True,
+                              additional_columns=additional_columns)
     pdt.assert_frame_equal(output, regular_output[regular_output['source_id'] == selected_source_id], check_like=True)

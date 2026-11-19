@@ -1,11 +1,12 @@
 import numpy.testing as npt
 
-from gaiaxpy.generator.internal_photometric_system import InternalPhotometricSystem
-from tests.test_generator.generator_paths import phot_systems_specs
+from gaiaxpy.core.generic_variables import RELEASES
+from gaiaxpy.photometric_system.internal_photometric_system import InternalPhotometricSystem
+from tests.reference.generator import phot_systems_specs
 
 # An InternalPhotometricSystem is created from a label, not from a name (i.e. from GaiaDr3Ab, not from GAIA_DR3_AB)
-available_systems = list(phot_systems_specs['name'])
-all_systems = [InternalPhotometricSystem(system) for system in available_systems]
+available_systems = list(phot_systems_specs['label'])
+all_systems = [InternalPhotometricSystem(system, is_builtin=True, release=RELEASES.dr3) for system in available_systems]
 
 
 def test_init():

@@ -1,8 +1,4 @@
-"""
-sampled_spectrum.py
-====================================
-Module to represent a sampled spectrum.
-"""
+"""Shared storage and coefficient projection for sampled spectra."""
 
 import numpy as np
 from numpy import ndarray, nan
@@ -11,147 +7,166 @@ from .generic_spectrum import Spectrum
 
 
 class SampledSpectrum(Spectrum):
-    """
-    A spectrum defined by a set of discrete measurements. Each measurement is defined by a position in wavelength (or
-    pseudo-wavelength), a measured flux and an associated flux error.
-    Specific implementations of this class will define the units in use for positions and fluxes.
+    """Base class for flux samples, flux errors and optional covariance.
+
+    Subclasses supply the sample positions, flux values and units. Design matrices
+    in this package have one row per basis function and one column per sample.
     """
 
     def __init__(self, source_id, sampling_grid):
-        """
-        Initialise a sampled spectrum.
+        """Store the source ID and number of samples, leaving sample data unset.
 
         Args:
-            source_id (str): Source identifier.
-            sampling_grid (ndarray): 1D array containing the positions of the samples (or discrete measurements) for
-                this spectrum.
+            source_id (int or str): Source identifier.
+            sampling_grid (array-like): Grid used to determine n_samples. The base
+                constructor does not retain this grid as pos.
+
+        Notes:
+            pos, flux, flux_error and covariance are initially None.
         """
         Spectrum.__init__(self, source_id)
         self.n_samples = np.size(sampling_grid)
 
         self.pos = None
         self.flux = None
-        self.error = None
+        self.flux_error = None
         self.covariance = None
 
     def _get_fluxes(self):
-        """
-        Get the flux samples.
+        """Return the stored flux samples without copying.
 
         Returns:
-            ndarray: 1D array containing all flux samples.
+            numpy.ndarray or None: Stored one-dimensional array, or None if unset.
         """
         return self.flux
 
     def _get_flux_errors(self):
-        """
-        Get the flux errors of each sample.
+        """Return the stored flux errors without copying.
 
         Returns:
-            ndarray: 1D array containing the error in flux for all samples.
+            numpy.ndarray or None: Stored one-dimensional array, or None if unset.
         """
-        return self.error
+        return self.flux_error
 
     def _get_covariance(self):
-        """
-        Get the flux covariance matrix.
+        """Return the stored sample covariance without copying.
 
         Returns:
-            ndarray: 2D array containing the flux covariance matrix.
+            numpy.ndarray or None: Stored two-dimensional array, or None if unset.
         """
         return self.covariance
 
     def get_positions(self):
-        """
-        Get the positions of all samples.
+        """Return the stored sample positions without copying.
 
         Returns:
-            ndarray: 1D array containing the position of all samples.
+            numpy.ndarray or None: Stored one-dimensional array, or None if unset.
         """
         return self.pos
 
-    def get_flux_label(self):
-        """
-        Get the labels describing the flux measurements.
+    def get_flux_label(self, use_tex=False):
+        """Return the empty flux label used by the base class.
+
+        Args:
+            use_tex (bool): Accepted for compatibility with subclass labels; unused.
 
         Returns:
-            str: Short description of the flux measurements, including the units.
+            str: Empty string.
         """
         return ""
 
-    def get_position_label(self):
-        """
-        Get the positions of the samples, including the units.
+    def get_position_label(self, use_tex=False):
+        """Return the empty position label used by the base class.
+
+        Args:
+            use_tex (bool): Accepted for compatibility with subclass labels; unused.
 
         Returns:
-            str: Short description of the positions of the samples.
+            str: Empty string.
         """
         return ""
 
     def _get_inputs(self, spectrum):
+        """Read positions, fluxes and flux errors from another sampled spectrum.
+
+        Args:
+            spectrum (SampledSpectrum): Spectrum to read.
+
+        Returns:
+            tuple: Positions, fluxes and flux errors, without copying.
+        """
         return spectrum.get_positions(), spectrum._get_fluxes(), spectrum._get_flux_errors()
 
     @staticmethod
-    def _sample_flux(coefficients, design_matrix):
-        """
-        Given a set of coefficients to be applied to a set of basis functions and a design matrix containing the
-        evaluation of each basis function at the positions corresponding to the samples, this method computes the flux
-        values for each sample.
+    def _sample_flux(caller_class, coefficients, design_matrix):
+        """Project coefficients onto the samples of a design matrix.
 
         Args:
-            coefficients (ndarray): 1D array containing the coefficients multiplying the basis functions in the
-                continuous representation.
-            design_matrix (ndarray): 2D array containing the evaluation of the basis functions on the desired sampling
-                grid.
+            caller_class (type): Calling class, used to select the mismatch message.
+            coefficients (numpy.ndarray): Coefficient vector of length n_bases.
+            design_matrix (numpy.ndarray): Matrix of shape (n_bases, n_samples).
 
         Returns:
-            ndarray: 1D array containing the flux values for all samples.
+            numpy.ndarray or float: Flux vector of length n_samples, or scalar NaN
+            for an empty coefficient array.
+
+        Raises:
+            ValueError: A non-empty coefficient vector has a different length from
+                the number of design-matrix rows.
         """
         if coefficients.shape[0] != 0 and coefficients.shape[0] != design_matrix.shape[0]:
-            raise ValueError("Coefficients length doesn't match the design matrix dimension. Please make sure you're "
-                             "using the correct input files and configuration.")
+            error_message = ''
+            if caller_class.__name__ == 'SingleSyntheticPhotometry':
+                error_message += "Are you sure the input spectra and the photometric systems match? "
+            else:
+                error_message += "Please make sure you're using the correct input files and configuration (release). "
+            error_message += (f"Coefficients length ({coefficients.shape[0]}) doesn't match the design matrix "
+                              f"dimension ({design_matrix.shape[0]}).")
+            raise ValueError(error_message)
         if isinstance(coefficients, ndarray) and coefficients.size > 0:
             return coefficients @ design_matrix
         return nan
 
     @staticmethod
-    def _sample_error(covariance, design_matrix, standard_deviation):
-        """
-        Given the covariance matrix and standard deviation of the least squares solution defining the continuous
-        representation of the spectrum in terms of basis functions and a design matrix containing the evaluation of each
-        basis function at the positions corresponding to the samples, this method computes the error associated to the
-        flux value for each sample.
+    def _sample_error(design_cov_element, t_design_matrix, standard_deviation):
+        """Calculate sample errors from a projected coefficient covariance.
 
         Args:
-            covariance (ndarray): 2D array containing the elements of the covariance matrix.
-            design_matrix (ndarray): 2D array containing the evaluation of the basis functions on the desired sampling
-                grid.
-            standard_deviation (float): Standard deviation.
+            design_cov_element (numpy.ndarray or float): design_matrix.T @ covariance,
+                with shape (n_samples, n_bases), or scalar NaN.
+            t_design_matrix (numpy.ndarray): Transposed design matrix, with shape
+                (n_samples, n_bases).
+            standard_deviation (float): Solution standard deviation, applied after
+                taking the square root of the projected variance.
 
         Returns:
-            ndarray: 1D array containing the errors in flux for all samples.
+            numpy.ndarray or float: Flux errors of length n_samples, or
+            scalar NaN when design_cov_element is NaN.
+
+        Raises:
+            TypeError: design_cov_element is neither a NumPy array nor scalar NaN.
         """
-        if isinstance(covariance, ndarray):
+        if isinstance(design_cov_element, ndarray):
             return np.sqrt(
-                np.sum(np.multiply(design_matrix.T @ covariance, design_matrix.T), axis=1)) * standard_deviation
-        elif np.isnan(covariance):
+                np.sum(np.multiply(design_cov_element, t_design_matrix), axis=1)) * standard_deviation
+        elif np.isnan(design_cov_element):
             return float('NaN')
         else:
             raise TypeError('Covariance must be either a NumPy array or nan.')
 
     @staticmethod
-    def _sample_covariance(covariance, design_matrix):
-        """
-        Given the covariance matrix and a design matrix containing the evaluation of each basis function at the
-        positions corresponding to the samples, this method computes the covariance matrix of the sampled spectrum.
+    def _sample_covariance(design_cov_element, design_matrix):
+        """Given the covariance matrix and a design matrix containing the evaluation
+        of each basis function at the positions corresponding to the samples, this
+        method computes the covariance matrix of the sampled spectrum.
 
         Args:
-            covariance (ndarray): 2D array containing the elements of the covariance matrix of the continuous
-                representation.
-            design_matrix (ndarray): 2D array containing the evaluation of the basis functions on the desired sampling
-            grid.
+            design_cov_element (numpy.ndarray): design_matrix.T @ covariance,
+                with shape (n_samples, n_bases).
+            design_matrix (numpy.ndarray): Matrix of shape (n_bases, n_samples).
 
         Returns:
-            ndarray: 2D array containing the covariance matrix of the sampled spectrum.
+            numpy.ndarray: Matrix of shape (n_samples, n_samples). No solution
+            standard-deviation factor is applied here.
         """
-        return design_matrix.T @ covariance @ design_matrix
+        return design_cov_element @ design_matrix

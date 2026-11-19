@@ -4,47 +4,29 @@ generic_functions.py
 Module to hold some functions used by different subpackages.
 """
 
+import re
 import sys
+import types
 from ast import literal_eval
 from collections import namedtuple
-from os.path import join
+from itertools import chain
 from pathlib import Path
-from string import capwords
 from typing import Optional, Union, Tuple, List
 from xml.etree import ElementTree as et
 
 import numpy as np
 import pandas as pd
-from numpy import ndarray
 
-from gaiaxpy.config.paths import filters_path, config_path
 from gaiaxpy.core.custom_errors import InvalidBandError
 from gaiaxpy.core.satellite import BANDS
-from gaiaxpy.generator.config import get_additional_filters_path
-from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
-
-# Verifying the function is valid first, will help when adding new functions
-PHOTOMETRY_FUNCTIONS = ['generate', '_generate']
-CHOLESKY_FUNCTIONS = ['get_inverse_covariance_matrix', 'get_inverse_square_root_covariance_matrix']
-OTHER_FUNCTIONS = ['calibrate', 'convert']  # The ones that accept truncation and with_correlation arguments
-ALL_ADD_COLS_FUNCTIONS = PHOTOMETRY_FUNCTIONS + CHOLESKY_FUNCTIONS + OTHER_FUNCTIONS
-
-
-def _get_built_in_systems() -> list:
-    av_sys = open(join(config_path, 'available_systems.txt'), 'r')
-    return av_sys.read().splitlines()
-
-
-def _is_built_in_system(system):
-    return system in _get_built_in_systems()
+from gaiaxpy.spectrum.utils import correlation_to_covariance_dr3int5
 
 
 def cast_output(output):
     cast_dict = {'source_id': 'int64', 'solution_id': 'int64'}
-    cast_dict_keys = cast_dict.keys()
     df = output if isinstance(output, pd.DataFrame) else output.data
-    for column in df.columns:
-        if column in cast_dict_keys:
+    for column in cast_dict.keys():
+        if column in df.columns:
             df[column] = df[column].astype(cast_dict[column])
     return df
 
@@ -75,50 +57,52 @@ def str_to_matrix(str_matrix):
 def str_to_array(str_array):
     if isinstance(str_array, np.ndarray):
         return str_array
-    if isinstance(str_array, str) and len(str_array) >= 2 and str_array[0] == '(' and str_array[1] == '(':
+    if isinstance(str_array, list):
+        return np.asarray(str_array)
+    if str_array is None:
+        return float('NaN')
+    if pd.isna(str_array):
+        return float('NaN')
+    if isinstance(str_array, float):
+        return float('NaN')
+    if isinstance(str_array, str) and len(str_array) >= 2 and str_array[0:2] == '((':
         return str_to_matrix(str_array)
     elif isinstance(str_array, str):
         try:
             return np.fromstring(str_array[1:-1], sep=',')
         except Exception:  # np.fromstring may not raise an error but only show a warning depending on the version
             raise ValueError('Input cannot be converted to array.')
-    elif isinstance(str_array, float):
-        return float('NaN')
     else:
-        raise ValueError('Unhandled type.')
+        raise ValueError(f'Unhandled type: {type(str_array).__name__}.')
+
+
+def _validate_sampling_grid(sampling, minimum, maximum):
+    """Validate a one-dimensional, finite, non-decreasing sampling grid."""
+    if sampling is None:
+        raise ValueError('Sampling cannot be None.')
+    if not isinstance(sampling, np.ndarray):
+        raise TypeError('Sampling must be a NumPy array.')
+    if sampling.ndim != 1 or sampling.size == 0:
+        raise ValueError('Sampling must be a non-empty one-dimensional array.')
+    if sampling.dtype.kind not in 'iuf' or not np.isfinite(sampling).all():
+        raise ValueError('Sampling must contain finite real numbers.')
+    if np.any(sampling[1:] < sampling[:-1]):
+        raise ValueError('Sampling must be in ascending order.')
+    if sampling[0] < minimum or sampling[-1] > maximum:
+        raise ValueError(f'Sampling values must be between {minimum} and {maximum}.')
 
 
 def validate_pwl_sampling(sampling):
-    # Receives a NumPy array. Validates sampling in pwl.
-    min_sampling_value = -10
-    max_sampling_value = 70
-    if sampling is None:
-        raise ValueError("Sampling can't be None.")
-    if len(sampling) == 0:
-        raise ValueError('Sampling must contain at least one point.')
-    # Must be a numpy array
-    if not isinstance(sampling, ndarray):
-        raise TypeError('Sampling must be a NumPy array.')
-    # Array must be sorted in ascending order
-    if not np.array_equal(sampling, np.sort(sampling)):
-        raise ValueError('Sampling must be in ascending order.')
-    min_value = sampling[0]
-    max_value = sampling[-1]
-    if min_value < min_sampling_value or max_value > max_sampling_value:
-        raise ValueError(f'Wrong value for sampling. Sampling accepts an array of values where the minimum value is '
-                         f'{min_sampling_value} and the maximum is {max_sampling_value}.')
+    _validate_sampling_grid(sampling, -10, 70)
 
 
 def validate_wl_sampling(sampling):
-    min_value = 330
-    max_value = 1050
-    # Check sampling
-    if sampling is not None:
-        if sampling[0] >= sampling[-1]:
-            raise ValueError('Sampling should be a non-decreasing array.')
-        elif sampling[0] < min_value or sampling[-1] > max_value:
-            raise ValueError(f'Wrong value for sampling. Sampling accepts an array of values where the minimum value '
-                             f'is {min_value} and the maximum is {max_value}.')
+    if sampling is None:
+        return
+    grid = np.asarray(sampling)
+    _validate_sampling_grid(grid, 330, 1050)
+    if grid[0] == grid[-1]:
+        raise ValueError('Wavelength sampling must contain at least two distinct positions.')
 
 
 def _warning(message):
@@ -142,24 +126,6 @@ def get_spectra_type(spectra):
     else:
         spectrum = spectra
     return spectrum.__class__
-
-
-def _get_system_label(name):
-    """
-    Get the label of the photometric system.
-
-    Returns:
-        str: A short description of the photometric system.
-    """
-
-    def snake_to_pascal(word):
-        return capwords(word.replace("_", " ")).replace(" ", "")
-
-    return snake_to_pascal(name) if _is_built_in_system(name) else name
-
-
-def _get_system_path(is_built_in):
-    return filters_path if is_built_in else get_additional_filters_path()
 
 
 # AVRO files include the values in the diagonal, whereas others don't
@@ -190,51 +156,41 @@ def array_to_symmetric_matrix(array, array_size):
         float_size = float(array_size)
         array_size = int(array_size)
         if float_size != array_size:
-            raise ValueError("Input must have a decimal part of exactly .0")
+            raise ValueError('Input must have a decimal part of exactly .0')
     if isinstance(array, np.ndarray):
         n_dim = array.ndim
         if array.size == 0 or n_dim == 2:  # Either empty or already a matrix
             return array
         elif n_dim == 1:
-            array_size = int(array_size)
-            matrix = np.zeros((array_size, array_size))
-            np.fill_diagonal(matrix, 1.0)  # Add values in diagonal
-            k = 0 if contains_diagonal(array_size, array) else -1  # Diagonal offset (from Numpy documentation)
-            matrix[np.tril_indices(array_size, k=k)] = array
-            transpose = matrix.transpose()
-            transpose[np.tril_indices(array_size, -1)] = matrix[np.tril_indices(array_size, -1)]
-            return transpose
-    raise TypeError('Wrong argument types. Must be np.ndarray and integer or float.')
+            n = int(array_size)
+            matrix = np.eye(n)
+            has_diag = contains_diagonal(n, array)
+            k = 0 if has_diag else -1
+            i, j = np.tril_indices(n, k=k)
+            # Avoid transpose
+            matrix[i, j] = array
+            matrix[j, i] = array
+
+        return matrix
+    raise TypeError(f'Wrong argument types. Must be np.ndarray and integer or float, '
+                    f'but types are {type(array).__name__} and {type(array_size).__name__}.')
 
 
-def _extract_systems_from_data(data_columns, photometric_system=None):
-    if isinstance(photometric_system, list):
-        return [system.get_system_label() for system in photometric_system]
-    src = 'source_id'
-    columns = list(data_columns.copy())
-    if src in columns:
-        columns.remove(src)
-    if photometric_system:
-        photometric_system = photometric_system if isinstance(photometric_system, list) else [photometric_system]
-        systems = [system.get_system_label() for system in photometric_system]
-    else:
-        # Infer photometric_system from the data
-        column_list = [column.split('_')[0] for column in columns]
-        systems = list(dict.fromkeys(column_list))
-    return systems
-
-
-def correlation_from_covariance(covariance):
+def lower_correlation_from_covariance(covariance: np.ndarray) -> np.ndarray | None:
     if covariance is None:
         return None
-    v = np.sqrt(np.diag(covariance))
-    outer_v = np.outer(v, v)
-    correlation = covariance / outer_v
-    correlation[covariance == 0] = 0
+
+    i, j = np.tril_indices(covariance.shape[0], k=-1)
+    stdev = np.sqrt(np.diag(covariance))
+    denominator = stdev[i] * stdev[j]
+
+    correlation = np.zeros_like(denominator, dtype=np.result_type(covariance, float))
+    np.divide(covariance[i, j], denominator, out=correlation, where=denominator != 0)
+
     return correlation
 
 
-def correlation_to_covariance(correlation: np.ndarray, error: np.ndarray, stdev: float) -> np.ndarray:
+def correlation_to_covariance(correlation: np.ndarray, error: np.ndarray, stdev: float) -> Optional[np.ndarray]:
     """
     Compute the covariance matrix from the correlation values.
 
@@ -254,19 +210,29 @@ def correlation_to_covariance(correlation: np.ndarray, error: np.ndarray, stdev:
     Raises:
         ValueError: If the dimensions of input correlation are not either 1 or 2.
     """
-    if correlation is None or (isinstance(correlation, float) and pd.isna(correlation)):
+    if correlation is None:
         return None
-    if correlation.ndim == 1:
-        size = get_matrix_size_from_lower_triangle(correlation)
-        new_matrix = np.zeros((size, size))
-        new_matrix[np.tril_indices(size, k=-1)] = correlation
-        new_matrix += new_matrix.T
-        new_matrix += np.diag(np.ones(size), k=0)
-        correlation = new_matrix
+
+    # Handles a scalar NaN sometimes produced by pandas
+    if np.isscalar(correlation):
+        if np.isnan(correlation):
+            return None
+        raise ValueError("Correlation must be a 1D or 2D array.")
+
     if correlation.ndim == 2:
-        return _correlation_to_covariance_dr3int5(correlation, error, stdev)
-    else:
-        raise ValueError('Dimensions of input correlation must be either 1 or 2.')
+        return correlation_to_covariance_dr3int5(correlation, error, stdev)
+
+    if correlation.ndim != 1:
+        raise ValueError("Correlation must be a 1D or 2D array.")
+
+    size = get_matrix_size_from_lower_triangle(correlation)
+    rows, cols = np.tril_indices(size, k=-1)
+
+    correlation_matrix = np.eye(size, dtype=correlation.dtype)
+    correlation_matrix[rows, cols] = correlation
+    correlation_matrix[cols, rows] = correlation
+
+    return correlation_to_covariance_dr3int5(correlation_matrix, error, stdev)
 
 
 def get_matrix_size_from_lower_triangle(array):
@@ -285,6 +251,19 @@ def get_matrix_size_from_lower_triangle(array):
         ValueError: If the length of array is not a valid input for a symmetric matrix lower triangle.
     """
     return int((np.sqrt(1 + 8 * len(array)) + 1) / 2)
+
+
+def get_file_extension(file_path):
+    """
+    Return the underlying format, ignoring one gzip suffix for supported inputs.
+    """
+    path = Path(file_path)
+    extension = path.suffix.lower().lstrip('.')
+    if extension == 'gz':
+        underlying = Path(path.stem).suffix.lower().lstrip('.')
+        if underlying in ('csv', 'ecsv', 'fits', 'xml'):
+            return underlying
+    return standardise_extension(extension) if extension else ''
 
 
 def standardise_extension(_extension):
@@ -312,18 +291,6 @@ def reverse_simple_add_col_dict(d):
     return {value[0]: key if len(value) == 1 else __reverse_error(value) for key, value in d.items()}
 
 
-def validate_additional_columns(additional_columns, function, **kwargs):
-    systems = None
-    additional_columns = format_additional_columns(additional_columns)
-    function_name = function.__name__
-    if function_name not in ALL_ADD_COLS_FUNCTIONS:
-        raise ValueError(f'Function {function_name} does not accept additional columns.')
-    if function_name in PHOTOMETRY_FUNCTIONS:
-        systems = kwargs['photometric_system']
-    if systems and function.__name__ not in ['_generate', 'generate']:
-        raise ValueError('Systems will only work with photometry-related functions.')
-
-
 def convert_values_to_lists(d):
     for key, value in d.items():
         if not isinstance(value, list):
@@ -344,14 +311,33 @@ def format_additional_columns(additional_columns: Optional[Union[str, list, dict
         return {v: [v] for v in additional_columns}
     if isinstance(additional_columns, dict):
         return convert_values_to_lists(additional_columns)
+    else:
+        raise ValueError(f'Additional columns type is {type(additional_columns).__name__}. This is not allowed.')
 
 
-def validate_photometric_system(photometric_system):
+def validate_photometric_system(photometric_system) -> list:
     """
-    Ensure photometric system input isn't empty.
+    Return a list of current registry members belonging to the same Gaia release.
+
+    Removed or replaced additional-system objects raise ValueError, even if
+    caller code still holds a reference to them.
     """
-    if photometric_system in (None, [], ''):
+    systems = photometric_system.copy() if isinstance(photometric_system, list) else [photometric_system]
+    if photometric_system is None or not systems:
         raise ValueError('At least one photometric system is required as input.')
+    from gaiaxpy.photometric_system.photometric_system import AutoName, PhotometricSystem
+
+    invalid = [repr(system) if isinstance(system, str) else type(system).__name__
+               for system in systems if not isinstance(system, AutoName)]
+    if invalid:
+        raise TypeError('photometric_system must be a PhotometricSystem member or a list of members. '
+                        f"Invalid entries: {', '.join(invalid)}.")
+
+    for system in systems:
+        if system not in PhotometricSystem:
+            raise ValueError(f'Photometric system {system.name!r} is not currently loaded. '
+                             'Select a current member from PhotometricSystem.')
+    return systems
 
 
 def rename_with_required(data, additional_columns):
@@ -365,15 +351,6 @@ def is_array_empty(array):
 
 def is_variable_empty(var):
     return var is None or pd.isna(var)
-
-
-def get_bands_config(bases_config):
-    if hasattr(bases_config, 'hermiteFunction'):
-        return bases_config.hermiteFunction
-    elif hasattr(bases_config, 'basisDefinition'):
-        return bases_config.basisDefinition.spline
-    else:
-        raise ValueError('Bases configuration type not implemented.')
 
 
 def __range_to_output(d: dict) -> Tuple[float, float]:
@@ -509,7 +486,7 @@ def __generate_array_output(x_root, outer_tags):
     return output_array
 
 
-def __create_namedtuple(label: str, data: dict) -> namedtuple:
+def __create_namedtuple(label: str, data: dict) -> Tuple:
     """
     Create a named tuple with the given label and data.
 
@@ -518,7 +495,7 @@ def __create_namedtuple(label: str, data: dict) -> namedtuple:
     :param data: A dictionary representing the data to be stored in the named tuple.
     :type data: dict
     :return: A named tuple with the given label and data.
-    :rtype: namedtuple
+    :rtype: tuple
     """
 
     def __add_matrix_to_config(_data, _xp):
@@ -542,7 +519,7 @@ def __create_namedtuple(label: str, data: dict) -> namedtuple:
 
 
 def __parse_config(x_root: et.Element, outer_tags: Optional[List[str]] = None, outer_title: Optional[str] = None,
-                   return_dict=False) -> namedtuple:
+                   return_dict=False) -> Tuple:
     """
     Parse the configuration in x_root. If no outer_tags list is given, the function will parse every tag in the input
     x_root.
@@ -572,7 +549,7 @@ def __get_file_root(xml_file: Union[Path, str]):
     return xtree.getroot()
 
 
-def parse_config(xml_file: Union[Path, str]) -> namedtuple:
+def parse_config(xml_file: Union[Path, str]) -> Tuple:
     """
     Parses a configuration file in XML format and returns a named tuple with the settings. It returns the values for
     all the tags present in the file.
@@ -580,17 +557,166 @@ def parse_config(xml_file: Union[Path, str]) -> namedtuple:
     :param xml_file: The path to the XML file to parse.
     :type xml_file: Union[Path, str]
     :return: A named tuple containing the configuration settings.
-    :rtype: namedtuple
+    :rtype: tuple
     """
+    if str(xml_file).lower().endswith('.npz'):
+        with np.load(xml_file, allow_pickle=False) as archive:
+            outer_title = archive['__root_name__'].item()
+            tuple_paths = (
+                set(archive['__tuple_paths__'].tolist())
+                if '__tuple_paths__' in archive.files
+                else set()
+            )
+            output = {}
+
+            for key in archive.files:
+                if key in {'__root_name__', '__tuple_paths__', '__gaiaxpy_metadata__'}:
+                    continue
+
+                value = archive[key]
+                value = value.item() if value.ndim == 0 else value.copy()
+
+                if key in tuple_paths:
+                    value = tuple(value.tolist())
+
+                parts = key.split('/')
+                target = output
+
+                for part in parts[:-1]:
+                    target = target.setdefault(part, {})
+
+                leaf = parts[-1]
+                target[leaf[1:] if leaf.startswith('@') else leaf] = value
+
+        def restore_attribute_ranges(value):
+            if not isinstance(value, dict):
+                return value
+
+            if set(value) == {'from', 'to'}:
+                return float(value['from']), float(value['to'])
+
+            return {
+                key: restore_attribute_ranges(child)
+                for key, child in value.items()
+            }
+
+        return __create_namedtuple(
+            outer_title,
+            restore_attribute_ranges(output),
+        )
+
     x_root = __get_file_root(xml_file)
     outer_title = x_root.tag.split('}')[1]
     return __parse_config(x_root, outer_title=outer_title)
 
 
-def format_sampled_output(spectra_series, with_correlation):
-    positions = spectra_series.iloc[0].get_positions()
-    spectra_type = get_spectra_type(spectra_series.iloc[0])
-    spectra_series = spectra_series.map(lambda x: x.spectrum_to_dict(with_correlation))
-    spectra_df = pd.DataFrame(spectra_series.tolist())
+def format_sampled_output(spectra, *, include_xp, with_correlation, with_stdev):
+    # Get first spectrum to obtain the type and then put it back
+    first_spectrum = next(spectra)
+    spectra_type = get_spectra_type(first_spectrum)
+    spectra = chain([first_spectrum], spectra)
+
+    for name, value in (("include_xp", include_xp),
+                        ("with_correlation", with_correlation),
+                        ("with_stdev", with_stdev),):
+        if not isinstance(value, bool):
+            raise TypeError(f"The variable '{name}' must be a bool.")
+    if include_xp:
+        columns = ["source_id", "xp", "flux", "flux_error"]
+    else:
+        columns = ["source_id", "flux", "flux_error"]
+    if with_correlation:
+        columns.append("correlation")
+    if with_stdev:
+        columns.append("standard_deviation")
+
+    records = (spectrum.spectrum_to_tuple(with_correlation) for spectrum in spectra)
+    spectra_df = pd.DataFrame.from_records(records, columns=columns)
     spectra_df.attrs['data_type'] = spectra_type
-    return spectra_df, positions
+
+    return spectra_df
+
+
+def get_function_name(function):
+    if isinstance(function, types.FunctionType):
+        name = function.__name__
+    elif isinstance(function, str):
+        name = function
+    else:
+        raise TypeError('Function name must be a string or of function type')
+    return name
+
+
+def extract_system_identifier(column_names):
+    """
+    Extracts the system name (substring before '_mag_', '_flux_', or '_flux_error_' from a list of strings).
+
+    :param column_names: The list of column names to process.
+    :return: The system identifiers.
+    :raises ValueError: If any column name doesn't match the expected pattern.
+    """
+    pattern = re.compile(r'^((?:USER_)?DR[34]_.+)_(?:flux_error|flux|mag|within_range)_.+$')
+    extracted = []
+    for name in column_names:
+        match = pattern.search(name)
+        if not match:
+            raise ValueError(f'Column name does not match expected pattern: {name}')
+        extracted.append(match.group(1))
+    return extracted
+
+
+def extract_systems_from_data(input_multi_photometry, release, photometric_system=None, return_label=True):
+    """
+    Return either a list of PhotometricSystem full labels (if return_label=True)
+    or a list of PhotometricSystem objects (if return_label=False).
+    """
+    # Normalise release
+    _release = release.upper()
+
+    if return_label:
+        # If explicit systems given
+        if photometric_system:
+            if isinstance(photometric_system, list):
+                systems = [ps.get_system_full_label() for ps in photometric_system]
+            else:
+                systems = [photometric_system.get_system_full_label()]
+        else:
+            # Infer from column names
+            data_columns = list(input_multi_photometry.columns)
+            columns = [c for c in data_columns if c != 'source_id']
+            systems_with_dups = extract_system_identifier(columns)
+            # Use dict.fromkeys to preserve order and remove duplicates
+            systems = list(dict.fromkeys(systems_with_dups))
+        # Release consistency check
+        mismatches = [s for s in systems if _release not in s.split('_')]
+        if mismatches:
+            raise ValueError(f"Mismatch between release and systems. Release is {_release}, but conflicting systems "
+                             f"are: {', '.join(mismatches)}.")
+        return systems
+
+    if not photometric_system:
+        raise ValueError(
+            'No photometric systems provided. Cannot return enum objects without explicit PhotometricSystem'
+            ' instances.')
+    # Always return a list for consistency
+    return photometric_system if isinstance(photometric_system, list) else [photometric_system]
+
+
+def mag_to_flux(mag, zp):
+    """
+    Convert magnitude to flux.
+    """
+    return np.power(10, (-0.4 * (mag - zp)))
+
+
+def format_list_to_str_msg(values):
+    quoted = [f"'{x}'" for x in values]
+
+    if len(quoted) == 0:
+        return ""
+    if len(quoted) == 1:
+        return quoted[0]
+    if len(quoted) == 2:
+        return f"{quoted[0]} and {quoted[1]}"
+
+    return f"{', '.join(quoted[:-1])}, and {quoted[-1]}"

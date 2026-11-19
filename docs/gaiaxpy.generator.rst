@@ -13,7 +13,7 @@ Generator
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: gaiaxpy.generator.internal_photometric_system
+.. automodule:: gaiaxpy.photometric_system.internal_photometric_system
    :members:
    :undoc-members:
    :show-inheritance:
@@ -25,17 +25,17 @@ Generator
 
 .. _photometric_system:
 
-.. automodule:: gaiaxpy.generator.photometric_system
+.. automodule:: gaiaxpy.photometric_system.photometric_system
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: gaiaxpy.generator.regular_photometric_system
+.. automodule:: gaiaxpy.photometric_system.regular_photometric_system
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: gaiaxpy.generator.standardised_photometric_system
+.. automodule:: gaiaxpy.photometric_system.standardised_photometric_system
    :members:
    :undoc-members:
    :show-inheritance:

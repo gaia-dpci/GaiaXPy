@@ -1,8 +1,4 @@
-"""
-multi_absolute.py
-====================================
-Module to plot multiple absolute spectra.
-"""
+"""Plot multiple externally calibrated spectra together in a single plot."""
 
 import matplotlib.pyplot as plt
 
@@ -10,16 +6,24 @@ from .plotter import Plotter
 
 
 class MultiAbsolutePlotter(Plotter):
+    """Combine externally calibrated spectrum rows without flux-error shading."""
 
     def __plot_multi_absolute(self):
+        """Create the combined figure and optional source-ID legend.
+
+        Returns:
+            tuple: Matplotlib Figure and Axes. Lines follow table row order and
+            duplicate source-ID legend labels are combined. Axis labels come from
+            the stored spectrum class. flux_error is read but not drawn.
+        """
         spectra_class = self.spectra_class
         spectra_df = self.spectra
         fig, ax = plt.subplots(figsize=(16, 9))
         for spectrum in spectra_df.to_dict('records'):
             x, y, e = self._get_inputs(spectrum)
             ax.plot(x, y, lw=2, alpha=0.95, label=spectrum['source_id'])
-        ax.set_xlabel(spectra_class.get_position_label())
-        ax.set_ylabel(spectra_class.get_flux_label())
+        ax.set_xlabel(spectra_class.get_position_label(self.use_tex))
+        ax.set_ylabel(spectra_class.get_flux_label(self.use_tex))
         fig.tight_layout()
         if self.legend:
             by_label = dict()
@@ -31,6 +35,16 @@ class MultiAbsolutePlotter(Plotter):
         return fig, ax
 
     def plot_fig(self):
+        """Create, optionally save/display, then close the combined figure.
+
+        Raises:
+            ValueError: More than 40 rows are supplied while both show_plot and
+                legend are True.
+
+        Notes:
+            Saving follows save_file. The row limit is not applied to saving-only
+            plots or plots without a legend. Returns None.
+        """
         n_spectra = len(self.spectra)
         if self.show_plot and self.legend and n_spectra > self.max_spectra_on_multi:
             raise ValueError(f'The legend can only be shown for a list of spectra no longer than '

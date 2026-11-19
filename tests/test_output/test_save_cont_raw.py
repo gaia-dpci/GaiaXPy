@@ -2,14 +2,16 @@ from os.path import join
 
 import numpy as np
 import pandas as pd
-import pandas.testing as pdt
 import pytest
 from astropy.io.votable import parse_single_table
 from astropy.table import Table
 
 from gaiaxpy import calibrate, convert, generate, PhotometricSystem
+from gaiaxpy.core.generic_variables import RELEASES
 from gaiaxpy.file_parser.parse_generic import GenericParser
-from tests.files.paths import output_sol_path, mean_spectrum_csv_file
+from tests.files.continuous import dr3_mean_spectra_csv_file
+from tests.files.misc import output_sol_path
+from tests.utils.utils import assert_dfs_equal
 
 _rtol, _atol = 1e-10, 1e-10
 
@@ -48,22 +50,27 @@ def compare_frames(output_file, solution_file, extension, function_name):
     else:
         output_df = function(output_file)
         solution_df = function(solution_file)
-    pdt.assert_frame_equal(output_df, solution_df, rtol=_rtol, atol=_atol)
+
+    assert_dfs_equal(output_df, solution_df, rtol=_rtol, atol=_atol)
 
 
 def run_output_test(output_path, function, filename, output_format, sampling=None, phot_systems=None):
     """
     This class generates GaiaXPy output files. Then, it compares them with the output solution files using filecmp.
     """
+    input_file = dr3_mean_spectra_csv_file
+    release = RELEASES.dr3
     if sampling is not None:
-        function(mean_spectrum_csv_file, sampling=sampling, output_path=output_path, output_file=filename,
-                 output_format=output_format)
+        function(input_file, sampling=sampling, output_path=output_path, output_file=filename,
+                 output_format=output_format, release=release)
     if phot_systems is not None:
-        function(mean_spectrum_csv_file, photometric_system=phot_systems, output_path=output_path,
-                 output_file=filename, output_format=output_format)
+        _ = function(input_file, photometric_system=phot_systems, output_path=output_path, output_file=filename,
+                     output_format=output_format, release=release)
     elif sampling is None and phot_systems is None:
-        function(mean_spectrum_csv_file, output_path=output_path, output_file=filename, output_format=output_format)
+        function(input_file, output_path=output_path, output_file=filename, output_format=output_format,
+                 release=release)
     current_file = f'{filename}.{output_format}'
+    print(join(output_path, current_file), join(output_sol_path, current_file), output_format)
     compare_frames(join(output_path, current_file), join(output_sol_path, current_file), extension=output_format,
                    function_name=function.__name__)
     if output_format in ['csv', '.csv'] and phot_systems is None and 'find' not in function.__name__:
@@ -93,10 +100,10 @@ def test_save_output_convert(tmp_path, name, extension, sampling):
         run_output_test(tmp_path, convert, name, extension)
 
 
-@pytest.mark.parametrize('name,extension,systems', [['photometry_gaia_2', 'csv', PhotometricSystem.Gaia_2],
-                                                    ['photometry_sdss_std', 'ecsv', PhotometricSystem.SDSS_Std],
-                                                    ['photometry_multi', 'fits', [PhotometricSystem.Gaia_DR3_Vega,
-                                                                                  PhotometricSystem.HST_HUGS_Std]],
-                                                    ['photometry_pristine', 'xml', [PhotometricSystem.Pristine]]])
+@pytest.mark.parametrize('name,extension,systems', [['photometry_gaia_2', 'csv', PhotometricSystem.DR3_Gaia_2],
+                                                    ['photometry_sdss_std', 'ecsv', PhotometricSystem.DR3_SDSS_Std],
+                                                    ['photometry_multi', 'fits', [PhotometricSystem.DR3_Gaia_Vega,
+                                                                                  PhotometricSystem.DR3_HST_HUGS_Std]],
+                                                    ['photometry_pristine', 'xml', [PhotometricSystem.DR3_Pristine]]])
 def test_save_output_generate(tmp_path, name, extension, systems):
     run_output_test(tmp_path, generate, name, extension, phot_systems=systems)

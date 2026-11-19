@@ -7,19 +7,22 @@ import pytest
 from gaiaxpy import get_chi2, get_inverse_covariance_matrix
 from gaiaxpy.cholesky.cholesky import (get_inverse_square_root_covariance_matrix,
                                        _get_inverse_square_root_covariance_matrix_aux)
+from gaiaxpy.core.custom_errors import InvalidReleaseError
 from gaiaxpy.core.generic_functions import str_to_array, array_to_symmetric_matrix
+from gaiaxpy.core.pandas_compat import CSV_FLOAT_PRECISION_KWARGS
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.input_reader.input_reader import InputReader
-from tests.files.paths import (mean_spectrum_csv_file, with_missing_bp_csv_file, with_missing_bp_xml_file)
-from tests.test_cholesky.cholesky_solutions import (cholesky_solution, inv_sqrt_cov_matrix_sol_no_missing_df,
-                                                    inv_sqrt_cov_matrix_sol_with_missing_df)
+from tests.files.continuous import (dr3_mean_spectra_csv_file, dr3_with_missing_bp_csv_file,
+                                    dr3_with_missing_bp_xml_binary_file)
+from tests.reference.cholesky import (cholesky_solution, inv_sqrt_cov_matrix_sol_no_missing_df,
+                                      inv_sqrt_cov_matrix_sol_with_missing_df)
 
 _rtol = 1e-5
 _atol = 1e-5
 
 
 def test_inverse_covariance_matrix_file_from_df_numpy_array():
-    df = pd.read_csv(with_missing_bp_csv_file)
+    df = pd.read_csv(dr3_with_missing_bp_csv_file, **CSV_FLOAT_PRECISION_KWARGS)
     # Correlations and error should be NumPy array
     for column in ['bp_coefficient_correlations', 'bp_coefficient_errors', 'rp_coefficient_correlations',
                    'rp_coefficient_errors']:
@@ -31,20 +34,21 @@ def test_inverse_covariance_matrix_file_from_df_numpy_array():
 
 
 def test_inverse_covariance_matrix_file_from_df_numpy_matrix():
-    df, _ = InputReader(with_missing_bp_csv_file, get_inverse_covariance_matrix, False).read()
+    df, _, _ = InputReader(dr3_with_missing_bp_csv_file, get_inverse_covariance_matrix, truncation=False).read()
     inverse_df = get_inverse_covariance_matrix(df)
     pdt.assert_frame_equal(inverse_df, cholesky_solution, rtol=_rtol, atol=_atol)
 
 
-@pytest.mark.parametrize('input_data', [with_missing_bp_xml_file, pd.read_csv(with_missing_bp_csv_file)])
+@pytest.mark.parametrize('input_data', [dr3_with_missing_bp_xml_binary_file,
+                                        pd.read_csv(dr3_with_missing_bp_csv_file, **CSV_FLOAT_PRECISION_KWARGS)])
 def test_inverse_covariance_matrix(input_data):
     inverse_df = get_inverse_covariance_matrix(input_data)
     pdt.assert_frame_equal(inverse_df, cholesky_solution, rtol=_rtol, atol=_atol)
 
 
-@pytest.mark.parametrize('file,solution', [(mean_spectrum_csv_file, inv_sqrt_cov_matrix_sol_no_missing_df),
-                                           (with_missing_bp_csv_file, inv_sqrt_cov_matrix_sol_with_missing_df),
-                                           (with_missing_bp_csv_file, inv_sqrt_cov_matrix_sol_with_missing_df)])
+@pytest.mark.parametrize('file,solution', [(dr3_mean_spectra_csv_file, inv_sqrt_cov_matrix_sol_no_missing_df),
+                                           (dr3_with_missing_bp_csv_file, inv_sqrt_cov_matrix_sol_with_missing_df),
+                                           (dr3_with_missing_bp_csv_file, inv_sqrt_cov_matrix_sol_with_missing_df)])
 def test_external_inverse_square_root_covariance_matrix_no_missing_bands_both_bands_file_input(file, solution):
     output_df = get_inverse_square_root_covariance_matrix(file)
     pdt.assert_frame_equal(output_df, solution)
@@ -65,7 +69,7 @@ def test_get_chi2_wrong_length():
 
 
 def test_get_chi2_values():
-    inv_sqrt_cov_df = get_inverse_square_root_covariance_matrix(mean_spectrum_csv_file)
+    inv_sqrt_cov_df = get_inverse_square_root_covariance_matrix(dr3_mean_spectra_csv_file)
     inv_sqrt_cov_row = inv_sqrt_cov_df[inv_sqrt_cov_df['source_id'] == 5853498713190525696].iloc[0]
     bp_inv_sqrt_cov = inv_sqrt_cov_row['bp_inverse_square_root_covariance_matrix']
     mock_residuals = np.array(list(range(55)))
@@ -73,9 +77,9 @@ def test_get_chi2_values():
 
 
 @pytest.mark.parametrize('file,band,solution,columns',
-                         [(mean_spectrum_csv_file, 'BP', inv_sqrt_cov_matrix_sol_no_missing_df,
+                         [(dr3_mean_spectra_csv_file, 'BP', inv_sqrt_cov_matrix_sol_no_missing_df,
                            ['source_id', 'bp_inverse_square_root_covariance_matrix']),
-                          (with_missing_bp_csv_file, ['rP'], inv_sqrt_cov_matrix_sol_with_missing_df,
+                          (dr3_with_missing_bp_csv_file, ['rP'], inv_sqrt_cov_matrix_sol_with_missing_df,
                            ['source_id', 'rp_inverse_square_root_covariance_matrix'])])
 def test_external_inverse_square_root_covariance_matrix_single_band(file, band, solution, columns):
     output_df = get_inverse_square_root_covariance_matrix(file, band=band)
@@ -83,18 +87,19 @@ def test_external_inverse_square_root_covariance_matrix_single_band(file, band, 
 
 
 def test_external_inverse_square_root_covariance_matrix_one_row_one_band_input():
-    input_object = pd.read_csv(with_missing_bp_csv_file).iloc[[2]]  # Select just one row
+    input_object = pd.read_csv(dr3_with_missing_bp_csv_file, **CSV_FLOAT_PRECISION_KWARGS).iloc[
+        [2]]  # Select just one row
     output = get_inverse_square_root_covariance_matrix(input_object, band='rP')
     # Almost equal as the solution file contains fewer decimals than the ones returned by the function
     npt.assert_array_almost_equal(output, inv_sqrt_cov_matrix_sol_with_missing_df[
         'rp_inverse_square_root_covariance_matrix'].iloc[2])
 
 
-@pytest.mark.parametrize('file,solution', [(mean_spectrum_csv_file, inv_sqrt_cov_matrix_sol_no_missing_df),
-                                           (with_missing_bp_csv_file, inv_sqrt_cov_matrix_sol_with_missing_df)])
+@pytest.mark.parametrize('file,solution', [(dr3_mean_spectra_csv_file, inv_sqrt_cov_matrix_sol_no_missing_df),
+                                           (dr3_with_missing_bp_csv_file, inv_sqrt_cov_matrix_sol_with_missing_df)])
 def test_internal_inverse_square_root_covariance_matrix_no_missing_bands(file, solution):
-    parsed_input_data, extension = InputReader(mean_spectrum_csv_file, get_inverse_square_root_covariance_matrix,
-                                               False).read()
+    parsed_input_data, extension, _ = InputReader(dr3_mean_spectra_csv_file, get_inverse_square_root_covariance_matrix,
+                                                  truncation=False).read()
     output_columns = ['source_id', 'bp_inverse_square_root_covariance_matrix',
                       'rp_inverse_square_root_covariance_matrix']
     bands_output = []
@@ -106,3 +111,30 @@ def test_internal_inverse_square_root_covariance_matrix_no_missing_bands(file, s
     output_list = [parsed_input_data['source_id']] + [element for element in bands_output]
     output_df = pd.DataFrame(zip(*output_list), columns=output_columns)
     pdt.assert_frame_equal(output_df, inv_sqrt_cov_matrix_sol_no_missing_df)
+
+
+@pytest.mark.parametrize('size', [51, 55])
+def test_get_chi2_accepts_release_dependent_dimensions(size):
+    matrix = np.identity(size)
+    residuals = np.arange(size, dtype=float)
+
+    assert get_chi2(matrix, residuals) == pytest.approx(np.dot(residuals, residuals))
+
+
+@pytest.mark.parametrize(
+    'matrix,residuals', [(np.identity(51), np.ones(55)), (np.ones((51, 50)), np.ones(51)),
+                         (np.ones(51), np.ones(51)), (np.identity(51), np.ones((51, 1)))])
+def test_get_chi2_rejects_incompatible_shapes(matrix, residuals):
+    with pytest.raises(ValueError):
+        get_chi2(matrix, residuals)
+
+
+@pytest.mark.parametrize('function', [get_inverse_covariance_matrix, get_inverse_square_root_covariance_matrix])
+def test_cholesky_accepts_matching_explicit_release(function):
+    function(dr3_mean_spectra_csv_file, release='dr3')
+
+
+@pytest.mark.parametrize('function', [get_inverse_covariance_matrix, get_inverse_square_root_covariance_matrix])
+def test_cholesky_rejects_release_mismatch(function):
+    with pytest.raises(InvalidReleaseError):
+        function(dr3_mean_spectra_csv_file, release='dr4')

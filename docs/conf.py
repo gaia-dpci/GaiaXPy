@@ -45,10 +45,15 @@ def edit_default_value(app, what, name, obj, options, signature, return_annotati
     return signature, return_annotation
 
 
+def setup(app):
+    app.add_css_file('css/custom.css')
+    app.connect("autodoc-process-signature", edit_default_value)
+
+
 # -- Project information -----------------------------------------------------
 project = u'GaiaXPy'
-copyright = u'2025, DPAC, CU5, DPCI'
-author = u'Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres'
+copyright = u'2022-2026, DPAC, CU5, DPCI'
+author = u'Daniela Ruz-Mieres, Francesca De Angeli, Paolo Montegriffo, Rene Andrae, Michele Bellazzini, Lovro Palaversa'
 
 # The short X.Y version
 version = f'{__version__} (latest)'
@@ -83,7 +88,7 @@ templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = ['.rst', '.md']
+source_suffix = {'.rst': 'restructuredtext'}
 
 # The master toctree document.
 master_doc = 'index'
@@ -98,7 +103,7 @@ language = 'en'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['build', '_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -115,9 +120,11 @@ html_theme = 'sphinx_rtd_theme'
 
 html_theme_options = {
     'logo_only': True,
-    'display_version': True,
+    # 'github_user': 'bitprophet',
+    # 'github_repo': 'alabaster',
     'prev_next_buttons_location': 'bottom',
     'style_external_links': True,
+    # 'style_nav_header_background': '#000000',
     'collapse_navigation': True,
     'sticky_navigation': True,
     'navigation_depth': 3,
@@ -133,7 +140,9 @@ html_static_path = ['_static']
 html_logo = "_static/images/GaiaXPy.png"
 html_favicon = html_logo
 
-html_css_files = ['_static/css/custom.css']
+html_css_files = [
+    'css/custom.css',
+]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -184,7 +193,7 @@ html_show_sourcelink = False
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'GaiaXPy.tex', u'GaiaXPy Documentation',
-     u'Francesca De Angeli, Paolo Montegriffo, Lovro Palaversa, Daniela Ruz-Mieres', 'manual'),
+     u'Daniela Ruz-Mieres, Francesca De Angeli, Paolo Montegriffo, Rene Andrae, Michele Bellazzini, Lovro Palaversa', 'manual'),
 ]
 
 # -- Options for manual page output ------------------------------------------

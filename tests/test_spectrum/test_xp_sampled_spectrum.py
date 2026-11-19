@@ -1,28 +1,28 @@
 import numpy as np
 
 from gaiaxpy.config.paths import hermite_bases_file
-from gaiaxpy.converter.converter import get_design_matrices
+from gaiaxpy.converter.config import get_transposed_design_matrices
 from gaiaxpy.core.generic_functions import parse_config
 from gaiaxpy.core.satellite import BANDS
 from gaiaxpy.file_parser.parse_internal_continuous import InternalContinuousParser
 from gaiaxpy.input_reader.required_columns import MANDATORY_INPUT_COLS, CORR_INPUT_COLUMNS
 from gaiaxpy.spectrum.generic_spectrum import Spectrum
 from gaiaxpy.spectrum.sampled_spectrum import SampledSpectrum
-from gaiaxpy.spectrum.utils import _correlation_to_covariance_dr3int5
+from gaiaxpy.spectrum.utils import correlation_to_covariance_dr3int5
 from gaiaxpy.spectrum.xp_continuous_spectrum import XpContinuousSpectrum
 from gaiaxpy.spectrum.xp_sampled_spectrum import XpSampledSpectrum
 from gaiaxpy.spectrum.xp_spectrum import XpSpectrum
-from tests.files.paths import mean_spectrum_csv_file
+from tests.files.continuous import dr3_mean_spectra_csv_file
 
 
 def test_init():
     parser = InternalContinuousParser(MANDATORY_INPUT_COLS['convert'] + CORR_INPUT_COLUMNS)
-    correlation_parsed_file, _ = parser.parse_file(mean_spectrum_csv_file)
+    correlation_parsed_file, _ = parser.parse_file(dr3_mean_spectra_csv_file)
     parsed_config = parse_config(hermite_bases_file)
     n_samples = 481  # Sampling grid
     output_samples = np.linspace(0, 60, n_samples)
     # Generate design matrices containing the basis functions sampled on the defined sampling grid.
-    design_matrices = get_design_matrices(output_samples, parsed_config)
+    design_matrices = get_transposed_design_matrices(output_samples, parsed_config)
     # Create single BP and single RP spectrum
     row = correlation_parsed_file.head(1)
     for band in BANDS:
@@ -30,9 +30,9 @@ def test_init():
         parameters = row[f'{band}_coefficients'][0]
         standard_deviation = row[f'{band}_standard_deviation'][0]
         design_matrix = design_matrices.get(band)
-        covariance_matrix = _correlation_to_covariance_dr3int5(correlation_matrix,
-                                                               row[f'{band}_coefficient_errors'][0],
-                                                               row[f'{band}_standard_deviation'][0])
+        covariance_matrix = correlation_to_covariance_dr3int5(correlation_matrix,
+                                                              row[f'{band}_coefficient_errors'][0],
+                                                              row[f'{band}_standard_deviation'][0])
         continuous_spectrum = XpContinuousSpectrum(row['source_id'][0], band, parameters, covariance_matrix,
                                                    standard_deviation)
         spectrum = XpSampledSpectrum.from_continuous(continuous_spectrum, design_matrix)
@@ -40,3 +40,10 @@ def test_init():
         assert isinstance(spectrum, SampledSpectrum)
         assert isinstance(spectrum, XpSpectrum)
         assert isinstance(spectrum, Spectrum)
+
+
+def test_plot_labels():
+    assert XpSampledSpectrum.get_flux_label() == 'Flux [e-/s]'
+    assert XpSampledSpectrum.get_position_label() == 'Pseudo-wavelength'
+    assert XpSampledSpectrum.get_flux_label(use_tex=True) == r'Flux [$\mathrm{e^-\,s^{-1}}$]'
+    assert XpSampledSpectrum.get_position_label(use_tex=True) == r'Pseudo\mbox{-}wavelength'

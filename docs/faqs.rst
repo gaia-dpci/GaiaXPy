@@ -1,6 +1,11 @@
 FAQs
 ====
 
+How can I ask a question or provide feedback?
+---------------------------------------------
+
+Please refer to the :doc:`support` section on the side navigation bar.
+
 How can I request a photometric system to be added?
 ---------------------------------------------------
 
@@ -21,20 +26,28 @@ The main conditions for adding a new system are the following:
 GaiaXPy can receive pandas DataFrames, what type of frame is it expecting?
 -------------------------------------------------------------------------------
 
-GaiaXPy expects to receive a pandas DataFrame with at minimum the columns and types:
+Required columns depend on the operation. Inspect them without loading data:
 
-* ``source_id`` (``int``)
-* ``bp_n_parameters`` (``int``)
-* ``rp_n_parameters`` (``int``)
-* ``bp_coefficients`` (NumPy ndarray)
-* ``bp_coefficient_errors`` (NumPy ndarray)
-* ``bp_coefficient_correlations`` (NumPy ndarray)
-* ``rp_coefficients`` (NumPy ndarray)
-* ``rp_coefficient_errors`` (NumPy ndarray)
-* ``rp_coefficient_correlations`` (NumPy ndarray)
-* ``bp_basis_function_id`` (``int``, only required if ``truncation=True``)
-* ``rp_basis_function_id`` (``int``, only required if ``truncation=True``)
+.. code-block:: python
 
-If strings are present in the data, the program will fail.
+    from gaiaxpy import get_required_columns
 
-The NumPy ndarrays should be 1-dimensional arrays. In the case of ``bp_coefficient_correlations`` and ``rp_coefficient_correlations``, both 1-dimensional and 2-dimensional arrays are accepted. If a 1-dimensional array is passed, the program will use the function `array_to_symmetric_matrix <https://gaiaxpy.readthedocs.io/en/latest/gaiaxpy.core.html#gaiaxpy.core.generic_functions.array_to_symmetric_matrix>`_ to transform the array. If a 2-dimensional array is received, no changes will be applied. This 2-dimensional array should have dimensions ``(55, 55)``.
+    requirements = get_required_columns("calibrate")
+    print(requirements.required)
+    print(requirements.conditional)
+
+You can also pass the function itself to ``get_required_columns`` instead of just its name:
+
+.. code-block:: python
+
+    from gaiaxpy import calibrate, get_required_columns
+
+    requirements = get_required_columns(calibrate)
+    print(requirements.required)
+    print(requirements.conditional)
+
+For calibration, conversion and generation, use the Archive coefficient-column names and provide the required error information. When ``truncation=True``, the per-source ``bp_n_relevant_bases`` and ``rp_n_relevant_bases`` counts are required.
+
+This will also be described in the tutorials. Access the tutorials `here <https://gaia-dpci.github.io/GaiaXPy-website/tutorials.html>`_.
+
+Recognised array fields accept NumPy arrays and supported text representations. Coefficient correlations may be packed one-dimensional arrays or square matrices. Their dimensions must match that photometer's coefficient count.

@@ -3,6 +3,8 @@ Index
 
 |License|
 
+**GaiaXPy version:** |release|
+
 .. |License| image:: https://img.shields.io/badge/License-BSD_3--Clause-blue.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
@@ -26,6 +28,12 @@ Package overview
      - Constants and internal generic functions.
    * - Generator
      - Subpackage to generate synthetic photometry
+   * - Input reader
+     - Read files, DataFrames and Archive selections.
+   * - Output
+     - Save results and read their metadata.
+   * - Photometric system
+     - Discover and select built-in and additional photometric filters.
    * - Plotter
      - Subpackage to plot the output of some of the tools.
    * - Spectrum
@@ -35,13 +43,15 @@ Contents
 ========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    Homepage <https://gaia-dpci.github.io/GaiaXPy-website/>
    description
    installation
    usage
+   Tutorials <https://gaia-dpci.github.io/GaiaXPy-website/tutorials.html>
    faqs
+   support
    caveats
    gaiaxpy
    links
